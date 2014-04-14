@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg" >
+
+    <RelativeLayout
+        android:id="@+id/createaccount_topbar"
+        android:layout_width="fill_parent"
+        android:layout_height="55dp"
+        android:background="@drawable/mainpage_topbar" >
+
+        <TextView
+            android:id="@+id/signin_top_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/app_name"
+            android:textColor="#FFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/signin_toprightbtn"
+            android:onClick="cancelPressed"
+            android:padding="10dp"
+            android:text="@string/cancel"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/createaccount_topbar"
+        android:layout_centerHorizontal="true" >
+
+        <LinearLayout
+            android:id="@+id/signin_inputs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/createaccount_topbar"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:orientation="vertical"
+            android:paddingBottom="30dp"
+            android:paddingTop="30dp" >
+
+            <EditText
+                android:id="@+id/account_name_input"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/name"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/account_mail_input"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/account_password_input"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/account_mobile_input"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/mobile"
+                android:inputType="number"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/btn_create"
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/mainpage_btn"
+                android:text="@string/create_account"
+                android:textColor="@color/color_text_title_main"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

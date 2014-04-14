@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background="#ECECEC">
+    <LinearLayout
+        	android:id ="@+id/tab_tabbar"
+            android:layout_width ="fill_parent"
+            android:layout_height="55dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/tab_tabbar"
+            android:paddingBottom="0dp">         
+            <LinearLayout
+                android:id="@+id/ll_tab_activity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:focusable="true"
+                android:clickable="true">
+                <ImageView
+        			android:id="@+id/tab_imgv_activity"
+        			android:layout_width="wrap_content"
+        			android:layout_height="wrap_content"        			
+        			android:src="@drawable/tab_activity_pressed" 
+        			>
+        		</ImageView>
+                <TextView
+                    android:id="@+id/tab_tv_activity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Activity"
+                    android:textSize="12sp"
+                    android:textColor="#fff"
+                    >
+                </TextView>   
+           	</LinearLayout>
+           	
+            <LinearLayout
+                android:id="@+id/ll_tab_participant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:clickable="true"
+                android:layout_marginTop="5dp">
+                <ImageView 
+                    android:id="@+id/tab_imgv_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                  
+                    android:src="@drawable/tab_member_normal"
+                    >
+                </ImageView>
+                <TextView
+                    android:id="@+id/tab_tv_member"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Participant"
+                    android:textSize="12sp"
+                    android:textColor="#fff">
+                </TextView>   
+           	</LinearLayout>
+           	
+            <LinearLayout
+                android:id="@+id/ll_tab_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                  android:clickable="true">
+                <ImageView 
+                    android:id="@+id/tab_imgv_schedule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                  
+                    android:src="@drawable/tab_schedule_normal"
+                    >
+                </ImageView>
+                <TextView
+                    android:id="@+id/tab_tv_schedule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Schedule"
+                    android:textSize="12sp"
+                    android:textColor="#fff">
+                </TextView>   
+           	</LinearLayout>
+           	
+            <LinearLayout
+                android:id="@+id/ll_tab_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                 android:clickable="true"
+                android:layout_marginTop="5dp">
+                <ImageView 
+                    android:id="@+id/tab_imgv_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                   
+                    android:src="@drawable/tab_account_normal"
+                    >
+                </ImageView>
+                <TextView
+                    android:id="@+id/tab_tv_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Account"
+                    android:textSize="12sp"
+                    android:textColor="#fff">
+                </TextView>   
+           	</LinearLayout>
+       	</LinearLayout>
+       	<LinearLayout 
+       	    android:orientation="vertical"
+       	    android:layout_width="fill_parent"
+       	    android:layout_height="wrap_content"
+       	    android:layout_above="@id/tab_tabbar"
+       	    android:layout_alignParentTop="true">
+            <android.support.v4.view.ViewPager
+                android:id="@+id/tab_viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"/>
+			       	    
+       	</LinearLayout>
+    
+
+</RelativeLayout>

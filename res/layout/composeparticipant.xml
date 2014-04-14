@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background="#ECECEC">
+    <RelativeLayout
+	    android:id="@+id/composeparticipant_topbar"
+	    android:layout_width="fill_parent"
+   	 	android:layout_height="55dp"
+    	android:background="@drawable/mainpage_topbar">
+    	<TextView
+    	    android:id="@+id/compose_participant_toptitle"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_centerInParent="true"
+    	    android:text="Add Participant"
+    	    android:textColor="#FFF"
+    	    android:textSize="20sp"
+    	    android:textStyle="bold"/>
+    	
+    	<Button
+    	    android:id="@+id/compose_participant_Done"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_centerVertical="true"
+    	    android:layout_marginRight="5dp"
+    	    android:text="Done"
+    	    android:textColor="#FFF"
+    	    android:textSize="15sp"
+    	    android:onClick="composeParticipantDone"/>
+   	</RelativeLayout>
+   	
+    <LinearLayout 
+        android:id="@+id/compose_participant_components"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/composeparticipant_topbar"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="vertical">
+    	<EditText
+    	    android:id="@+id/compose_participant_email_et"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="wrap_content"
+    	    android:textColor="#000"
+    	    android:textSize="18dp"
+    	    android:hint="Email"
+    	    />
+    	<EditText
+    	    android:id="@+id/compose_participant_name_et"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="wrap_content"
+    	    android:textColor="#000"
+    	    android:textSize="18dp"
+    	    android:hint="Name"
+    	    />
+    	<EditText
+    	    android:id="@+id/compose_participant_mobile_et"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="wrap_content"
+    	    android:textColor="#000"
+    	    android:textSize="18dp"
+    	    android:hint="Mobile"
+    	    />   
+    	    	
+  	</LinearLayout>
+        
+</RelativeLayout>

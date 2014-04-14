@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background = "#FFF">
+    
+    <ImageButton
+        android:id="@+id/onduty_imgbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="20dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/unchecked"
+        android:onClick="itemSelected"/>
+    
+    <TextView
+        android:id="@+id/onduty_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       	android:layout_toRightOf="@id/onduty_imgbtn"
+        android:layout_marginLeft="20dp"
+        android:layout_centerVertical="true"
+        android:textSize="18sp"
+        android:textColor="#000"
+        android:text="hi"
+        android:textStyle="bold"/>
+    
+
+</RelativeLayout>

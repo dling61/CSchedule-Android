@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <RelativeLayout
+	    android:id="@+id/schedule_topbar"
+	    android:layout_width="fill_parent"
+   	 	android:layout_height="40dp"
+    	android:background="@drawable/mainpage_topbar">
+    	<TextView
+    	    android:id="@+id/scheudle_title_tv"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_centerInParent="true"
+    	    android:text="Schedule"
+    	    android:textColor="#FFF"
+    	    android:textSize="18sp"
+    	    android:textStyle="bold"/>
+    	<ImageButton
+    	    android:id="@+id/schedule_add_imgbtn"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_centerVertical="true"
+    	    android:layout_marginRight="10dp"
+    	    android:src="@drawable/button_add"
+    	    android:onClick="addNewSchedule"/>
+   	</RelativeLayout>
+   	
+    <RelativeLayout
+	    android:id="@+id/schedule_monthbar"
+	    android:layout_below="@id/schedule_topbar"
+	    android:layout_width="fill_parent"
+   	 	android:layout_height="40dp"
+    	android:background="#dddddd">
+    	<ImageButton
+    	    android:id="@+id/schedule_lastmonth_imgbtn"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentLeft="true"
+    		android:layout_centerVertical="true"
+    	    android:layout_marginLeft="10dp"
+    	    android:src="@drawable/button_left"
+    	    android:onClick="lastMonth"/>
+    	<TextView
+    	    android:id="@+id/scheudle_month_tv"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_centerInParent="true"
+    	    android:text="Schedule"
+    	    android:textColor="#FFF"
+    	    android:textSize="18sp"
+    	    android:textStyle="bold"/>
+    	<ImageButton
+    	    android:id="@+id/schedule_nextmonth_imgbtn"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:layout_alignParentRight="true"
+    	    android:layout_centerVertical="true"
+    	    android:layout_marginRight="10dp"
+    	    android:src="@drawable/button_right"
+    	    android:onClick="nextMonth"/>
+   	</RelativeLayout>
+
+	   	<LinearLayout
+	   	    android:id="@+id/schedule_calendar"
+	   	    android:layout_below="@id/schedule_monthbar"
+	   	    android:layout_width="wrap_content"
+	   	    android:layout_height="wrap_content"
+	   	    android:orientation="vertical" >
+	   	    
+	   	</LinearLayout>
+	   	
+	   	<ListView
+	   	    android:id="@+id/list_schedule"
+	   	    android:layout_below="@id/schedule_calendar"
+	   	    android:layout_width="fill_parent"
+	   	    android:layout_height="wrap_content"/>
+
+	   	
+
+</RelativeLayout>

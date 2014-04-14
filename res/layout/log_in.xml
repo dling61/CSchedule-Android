@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg" >
+
+    <RelativeLayout
+        android:id="@+id/signin_topbar"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="@color/bg_login_title_bar" >
+
+        <TextView
+            android:id="@+id/signin_top_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/app_name"
+            android:textColor="@color/color_text_title_main"
+            android:textSize="22sp" />
+
+        <RelativeLayout
+            android:id="@+id/layout_back"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:padding="10dp" >
+
+            <ImageView
+                android:id="@+id/signin_topright_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/button_up" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/signin_topbar"
+        android:layout_centerHorizontal="true" >
+
+        <LinearLayout
+            android:id="@+id/signin_inputs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/signin_topbar"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="vertical"
+            android:paddingTop="16dp" >
+
+            <EditText
+                android:id="@+id/txt_email"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/txt_password"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/signin_btn"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:background="#0099cc"
+                android:text="@string/signin"
+                android:textColor="#FFF"
+                android:textSize="22sp" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
