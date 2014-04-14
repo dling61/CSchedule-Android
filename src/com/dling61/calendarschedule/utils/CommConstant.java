@@ -24,4 +24,6 @@ public class CommConstant {
 	public static final String ACTIVITY_DOWNLOAD_SUCCESS="cschedule.activities.ready";
 	public static final String SCHEDULE_READY="cschedule.schedules.ready";
 	public static final String PARTICIPANT_READY="cschedule.participants.ready";
+	public static final long END_TIME_ACTIVITY=30*60;
+	
 }

@@ -9,6 +9,8 @@ public class SharedReference {
 	final String OWNER_ID = "owner_id";
 	final String USER_ACCOUNT = "user_account";
 	final String MY_PREFERENCE = "MyPreferences";
+	final String TIMEZONE = "time_zone";
+
 	/**
 	 * Set username to shared reference
 	 * */
@@ -30,7 +32,7 @@ public class SharedReference {
 		username = appSharedPrefs.getString(USERNAME, "");
 		return username;
 	}
-	
+
 	/**
 	 * Get email logged in shared reference
 	 * */
@@ -41,7 +43,7 @@ public class SharedReference {
 		email = appSharedPrefs.getString(CommConstant.EMAIL, "");
 		return email;
 	}
-	
+
 	/**
 	 * Set owner id to shared reference
 	 * */
@@ -74,16 +76,16 @@ public class SharedReference {
 		prefsEditor.putString(USER_ACCOUNT, jsonString);
 		prefsEditor.commit();
 	}
+
 	/**
 	 * Get current owner id logged in shared reference
 	 * */
-	public int getCurrentOwnerId(Context context) {		
+	public int getCurrentOwnerId(Context context) {
 		SharedPreferences appSharedPrefs = context.getSharedPreferences(
 				MY_PREFERENCE, 0);
 		return appSharedPrefs.getInt(CommConstant.CURRENT_OWNER_ID, -1);
 	}
 
-	
 	/**
 	 * Set infor related account
 	 * */
@@ -105,9 +107,10 @@ public class SharedReference {
 	// get the lastest last_modified time from activity table
 	public String getLastestServiceLastModifiedTime(Context mContext) {
 		SharedPreferences sp = mContext.getSharedPreferences(MY_PREFERENCE, 0);
-		String lastActivityModified = sp.getString(CommConstant.LAST_ACTIVITY_MODIFY,
-				MyDate.transformLocalDateTimeToUTCFormat(MyDate
-						.getCurrentDateTime()));
+		String lastActivityModified = sp.getString(
+				CommConstant.LAST_ACTIVITY_MODIFY, MyDate
+						.transformLocalDateTimeToUTCFormat(MyDate
+								.getCurrentDateTime()));
 		return lastActivityModified;
 
 	}
@@ -125,42 +128,67 @@ public class SharedReference {
 
 	public String getLastestScheduleLastModifiedTime(Context context) {
 		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, 0);
-		String lastScheduleModified = sp.getString(CommConstant.LAST_SCHEDULE_MODIFIED,
-				MyDate.transformLocalDateTimeToUTCFormat(MyDate
-						.getCurrentDateTime()));
+		String lastScheduleModified = sp.getString(
+				CommConstant.LAST_SCHEDULE_MODIFIED, MyDate
+						.transformLocalDateTimeToUTCFormat(MyDate
+								.getCurrentDateTime()));
 		return lastScheduleModified;
 	}
-	
+
 	/**
-	 * setLastestParticipantLastModifiedTime 
+	 * setLastestParticipantLastModifiedTime
 	 * */
-	public void setLastestParticipantLastModifiedTime(Context context, String dateTime) {
+	public void setLastestParticipantLastModifiedTime(Context context,
+			String dateTime) {
 		SharedPreferences appSharedPrefs = context.getSharedPreferences(
 				MY_PREFERENCE, 0);
 		Editor prefsEditor = appSharedPrefs.edit();
 		prefsEditor.putString(CommConstant.LAST_PARTICIPANT_MODIFY, dateTime);
 		prefsEditor.commit();
 	}
-	
+
 	/**
-	 * setLastestScheduleLastModifiedTime 
+	 * setLastestScheduleLastModifiedTime
 	 * */
-	public void setLastestScheduleLastModifiedTime(Context context, String dateTime) {
+	public void setLastestScheduleLastModifiedTime(Context context,
+			String dateTime) {
 		SharedPreferences appSharedPrefs = context.getSharedPreferences(
 				MY_PREFERENCE, 0);
 		Editor prefsEditor = appSharedPrefs.edit();
 		prefsEditor.putString(CommConstant.LAST_SCHEDULE_MODIFIED, dateTime);
 		prefsEditor.commit();
 	}
-	
+
 	/**
-	 * setLastestServiceLastModifiedTime 
+	 * setLastestServiceLastModifiedTime
 	 * */
-	public void setLastestServiceLastModifiedTime(Context context, String dateTime) {
+	public void setLastestServiceLastModifiedTime(Context context,
+			String dateTime) {
 		SharedPreferences appSharedPrefs = context.getSharedPreferences(
 				MY_PREFERENCE, 0);
 		Editor prefsEditor = appSharedPrefs.edit();
 		prefsEditor.putString(CommConstant.LAST_UPDATE_TIME, dateTime);
 		prefsEditor.commit();
 	}
+
+	/**
+	 * setTimeZone
+	 * */
+	public void setTimeZone(Context context, String timeZone) {
+		SharedPreferences appSharedPrefs = context.getSharedPreferences(
+				MY_PREFERENCE, 0);
+		Editor prefsEditor = appSharedPrefs.edit();
+		prefsEditor.putString(CommConstant.LAST_SCHEDULE_MODIFIED, timeZone);
+		prefsEditor.commit();
+	}
+
+	/**
+	 * getTimeZone
+	 * */
+	public String getTimeZone(Context context) {
+		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, 0);
+		String timeZone = sp.getString(TIMEZONE, "");
+		return timeZone;
+	}
+
 }

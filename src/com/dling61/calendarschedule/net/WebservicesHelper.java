@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import com.dling61.calendarschedule.HomeActivity;
 import com.dling61.calendarschedule.LoginActivity;
 import com.dling61.calendarschedule.R;
+import com.dling61.calendarschedule.TabActivity;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.ActivityTable;
 import com.dling61.calendarschedule.models.MyActivity;
@@ -256,10 +257,10 @@ public class WebservicesHelper {
 										nextscheduleid);
 
 								((Activity) mContext).finish();
-//								Intent intent = new Intent(mContext,
-//										TabActivity.class);
 								Intent intent = new Intent(mContext,
-                                        HomeActivity.class);
+										TabActivity.class);
+//								Intent intent = new Intent(mContext,
+//                                        HomeActivity.class);
 								mContext.startActivity(intent);
 
 							} catch (JSONException e) {

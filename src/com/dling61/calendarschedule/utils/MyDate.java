@@ -1,12 +1,9 @@
 package com.dling61.calendarschedule.utils;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-
 import android.net.ParseException;
-import android.util.Log;
 
 public class MyDate {
 	

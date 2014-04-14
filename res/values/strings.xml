@@ -27,4 +27,65 @@
         <item>Account</item>
     </string-array>
 
+    <string name="add_activity">Add Activity</string>
+    <string name="edit_activity">Edit Activity</string>
+
+    <string-array name="alert_array">
+        <item>None</item>
+        <item>5 minutes before</item>
+        <item>15 minutes before</item>
+        <item>30 minutes before</item>
+        <item>1 hour before</item>
+        <item>2 hours before</item>
+        <item>1 day before</item>
+        <item>2 day before</item>
+        <item>On date of event</item>
+    </string-array>
+    <string-array name="repeat_array">
+        <item>None</item>
+        <item>Every day</item>
+        <item>Every week</item>
+        <item>Every 2 weeks</item>
+        <item>Every month</item>
+        <item>Every year</item>
+    </string-array>
+    
+    <string-array name="timezone_array">
+        <item>US/Samoa-(GMT-11:00) Samoa</item>
+        <item>US/Hawaii-(GMT-10:00) Hawaii</item>
+        <item>US/Alaska-(GMT-09:00) Alaska</item>
+        <item>US/Pacific-(GMT-08:00) Pacific Time (US-Canada)</item>
+        <item>US/Arizona-(GMT-07:00) Arizona</item>
+        <item>US/Mountain-(GMT-07:00) Mountain Time (US-Canada)</item>
+        <item>US/Central-(GMT-06:00) Central Time (US-Canada)</item>
+        <item>US/Eastern-(GMT-05:00) Eastern Time (US-Canada)</item>
+        <item>US/East-Indiana-(GMT-05:00) Indiana (East)</item>
+        <item>Canada/Atlantic-(GMT-04:00) Atlantic Time (Canada)</item>
+        <item>Canada/Newfoundland-(GMT-03:30) Newfoundland</item>
+    </string-array>
+    <string-array name="timezone_value_array">
+        <item>-11</item>
+        <item>-10</item>
+        <item>-9</item>
+        <item>-8</item>
+        <item>-7</item>
+        <item>-7</item>
+        <item>-6</item>
+        <item>-5</item>
+        <item>-5</item>
+        <item>-4</item>
+        <item>-3.5</item>
+    </string-array>
+
+    <string name="set_end_date">Set End Date</string>
+    <string name="set_start_time">Set Start Time</string>
+    <string name="set_end_time">Set End Time</string>
+    <string name="next">Next</string>
+    <string name="new_activity">New Activity</string>
+    <string name="activity_name">Activity name</string>
+    <string name="time_zone">Time Zone</string>
+    <string name="alert">Alert</string>
+    <string name="repeat">Repeat</string>
+    <string name="description">Description</string>
+
 </resources>

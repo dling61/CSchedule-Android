@@ -1,12 +1,15 @@
 package com.dling61.calendarschedule.fragments;
 
 import java.util.ArrayList;
+
+import com.dling61.calendarschedule.AddNewActivity;
 import com.dling61.calendarschedule.adapter.ActivityAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.MyActivity;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.views.ActivityView;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,13 +29,15 @@ import android.view.ViewGroup;
 public class ActivityFragment extends Fragment implements OnClickListener {
 	ActivityView view;
 	Context mContext;
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mContext = getActivity();
 		initData();
-
+		onClickListener();
 	}
+
 	private void initData() {
 		WebservicesHelper ws = new WebservicesHelper(mContext);
 		ws.getActivity(mContext);
@@ -42,9 +47,16 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 		return ActivityFragment.getInstance();
 	}
 
+	private void onClickListener() {
+		view.btn_add_activity.setOnClickListener(this);
+	}
+
 	@Override
 	public void onClick(View v) {
-
+		if (v == view.btn_add_activity) {
+			Intent intent = new Intent(mContext, AddNewActivity.class);
+			mContext.startActivity(intent);
+		}
 	}
 
 	@Override
