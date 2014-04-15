@@ -6,7 +6,7 @@ public class Participant {
 	private String email="";
 	private String mobile="";
 	private int owner_id=-1;
-	
+	public boolean isChecked=false;//mark checkbox uncheck
 	public Participant(int p_id,String p_name, String p_email, String p_mobile, int o_id)
 	{
 		id = p_id;

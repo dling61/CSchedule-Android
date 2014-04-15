@@ -4,35 +4,52 @@
     android:layout_height="match_parent"
     android:background="#fff"
     android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <CheckBox
+            android:id="@+id/cb_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/participant_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/cb_check"
+            android:text="Text"
+            android:textColor="#0099cc"
+            android:textSize="22sp"
+            android:textStyle="bold" 
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
     <TextView
-        android:id ="@+id/participant_name_tv"
+        android:id="@+id/participant_email_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:textSize="22sp"
-        android:textStyle="bold"
-       	android:textColor="#0099cc"
-        />
-    <TextView
-        android:id ="@+id/participant_email_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:textColor="#000"
         android:textSize="14sp"
-        android:textStyle="bold"
-       	android:textColor="#000"
-        />
+        android:textStyle="bold" />
+
     <TextView
-        android:id ="@+id/participant_mobile_tv"
+        android:id="@+id/participant_mobile_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:textColor="#777777"
         android:textSize="12sp"
-        android:textStyle="bold"
-       	android:textColor="#777777"
-        />
+        android:textStyle="bold" />
 
 </LinearLayout>

@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,6 +28,10 @@ public class AddActivityView extends RelativeLayout {
 	public EditText et_new_activity_description;
 	public Button btn_new_activity_next;
 	public View layout;
+	public Button btn_add_paticipant;
+	public Button btn_remove_activity;
+	public ListView list_participant;
+	public TextView tv_participant;
 	public AddActivityView(Context context) {
 		super(context);
 		this.context = context;
@@ -55,5 +60,9 @@ public class AddActivityView extends RelativeLayout {
 		et_new_activity_repeat = (EditText) findViewById(R.id.et_new_activity_repeat);
 		et_new_activity_description = (EditText) findViewById(R.id.et_new_activity_description);
 		btn_new_activity_next=(Button)findViewById(R.id.btn_new_activity_next);
+		btn_add_paticipant=(Button)findViewById(R.id.btn_add_paticipant);
+		btn_remove_activity=(Button)findViewById(R.id.btn_remove_activity);
+		list_participant=(ListView)findViewById(R.id.list_participant);
+		tv_participant=(TextView)findViewById(R.id.tv_participant);
 	}
 }

@@ -57,7 +57,7 @@ public class OndutyActivity extends Activity implements OnItemClickListener {
 		mDialog.show();
 		
 		WebservicesHelper ws=new WebservicesHelper(mContext);
-		ws.getSharedmembersForActivity(activity_id, sharedmembers);
+//		ws.getSharedmembersForActivity(activity_id, sharedmembers);
 		
 		IntentFilter filter = new IntentFilter("cschedule.sharedmembersready");
 		

@@ -5,9 +5,10 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="400dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:text="àafffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
         android:textColor="@color/color_textview"
         android:textSize="@dimen/text_size" />
 

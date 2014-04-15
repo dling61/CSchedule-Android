@@ -4,6 +4,7 @@
 package com.dling61.calendarschedule;
 
 import org.json.JSONException;
+
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 
@@ -16,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @class LoginActivity
@@ -76,6 +78,23 @@ public class LoginActivity extends Activity implements OnClickListener {
 		if (v == signin_btn) {
 			String username = txt_email.getText().toString().trim();
 			String password = txt_password.getText().toString().trim();
+			if (username.equals("")) {
+				Toast.makeText(
+						mContext,
+						mContext.getResources().getString(
+								R.string.username_blank)
+								+ "\n", Toast.LENGTH_LONG).show();
+
+				return;
+			}
+			if (password.equals("")) {
+				Toast.makeText(
+						mContext,
+						mContext.getResources().getString(
+								R.string.password_blank)
+								+ "\n", Toast.LENGTH_LONG).show();
+				return;
+			}
 			login(username, password);
 		} else if (v == layout_back) {
 			finish();

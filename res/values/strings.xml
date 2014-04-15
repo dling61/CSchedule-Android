@@ -49,7 +49,6 @@
         <item>Every month</item>
         <item>Every year</item>
     </string-array>
-    
     <string-array name="timezone_array">
         <item>US/Samoa-(GMT-11:00) Samoa</item>
         <item>US/Hawaii-(GMT-10:00) Hawaii</item>
@@ -83,9 +82,24 @@
     <string name="next">Next</string>
     <string name="new_activity">New Activity</string>
     <string name="activity_name">Activity name</string>
+    <string name="remove_activity">Remove Activity</string>
     <string name="time_zone">Time Zone</string>
     <string name="alert">Alert</string>
-    <string name="repeat">Repeat</string>
     <string name="description">Description</string>
+    <string name="repeat">Repeat</string>
+    <string name="username_blank">Please enter your username</string>
+    <string name="password_blank">Please enter your password</string>
+    <string name="input_activity_name">Please enter activity name</string>
+    <string name="input_activity_description">Please enter activity description</string>
+    <string name="create_activity_error">Have an error occur when creating an activity. Please try again!</string>
+    <string name="edit_activity_error">Have an error occur when editing an activity. Please try again!</string>
+    <string name="add_participant">Add Participant</string>
+    <string name="edit_participant">Edit Participant</string>
+    <string name="participant">Participant</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="on_duty">On Duty</string>
+    <string name="add_schedule">Add schedule</string>
+    <string name="edit_schedule">Edit Schedule</string>
 
 </resources>

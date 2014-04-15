@@ -22,7 +22,7 @@ public class TextViewBaseAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		TextItemView holder;
 		//
-		if (null == convertView) {
+		if (convertView==null) {
 			holder = new TextItemView(activity);
 			convertView = holder;
 			convertView.setTag(holder);

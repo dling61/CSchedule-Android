@@ -3,11 +3,8 @@
  * */
 package com.dling61.calendarschedule;
 
-import org.json.JSONObject;
-
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.Utils;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;

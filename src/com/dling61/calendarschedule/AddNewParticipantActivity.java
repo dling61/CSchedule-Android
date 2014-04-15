@@ -5,6 +5,7 @@ import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.models.ParticipantTable;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.SharedReference;
+import com.dling61.calendarschedule.views.AddParticipantView;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -13,33 +14,31 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-public class ComposeParticipantActivity extends Activity {
+public class AddNewParticipantActivity extends Activity implements OnClickListener{
 	private Participant thisParticipant;
 	private int composeType;
 	private DatabaseHelper dbHelper;
-	private EditText email_et;
-	private EditText name_et;
-	private EditText mobile_et;
-	private TextView title_tv;
+	AddParticipantView view;
 	Context mContext;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.composeparticipant);
+		
 		mContext=this;
-		this.findViews();
-		dbHelper = DatabaseHelper.getSharedDatabaseHelper(this);
+		view=new AddParticipantView(mContext);
+		this.setContentView(view.layout);
+	
+		
 		Intent myIntent = this.getIntent();
 		composeType = myIntent.getIntExtra("type", -1);
-		
+		dbHelper = DatabaseHelper.getSharedDatabaseHelper(this);
 		SharedReference ref=new SharedReference();
 		if (composeType == DatabaseHelper.NEW)
 		{
-			title_tv.setText("Add Participant");
+			view.tv_title.setText(mContext.getResources().getString(R.string.add_participant));
 			
 			int newParticipantID = dbHelper.getNextParticipantID();
 			int ownerid =ref.getCurrentOwnerId(mContext);
@@ -47,22 +46,18 @@ public class ComposeParticipantActivity extends Activity {
 		}
 		else if (composeType == DatabaseHelper.EXISTED)
 		{
-			title_tv.setText("Edit Participant");
+			view.tv_title.setText(mContext.getResources().getString(R.string.edit_participant));
 			int selectedParticipantID = myIntent.getIntExtra("participantid", -1);
 			thisParticipant = dbHelper.getParticipant(selectedParticipantID);
 		}
-		email_et.setText(thisParticipant.getEmail());
-		name_et.setText(thisParticipant.getName());
-		mobile_et.setText(thisParticipant.getMobile());
+		view.et_email.setText(thisParticipant.getEmail());
+		view.et_name.setText(thisParticipant.getName());
+		view.et_mobile.setText(thisParticipant.getMobile());
+	
+		
+		onClickListener();
 	}
 	
-	public void findViews()
-	{
-		email_et = (EditText) this.findViewById(R.id.compose_participant_email_et);
-		name_et = (EditText) this.findViewById(R.id.compose_participant_name_et);
-		mobile_et = (EditText) this.findViewById(R.id.compose_participant_mobile_et);
-		title_tv = (TextView) this.findViewById(R.id.compose_participant_toptitle);
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -71,18 +66,31 @@ public class ComposeParticipantActivity extends Activity {
 		return true;
 	}
 	
-	public void composeParticipantDone(View v)
+	private void onClickListener()
 	{
-		Toast t = Toast.makeText(this, "done composing participant button pressed", Toast.LENGTH_LONG);
-		t.show();
-		if (DatabaseHelper.isEmailValid(email_et.getText().toString()) == false)
+		view.btn_next.setOnClickListener(this);
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if(v==view.btn_next)
 		{
-			Toast.makeText(this, "The emial address is invalid",Toast.LENGTH_LONG).show();
+			composeParticipantDone();
+		}
+	}
+	
+	public void composeParticipantDone()
+	{
+	
+		if (DatabaseHelper.isEmailValid(view.et_email.getText().toString()) == false)
+		{
+			Toast.makeText(this, "The email address is invalid",Toast.LENGTH_LONG).show();
 			return ;
 		}
-		thisParticipant.setEmail(email_et.getText().toString());
-		thisParticipant.setName(name_et.getText().toString());
-		thisParticipant.setMobile(mobile_et.getText().toString());
+		thisParticipant.setEmail(view.et_email.getText().toString());
+		thisParticipant.setName(view.et_name.getText().toString());
+		thisParticipant.setMobile(view.et_mobile.getText().toString());
 		if (composeType == DatabaseHelper.NEW)
 		{
 			ContentValues newParticipant  = new ContentValues();
@@ -99,10 +107,10 @@ public class ComposeParticipantActivity extends Activity {
 			WebservicesHelper ws=new WebservicesHelper(mContext);
 			ws.addParticipant(thisParticipant);
 			
-			Intent resultIntent = new Intent();
-			resultIntent.putExtra("id", thisParticipant.getID());
-			setResult(Activity.RESULT_OK, resultIntent);
-			finish();
+//			Intent resultIntent = new Intent();
+//			resultIntent.putExtra("id", thisParticipant.getID());
+//			setResult(Activity.RESULT_OK, resultIntent);
+//			finish();
 		}
 		else
 		{
@@ -118,10 +126,10 @@ public class ComposeParticipantActivity extends Activity {
 			WebservicesHelper ws=new WebservicesHelper(mContext);
 			ws.updateParticipant(thisParticipant);
 		
-			Intent resultIntent = new Intent();
-			resultIntent.putExtra("id", thisParticipant.getID());
-			setResult(Activity.RESULT_OK, resultIntent);
-			finish();
+//			Intent resultIntent = new Intent();
+//			resultIntent.putExtra("id", thisParticipant.getID());
+//			setResult(Activity.RESULT_OK, resultIntent);
+//			finish();
 		}
 		
 	}

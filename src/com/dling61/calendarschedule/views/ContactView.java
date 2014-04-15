@@ -8,6 +8,7 @@ import com.dling61.calendarschedule.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -18,6 +19,8 @@ import android.widget.RelativeLayout;
 public class ContactView extends RelativeLayout {
 	Context context;
 	public ListView list_contact;
+	public ImageButton btn_add_participant;
+	public ImageButton btn_next;
 	public ContactView(Context context) {
 		super(context);
 		this.context = context;
@@ -37,7 +40,9 @@ public class ContactView extends RelativeLayout {
 	}
 
 	public void findViewById(final Context context) {
-		View.inflate(context, R.layout.memberpage, this);
+		View.inflate(context, R.layout.contact_view, this);
 		list_contact=(ListView)findViewById(R.id.list_contact);
+		btn_add_participant=(ImageButton)findViewById(R.id.btn_add_participant);
+		btn_next=(ImageButton)findViewById(R.id.btn_next);
 	}
 }

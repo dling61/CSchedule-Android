@@ -57,7 +57,7 @@ public class ShareActivity extends Activity implements OnItemClickListener  {
 			mDialog.show();
 			
 			WebservicesHelper ws=new WebservicesHelper(mContext);
-			ws.getSharedmembersForActivity(current_activityid, sharedmembers);
+//			ws.getSharedmembersForActivity(current_activityid, sharedmembers);
 		}
 		
 		IntentFilter filter = new IntentFilter("cschedule.sharedmembersready");
@@ -158,7 +158,7 @@ public class ShareActivity extends Activity implements OnItemClickListener  {
 				if (sm.getRole() != DatabaseHelper.NOSHARE)
 				{
 					WebservicesHelper ws=new WebservicesHelper(mContext);
-					ws.postSharedmemberToActivity(sm.getID(), sm.getRole(), current_activityid);
+					ws.postSharedmemberToActivity(sm.getID(), sm.getRole(), current_activityid+"");
 				}
 			}
 			else

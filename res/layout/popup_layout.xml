@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:background="@color/bg"
     android:orientation="vertical"
-    android:padding="10dip"
-    android:background="@color/white" >
+    android:padding="10dip" >
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dip" />
+        android:layout_marginTop="10dip"
+        android:textColor="@color/color_textview"
+        android:textSize="@dimen/text_size"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_textview"
+        android:orientation="vertical" >
+    </LinearLayout>
 
     <ListView
         android:id="@+id/list_item"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@color/bg"
+        android:divider="@color/color_textview"
+        android:dividerHeight="1dp" >
     </ListView>
 
 </LinearLayout>

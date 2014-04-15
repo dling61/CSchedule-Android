@@ -1,31 +1,32 @@
 package com.dling61.calendarschedule.adapter;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.models.Participant;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class ParticipantAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
-	private ArrayList<Participant> participants;
+	public ArrayList<Participant> participants;
 	private Typeface thinface;
 	private Typeface regularface;
 	private Typeface lightface;
 	Context mContext;
-	public ParticipantAdapter(Context context, ArrayList<Participant> participants)
+	boolean isCheck=false;
+	public ParticipantAdapter(Context context, ArrayList<Participant> participants,boolean isCheck)
 	{
 		mInflater = LayoutInflater.from(context);
 		mContext=context;
 		this.participants = participants;
+		this.isCheck=isCheck;
 	}
 	
 	public void setParticipants (ArrayList<Participant> participants)
@@ -68,7 +69,7 @@ public class ParticipantAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup arg2) {
+	public View getView(final int position, View convertView, ViewGroup arg2) {
 		// TODO Auto-generated method stub
 		
 		ParticipantViewHolder viewHolder;
@@ -82,19 +83,45 @@ public class ParticipantAdapter extends BaseAdapter {
 			viewHolder.name_tv = (TextView)convertView.findViewById(R.id.participant_name_tv);
 			viewHolder.email_tv = (TextView)convertView.findViewById(R.id.participant_email_tv);
 			viewHolder.mobile_tv = (TextView)convertView.findViewById(R.id.participant_mobile_tv);
+			viewHolder.cb_check=(CheckBox)convertView.findViewById(R.id.cb_check);
 			convertView.setTag(viewHolder);
 		}
 		else
 		{
 			viewHolder = (ParticipantViewHolder) convertView.getTag();
 		}
-		Participant participant = participants.get(position);
+		if(isCheck)
+		{
+			viewHolder.cb_check.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			viewHolder.cb_check.setVisibility(View.GONE);
+		}
+		
+		final Participant participant = participants.get(position);
 		viewHolder.name_tv.setText(participant.getName());
 		viewHolder.name_tv.setTypeface(lightface);
 		viewHolder.email_tv.setText(participant.getEmail());
 		viewHolder.email_tv.setTypeface(thinface);
 		viewHolder.mobile_tv.setText(participant.getMobile());
 		viewHolder.mobile_tv.setTypeface(thinface);
+		convertView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(isCheck)
+				{
+					participant.isChecked=!participant.isChecked;
+					participants.set(position,participant);
+				}
+				else
+				{
+					//do nothing
+				}
+			}
+		});
 		return convertView;
 	}
 	
@@ -103,6 +130,7 @@ public class ParticipantAdapter extends BaseAdapter {
 		TextView name_tv;
 		TextView email_tv;
 		TextView mobile_tv;
+		CheckBox cb_check;
 	}
 
 }

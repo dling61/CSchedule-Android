@@ -128,10 +128,16 @@ public class SharedReference {
 
 	public String getLastestScheduleLastModifiedTime(Context context) {
 		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, 0);
-		String lastScheduleModified = sp.getString(
-				CommConstant.LAST_SCHEDULE_MODIFIED, MyDate
-						.transformLocalDateTimeToUTCFormat(MyDate
-								.getCurrentDateTime()));
+
+		String lastScheduleModified = "";
+		try {
+			lastScheduleModified = sp.getString(
+					CommConstant.LAST_SCHEDULE_MODIFIED, MyDate
+							.transformLocalDateTimeToUTCFormat(MyDate
+									.getCurrentDateTime()));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		return lastScheduleModified;
 	}
 
@@ -174,20 +180,20 @@ public class SharedReference {
 	/**
 	 * setTimeZone
 	 * */
-	public void setTimeZone(Context context, String timeZone) {
+	public void setTimeZone(Context context, int timeZone) {
 		SharedPreferences appSharedPrefs = context.getSharedPreferences(
 				MY_PREFERENCE, 0);
 		Editor prefsEditor = appSharedPrefs.edit();
-		prefsEditor.putString(CommConstant.LAST_SCHEDULE_MODIFIED, timeZone);
+		prefsEditor.putInt(CommConstant.LAST_SCHEDULE_MODIFIED, timeZone);
 		prefsEditor.commit();
 	}
 
 	/**
-	 * getTimeZone
+	 * getTimeZone position in timezone array value
 	 * */
-	public String getTimeZone(Context context) {
+	public int getTimeZone(Context context) {
 		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, 0);
-		String timeZone = sp.getString(TIMEZONE, "");
+		int timeZone = sp.getInt(TIMEZONE, 0);
 		return timeZone;
 	}
 

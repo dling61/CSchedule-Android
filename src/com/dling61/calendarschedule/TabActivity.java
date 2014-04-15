@@ -184,6 +184,7 @@ public class TabActivity extends FragmentActivity implements View.OnClickListene
 		// TODO Put here your Fragments
 		ActivityFragment activity=new ActivityFragment();
 		ContactFragment contact=new ContactFragment(); 
+		contact.setInSideTab(true);
 		ScheduleFragment schedule=new ScheduleFragment();
 		AccountFragment account=new AccountFragment(); 
 		

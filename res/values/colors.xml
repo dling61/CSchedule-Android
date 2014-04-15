@@ -41,5 +41,8 @@
     <color name="bg">#ECECEC</color>
     <color name="color_text_title_main">#FFF</color>
     <color name="bg_login_title_bar">#0099cc</color>
-    <color name="color_textview">#244086</color>
+    <color name="color_textview">#0d8fde</color>
+    <color name="bg_button">#0d8fde</color>
+    <color name="text_button">#ffffff</color>
+    <color name="bg_top_bar">#2884cd</color>
 </resources>

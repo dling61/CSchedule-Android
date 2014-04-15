@@ -55,9 +55,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
 		Log.i("database", "database is initializing");
-		db.execSQL("CREATE TABLE " + ParticipantTable.ParticipantTableName
-				+ "(" + ParticipantTable.participant_ID
-				//+ " INTEGER PRIMARY KEY NOT NULL,"
+		db.execSQL("CREATE TABLE "
+				+ ParticipantTable.ParticipantTableName
+				+ "("
+				+ ParticipantTable.participant_ID
+				// + " INTEGER PRIMARY KEY NOT NULL,"
 				+ " INTEGER PRIMARY KEY NOT NULL UNIQUE,"
 				+ ParticipantTable.participant_Name + " TEXT NOT NULL,"
 				+ ParticipantTable.participant_Mobile + " TEXT,"
@@ -222,7 +224,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return activities;
 	}
 
-	public MyActivity getActivity(int service_id) {
+	public MyActivity getActivity(String service_id) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ActivityTable.ActivityTableName + " WHERE "
 						+ ActivityTable.service_ID + " = " + service_id, null);
@@ -261,7 +263,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.end_Time));
 			String desp = c.getString(c
 					.getColumnIndex(ScheduleTable.schedule_Description));
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id,
+			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
 					startDate, endDate, desp);
 			return newSchedule;
 		}
@@ -284,7 +286,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.end_Time));
 			String desp = c.getString(c
 					.getColumnIndex(ScheduleTable.schedule_Description));
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id,
+			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
 					startDate, endDate, desp);
 			schedules.add(newSchedule);
 		}
@@ -341,7 +343,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						.getColumnIndex(ScheduleTable.schedule_Description);
 				String desp = c1.getString(despIndex);
 
-				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id,
+				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
 						startDate, endDate, desp);
 				schedules.add(newSchedule);
 			}
@@ -371,7 +373,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.schedule_Description);
 			String desp = c1.getString(despIndex);
 
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id,
+			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
 					startDate, endDate, desp);
 			allschedules.add(newSchedule);
 		}
@@ -379,7 +381,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		// IllegalStateException: Process 5808 exceeded cursor quota 100, will
 		// kill it
 		c1.close();
-		//sharedDatabaseHelper.close();
+		// sharedDatabaseHelper.close();
 
 		return allschedules;
 	}
@@ -437,7 +439,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.schedule_Description);
 			String desp = c.getString(despIndex);
 
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id,
+			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
 					startDate, endDate, desp);
 			schedules.add(newSchedule);
 		}
@@ -465,7 +467,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.schedule_Description);
 			String desp = c.getString(despIndex);
 
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id,
+			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
 					startDate, endDate, desp);
 			schedules.add(newSchedule);
 		}
@@ -514,7 +516,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	public Sharedmember getSharedmember(int member_id, int activity_id) {
+	public Sharedmember getSharedmember(int member_id, String activity_id) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
 						+ " WHERE " + SharedMemberTable.member_id + " = "
@@ -540,8 +542,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
+	/**
+	 * Get participant of an activity
+	 * */
+	public ArrayList<Participant> getParticipantsOfActivity(String activity_id) {
+		Cursor c = this.getWritableDatabase().rawQuery(
+				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
+						+ " WHERE " + SharedMemberTable.service_id + "="
+						+ activity_id, null);
+		ArrayList<Participant> list_participant = new ArrayList<Participant>();
+		while (c.moveToNext()) {
+			int mem_id = c
+					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
+//			int serviceid = c.getInt(c
+//					.getColumnIndex(SharedMemberTable.service_id));
+			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
+			String name = c.getString(c
+					.getColumnIndex(SharedMemberTable.member_name));
+			String email = c.getString(c
+					.getColumnIndex(SharedMemberTable.member_email));
+			String mobile = c.getString(c
+					.getColumnIndex(SharedMemberTable.member_mobile));
+			Participant new_participant = new Participant(mem_id, name, email,
+					mobile, role);
+			list_participant.add(new_participant);
+
+		}
+		return list_participant;
+	}
+
 	public ArrayList<Participant> getParticipants() {
-		SharedReference ref=new SharedReference();
+		SharedReference ref = new SharedReference();
 		ArrayList<Participant> participants = new ArrayList<Participant>();
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ParticipantTable.ParticipantTableName
@@ -628,7 +659,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		// Add this to prevent collapse
 		c.close();
-		//sharedDatabaseHelper.close();
+		// sharedDatabaseHelper.close();
 		return memberids;
 	}
 
@@ -645,8 +676,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		return ondutyids;
 	}
-	
-	public boolean IsActivityExisted(int activityID) {
+
+	public boolean isActivityExisted(int activityID) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + ActivityTable.service_ID + " from "
 						+ ActivityTable.ActivityTableName + " where "
@@ -657,7 +688,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return (id == (-1)) ? false : true;
 	}
 
-	public boolean IsParticipantExisted(int participantID) {
+	public boolean isParticipantExisted(int participantID) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + ParticipantTable.participant_ID + " from "
 						+ ParticipantTable.ParticipantTableName + " where "
@@ -669,7 +700,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return (id == (-1)) ? false : true;
 	}
 
-	public boolean IsScheduleExisted(int scheduleID) {
+	public boolean isScheduleExisted(int scheduleID) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + ScheduleTable.schedule_ID + " from "
 						+ ScheduleTable.ScheduleTableName + " where "
@@ -680,7 +711,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return (id == (-1)) ? false : true;
 	}
 
-	public boolean IsOndutyExisted(int scheduleID) {
+	public boolean isOndutyExisted(int scheduleID) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + OndutyTable.schedule_ID + " from "
 						+ OndutyTable.OntudyTableName + " where "
@@ -691,7 +722,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return (id == (-1)) ? false : true;
 	}
 
-	public boolean IsSharedmemberExisted(int memberid, int activityid) {
+	public boolean isSharedmemberExisted(int memberid, String activityid) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + SharedMemberTable.member_id + " from "
 						+ SharedMemberTable.SharedMemberTableName + " where "
@@ -709,9 +740,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean insertParticipant(ContentValues newParticipant) {
-		long result = this.getWritableDatabase().insert(
+		long result = this.getWritableDatabase().insertWithOnConflict(
 				ParticipantTable.ParticipantTableName,
-				ParticipantTable.participant_ID, newParticipant);
+				ParticipantTable.participant_ID, newParticipant,
+				SQLiteDatabase.CONFLICT_IGNORE);
 		return (result == -1) ? false : true;
 	}
 
@@ -732,9 +764,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean insertActivity(ContentValues newActivity) {
-		long result = this.getWritableDatabase().insert(
+
+		long result = this.getWritableDatabase().insertWithOnConflict(
 				ActivityTable.ActivityTableName, ActivityTable.service_ID,
-				newActivity);
+				newActivity, SQLiteDatabase.CONFLICT_IGNORE);
 		return (result == -1) ? false : true;
 	}
 
@@ -755,9 +788,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean insertSchedule(ContentValues newSchedule) {
-		long result = this.getWritableDatabase().insert(
+		long result = this.getWritableDatabase().insertWithOnConflict(
 				ScheduleTable.ScheduleTableName, ScheduleTable.schedule_ID,
-				newSchedule);
+				newSchedule, SQLiteDatabase.CONFLICT_IGNORE);
 		return (result == -1) ? false : true;
 	}
 
@@ -778,8 +811,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean insertOnduty(ContentValues newOnduty) {
-		long result = this.getWritableDatabase().insert(
-				OndutyTable.OntudyTableName, OndutyTable.service_ID, newOnduty);
+		long result = this.getWritableDatabase().insertWithOnConflict(
+				OndutyTable.OntudyTableName, OndutyTable.service_ID, newOnduty,
+				SQLiteDatabase.CONFLICT_IGNORE);
 		return (result == -1) ? false : true;
 	}
 
@@ -800,13 +834,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean insertSharedmember(ContentValues sharedmember) {
-		long result = this.getWritableDatabase().insert(
+		long result = this.getWritableDatabase().insertWithOnConflict(
 				SharedMemberTable.SharedMemberTableName,
-				SharedMemberTable.member_id, sharedmember);
+				SharedMemberTable.member_id, sharedmember,
+				SQLiteDatabase.CONFLICT_IGNORE);
 		return (result == -1) ? false : true;
 	}
 
-	public boolean updateSharedmember(int memberid, int activityid,
+	public boolean updateSharedmember(int memberid, String activityid,
 			ContentValues sharedmember) {
 		String[] whereArgs = new String[] { String.valueOf(memberid),
 				String.valueOf(activityid) };
@@ -894,7 +929,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
 				null);
 	}
-	
+
 	public int getNextActivityID() {
 		SharedPreferences sp = context.getSharedPreferences("MyPreferences", 0);
 		int nextid = sp.getInt("nextserviceid", -1);
