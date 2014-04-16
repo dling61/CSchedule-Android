@@ -6,7 +6,7 @@ package com.dling61.calendarschedule.models;
  */
 public class MyActivity {
 
-	private int activity_ID = -1;
+	private String activity_ID = "";
 	private int owner_ID = -1;
 	private int alert = -1;
 	private int repeat = -1;
@@ -17,8 +17,8 @@ public class MyActivity {
 	private int otc_offset = -1;
 	private int role = -1;
 
-	public MyActivity(int id, int ownid, int alrt, int rep, String name, String start,
-			String end, String des, int otc, int r) {
+	public MyActivity(String id, int ownid, int alrt, int rep, String name,
+			String start, String end, String des, int otc, int r) {
 		activity_ID = id;
 		owner_ID = ownid;
 		alert = alrt;
@@ -31,18 +31,11 @@ public class MyActivity {
 		role = r;
 	}
 
-	/**
-	 * @return the activity_ID
-	 */
-	public int getActivity_ID() {
+	public String getActivity_ID() {
 		return activity_ID;
 	}
 
-	/**
-	 * @param activity_ID
-	 *            the activity_ID to set
-	 */
-	public void setActivity_ID(int activity_ID) {
+	public void setActivity_ID(String activity_ID) {
 		this.activity_ID = activity_ID;
 	}
 

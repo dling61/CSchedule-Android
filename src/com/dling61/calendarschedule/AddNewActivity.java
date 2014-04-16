@@ -1,25 +1,32 @@
 package com.dling61.calendarschedule;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.adapter.TextViewBaseAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.ActivityTable;
 import com.dling61.calendarschedule.models.MyActivity;
+import com.dling61.calendarschedule.models.OndutyTable;
 import com.dling61.calendarschedule.models.Participant;
+import com.dling61.calendarschedule.models.Schedule;
+import com.dling61.calendarschedule.models.ScheduleTable;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.SharedReference;
+import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.AddActivityView;
 import com.dling61.calendarschedule.views.PopupDialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,7 +67,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(mContext);
 
-		thisActivity = new MyActivity(dbHelper.getNextActivityID(),
+		thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
 				new SharedReference().getCurrentOwnerId(mContext), 0, 0, "",
 				MyDate.transformLocalDateTimeToUTCFormat(MyDate
 						.getCurrentDateTime()),
@@ -75,7 +82,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			// String activity_name,
 			// String starttime, String endtime, String desp, int otc_offset,
 			// int role);
-			thisActivity = new MyActivity(dbHelper.getNextActivityID(),
+			thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
 					new SharedReference().getCurrentOwnerId(mContext), 0, 0,
 					"", MyDate.transformLocalDateTimeToUTCFormat(MyDate
 							.getCurrentDateTime()),
@@ -107,7 +114,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					.getParticipantsOfActivity(activity_id);
 			dbHelper.close();
 			ParticipantAdapter adapter = new ParticipantAdapter(mContext,
-					list_participant, true);
+					list_participant, true, true);
 			view.list_participant.setAdapter(adapter);
 		}
 	}
@@ -127,7 +134,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					.getParticipantsOfActivity(activity_id);
 			dbHelper.close();
 			ParticipantAdapter adapter = new ParticipantAdapter(mContext,
-					list_participant, true);
+					list_participant, true, true);
 			view.list_participant.setAdapter(adapter);
 
 		}
@@ -251,6 +258,24 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		int repeat = thisActivity != null ? thisActivity.getRepeat() : 0;
 		view.et_new_activity_repeat.setText(getAlert(repeat));
 
+		// get all participant of activity
+		String activity_id = thisActivity != null ? thisActivity
+				.getActivity_ID() : "";
+		if (activity_id != null && (!activity_id.equals(""))) {
+			ArrayList<Participant> arrParticipant = dbHelper
+					.getParticipantsOfActivity(activity_id);
+			if (arrParticipant != null && arrParticipant.size() > 0) {
+				// view.tv_participant.setText(Utils.getStringNameArrParticipant(arrParticipant));
+				ParticipantAdapter participantAdapter = new ParticipantAdapter(
+						mContext, arrParticipant, false, false);
+				view.list_participant.setAdapter(participantAdapter);
+				view.tv_participant.setVisibility(View.VISIBLE);
+				Utils.setListViewHeightBasedOnChildren(view.list_participant,
+						participantAdapter);
+				view.list_participant.setVisibility(View.VISIBLE);
+			}
+		}
+
 	}
 
 	/**
@@ -295,11 +320,67 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		} else if (v == view.et_new_activity_alert) {
 			popUp(alert_array, ALERT);
 		} else if (v == view.btn_add_paticipant) {
-			Intent intent = new Intent(mContext, ParticipantActivity.class);
+			Intent intent = new Intent(mContext, ContactActivity.class);
 			intent.putExtra(CommConstant.TYPE,
 					CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
+			intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 			mContext.startActivity(intent);
+		} else if (v == view.btn_remove_activity) {
+			deleteActivity();
 		}
+	}
+
+	/**
+	 * Delete activity
+	 * */
+	private void deleteActivity() {
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+		alertDialog.setTitle(mContext.getResources()
+				.getString(R.string.caution));
+		alertDialog.setMessage(mContext.getResources().getString(
+				R.string.delete_activity));
+		alertDialog.setPositiveButton(
+				mContext.getResources().getString(R.string.ok),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						ContentValues cv = new ContentValues();
+						cv.put(ActivityTable.is_Deleted, 1);
+						cv.put(ActivityTable.is_Synchronized, 0);
+						dbHelper.updateActivity(activity_id, cv);
+						List<Schedule> sbelongtoa = dbHelper
+								.getSchedulesBelongtoActivity(activity_id);
+						for (int i = 0; i < sbelongtoa.size(); i++) {
+							ContentValues scv = new ContentValues();
+							scv.put(ScheduleTable.is_Deleted, 1);
+							scv.put(ScheduleTable.is_Synchronized, 0);
+							int schedule_id = sbelongtoa.get(i)
+									.getSchedule_ID();
+							dbHelper.updateSchedule(schedule_id, scv);
+							List<Integer> onduties = dbHelper
+									.getOndutyRecordsForSchedule(schedule_id);
+							for (int j = 0; j < onduties.size(); j++) {
+								ContentValues ocv = new ContentValues();
+								ocv.put(OndutyTable.is_Deleted, 1);
+								ocv.put(OndutyTable.is_Synchronized, 0);
+								int onduty_id = onduties.get(j);
+								dbHelper.updateSchedule(onduty_id, ocv);
+							}
+						}
+
+						WebservicesHelper ws = new WebservicesHelper(mContext);
+						ws.deleteActivity(thisActivity);
+					}
+				});
+		alertDialog.setNegativeButton(
+				mContext.getResources().getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						// Toast.makeText(mContext, "You clicked on NO",
+						// Toast.LENGTH_SHORT).show();
+						dialog.cancel();
+					}
+				});
+		alertDialog.show();
 	}
 
 	/**

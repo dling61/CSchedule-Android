@@ -33,4 +33,6 @@ public class CommConstant {
 	public static final int PARTICIPANT=2;//(Participant);
 	public static final int VIEWER=3;//(Viewer)
 	public static final String ACTIVITY_ID="activity_id";
+	public static final int ROLE_SHARE_MEMBER_ACTIVITY=PARTICIPANT;
+	public static final int ROLE_ASSIGN_MEMBER_SCHEDULE=PARTICIPANT;
 }

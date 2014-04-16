@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.DatePicker;
 //import android.widget.PopupMenu;
 import android.widget.Toast;
@@ -37,7 +38,8 @@ import android.widget.TimePicker;
 
 @SuppressLint("NewApi")
 public class CreateNewScheduleActivity extends Activity implements
-		OnDateSetListener, OnTimeSetListener, OnMenuItemClickListener {
+		OnDateSetListener, OnTimeSetListener, OnMenuItemClickListener,
+		OnClickListener {
 
 	static private final int START = 0;
 	static private final int END = 1;
@@ -51,6 +53,7 @@ public class CreateNewScheduleActivity extends Activity implements
 	AddScheduleView view;
 	String activity_id = "";
 	Context mContext;
+	MyActivity myActivity;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,7 +64,13 @@ public class CreateNewScheduleActivity extends Activity implements
 		Intent myIntent = this.getIntent();
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, -1);
 		activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
+
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(this);
+
+		if (activity_id != null || (!activity_id.equals(""))) {
+			myActivity = dbHelper.getActivity(activity_id);
+		}
+
 		if (composeType == DatabaseHelper.NEW) {
 			Log.i("next service id", "is " + dbHelper.getNextActivityID());
 			thisSchedule = new Schedule(
@@ -77,6 +86,7 @@ public class CreateNewScheduleActivity extends Activity implements
 			thisSchedule = dbHelper.getScheduleSortedByID(id);
 		}
 		initViewValues();
+		onClickListener();
 	}
 
 	@Override
@@ -86,75 +96,81 @@ public class CreateNewScheduleActivity extends Activity implements
 		return true;
 	}
 
-	// @Override
-	// public void onActivityResult(int requestCode, int resultCode, Intent
-	// data) {
-	// super.onActivityResult(requestCode, resultCode, data);
-	// switch(requestCode)
-	// {
-	// case (6) :
-	// {
-	// if (resultCode == Activity.RESULT_OK)
-	// {
-	// pins = data.getIntegerArrayListExtra("pins");
-	// String members = "";
-	// for (int i=0;i < pins.size();i++)
-	// {
-	// Sharedmember sm = dbHelper.getSharedmember(pins.get(i),
-	// thisSchedule.getService_ID());
-	// if (i == 0)
-	// members = members + sm.getName();
-	// else
-	// members = members + "," + sm.getName();
-	// }
-	// this.onduty_btn.setText(members);
-	// }
-	// }
-	// break;
-	// }
-	// }
+	private void onClickListener() {
+		view.et_endDate.setOnClickListener(this);
+		view.et_startDate.setOnClickListener(this);
+		view.et_endTime.setOnClickListener(this);
+		view.et_startTime.setOnClickListener(this);
+		view.et_on_duty.setOnClickListener(this);
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (v == view.et_startDate) {
+			// setStartDate();
+			setStartDate();
+		} else if (v == view.et_endDate) {
+			setEndDate();
+		}
+		else if(v==view.et_endTime)
+		{
+			setEndTime();
+		}
+		else if(v==view.et_startTime)
+		{
+			setStartTime();
+		}
+		else if(v==view.et_on_duty)
+		{
+			Intent intent=new Intent(mContext,ParticipantActivity.class);
+			intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
+			mContext.startActivity(intent);
+		}
+	}
 
 	public void initViewValues() {
 		if (composeType == DatabaseHelper.NEW) {
 			view.title_tv.setText(mContext.getResources().getString(
 					R.string.add_schedule));
 		} else {
-			String service_id = thisSchedule.getService_ID();
-			MyActivity activity = dbHelper.getActivity(service_id);
-			view.et_new_activity_name.setText(activity.getActivity_name());
 			view.title_tv.setText(mContext.getResources().getString(
 					R.string.edit_schedule));
-			pins = dbHelper.getParticipantsForSchedule(thisSchedule
-					.getSchedule_ID());
-			String members = "";
-			for (int i = 0; i < pins.size(); i++) {
-				Participant p = dbHelper.getParticipant(pins.get(i));
-				if (i == 0)
-					members = members + p.getName();
-				else
-					members = members + "," + p.getName();
-			}
-			view.et_on_duty.setText(members);
-
 		}
+
+		view.et_new_activity_name.setText(myActivity != null ? myActivity
+				.getActivity_name() : "");
+
+		pins = dbHelper.getParticipantsForSchedule(thisSchedule
+				.getSchedule_ID());
+		String members = "";
+		for (int i = 0; i < pins.size(); i++) {
+			Participant p = dbHelper.getParticipant(pins.get(i));
+			if (i == 0)
+				members = members + p.getName();
+			else
+				members = members + "," + p.getName();
+		}
+		view.et_on_duty.setText(members);
+
+		// }
 		String startdate = thisSchedule.getStarttime();
 		String startfulldate = MyDate.getWeekdayFromUTCTime(startdate) + ", "
 				+ MyDate.transformUTCTimeToCustomStyle(startdate);
 		String starttime = MyDate.getTimeWithAPMFromUTCTime(startdate);
-		view.et_start.setText(startfulldate);
+		view.et_startDate.setText(startfulldate);
 		// start_time_btn.setText(starttime);
 
 		String enddate = thisSchedule.getEndtime();
 		String endfulldate = MyDate.getWeekdayFromUTCTime(enddate) + ", "
 				+ MyDate.transformUTCTimeToCustomStyle(enddate);
 		String endtime = MyDate.getTimeWithAPMFromUTCTime(enddate);
-		view.et_end.setText(endfulldate);
+		view.et_endDate.setText(endfulldate);
 		// end_time_btn.setText(endtime);
 
 		view.et_new_activity_description.setText(thisSchedule.getDesp());
 	}
 
-	public void setStartDate(View v) {
+	public void setStartDate() {
 		String[] startdatetime = MyDate.transformUTCDateToLocalDate(
 				MyDate.STANDARD, thisSchedule.getStarttime()).split(" ");
 		String[] datecomponents = startdatetime[0].split("-");
@@ -169,7 +185,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		StartOrEnd = START;
 	}
 
-	public void setEndDate(View v) {
+	public void setEndDate() {
 		String[] enddatetime = MyDate.transformUTCDateToLocalDate(
 				MyDate.STANDARD, thisSchedule.getEndtime()).split(" ");
 		String[] datecomponents = enddatetime[0].split("-");
@@ -184,7 +200,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		StartOrEnd = END;
 	}
 
-	public void setStartTime(View v) {
+	public void setStartTime() {
 		String[] startdatetime = MyDate.transformUTCDateToLocalDate(
 				MyDate.STANDARD, thisSchedule.getStarttime()).split(" ");
 		String[] timecomponents = startdatetime[1].split(":");
@@ -197,7 +213,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		StartOrEnd = START;
 	}
 
-	public void setEndTime(View v) {
+	public void setEndTime() {
 		String[] enddatetime = MyDate.transformUTCDateToLocalDate(
 				MyDate.STANDARD, thisSchedule.getEndtime()).split(" ");
 		String[] timecomponents = enddatetime[1].split(":");
@@ -234,7 +250,7 @@ public class CreateNewScheduleActivity extends Activity implements
 						+ daystr + " " + "00:00:00"));
 		String fulldate = weekday + ", " + customDate;
 		if (StartOrEnd == START) {
-			this.view.et_start.setText(fulldate);
+			this.view.et_startDate.setText(fulldate);
 			thisSchedule
 					.setStarttime(MyDate.transformLocalDateTimeToUTCFormat(year
 							+ "-"
@@ -249,11 +265,11 @@ public class CreateNewScheduleActivity extends Activity implements
 					this.thisSchedule.getStarttime(),
 					this.thisSchedule.getEndtime())) {
 				this.thisSchedule.setEndtime(this.thisSchedule.getStarttime());
-				this.view.et_end.setText(this.view.et_start.getText());
+				this.view.et_endDate.setText(this.view.et_startDate.getText());
 				// end_time_btn.setText(start_time_btn.getText());
 			}
 		} else {
-			this.view.et_end.setText(fulldate);
+			this.view.et_endDate.setText(fulldate);
 			thisSchedule.setEndtime(MyDate
 					.transformLocalDateTimeToUTCFormat(year
 							+ "-"
@@ -281,7 +297,7 @@ public class CreateNewScheduleActivity extends Activity implements
 				.transformLocalDateTimeToUTCFormat("0000-00-00 " + hourstr
 						+ ":" + minutestr + ":" + "00"));
 		if (StartOrEnd == START) {
-			this.view.et_start.setText(time);
+			this.view.et_startDate.setText(time);
 			thisSchedule.setStarttime(MyDate
 					.transformLocalDateTimeToUTCFormat(MyDate
 							.transformUTCDateToLocalDate(MyDate.STANDARD,
@@ -291,11 +307,11 @@ public class CreateNewScheduleActivity extends Activity implements
 					this.thisSchedule.getStarttime(),
 					this.thisSchedule.getEndtime())) {
 				this.thisSchedule.setEndtime(this.thisSchedule.getStarttime());
-				this.view.et_end.setText(this.view.et_start.getText());
+				this.view.et_endDate.setText(this.view.et_startDate.getText());
 				// end_time_btn.setText(start_time_btn.getText());
 			}
 		} else {
-			this.view.et_end.setText(time);
+			this.view.et_endDate.setText(time);
 			thisSchedule.setEndtime(MyDate
 					.transformLocalDateTimeToUTCFormat(MyDate
 							.transformUTCDateToLocalDate(MyDate.STANDARD,
@@ -348,7 +364,8 @@ public class CreateNewScheduleActivity extends Activity implements
 					Toast.LENGTH_LONG).show();
 			return;
 		}
-		thisSchedule.setDesp(view.et_new_activity_description.getText().toString());
+		thisSchedule.setDesp(view.et_new_activity_description.getText()
+				.toString());
 		if (composeType == DatabaseHelper.NEW) {
 			ContentValues cv = new ContentValues();
 			cv.put(ScheduleTable.own_ID, thisSchedule.getOwner_ID());

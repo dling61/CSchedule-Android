@@ -51,17 +51,17 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mContext = getActivity();
-		
-		initData();
+		dbHelper=DatabaseHelper.getSharedDatabaseHelper(mContext);
+//		initData();
 		onClickListener();
 	}
 
-	private void initData() {
-		dbHelper= DatabaseHelper
-				.getSharedDatabaseHelper(mContext);
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		ws.getActivity(mContext);
-	}
+//	private void initData() {
+//		dbHelper= DatabaseHelper
+//				.getSharedDatabaseHelper(mContext);
+//		WebservicesHelper ws = new WebservicesHelper(mContext);
+//		ws.getAllActivitys(mContext);
+//	}
 
 	public static ActivityFragment getInstance() {
 		return ActivityFragment.getInstance();

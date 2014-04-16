@@ -88,16 +88,48 @@
                 android:textSize="@dimen/text_size"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/et_start"
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/margin_top"
                 android:layout_toRightOf="@id/tv_start"
-                android:clickable="true"
-                android:focusable="false"
-                android:inputType="none"
-                android:textColor="@color/color_textview" />
+                android:paddingBottom="@dimen/margin_top" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/et_startTime"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_top"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:inputType="datetime"
+                        android:textColor="@color/color_textview" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/et_startDate"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_top"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:inputType="date"
+                        android:textColor="@color/color_textview" />
+                </LinearLayout>
+            </LinearLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -117,16 +149,48 @@
                 android:textSize="@dimen/text_size"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/et_end"
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/margin_top"
                 android:layout_toRightOf="@id/tv_end"
-                android:clickable="true"
-                android:focusable="false"
-                android:inputType="none"
-                android:textColor="@color/color_textview" />
+                android:paddingBottom="@dimen/margin_top" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/et_endTime"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_top"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:inputType="datetime"
+                        android:textColor="@color/color_textview" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/et_endDate"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_top"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:inputType="date"
+                        android:textColor="@color/color_textview" />
+                </LinearLayout>
+            </LinearLayout>
         </RelativeLayout>
 
         <RelativeLayout

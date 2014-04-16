@@ -1,11 +1,9 @@
 package com.dling61.calendarschedule.fragments;
 
 import java.util.ArrayList;
-
 import com.dling61.calendarschedule.adapter.ScheduleAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.Schedule;
-import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.views.ScheduleView;
 import android.content.BroadcastReceiver;
@@ -30,13 +28,13 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mContext = getActivity();
-		initData();
+//		initData();
 
 	}
-	private void initData() {
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		ws.getActivity(mContext);
-	}
+//	private void initData() {
+//		WebservicesHelper ws = new WebservicesHelper(mContext);
+//		ws.getAllActivitys(mContext);
+//	}
 
 	public static ScheduleFragment getInstance() {
 		return ScheduleFragment.getInstance();

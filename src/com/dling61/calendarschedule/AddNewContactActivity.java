@@ -17,7 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-public class AddNewParticipantActivity extends Activity implements OnClickListener{
+public class AddNewContactActivity extends Activity implements OnClickListener{
 	private Participant thisParticipant;
 	private int composeType;
 	private DatabaseHelper dbHelper;

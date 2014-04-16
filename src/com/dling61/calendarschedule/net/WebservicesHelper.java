@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.HomeActivity;
 import com.dling61.calendarschedule.LoginActivity;
 import com.dling61.calendarschedule.R;
@@ -303,7 +304,7 @@ public class WebservicesHelper {
 	/**
 	 * get all activity of current owner id
 	 * */
-	public void getActivity(final Context mContext) {
+	public void getAllActivitys(final Context mContext) {
 		String activityUrl = BaseUrl.BASEURL + "services" + "?"
 				+ BaseUrl.URL_POST_FIX;
 		Log.i("url is :", activityUrl);
@@ -327,7 +328,7 @@ public class WebservicesHelper {
 						int ownid = service.getInt("creatorid");
 						newActivity.put(ActivityTable.own_ID, ownid);
 						Log.i("getActivitiesFromWeb own_ID ", ownid + "");
-						int activityid = service.getInt("serviceid");
+						String activityid = service.getString("serviceid");
 
 						String serviceName = service.getString("servicename");
 						newActivity
@@ -412,7 +413,7 @@ public class WebservicesHelper {
 		});
 	}
 
-	public void getSchedulesForActivity(int activityid) {
+	public void getSchedulesForActivity(String activityid) {
 		String SchedulesUrl = BaseUrl.BASEURL + "services/" + activityid
 				+ "/schedules" + "?" + BaseUrl.URL_POST_FIX;
 		final SharedReference ref = new SharedReference();
@@ -1040,7 +1041,7 @@ public class WebservicesHelper {
 	}
 
 	public void postSharedmemberToActivity(int memberid, int role,
-			String activityid) {
+			final String activityid) {
 		String sharedmemberUrl = BaseUrl.BASEURL + "services/" + activityid
 				+ "/" + "sharedmembers" + "?" + BaseUrl.URL_POST_FIX;
 		try {
@@ -1058,7 +1059,11 @@ public class WebservicesHelper {
 					new JsonHttpResponseHandler() {
 						public void onSuccess(JSONObject response) {
 							Log.i("successful response", response.toString());
-
+							Intent intent = new Intent(mContext,
+									CreateNewScheduleActivity.class);
+							intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
+							intent.putExtra(CommConstant.ACTIVITY_ID, activityid);
+							mContext.startActivity(intent);
 						}
 
 						public void onFailure(Throwable e, String response) {
@@ -1067,6 +1072,19 @@ public class WebservicesHelper {
 							Log.i("failure response", response);
 							Log.i("fail", e.toString());
 
+						}
+						@Override
+						public void onStart() {
+							// TODO Auto-generated method stub
+							super.onStart();
+							progress.show();
+						}
+
+						@Override
+						public void onFinish() {
+							// TODO Auto-generated method stub
+							super.onFinish();
+							progress.dismiss();
 						}
 					});
 		} catch (UnsupportedEncodingException e1) {
@@ -1296,7 +1314,7 @@ public class WebservicesHelper {
 	public void updateActivity(MyActivity activity) {
 		String ActivityUrl = BaseUrl.BASEURL + "services/"
 				+ activity.getActivity_ID() + "?" + BaseUrl.URL_POST_FIX;
-		final int id = activity.getActivity_ID();
+		final String id =activity.getActivity_ID();
 		try {
 			JSONObject activityParams = new JSONObject();
 			activityParams.put("alert", activity.getAlert());
@@ -1376,7 +1394,7 @@ public class WebservicesHelper {
 	public void deleteActivity(MyActivity activity) {
 		String ActivityUrl = BaseUrl.BASEURL + "services/"
 				+ activity.getActivity_ID() + "?" + BaseUrl.URL_POST_FIX;
-		final int id = activity.getActivity_ID();
+		final String id = activity.getActivity_ID();
 		client.delete(ActivityUrl, new JsonHttpResponseHandler() {
 			public void onSuccess(JSONObject response) {
 				try {

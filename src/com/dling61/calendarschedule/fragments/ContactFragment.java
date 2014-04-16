@@ -2,13 +2,16 @@ package com.dling61.calendarschedule.fragments;
 
 import java.util.ArrayList;
 
-import com.dling61.calendarschedule.AddNewParticipantActivity;
+import com.dling61.calendarschedule.AddNewContactActivity;
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
+import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
+import com.dling61.calendarschedule.models.MyActivity;
 import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.ContactView;
 
 import android.content.Context;
@@ -19,6 +22,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * @author Huyen return account information by token
@@ -31,6 +36,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	ParticipantAdapter adapter;
 
 	String activity_id = "";
+	MyActivity myActivity = null;
 
 	public void setActivity_id(String activity_id) {
 		this.activity_id = activity_id;
@@ -58,8 +64,12 @@ public class ContactFragment extends Fragment implements OnClickListener {
 			view.btn_add_participant.setVisibility(View.GONE);
 			view.btn_next.setVisibility(View.VISIBLE);
 		}
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		ws.getParticipantsFromWeb();
+		DatabaseHelper db = DatabaseHelper.getSharedDatabaseHelper(mContext);
+		if (activity_id != null && (!activity_id.equals(""))) {
+			myActivity = db.getActivity(activity_id);
+		}
+		// WebservicesHelper ws = new WebservicesHelper(mContext);
+		// ws.getParticipantsFromWeb();
 	}
 
 	public static ContactFragment getInstance() {
@@ -74,7 +84,8 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_participant) {
-			Intent intent = new Intent(mContext, AddNewParticipantActivity.class);
+			Intent intent = new Intent(mContext,
+					AddNewContactActivity.class);
 			intent.putExtra("type", DatabaseHelper.NEW);
 			mContext.startActivity(intent);
 		}
@@ -89,6 +100,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 				// ArrayList<Participant> listParticipantSelected=new
 				// ArrayList<Participant>();
 				WebservicesHelper ws = new WebservicesHelper(mContext);
+
 				for (Participant participant : adapter.participants) {
 					if (participant.isChecked) {
 						ws.postSharedmemberToActivity(participant.getID(),
@@ -96,7 +108,8 @@ public class ContactFragment extends Fragment implements OnClickListener {
 					}
 
 				}
-				Intent intent=new Intent(mContext,CreateNewScheduleActivity.class);
+				Intent intent = new Intent(mContext,
+						CreateNewScheduleActivity.class);
 				intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				mContext.startActivity(intent);
@@ -130,8 +143,50 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		dbHelper.close();
 
 		adapter = new ParticipantAdapter(mContext, activities, tab ? false
-				: true);
+				: true,true);
 		view.list_contact.setAdapter(adapter);
+		view.list_contact.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					final int position, long id) {
+				final Participant participantSelected = adapter.participants
+						.get(position);
+				String activity_name=myActivity != null ? myActivity.getActivity_name()
+						: " my activity";
+				String title = mContext.getResources().getString(
+						R.string.confirm_title)
+						+ " "
+						+ participantSelected.getName()
+						+ " "
+						+ mContext.getResources().getString(R.string.into)
+						+ activity_name;
+				final ConfirmDialog confirmDialog = new ConfirmDialog(mContext,
+						title);
+				confirmDialog.show();
+				confirmDialog.btnOk.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						WebservicesHelper ws = new WebservicesHelper(mContext);
+						ws.postSharedmemberToActivity(
+								participantSelected.getID(),
+								CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
+								activity_id);
+						confirmDialog.dismiss();
+					}
+				});
+				confirmDialog.btnCancel
+						.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								confirmDialog.dismiss();
+							}
+						});
+
+			}
+		});
 	}
 
 	// BroadcastReceiver activityDownloadComplete = new BroadcastReceiver() {

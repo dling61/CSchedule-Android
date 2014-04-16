@@ -142,7 +142,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ActivityTable.ActivityTableName, null);
 		while (c.moveToNext()) {
-			int id = c.getInt(c.getColumnIndex(ActivityTable.service_ID));
+			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
 			int repeat = c.getInt(c.getColumnIndex(ActivityTable.repeat));
@@ -174,7 +174,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ActivityTable.last_ModifiedTime + " LIKE" + "'no%'",
 				null);
 		while (c.moveToNext()) {
-			int id = c.getInt(c.getColumnIndex(ActivityTable.service_ID));
+			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			// int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			Log.i("getUnsyncedNewActivities ownid ", ownid + "");
@@ -204,7 +204,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ActivityTable.last_ModifiedTime + " LIKE" + "'2%'",
 				null);
 		while (c.moveToNext()) {
-			int id = c.getInt(c.getColumnIndex(ActivityTable.service_ID));
+			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
 			int repeat = c.getInt(c.getColumnIndex(ActivityTable.repeat));
@@ -229,7 +229,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				"SELECT * FROM " + ActivityTable.ActivityTableName + " WHERE "
 						+ ActivityTable.service_ID + " = " + service_id, null);
 		while (c.moveToNext()) {
-			int id = c.getInt(c.getColumnIndex(ActivityTable.service_ID));
+			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
 			int repeat = c.getInt(c.getColumnIndex(ActivityTable.repeat));
@@ -270,7 +270,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	public List<Schedule> getSchedulesBelongtoActivity(int id) {
+	public List<Schedule> getSchedulesBelongtoActivity(String id) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 						+ ScheduleTable.service_ID + " = " + id + " AND "
@@ -677,7 +677,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return ondutyids;
 	}
 
-	public boolean isActivityExisted(int activityID) {
+	public boolean isActivityExisted(String activityID) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + ActivityTable.service_ID + " from "
 						+ ActivityTable.ActivityTableName + " where "
@@ -771,7 +771,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return (result == -1) ? false : true;
 	}
 
-	public boolean updateActivity(int id, ContentValues newActivity) {
+	public boolean updateActivity(String id, ContentValues newActivity) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
 		int result = this.getWritableDatabase().update(
 				ActivityTable.ActivityTableName, newActivity,
@@ -779,7 +779,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return (result == 1) ? true : false;
 	}
 
-	public boolean deleteActivity(int id) {
+	public boolean deleteActivity(String id) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
 		int result = this.getWritableDatabase().delete(
 				ActivityTable.ActivityTableName,
