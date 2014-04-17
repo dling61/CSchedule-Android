@@ -263,8 +263,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.end_Time));
 			String desp = c.getString(c
 					.getColumnIndex(ScheduleTable.schedule_Description));
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
-					startDate, endDate, desp);
+			Schedule newSchedule = new Schedule(owner_id, sche_id,
+					serv_id + "", startDate, endDate, desp);
 			return newSchedule;
 		}
 		return null;
@@ -286,8 +286,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.end_Time));
 			String desp = c.getString(c
 					.getColumnIndex(ScheduleTable.schedule_Description));
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
-					startDate, endDate, desp);
+			Schedule newSchedule = new Schedule(owner_id, sche_id,
+					serv_id + "", startDate, endDate, desp);
 			schedules.add(newSchedule);
 		}
 		return schedules;
@@ -343,8 +343,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						.getColumnIndex(ScheduleTable.schedule_Description);
 				String desp = c1.getString(despIndex);
 
-				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
-						startDate, endDate, desp);
+				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id
+						+ "", startDate, endDate, desp);
 				schedules.add(newSchedule);
 			}
 			groupedSchedules.add(schedules);
@@ -373,8 +373,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.schedule_Description);
 			String desp = c1.getString(despIndex);
 
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
-					startDate, endDate, desp);
+			Schedule newSchedule = new Schedule(owner_id, sche_id,
+					serv_id + "", startDate, endDate, desp);
 			allschedules.add(newSchedule);
 		}
 		// If not added,error will occour
@@ -439,8 +439,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.schedule_Description);
 			String desp = c.getString(despIndex);
 
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
-					startDate, endDate, desp);
+			Schedule newSchedule = new Schedule(owner_id, sche_id,
+					serv_id + "", startDate, endDate, desp);
 			schedules.add(newSchedule);
 		}
 		return schedules;
@@ -467,8 +467,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ScheduleTable.schedule_Description);
 			String desp = c.getString(despIndex);
 
-			Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id+"",
-					startDate, endDate, desp);
+			Schedule newSchedule = new Schedule(owner_id, sche_id,
+					serv_id + "", startDate, endDate, desp);
 			schedules.add(newSchedule);
 		}
 		return schedules;
@@ -554,8 +554,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		while (c.moveToNext()) {
 			int mem_id = c
 					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
-//			int serviceid = c.getInt(c
-//					.getColumnIndex(SharedMemberTable.service_id));
+			// int serviceid = c.getInt(c
+			// .getColumnIndex(SharedMemberTable.service_id));
 			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
 			String name = c.getString(c
 					.getColumnIndex(SharedMemberTable.member_name));
@@ -578,7 +578,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				"SELECT * FROM " + ParticipantTable.ParticipantTableName
 						+ " WHERE " + ParticipantTable.is_Deleted + "=0"
 						+ " AND " + ParticipantTable.own_ID + "="
-						+ ref.getCurrentOwnerId(context), null);
+						+ ref.getCurrentOwnerId(context) + " order by "
+						+ ParticipantTable.participant_Name + " ASC", null);
 		while (c.moveToNext()) {
 			int id = c
 					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));

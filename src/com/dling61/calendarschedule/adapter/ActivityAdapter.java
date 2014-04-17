@@ -15,6 +15,7 @@ import com.dling61.calendarschedule.utils.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,37 +23,39 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class ActivityAdapter extends BaseAdapter 
-{
+public class ActivityAdapter extends BaseAdapter {
+	private Typeface thinface;
 	private LayoutInflater mInflater;
 	private List<MyActivity> mItems = new ArrayList<MyActivity>();
 	Context mContext;
-	
-	HashMap<String,ArrayList<Participant>> listParticipant=new HashMap<String,ArrayList<Participant>>();//.getParticipantsOfActivity(activity.getActivity_ID());
-	HashMap<String, String>listParticipantName=new HashMap<String,String>();
-	public ActivityAdapter(Context context,
-		       List<MyActivity> items) {
-		           // HERE WE CACHE THE INFLATOR FOR EFFICIENCY
+
+	HashMap<String, ArrayList<Participant>> listParticipant = new HashMap<String, ArrayList<Participant>>();// .getParticipantsOfActivity(activity.getActivity_ID());
+	HashMap<String, String> listParticipantName = new HashMap<String, String>();
+
+	public ActivityAdapter(Context context, List<MyActivity> items) {
+		// HERE WE CACHE THE INFLATOR FOR EFFICIENCY
 		mInflater = LayoutInflater.from(context);
 		mItems = items;
-		mContext=context;
-		DatabaseHelper db=DatabaseHelper.getSharedDatabaseHelper(mContext);
-		//get all participant of activity
-		for(MyActivity activity:mItems)
-		{
-			ArrayList<Participant> arrParticipant=db.getParticipantsOfActivity(activity.getActivity_ID());
+		mContext = context;
+		DatabaseHelper db = DatabaseHelper.getSharedDatabaseHelper(mContext);
+
+		thinface = Typeface.createFromAsset(mContext.getAssets(),
+				"fonts/Roboto-Regular.ttf");
+
+		// get all participant of activity
+		for (MyActivity activity : mItems) {
+			ArrayList<Participant> arrParticipant = db
+					.getParticipantsOfActivity(activity.getActivity_ID());
 			listParticipant.put(activity.getActivity_ID(), arrParticipant);
-			listParticipantName.put(activity.getActivity_ID(), Utils.getStringNameArrParticipant(arrParticipant));
+			listParticipantName.put(activity.getActivity_ID(),
+					Utils.getStringNameArrParticipant(arrParticipant));
 		}
 	}
-	
-	
-	
-	public void setItems (List<MyActivity> items)
-	{
+
+	public void setItems(List<MyActivity> items) {
 		this.mItems = items;
 	}
-	
+
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -75,55 +78,67 @@ public class ActivityAdapter extends BaseAdapter
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		ActivityViewHolder viewHolder;
-		if (convertView == null)
-		{
-			convertView = mInflater.inflate(R.layout.activitycell,null);
+		if (convertView == null) {
+			convertView = mInflater.inflate(R.layout.activitycell, null);
 			viewHolder = new ActivityViewHolder();
-			viewHolder.service_name_tv = (TextView)convertView.findViewById(R.id.service_name_tv);
-			viewHolder.service_time = (TextView)convertView.findViewById(R.id.service_time_tv);
-			viewHolder.service_desp = (TextView)convertView.findViewById(R.id.service_descrpition_tv);
-			viewHolder.tv_participant=(TextView)convertView.findViewById(R.id.tv_participant);
+			viewHolder.service_name_tv = (TextView) convertView
+					.findViewById(R.id.service_name_tv);
+			viewHolder.service_time = (TextView) convertView
+					.findViewById(R.id.service_time_tv);
+			viewHolder.service_desp = (TextView) convertView
+					.findViewById(R.id.service_descrpition_tv);
+			viewHolder.tv_participant = (TextView) convertView
+					.findViewById(R.id.tv_participant);
+			viewHolder.service_name_tv.setTypeface(thinface);
+			viewHolder.service_time.setTypeface(thinface);
+			viewHolder.service_desp.setTypeface(thinface);
+			viewHolder.tv_participant.setTypeface(thinface);
 			convertView.setTag(viewHolder);
+		} else {
+			viewHolder = (ActivityViewHolder) convertView.getTag();
 		}
-		else
-		{
-			 viewHolder = (ActivityViewHolder) convertView.getTag();
-		}
-		
+
 		final MyActivity activity = mItems.get(position);
 		viewHolder.service_name_tv.setText(activity.getActivity_name());
-		String startWeekday = MyDate.getWeekdayFromUTCTime(activity.getStarttime());
-		String startDate = MyDate.transformUTCTimeToCustomStyle(activity.getStarttime());
+		String startWeekday = MyDate.getWeekdayFromUTCTime(activity
+				.getStarttime());
+		String startDate = MyDate.transformUTCTimeToCustomStyle(activity
+				.getStarttime());
 		String startTime = startWeekday + "," + " " + startDate;
 		String endWeekday = MyDate.getWeekdayFromUTCTime(activity.getEndtime());
-		String endDate = MyDate.transformUTCTimeToCustomStyle(activity.getEndtime());
+		String endDate = MyDate.transformUTCTimeToCustomStyle(activity
+				.getEndtime());
 		String endTime = endWeekday + "," + " " + endDate;
 		viewHolder.service_time.setText(startTime + " to " + endTime);
 		viewHolder.service_desp.setText(activity.getDesp());
-		viewHolder.tv_participant.setText(listParticipantName.get(activity.getActivity_ID()));
-		
+		viewHolder.tv_participant.setText(listParticipantName.get(activity
+				.getActivity_ID()));
+
 		convertView.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				
-				Intent inforActivityIntent = new Intent(mContext,AddNewActivity.class);
-				inforActivityIntent.putExtra(CommConstant.TYPE, DatabaseHelper.EXISTED);
-				inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID, activity.getActivity_ID());
+
+				Intent inforActivityIntent = new Intent(mContext,
+						AddNewActivity.class);
+				inforActivityIntent.putExtra(CommConstant.TYPE,
+						DatabaseHelper.EXISTED);
+				inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID,
+						activity.getActivity_ID());
 				mContext.startActivity(inforActivityIntent);
-				
+
 			}
 		});
-		
+
 		return convertView;
 	}
-	
+
 	static class ActivityViewHolder {
-        TextView service_name_tv;
-        TextView service_time;
-        TextView service_desp;
-        TextView tv_participant;
-    }
-	
+		TextView service_name_tv;
+		TextView service_time;
+		TextView service_desp;
+		TextView tv_participant;
+	}
+
 }

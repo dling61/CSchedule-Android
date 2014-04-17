@@ -4,7 +4,6 @@
 package com.dling61.calendarschedule.net;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.entity.StringEntity;
@@ -12,8 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.dling61.calendarschedule.CategoryTabActivity;
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
-import com.dling61.calendarschedule.HomeActivity;
 import com.dling61.calendarschedule.LoginActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.TabActivity;
@@ -26,7 +25,6 @@ import com.dling61.calendarschedule.models.ParticipantTable;
 import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.models.ScheduleTable;
 import com.dling61.calendarschedule.models.SharedMemberTable;
-import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.SharedReference;
@@ -39,8 +37,6 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -261,7 +257,7 @@ public class WebservicesHelper {
 
 								((Activity) mContext).finish();
 								Intent intent = new Intent(mContext,
-										TabActivity.class);
+										CategoryTabActivity.class);
 								// Intent intent = new Intent(mContext,
 								// HomeActivity.class);
 								mContext.startActivity(intent);
@@ -549,7 +545,7 @@ public class WebservicesHelper {
 					int participant_count = participants.length();
 					for (int i = 0; i < participant_count; i++) {
 						JSONObject Participant = participants.getJSONObject(i);
-						int ownerid = Participant.getInt("creatorid");						
+						int ownerid = Participant.getInt("creatorid");
 
 						// Owner is included in JSON Response "members"
 						// Should not appear in Participants
@@ -651,41 +647,44 @@ public class WebservicesHelper {
 								ContentValues cv = new ContentValues();
 								String last_modified = response
 										.getString("lastmodified");
-								 cv.put(ActivityTable.last_ModifiedTime,
-								 last_modified);
-								 cv.put(ActivityTable.is_Synchronized, 1);
-								 dbHelper.updateActivity(activity.getActivity_ID(), cv);
-								 Log.i("last_modified", last_modified);
+								cv.put(ActivityTable.last_ModifiedTime,
+										last_modified);
+								cv.put(ActivityTable.is_Synchronized, 1);
+								dbHelper.updateActivity(
+										activity.getActivity_ID(), cv);
+								Log.i("last_modified", last_modified);
 
-//								ContentValues newActivity = new ContentValues();
-//								newActivity.put(ActivityTable.service_ID,
-//										activity.getActivity_ID());
-//								newActivity.put(ActivityTable.own_ID,
-//										activity.getOwner_ID());
-//								newActivity.put(ActivityTable.service_Name,
-//										activity.getActivity_name());
-//								newActivity.put(ActivityTable.alert,
-//										activity.getAlert());
-//								newActivity.put(ActivityTable.repeat,
-//										activity.getRepeat());
-//								newActivity.put(ActivityTable.sharedrole,
-//										activity.getRole());
-//								newActivity.put(ActivityTable.start_time,
-//										activity.getStarttime());
-//								newActivity.put(ActivityTable.end_time,
-//										activity.getEndtime());
-//								newActivity.put(
-//										ActivityTable.service_description,
-//										activity.getDesp());
-//								newActivity.put(ActivityTable.otc_Offset,
-//										activity.getOtc_offset());
-//								newActivity.put(ActivityTable.is_Deleted, 0);
-//								newActivity.put(ActivityTable.is_Synchronized,
-//										1);
-//								newActivity.put(
-//										ActivityTable.last_ModifiedTime,
-//										last_modified);
-								if (dbHelper.updateActivity(activity.getActivity_ID(), cv)) {
+								// ContentValues newActivity = new
+								// ContentValues();
+								// newActivity.put(ActivityTable.service_ID,
+								// activity.getActivity_ID());
+								// newActivity.put(ActivityTable.own_ID,
+								// activity.getOwner_ID());
+								// newActivity.put(ActivityTable.service_Name,
+								// activity.getActivity_name());
+								// newActivity.put(ActivityTable.alert,
+								// activity.getAlert());
+								// newActivity.put(ActivityTable.repeat,
+								// activity.getRepeat());
+								// newActivity.put(ActivityTable.sharedrole,
+								// activity.getRole());
+								// newActivity.put(ActivityTable.start_time,
+								// activity.getStarttime());
+								// newActivity.put(ActivityTable.end_time,
+								// activity.getEndtime());
+								// newActivity.put(
+								// ActivityTable.service_description,
+								// activity.getDesp());
+								// newActivity.put(ActivityTable.otc_Offset,
+								// activity.getOtc_offset());
+								// newActivity.put(ActivityTable.is_Deleted, 0);
+								// newActivity.put(ActivityTable.is_Synchronized,
+								// 1);
+								// newActivity.put(
+								// ActivityTable.last_ModifiedTime,
+								// last_modified);
+								if (dbHelper.updateActivity(
+										activity.getActivity_ID(), cv)) {
 									// Toast.makeText(this,
 									// "insert activity successfully",
 									// Toast.LENGTH_LONG).show();
@@ -959,7 +958,8 @@ public class WebservicesHelper {
 	 * Get member join into actiivty
 	 * */
 	public void getSharedmembersForActivity(final String activity_id) {
-//		final ArrayList<Sharedmember> sharedmembers=new ArrayList<Sharedmember>();
+		// final ArrayList<Sharedmember> sharedmembers=new
+		// ArrayList<Sharedmember>();
 		String SharedmembersUrl = BaseUrl.BASEURL + "services/" + activity_id
 				+ "/sharedmembers" + "?" + BaseUrl.URL_POST_FIX;
 		Log.i("url is :", SharedmembersUrl);
@@ -987,12 +987,12 @@ public class WebservicesHelper {
 						int sm_role = JSharedmember.getInt("sharedrole");
 						String sm_lastmdf = JSharedmember
 								.getString("lastmodified");
-//						Sharedmember newsm = new Sharedmember(sm_id, sm_name,
-//								sm_email, sm_number, sm_role, activity_id);
-//						sharedmembers.add(newsm);
+						// Sharedmember newsm = new Sharedmember(sm_id, sm_name,
+						// sm_email, sm_number, sm_role, activity_id);
+						// sharedmembers.add(newsm);
 
 						ContentValues cv = new ContentValues();
-						
+
 						cv.put(SharedMemberTable.member_email, sm_email);
 						cv.put(SharedMemberTable.member_name, sm_name);
 						cv.put(SharedMemberTable.member_mobile, sm_number);
@@ -1011,15 +1011,15 @@ public class WebservicesHelper {
 						}
 					}
 
-//					SharedPreferences sp = mContext.getSharedPreferences(
-//							"MyPreferences", 0);
-//					Editor editor = sp.edit();
-//					editor.putString("lastparticipantmodified", MyDate
-//							.transformLocalDateTimeToUTCFormat(MyDate
-//									.getCurrentDateTime()));
-//					editor.commit();
-					SharedReference ref=new SharedReference();
-					ref.setLastestParticipantLastModifiedTime(mContext,  MyDate
+					// SharedPreferences sp = mContext.getSharedPreferences(
+					// "MyPreferences", 0);
+					// Editor editor = sp.edit();
+					// editor.putString("lastparticipantmodified", MyDate
+					// .transformLocalDateTimeToUTCFormat(MyDate
+					// .getCurrentDateTime()));
+					// editor.commit();
+					SharedReference ref = new SharedReference();
+					ref.setLastestParticipantLastModifiedTime(mContext, MyDate
 							.transformLocalDateTimeToUTCFormat(MyDate
 									.getCurrentDateTime()));
 
@@ -1061,8 +1061,10 @@ public class WebservicesHelper {
 							Log.i("successful response", response.toString());
 							Intent intent = new Intent(mContext,
 									CreateNewScheduleActivity.class);
-							intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
-							intent.putExtra(CommConstant.ACTIVITY_ID, activityid);
+							intent.putExtra(CommConstant.TYPE,
+									DatabaseHelper.NEW);
+							intent.putExtra(CommConstant.ACTIVITY_ID,
+									activityid);
 							mContext.startActivity(intent);
 						}
 
@@ -1073,6 +1075,7 @@ public class WebservicesHelper {
 							Log.i("fail", e.toString());
 
 						}
+
 						@Override
 						public void onStart() {
 							// TODO Auto-generated method stub
@@ -1084,7 +1087,9 @@ public class WebservicesHelper {
 						public void onFinish() {
 							// TODO Auto-generated method stub
 							super.onFinish();
-							progress.dismiss();
+							if (progress.isShowing()) {
+								progress.dismiss();
+							}
 						}
 					});
 		} catch (UnsupportedEncodingException e1) {
@@ -1287,7 +1292,7 @@ public class WebservicesHelper {
 		}
 	}
 
-	public void deleteParticipant(Participant participant) {
+	public void deleteParticipant(final Participant participant) {
 		String ParticipantUrl = BaseUrl.BASEURL + "members/"
 				+ participant.getID() + "?" + BaseUrl.URL_POST_FIX;
 		final int id = participant.getID();
@@ -1295,7 +1300,13 @@ public class WebservicesHelper {
 			public void onSuccess(JSONObject response) {
 				try {
 					if (response.getString("lastmodified") != null) {
+
+						ContentValues cv = new ContentValues();
+						cv.put(ParticipantTable.is_Deleted, 1);
+						cv.put(ParticipantTable.is_Sychronized, 0);
+						dbHelper.updateParticipant(id, cv);
 						dbHelper.deleteParticipant(id);
+						((Activity) mContext).finish();
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -1307,6 +1318,26 @@ public class WebservicesHelper {
 				// Response failed :
 				Log.i("failure response", response);
 				Log.i("fail", e.toString());
+				Toast.makeText(
+						mContext,
+						mContext.getResources().getString(
+								R.string.delete_contact_error)
+								+ "\n" + response.toString(),
+						Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onStart() {
+				// TODO Auto-generated method stub
+				super.onStart();
+				progress.show();
+			}
+
+			@Override
+			public void onFinish() {
+				// TODO Auto-generated method stub
+				super.onFinish();
+				progress.dismiss();
 			}
 		});
 	}
@@ -1314,7 +1345,7 @@ public class WebservicesHelper {
 	public void updateActivity(MyActivity activity) {
 		String ActivityUrl = BaseUrl.BASEURL + "services/"
 				+ activity.getActivity_ID() + "?" + BaseUrl.URL_POST_FIX;
-		final String id =activity.getActivity_ID();
+		final String id = activity.getActivity_ID();
 		try {
 			JSONObject activityParams = new JSONObject();
 			activityParams.put("alert", activity.getAlert());
@@ -1409,6 +1440,9 @@ public class WebservicesHelper {
 						}
 						dbHelper.deleteActivity(id);
 						Log.i("delete activity", "successfully");
+						Intent intent = new Intent(
+								CommConstant.DELETE_ACTIVITY_COMPLETE);
+						mContext.sendBroadcast(intent);
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

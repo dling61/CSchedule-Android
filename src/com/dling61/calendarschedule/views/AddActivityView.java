@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,12 +27,15 @@ public class AddActivityView extends RelativeLayout {
 	public EditText et_new_activity_alert;
 	public EditText et_new_activity_repeat;
 	public EditText et_new_activity_description;
-	public Button btn_new_activity_next;
+//	public Button btn_new_activity_next;
 	public View layout;
 	public Button btn_add_paticipant;
 	public Button btn_remove_activity;
 	public ListView list_participant;
 	public TextView tv_participant;
+	public LinearLayout layout_next;
+	public LinearLayout layout_back;
+	public LinearLayout layout_save;
 	public AddActivityView(Context context) {
 		super(context);
 		this.context = context;
@@ -59,10 +63,13 @@ public class AddActivityView extends RelativeLayout {
 		et_new_activity_alert = (EditText) findViewById(R.id.et_new_activity_alert);
 		et_new_activity_repeat = (EditText) findViewById(R.id.et_new_activity_repeat);
 		et_new_activity_description = (EditText) findViewById(R.id.et_new_activity_description);
-		btn_new_activity_next=(Button)findViewById(R.id.btn_new_activity_next);
+//		btn_new_activity_next=(Button)findViewById(R.id.btn_next);
 		btn_add_paticipant=(Button)findViewById(R.id.btn_add_paticipant);
 		btn_remove_activity=(Button)findViewById(R.id.btn_remove_activity);
 		list_participant=(ListView)findViewById(R.id.list_participant);
 		tv_participant=(TextView)findViewById(R.id.tv_participant);
+		layout_next=(LinearLayout)findViewById(R.id.layout_next);
+		layout_back=(LinearLayout)findViewById(R.id.layout_back);
+		layout_save=(LinearLayout)findViewById(R.id.layout_save);
 	}
 }

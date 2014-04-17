@@ -2,7 +2,6 @@ package com.dling61.calendarschedule;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.adapter.TextViewBaseAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
@@ -19,7 +18,6 @@ import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.AddActivityView;
 import com.dling61.calendarschedule.views.PopupDialog;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -28,6 +26,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -88,6 +87,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 							.getCurrentDateTime()),
 					MyDate.transformLocalDateTimeToUTCFormat(MyDate
 							.getCurrentDateTime()), "", 0, 0);
+			view.layout_save.setVisibility(View.GONE);
+			view.layout_next.setVisibility(View.VISIBLE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
 
@@ -95,6 +96,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			// set visible when edit
 			view.btn_add_paticipant.setVisibility(View.VISIBLE);
 			view.btn_remove_activity.setVisibility(View.VISIBLE);
+			view.layout_next.setVisibility(View.GONE);
+			view.et_new_activity_description.setFocusable(false);
+			view.layout_save.setVisibility(View.VISIBLE);
+			view.layout_next.setVisibility(View.GONE);
 			WebservicesHelper ws = new WebservicesHelper(mContext);
 			ws.getSharedmembersForActivity(activity_id);
 		}
@@ -102,10 +107,18 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		onClickListener();
 	}
 
+	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
+		public void onReceive(Context arg0, Intent arg1) {
+
+		}
+	};
+
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		mContext.registerReceiver(deleteActivityComplete, new IntentFilter(
+				CommConstant.DELETE_ACTIVITY_COMPLETE));
 		if (activity_id != null && (!activity_id.equals(""))) {
 			DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
@@ -114,14 +127,16 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					.getParticipantsOfActivity(activity_id);
 			dbHelper.close();
 			ParticipantAdapter adapter = new ParticipantAdapter(mContext,
-					list_participant, true, true);
+					list_participant, false, false);
 			view.list_participant.setAdapter(adapter);
+			Utils.setListViewHeightBasedOnChildren(view.list_participant,
+					adapter);
 		}
 	}
 
 	@Override
 	protected void onPause() {
-		// mContext.unregisterReceiver(activityGetSharedMemberComplete);
+		mContext.unregisterReceiver(deleteActivityComplete);
 		super.onPause();
 	};
 
@@ -203,11 +218,16 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	 * On Click listener
 	 * */
 	public void onClickListener() {
-		view.btn_new_activity_next.setOnClickListener(this);
+		// view.btn_new_activity_next.setOnClickListener(this);
 		view.et_new_activity_time_zone.setOnClickListener(this);
 		view.et_new_activity_alert.setOnClickListener(this);
 		view.et_new_activity_repeat.setOnClickListener(this);
 		view.btn_add_paticipant.setOnClickListener(this);
+		view.btn_remove_activity.setOnClickListener(this);
+		view.layout_next.setOnClickListener(this);
+		view.layout_back.setOnClickListener(this);
+		view.et_new_activity_description.setOnClickListener(this);
+		view.layout_save.setOnClickListener(this);
 	}
 
 	@Override
@@ -307,7 +327,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		if (v == view.btn_new_activity_next) {
+		if (v == view.layout_next) {
 			createNewActivity();
 		} else if (v == view.et_new_activity_time_zone) {
 			SharedReference ref = new SharedReference();
@@ -327,6 +347,19 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			mContext.startActivity(intent);
 		} else if (v == view.btn_remove_activity) {
 			deleteActivity();
+		} else if (v == view.layout_back) {
+			((Activity) mContext).finish();
+		} else if (v == view.et_new_activity_description) {
+			// show an activity to edit description
+			if (composeType == DatabaseHelper.EXISTED) {
+				Intent intent = new Intent(mContext,
+						EditDescriptionActivity.class);
+				intent.putExtra(CommConstant.ACTIVITY_DESCRIPTION,
+						thisActivity.getDesp());
+				startActivityForResult(intent, 0);
+			}
+		} else if (v == view.layout_save) {
+			editActivity();
 		}
 	}
 
@@ -384,13 +417,42 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * Create new activity
+	 * Edit activity
 	 * */
-	public void createNewActivity() {
+	private void editActivity() {
+		if (setAndCheckDataForActivity()) {
+			if (composeType == DatabaseHelper.EXISTED) {
+
+				ContentValues cv = new ContentValues();
+				cv.put(ActivityTable.service_Name,
+						thisActivity.getActivity_name());
+				cv.put(ActivityTable.alert, thisActivity.getAlert());
+				cv.put(ActivityTable.repeat, thisActivity.getRepeat());
+				cv.put(ActivityTable.start_time, thisActivity.getStarttime());
+				cv.put(ActivityTable.end_time, thisActivity.getEndtime());
+				cv.put(ActivityTable.service_description,
+						thisActivity.getDesp());
+				cv.put(ActivityTable.otc_Offset, thisActivity.getOtc_offset());
+				cv.put(ActivityTable.sharedrole, thisActivity.getRole());
+				cv.put(ActivityTable.is_Deleted, 0);
+				cv.put(ActivityTable.is_Synchronized, 0);
+				dbHelper.updateActivity(thisActivity.getActivity_ID(), cv);
+
+				WebservicesHelper ws = new WebservicesHelper(mContext);
+				ws.updateActivity(thisActivity);
+
+			}
+		}
+	}
+
+	/**
+	 * Set and check data invalid for activity to add or edit
+	 * */
+	private boolean setAndCheckDataForActivity() {
 		if (view.et_new_activity_name.getText().toString().equalsIgnoreCase("")) {
 			Toast.makeText(this, "The activity name should not be empty",
 					Toast.LENGTH_LONG).show();
-			return;
+			return false;
 		}
 
 		String activity_name = view.et_new_activity_name.getText().toString()
@@ -404,7 +466,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					mContext.getResources().getString(
 							R.string.input_activity_name)
 							+ "\n", Toast.LENGTH_LONG).show();
-			return;
+			return false;
 		}
 		if (activity_description == null || activity_description.equals("")) {
 			Toast.makeText(
@@ -412,7 +474,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					mContext.getResources().getString(
 							R.string.input_activity_description)
 							+ "\n", Toast.LENGTH_LONG).show();
-			return;
+			return false;
 		}
 
 		thisActivity.setActivity_name(activity_name);
@@ -421,67 +483,57 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		thisActivity.setRepeat(repeat_type);
 		thisActivity.setOtc_offset((int) (Float
 				.parseFloat(timezone_value_array[time_zone]) * 3600));
+		return true;
+	}
 
-		// WebservicesHelper ws = new WebservicesHelper(mContext);
-		// ws.addActivity(thisActivity);
+	/**
+	 * Create new activity
+	 * */
+	private void createNewActivity() {
 
-		if (composeType == DatabaseHelper.NEW) {
-			ContentValues newActivity = new ContentValues();
-			newActivity.put(ActivityTable.service_ID,
-					thisActivity.getActivity_ID());
-			newActivity.put(ActivityTable.own_ID, thisActivity.getOwner_ID());
-			newActivity.put(ActivityTable.service_Name,
-					thisActivity.getActivity_name());
-			newActivity.put(ActivityTable.alert, thisActivity.getAlert());
-			newActivity.put(ActivityTable.repeat, thisActivity.getRepeat());
-			newActivity.put(ActivityTable.sharedrole, thisActivity.getRole());
-			newActivity.put(ActivityTable.start_time,
-					thisActivity.getStarttime());
-			newActivity.put(ActivityTable.end_time, thisActivity.getEndtime());
-			newActivity.put(ActivityTable.service_description,
-					thisActivity.getDesp());
-			newActivity.put(ActivityTable.otc_Offset,
-					thisActivity.getOtc_offset());
-			newActivity.put(ActivityTable.is_Deleted, 0);
-			newActivity.put(ActivityTable.is_Synchronized, 0);
-			newActivity.put(ActivityTable.last_ModifiedTime, "nouploaded");
-			if (dbHelper.insertActivity(newActivity)) {
+		if (setAndCheckDataForActivity()) {
+			if (composeType == DatabaseHelper.NEW) {
+				ContentValues newActivity = new ContentValues();
+				newActivity.put(ActivityTable.service_ID,
+						thisActivity.getActivity_ID());
+				newActivity.put(ActivityTable.own_ID,
+						thisActivity.getOwner_ID());
+				newActivity.put(ActivityTable.service_Name,
+						thisActivity.getActivity_name());
+				newActivity.put(ActivityTable.alert, thisActivity.getAlert());
+				newActivity.put(ActivityTable.repeat, thisActivity.getRepeat());
+				newActivity.put(ActivityTable.sharedrole,
+						thisActivity.getRole());
+				newActivity.put(ActivityTable.start_time,
+						thisActivity.getStarttime());
+				newActivity.put(ActivityTable.end_time,
+						thisActivity.getEndtime());
+				newActivity.put(ActivityTable.service_description,
+						thisActivity.getDesp());
+				newActivity.put(ActivityTable.otc_Offset,
+						thisActivity.getOtc_offset());
+				newActivity.put(ActivityTable.is_Deleted, 0);
+				newActivity.put(ActivityTable.is_Synchronized, 0);
+				newActivity.put(ActivityTable.last_ModifiedTime, "nouploaded");
+				if (dbHelper.insertActivity(newActivity)) {
 
+				}
+				WebservicesHelper ws = new WebservicesHelper(mContext);
+				ws.addActivity(thisActivity);
 			}
-
-			WebservicesHelper ws = new WebservicesHelper(mContext);
-			ws.addActivity(thisActivity);
-			// Intent newIntent = new Intent(this, ShareActivity.class);
-			// newIntent.putExtra("type", DatabaseHelper.NEW);
-			// newIntent.putExtra("serviceid", thisActivity.getActivity_ID());
-			// this.startActivityForResult(newIntent, 11);
-
-		} else {
-			ContentValues cv = new ContentValues();
-			cv.put(ActivityTable.service_Name, thisActivity.getActivity_name());
-			cv.put(ActivityTable.alert, thisActivity.getAlert());
-			cv.put(ActivityTable.repeat, thisActivity.getRepeat());
-			cv.put(ActivityTable.start_time, thisActivity.getStarttime());
-			cv.put(ActivityTable.end_time, thisActivity.getEndtime());
-			cv.put(ActivityTable.service_description, thisActivity.getDesp());
-			cv.put(ActivityTable.otc_Offset, thisActivity.getOtc_offset());
-			cv.put(ActivityTable.sharedrole, thisActivity.getRole());
-			cv.put(ActivityTable.is_Deleted, 0);
-			cv.put(ActivityTable.is_Synchronized, 0);
-			dbHelper.updateActivity(thisActivity.getActivity_ID(), cv);
-
-			WebservicesHelper ws = new WebservicesHelper(mContext);
-			ws.updateActivity(thisActivity);
-
-			// Intent resultIntent = new Intent();
-			// resultIntent.putExtra("id", thisActivity.getActivity_ID());
-			// setResult(Activity.RESULT_OK, resultIntent);
-			// finish();
 		}
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == 222) {
+			String activity_decription = data
+					.getStringExtra(CommConstant.ACTIVITY_DESCRIPTION);
+			view.et_new_activity_description
+					.setText(activity_decription != null ? activity_decription
+							: view.et_new_activity_description.getText()
+									.toString());
+		}
 		switch (requestCode) {
 		case (11): {
 			Intent resultIntent = new Intent();
@@ -490,6 +542,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			finish();
 			break;
 		}
+
 		}
 	}
 

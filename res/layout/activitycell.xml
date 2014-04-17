@@ -2,47 +2,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/margin_top"
     android:orientation="vertical" >
+
     <TextView
-        android:id ="@+id/service_name_tv"
+        android:id="@+id/service_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textSize="25dp"
-        android:textStyle="bold"
-       	android:textColor="#000"
-        />
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_name"
+        android:textStyle="bold" />
+
     <TextView
-        android:id ="@+id/service_time_tv"
+        android:id="@+id/service_time_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textSize="18dp"
-        android:textStyle="bold"
-       	android:textColor="#244086"
-        />
+        android:textColor="@color/bg_login_title_bar"
+        android:textSize="@dimen/text_description"
+        android:textStyle="bold" />
+
     <TextView
-        android:id ="@+id/service_descrpition_tv"
+        android:id="@+id/service_descrpition_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textSize="15dp"
-        android:textStyle="bold"
-       	android:textColor="#000"
-        />
-     <TextView
-        android:id ="@+id/tv_participant"
+        android:textColor="@color/text_activity_description"
+        android:textSize="@dimen/text_description"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_participant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textSize="15dp"
-        android:textStyle="bold"
         android:singleLine="true"
-       	android:textColor="#000"
-        />
-    
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_description"
+        android:textStyle="bold" />
+
 </LinearLayout>

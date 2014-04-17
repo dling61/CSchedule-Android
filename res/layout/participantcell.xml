@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:padding="@dimen/margin_top"
+    android:background="@color/bg"
     android:orientation="vertical" >
 
     <RelativeLayout
@@ -22,35 +23,27 @@
             android:id="@+id/participant_name_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/cb_check"
             android:text="Text"
-            android:textColor="#0099cc"
-            android:textSize="22sp"
-            android:textStyle="bold" 
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"/>
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_name"
+            android:textStyle="bold" />
     </RelativeLayout>
 
     <TextView
         android:id="@+id/participant_email_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textColor="#000"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:textColor="@color/bg_login_title_bar"
+        android:textSize="@dimen/text_description" />
 
     <TextView
         android:id="@+id/participant_mobile_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textColor="#777777"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textColor="@color/bg_login_title_bar"
+        android:textSize="@dimen/text_description" />
 
 </LinearLayout>

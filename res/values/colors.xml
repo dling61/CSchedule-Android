@@ -45,4 +45,5 @@
     <color name="bg_button">#0d8fde</color>
     <color name="text_button">#ffffff</color>
     <color name="bg_top_bar">#2884cd</color>
+    <color name="text_activity_description">#777777</color>
 </resources>

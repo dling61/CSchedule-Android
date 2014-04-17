@@ -1,137 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:background="#ECECEC">
+    android:layout_height="match_parent" >
+
     <LinearLayout
-        	android:id ="@+id/tab_tabbar"
-            android:layout_width ="fill_parent"
-            android:layout_height="55dp"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/tab_tabbar"
-            android:paddingBottom="0dp">         
-            <LinearLayout
-                android:id="@+id/ll_tab_activity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                android:focusable="true"
-                android:clickable="true">
-                <ImageView
-        			android:id="@+id/tab_imgv_activity"
-        			android:layout_width="wrap_content"
-        			android:layout_height="wrap_content"        			
-        			android:src="@drawable/tab_activity_pressed" 
-        			>
-        		</ImageView>
+        android:id="@+id/tab_tabbar"
+        android:layout_width="fill_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/tab_tabbar"
+        android:paddingBottom="0dp" >
+
+        <LinearLayout
+            android:id="@+id/ll_tab_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="@dimen/width_item_tab"
+                android:layout_height="@dimen/height_item_list"
+                android:background="@drawable/tab_item_selector" >
+
                 <TextView
-                    android:id="@+id/tab_tv_activity"
+                    android:id="@+id/txtNameApp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Activity"
-                    android:textSize="12sp"
-                    android:textColor="#fff"
-                    >
-                </TextView>   
-           	</LinearLayout>
-           	
-            <LinearLayout
-                android:id="@+id/ll_tab_participant"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:clickable="true"
-                android:layout_marginTop="5dp">
-                <ImageView 
-                    android:id="@+id/tab_imgv_member"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                  
-                    android:src="@drawable/tab_member_normal"
-                    >
-                </ImageView>
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:maxWidth="150dp"
+                    android:singleLine="true"
+                    android:text="@string/activity"
+                    android:textColor="@color/bg_top_bar"
+                    android:textSize="@dimen/text_size" >
+                </TextView>
+
+                <RelativeLayout
+                    android:id="@+id/right"
+                    android:layout_width="2dp"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentRight="true" >
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_tab_participant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="@dimen/width_item_tab"
+                android:layout_height="@dimen/height_item_list"
+                android:background="@drawable/tab_item_selector" >
+
                 <TextView
-                    android:id="@+id/tab_tv_member"
+                    android:id="@+id/txtNameApp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Participant"
-                    android:textSize="12sp"
-                    android:textColor="#fff">
-                </TextView>   
-           	</LinearLayout>
-           	
-            <LinearLayout
-                android:id="@+id/ll_tab_schedule"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                  android:clickable="true">
-                <ImageView 
-                    android:id="@+id/tab_imgv_schedule"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                  
-                    android:src="@drawable/tab_schedule_normal"
-                    >
-                </ImageView>
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:maxWidth="150dp"
+                    android:singleLine="true"
+                    android:text="@string/participant"
+                    android:textColor="@color/bg_top_bar"
+                    android:textSize="@dimen/text_size" >
+                </TextView>
+
+                <RelativeLayout
+                    android:id="@+id/right"
+                    android:layout_width="2dp"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentRight="true" >
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_tab_schedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="@dimen/width_item_tab"
+                android:layout_height="@dimen/height_item_list"
+                android:background="@drawable/tab_item_selector" >
+
                 <TextView
-                    android:id="@+id/tab_tv_schedule"
+                    android:id="@+id/txtNameApp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Schedule"
-                    android:textSize="12sp"
-                    android:textColor="#fff">
-                </TextView>   
-           	</LinearLayout>
-           	
-            <LinearLayout
-                android:id="@+id/ll_tab_account"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                 android:clickable="true"
-                android:layout_marginTop="5dp">
-                <ImageView 
-                    android:id="@+id/tab_imgv_account"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                   
-                    android:src="@drawable/tab_account_normal"
-                    >
-                </ImageView>
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:maxWidth="150dp"
+                    android:singleLine="true"
+                    android:text="@string/schedule"
+                    android:textColor="@color/bg_top_bar"
+                    android:textSize="@dimen/text_size" >
+                </TextView>
+
+                <RelativeLayout
+                    android:id="@+id/right"
+                    android:layout_width="2dp"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentRight="true" >
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_tab_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="@dimen/width_item_tab"
+                android:layout_height="@dimen/height_item_list"
+                android:background="@drawable/tab_item_selector" >
+
                 <TextView
-                    android:id="@+id/tab_tv_account"
+                    android:id="@+id/txtNameApp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Account"
-                    android:textSize="12sp"
-                    android:textColor="#fff">
-                </TextView>   
-           	</LinearLayout>
-       	</LinearLayout>
-       	<LinearLayout 
-       	    android:orientation="vertical"
-       	    android:layout_width="fill_parent"
-       	    android:layout_height="wrap_content"
-       	    android:layout_above="@id/tab_tabbar"
-       	    android:layout_alignParentTop="true">
-            <android.support.v4.view.ViewPager
-                android:id="@+id/tab_viewpager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"/>
-			       	    
-       	</LinearLayout>
-    
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:maxWidth="150dp"
+                    android:singleLine="true"
+                    android:text="@string/account"
+                    android:textColor="@color/bg_top_bar"
+                    android:textSize="@dimen/text_size" >
+                </TextView>
+
+                <RelativeLayout
+                    android:id="@+id/right"
+                    android:layout_width="2dp"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentRight="true" >
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/tab_tabbar"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/tab_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center" />
+    </LinearLayout>
 
 </RelativeLayout>

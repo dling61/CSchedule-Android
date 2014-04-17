@@ -1,70 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:background="#ECECEC">
+    android:layout_height="match_parent"
+    android:background="#ECECEC" >
+
     <RelativeLayout
-	    android:id="@+id/composeparticipant_topbar"
-	    android:layout_width="fill_parent"
-   	 	android:layout_height="55dp"
-    	android:background="@color/bg_top_bar">
-    	<TextView
-    	    android:id="@+id/compose_participant_toptitle"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:layout_centerInParent="true"
-    	    android:text="@string/add_participant"
-    	    android:textColor="@color/text_button"
-    	    android:textSize="20sp"
-    	    android:textStyle="bold"/>
-    	
-    	<Button
-    	    android:id="@+id/btn_next"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:layout_alignParentRight="true"
-    	    android:layout_centerVertical="true"
-    	    android:layout_marginRight="5dp"
-    	    android:text="@string/next"
-    	    android:textColor="@color/white"
-    	    android:textSize="15sp"
-    	    />
-   	</RelativeLayout>
-   	
-    <LinearLayout 
+        android:id="@+id/composeparticipant_topbar"
+        android:layout_width="fill_parent"
+        android:layout_height="55dp"
+        android:background="@color/bg_top_bar" >
+
+        <LinearLayout
+            android:id="@+id/layout_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/margin_top" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_back" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/margin_top" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/next" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/compose_participant_toptitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/add_participant"
+            android:textColor="@color/text_button"
+            android:textSize="@dimen/text_name"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <LinearLayout
         android:id="@+id/compose_participant_components"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/composeparticipant_topbar"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:orientation="vertical">
-    	<EditText
-    	    android:id="@+id/compose_participant_email_et"
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="wrap_content"
-    	    android:textColor="#000"
-    	    android:textSize="18dp"
-    	    android:hint="Email"
-    	    />
-    	<EditText
-    	    android:id="@+id/compose_participant_name_et"
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="wrap_content"
-    	    android:textColor="#000"
-    	    android:textSize="18dp"
-    	    android:hint="Name"
-    	    />
-    	<EditText
-    	    android:id="@+id/compose_participant_mobile_et"
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="wrap_content"
-    	    android:textColor="#000"
-    	    android:textSize="18dp"
-    	    android:hint="Mobile"
-    	    />   
-    	    	
-  	</LinearLayout>
-        
+        android:layout_margin="@dimen/margin_left"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/compose_participant_email_et"
+            style="@style/edittextStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/email"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_description" />
+
+        <EditText
+            android:id="@+id/compose_participant_name_et"
+            style="@style/edittextStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/name"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_description" />
+
+        <EditText
+            android:id="@+id/compose_participant_mobile_et"
+            style="@style/edittextStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/mobile"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_description" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_remove_activity"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/mainpage_btn"
+        android:text="@string/remove_contact"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:visibility="visible" />
+
 </RelativeLayout>

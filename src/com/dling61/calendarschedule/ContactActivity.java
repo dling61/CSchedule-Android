@@ -15,7 +15,7 @@ public class ContactActivity extends FragmentActivity {
 		setContentView(R.layout.participant);
 		activity_id=getIntent().getStringExtra(CommConstant.ACTIVITY_ID);
 		ContactFragment contactFragment = new ContactFragment();
-		contactFragment.setInSideTab(false);
+		contactFragment.setInSideTab(true);
 		contactFragment.setActivity_id(activity_id);
 		
 		getSupportFragmentManager().beginTransaction().replace(R.id.container,contactFragment).commit(); 

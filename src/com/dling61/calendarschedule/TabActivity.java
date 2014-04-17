@@ -10,6 +10,7 @@ import com.dling61.calendarschedule.fragments.ActivityFragment;
 import com.dling61.calendarschedule.fragments.ContactFragment;
 import com.dling61.calendarschedule.fragments.ScheduleFragment;
 import com.dling61.calendarschedule.net.WebservicesHelper;
+import com.dling61.calendarschedule.views.MenuAppView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,18 +27,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class TabActivity extends FragmentActivity implements
 		View.OnClickListener, OnPageChangeListener {
 	private LinearLayout llTabActivity, llTabPaticipant, llTabSchedule,
 			llTabAccount;
-	private ImageView activityImgV, memberImgV, scheduleImgV, accountImgV;
+	// private ImageView activityImgV, memberImgV, scheduleImgV, accountImgV;
 	private ViewPager viewpager;
 	// private ProgressDialog mDialog;
 	DatabaseHelper dbHelper;
 	Context mContext;
+	public MenuAppView menuApp;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -92,16 +93,16 @@ public class TabActivity extends FragmentActivity implements
 
 	}
 
-	public void initallImages() {
-		activityImgV.setImageDrawable(getResources().getDrawable(
-				R.drawable.tab_activity_normal));
-		memberImgV.setImageDrawable(getResources().getDrawable(
-				R.drawable.tab_member_normal));
-		scheduleImgV.setImageDrawable(getResources().getDrawable(
-				R.drawable.tab_schedule_normal));
-		accountImgV.setImageDrawable(getResources().getDrawable(
-				R.drawable.tab_account_normal));
-	}
+	// public void initallImages() {
+	// activityImgV.setImageDrawable(getResources().getDrawable(
+	// R.drawable.tab_activity_normal));
+	// memberImgV.setImageDrawable(getResources().getDrawable(
+	// R.drawable.tab_member_normal));
+	// scheduleImgV.setImageDrawable(getResources().getDrawable(
+	// R.drawable.tab_schedule_normal));
+	// accountImgV.setImageDrawable(getResources().getDrawable(
+	// R.drawable.tab_account_normal));
+	// }
 
 	// find view by id
 	public void findViewById() {
@@ -114,14 +115,14 @@ public class TabActivity extends FragmentActivity implements
 
 		llTabAccount = (LinearLayout) this.findViewById(R.id.ll_tab_account);
 
-		activityImgV = (ImageView) this.findViewById(R.id.tab_imgv_activity);
-
-		memberImgV = (ImageView) this.findViewById(R.id.tab_imgv_member);
-
-		scheduleImgV = (ImageView) this.findViewById(R.id.tab_imgv_schedule);
-
-		accountImgV = (ImageView) this.findViewById(R.id.tab_imgv_account);
-
+		// activityImgV = (ImageView) this.findViewById(R.id.tab_imgv_activity);
+		//
+		// memberImgV = (ImageView) this.findViewById(R.id.tab_imgv_member);
+		//
+		// scheduleImgV = (ImageView) this.findViewById(R.id.tab_imgv_schedule);
+		//
+		// accountImgV = (ImageView) this.findViewById(R.id.tab_imgv_account);
+		//
 		viewpager = (ViewPager) this.findViewById(R.id.tab_viewpager);
 	}
 
@@ -183,34 +184,34 @@ public class TabActivity extends FragmentActivity implements
 
 	@Override
 	public void onPageSelected(int arg0) {
-		activityImgV.setImageDrawable(getResources().getDrawable(
-				R.drawable.tab_activity_normal));
-		memberImgV.setImageDrawable(getResources().getDrawable(
-				R.drawable.tab_member_normal));
-		scheduleImgV.setImageDrawable(getResources().getDrawable(
-				R.drawable.tab_schedule_normal));
-		accountImgV.setImageDrawable(getResources().getDrawable(
-				R.drawable.tab_account_normal));
-		switch (arg0) {
-		case 0:
-			activityImgV.setImageDrawable(getResources().getDrawable(
-					R.drawable.tab_activity_pressed));
-			break;
-		case 1:
-			memberImgV.setImageDrawable(getResources().getDrawable(
-					R.drawable.tab_member_pressed));
-			break;
-		case 2:
-			scheduleImgV.setImageDrawable(getResources().getDrawable(
-					R.drawable.tab_schedule_pressed));
-
-			break;
-		case 3:
-			accountImgV.setImageDrawable(getResources().getDrawable(
-					R.drawable.tab_account_pressed));
-			// ((TabActivity) thisContext).initAccountViews();
-			break;
-		}
+		// activityImgV.setImageDrawable(getResources().getDrawable(
+		// R.drawable.tab_activity_normal));
+		// memberImgV.setImageDrawable(getResources().getDrawable(
+		// R.drawable.tab_member_normal));
+		// scheduleImgV.setImageDrawable(getResources().getDrawable(
+		// R.drawable.tab_schedule_normal));
+		// accountImgV.setImageDrawable(getResources().getDrawable(
+		// R.drawable.tab_account_normal));
+		// switch (arg0) {
+		// case 0:
+		// activityImgV.setImageDrawable(getResources().getDrawable(
+		// R.drawable.tab_activity_pressed));
+		// break;
+		// case 1:
+		// memberImgV.setImageDrawable(getResources().getDrawable(
+		// R.drawable.tab_member_pressed));
+		// break;
+		// case 2:
+		// scheduleImgV.setImageDrawable(getResources().getDrawable(
+		// R.drawable.tab_schedule_pressed));
+		//
+		// break;
+		// case 3:
+		// accountImgV.setImageDrawable(getResources().getDrawable(
+		// R.drawable.tab_account_pressed));
+		// // ((TabActivity) thisContext).initAccountViews();
+		// break;
+		// }
 	}
 
 	@Override
@@ -225,30 +226,30 @@ public class TabActivity extends FragmentActivity implements
 		// TODO Auto-generated method stub
 		int viewId = v.getId();
 		// ImageView imgv = (ImageView)v;
-		this.initallImages();
+		// this.initallImages();
 		switch (viewId) {
 		// case R.id.tab_imgv_activity:
 		case R.id.ll_tab_activity:
-			activityImgV.setImageDrawable(this.getResources().getDrawable(
-					R.drawable.tab_activity_pressed));
+			// activityImgV.setImageDrawable(this.getResources().getDrawable(
+			// R.drawable.tab_activity_pressed));
 			viewpager.setCurrentItem(0);
 			break;
 		// case R.id.tab_imgv_member:
 		case R.id.ll_tab_participant:
-			memberImgV.setImageDrawable(this.getResources().getDrawable(
-					R.drawable.tab_member_pressed));
+			// memberImgV.setImageDrawable(this.getResources().getDrawable(
+			// R.drawable.tab_member_pressed));
 			viewpager.setCurrentItem(1);
 			break;
 		// case R.id.tab_imgv_schedule:
 		case R.id.ll_tab_schedule:
-			scheduleImgV.setImageDrawable(this.getResources().getDrawable(
-					R.drawable.tab_schedule_pressed));
+			// scheduleImgV.setImageDrawable(this.getResources().getDrawable(
+			// R.drawable.tab_schedule_pressed));
 			viewpager.setCurrentItem(2);
 			break;
 		// case R.id.tab_imgv_account:
 		case R.id.ll_tab_account:
-			accountImgV.setImageDrawable(this.getResources().getDrawable(
-					R.drawable.tab_account_pressed));
+			// accountImgV.setImageDrawable(this.getResources().getDrawable(
+			// R.drawable.tab_account_pressed));
 			viewpager.setCurrentItem(3);
 			break;
 		}

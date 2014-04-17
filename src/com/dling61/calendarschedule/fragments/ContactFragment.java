@@ -139,54 +139,53 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		// CommConstant.PARTICIPANT_READY));
 		DatabaseHelper dbHelper = DatabaseHelper
 				.getSharedDatabaseHelper(mContext);
-		ArrayList<Participant> activities = dbHelper.getParticipants();
+		ArrayList<Participant> participants = dbHelper.getParticipants();
 		dbHelper.close();
-
-		adapter = new ParticipantAdapter(mContext, activities, tab ? false
+		adapter = new ParticipantAdapter(mContext, participants, tab ? false
 				: true,true);
 		view.list_contact.setAdapter(adapter);
-		view.list_contact.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					final int position, long id) {
-				final Participant participantSelected = adapter.participants
-						.get(position);
-				String activity_name=myActivity != null ? myActivity.getActivity_name()
-						: " my activity";
-				String title = mContext.getResources().getString(
-						R.string.confirm_title)
-						+ " "
-						+ participantSelected.getName()
-						+ " "
-						+ mContext.getResources().getString(R.string.into)
-						+ activity_name;
-				final ConfirmDialog confirmDialog = new ConfirmDialog(mContext,
-						title);
-				confirmDialog.show();
-				confirmDialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						WebservicesHelper ws = new WebservicesHelper(mContext);
-						ws.postSharedmemberToActivity(
-								participantSelected.getID(),
-								CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
-								activity_id);
-						confirmDialog.dismiss();
-					}
-				});
-				confirmDialog.btnCancel
-						.setOnClickListener(new OnClickListener() {
-
-							@Override
-							public void onClick(View v) {
-								confirmDialog.dismiss();
-							}
-						});
-
-			}
-		});
+//		view.list_contact.setOnItemClickListener(new OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view,
+//					final int position, long id) {
+//				final Participant participantSelected = adapter.participants
+//						.get(position);
+//				String activity_name=myActivity != null ? myActivity.getActivity_name()
+//						: " my activity";
+//				String title = mContext.getResources().getString(
+//						R.string.confirm_title)
+//						+ " "
+//						+ participantSelected.getName()
+//						+ " "
+//						+ mContext.getResources().getString(R.string.into)
+//						+ activity_name;
+//				final ConfirmDialog confirmDialog = new ConfirmDialog(mContext,
+//						title);
+//				confirmDialog.show();
+//				confirmDialog.btnOk.setOnClickListener(new OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						// TODO Auto-generated method stub
+//						WebservicesHelper ws = new WebservicesHelper(mContext);
+//						ws.postSharedmemberToActivity(
+//								participantSelected.getID(),
+//								CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
+//								activity_id);
+//						confirmDialog.dismiss();
+//					}
+//				});
+//				confirmDialog.btnCancel
+//						.setOnClickListener(new OnClickListener() {
+//
+//							@Override
+//							public void onClick(View v) {
+//								confirmDialog.dismiss();
+//							}
+//						});
+//
+//			}
+//		});
 	}
 
 	// BroadcastReceiver activityDownloadComplete = new BroadcastReceiver() {

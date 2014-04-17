@@ -67,12 +67,12 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	}
 
 	private void onClickListener() {
-		view.btn_done.setOnClickListener(this);
+		view.layout_next.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
-		if (v == view.btn_done) {
+		if (v == view.layout_next) {
 			// share schedule
 			if (arrParticipant != null && arrParticipant.size() > 0
 					&& activity_id != null && (!activity_id.equals(""))) {

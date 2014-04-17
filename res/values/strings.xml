@@ -28,7 +28,7 @@
     </string-array>
 
     <string name="add_activity">Add Activity</string>
-    <string name="edit_activity">Edit Activity</string>
+    <string name="edit_activity">Activity Information</string>
 
     <string-array name="alert_array">
         <item>None</item>
@@ -106,5 +106,12 @@
     <string name="into">to</string>
     <string name="delete_activity">Are you sure you want delete this activity and related schedules?</string>
     <string name="caution">Caution</string>
+    <string name="activity">Activity</string>
+    <string name="schedule">Schedule</string>
+    <string name="account">Account</string>
+    <string name="activity_description">Activity Description</string>
+    <string name="remove_contact">Remove Contact</string>
+    <string name="delete_contact">Are you sure you want delete this contact?</string>
+    <string name="delete_contact_error">Have an error occur when deleting this contact</string>
 
 </resources>
