@@ -166,7 +166,7 @@ public class ShareActivity extends Activity implements OnItemClickListener  {
 				if (sm.getRole() == DatabaseHelper.NOSHARE)
 				{
 					WebservicesHelper ws=new WebservicesHelper(mContext);
-					ws.deleteSharedmemberOfActivity(sm.getID(), current_activityid);
+//					ws.deleteSharedmemberOfActivity(sm.getID(), current_activityid);
 				}
 				else
 				{

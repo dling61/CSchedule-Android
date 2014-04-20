@@ -17,13 +17,17 @@ import com.dling61.calendarschedule.views.AddScheduleView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -54,6 +58,8 @@ public class CreateNewScheduleActivity extends Activity implements
 	String activity_id = "";
 	Context mContext;
 	MyActivity myActivity;
+	int startMonth, startYear, startDate, startHour, startMin;
+	int endMonth, endYear, endDate, endHour, endMin;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,12 +87,35 @@ public class CreateNewScheduleActivity extends Activity implements
 							.getCurrentDateTime()),
 					MyDate.transformLocalDateTimeToUTCFormat(MyDate
 							.getCurrentDateTime()), "");
-		} else {
-			int id = myIntent.getIntExtra("scheduleid", -1);
+			view.btn_remove_schedule.setVisibility(View.GONE);
+			view.layout_next.setVisibility(View.VISIBLE);
+			view.layout_save.setVisibility(View.GONE);
+		} else if (composeType == DatabaseHelper.EXISTED) {
+			int id = myIntent.getIntExtra(CommConstant.SCHEDULE_ID, -1);
 			thisSchedule = dbHelper.getScheduleSortedByID(id);
+			view.btn_remove_schedule.setVisibility(View.VISIBLE);
+			view.layout_next.setVisibility(View.GONE);
+			view.layout_save.setVisibility(View.VISIBLE);
 		}
 		initViewValues();
 		onClickListener();
+		try {
+			registerReceiver(deleteScheduleComplete, new IntentFilter(
+					CommConstant.DELETE_SCHEDULE_COMPLETE));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		try {
+			unregisterReceiver(deleteScheduleComplete);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override
@@ -102,6 +131,10 @@ public class CreateNewScheduleActivity extends Activity implements
 		view.et_endTime.setOnClickListener(this);
 		view.et_startTime.setOnClickListener(this);
 		view.et_on_duty.setOnClickListener(this);
+		view.layout_next.setOnClickListener(this);
+		view.btn_remove_schedule.setOnClickListener(this);
+		view.layout_back.setOnClickListener(this);
+		view.layout_save.setOnClickListener(this);
 	}
 
 	@Override
@@ -111,20 +144,25 @@ public class CreateNewScheduleActivity extends Activity implements
 			setStartDate();
 		} else if (v == view.et_endDate) {
 			setEndDate();
-		}
-		else if(v==view.et_endTime)
-		{
+		} else if (v == view.et_endTime) {
 			setEndTime();
-		}
-		else if(v==view.et_startTime)
-		{
+		} else if (v == view.et_startTime) {
 			setStartTime();
-		}
-		else if(v==view.et_on_duty)
-		{
-			Intent intent=new Intent(mContext,ParticipantActivity.class);
+		} else if (v == view.et_on_duty) {
+			Intent intent = new Intent(mContext, ParticipantActivity.class);
 			intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
+			intent.putExtra(CommConstant.TYPE, CommConstant.TYPE_PARTICIPANT);
 			mContext.startActivity(intent);
+		} else if (v == view.layout_next) {
+			createNewSchedule();
+		} else if (v == view.btn_remove_schedule) {
+			deleteSchedule();
+		} else if (v == view.layout_back) {
+			((Activity) mContext).finish();
+		}
+		else if(v==view.layout_save)
+		{
+			editSchedule();
 		}
 	}
 
@@ -152,20 +190,19 @@ public class CreateNewScheduleActivity extends Activity implements
 		}
 		view.et_on_duty.setText(members);
 
-		// }
 		String startdate = thisSchedule.getStarttime();
 		String startfulldate = MyDate.getWeekdayFromUTCTime(startdate) + ", "
 				+ MyDate.transformUTCTimeToCustomStyle(startdate);
 		String starttime = MyDate.getTimeWithAPMFromUTCTime(startdate);
 		view.et_startDate.setText(startfulldate);
-		// start_time_btn.setText(starttime);
+		view.et_startTime.setText(starttime);
 
 		String enddate = thisSchedule.getEndtime();
 		String endfulldate = MyDate.getWeekdayFromUTCTime(enddate) + ", "
 				+ MyDate.transformUTCTimeToCustomStyle(enddate);
 		String endtime = MyDate.getTimeWithAPMFromUTCTime(enddate);
 		view.et_endDate.setText(endfulldate);
-		// end_time_btn.setText(endtime);
+		view.et_endTime.setText(endtime);
 
 		view.et_new_activity_description.setText(thisSchedule.getDesp());
 	}
@@ -242,12 +279,22 @@ public class CreateNewScheduleActivity extends Activity implements
 			daystr = "0" + dayOfMonth;
 		else
 			daystr = String.valueOf(dayOfMonth);
+		String hourMinute = "";
+		if (StartOrEnd == START) {
+			hourMinute = this.view.et_startTime.getText().toString().trim();
+			
+		} else {
+			hourMinute = this.view.et_endTime.getText().toString().trim();
+		}
+		hourMinute=hourMinute.replace("AM", "").replace("PM", "");
+		hourMinute=hourMinute.trim()+":00";
+		Log.d("hourMinute",hourMinute);
 		String weekday = MyDate.getWeekdayFromUTCTime(MyDate
 				.transformLocalDateTimeToUTCFormat(year + "-" + monthstr + "-"
-						+ daystr + " " + "00:00:00"));
+						+ daystr + " " +(hourMinute.equals("")?"00:00:00":hourMinute)));
 		String customDate = MyDate.transformUTCTimeToCustomStyle(MyDate
 				.transformLocalDateTimeToUTCFormat(year + "-" + monthstr + "-"
-						+ daystr + " " + "00:00:00"));
+						+ daystr + " " +(hourMinute.equals("")?"00:00:00":hourMinute)));
 		String fulldate = weekday + ", " + customDate;
 		if (StartOrEnd == START) {
 			this.view.et_startDate.setText(fulldate);
@@ -266,21 +313,23 @@ public class CreateNewScheduleActivity extends Activity implements
 					this.thisSchedule.getEndtime())) {
 				this.thisSchedule.setEndtime(this.thisSchedule.getStarttime());
 				this.view.et_endDate.setText(this.view.et_startDate.getText());
-				// end_time_btn.setText(start_time_btn.getText());
+				this.view.et_endTime.setText(this.view.et_startTime.getText());
 			}
 		} else {
+
 			this.view.et_endDate.setText(fulldate);
-			thisSchedule.setEndtime(MyDate
-					.transformLocalDateTimeToUTCFormat(year
-							+ "-"
-							+ monthstr
-							+ "-"
-							+ daystr
-							+ " "
-							+ MyDate.transformUTCDateToLocalDate(
-									MyDate.STANDARD, thisSchedule.getEndtime())
-									.split(" ")[1]));
+			thisSchedule
+			.setEndtime(MyDate.transformLocalDateTimeToUTCFormat(year
+					+ "-"
+					+ monthstr
+					+ "-"
+					+ daystr
+					+ " "
+					+ MyDate.transformUTCDateToLocalDate(
+							MyDate.STANDARD,
+							thisSchedule.getStarttime()).split(" ")[1]));
 		}
+
 	}
 
 	@SuppressLint("NewApi")
@@ -297,7 +346,7 @@ public class CreateNewScheduleActivity extends Activity implements
 				.transformLocalDateTimeToUTCFormat("0000-00-00 " + hourstr
 						+ ":" + minutestr + ":" + "00"));
 		if (StartOrEnd == START) {
-			this.view.et_startDate.setText(time);
+			this.view.et_startTime.setText(time);
 			thisSchedule.setStarttime(MyDate
 					.transformLocalDateTimeToUTCFormat(MyDate
 							.transformUTCDateToLocalDate(MyDate.STANDARD,
@@ -306,17 +355,31 @@ public class CreateNewScheduleActivity extends Activity implements
 			if (MyDate.IsFirstDateLaterThanSecondDate(
 					this.thisSchedule.getStarttime(),
 					this.thisSchedule.getEndtime())) {
-				this.thisSchedule.setEndtime(this.thisSchedule.getStarttime());
+				this.thisSchedule.setEndtime(this.thisSchedule.getEndtime());
 				this.view.et_endDate.setText(this.view.et_startDate.getText());
-				// end_time_btn.setText(start_time_btn.getText());
+				this.view.et_endTime.setText(this.view.et_startTime.getText());
+
+			} else {
+
 			}
+
 		} else {
-			this.view.et_endDate.setText(time);
+			this.view.et_endTime.setText(time);
 			thisSchedule.setEndtime(MyDate
 					.transformLocalDateTimeToUTCFormat(MyDate
 							.transformUTCDateToLocalDate(MyDate.STANDARD,
 									thisSchedule.getEndtime()).split(" ")[0]
 							+ " " + hourstr + ":" + minutestr + ":" + "00"));
+			if (MyDate.IsFirstDateLaterThanSecondDate(
+					this.thisSchedule.getStarttime(),
+					this.thisSchedule.getEndtime())) {
+				this.thisSchedule.setEndtime(this.thisSchedule.getEndtime());
+				this.view.et_endDate.setText(this.view.et_startDate.getText());
+				this.view.et_startTime.setText(this.view.et_endTime.getText());
+
+			} else {
+
+			}
 		}
 	}
 
@@ -357,45 +420,68 @@ public class CreateNewScheduleActivity extends Activity implements
 		this.startActivityForResult(newIntent, 6);
 	}
 
-	public void composeScheduleDone(View v) {
+	/**
+	 * Check&set data, return true if valid else return false
+	 * */
+	private boolean checkAndSetData() {
 		if (this.thisSchedule.getService_ID().equals("0")) {
 			Toast.makeText(this,
 					"You should choose an activity this schedule belongs to",
 					Toast.LENGTH_LONG).show();
-			return;
+			return false;
 		}
 		thisSchedule.setDesp(view.et_new_activity_description.getText()
 				.toString());
-		if (composeType == DatabaseHelper.NEW) {
-			ContentValues cv = new ContentValues();
-			cv.put(ScheduleTable.own_ID, thisSchedule.getOwner_ID());
-			cv.put(ScheduleTable.schedule_ID, thisSchedule.getSchedule_ID());
-			cv.put(ScheduleTable.last_Modified, "upload");
-			cv.put(ScheduleTable.start_Time, thisSchedule.getStarttime());
-			cv.put(ScheduleTable.schedule_Description, thisSchedule.getDesp());
-			cv.put(ScheduleTable.end_Time, thisSchedule.getEndtime());
-			cv.put(ScheduleTable.service_ID, thisSchedule.getService_ID());
-			cv.put(ScheduleTable.is_Deleted, 0);
-			cv.put(ScheduleTable.is_Synchronized, 0);
-			dbHelper.insertSchedule(cv);
-			for (int i = 0; i < pins.size(); i++) {
-				ContentValues onduty = new ContentValues();
-				onduty.put(OndutyTable.schedule_ID,
-						thisSchedule.getSchedule_ID());
-				onduty.put(OndutyTable.service_ID, thisSchedule.getService_ID());
-				onduty.put(OndutyTable.participant_ID, pins.get(i));
-				onduty.put(OndutyTable.last_Modified, "");
-				onduty.put(OndutyTable.is_Deleted, 0);
-				onduty.put(OndutyTable.is_Synchronized, 0);
-				dbHelper.insertOnduty(onduty);
-			}
-			WebservicesHelper ws = new WebservicesHelper(mContext);
-			ws.addSchedule(thisSchedule, pins);
+	
+		return true;
+	}
 
-			Intent resultIntent = new Intent();
-			setResult(Activity.RESULT_OK, resultIntent);
-			finish();
-		} else {
+	/**
+	 * Create new activity
+	 * */
+	private void createNewSchedule() {
+		if (checkAndSetData()) {
+			if (composeType == DatabaseHelper.NEW) {
+				ContentValues cv = new ContentValues();
+				cv.put(ScheduleTable.own_ID, thisSchedule.getOwner_ID());
+				cv.put(ScheduleTable.schedule_ID, thisSchedule.getSchedule_ID());
+				cv.put(ScheduleTable.last_Modified, "upload");
+				cv.put(ScheduleTable.start_Time, thisSchedule.getStarttime());
+				cv.put(ScheduleTable.schedule_Description,
+						thisSchedule.getDesp());
+				cv.put(ScheduleTable.end_Time, thisSchedule.getEndtime());
+				cv.put(ScheduleTable.service_ID, thisSchedule.getService_ID());
+				cv.put(ScheduleTable.is_Deleted, 0);
+				cv.put(ScheduleTable.is_Synchronized, 0);
+				dbHelper.insertSchedule(cv);
+				for (int i = 0; i < pins.size(); i++) {
+					ContentValues onduty = new ContentValues();
+					onduty.put(OndutyTable.schedule_ID,
+							thisSchedule.getSchedule_ID());
+					onduty.put(OndutyTable.service_ID,
+							thisSchedule.getService_ID());
+					onduty.put(OndutyTable.participant_ID, pins.get(i));
+					onduty.put(OndutyTable.last_Modified, "");
+					onduty.put(OndutyTable.is_Deleted, 0);
+					onduty.put(OndutyTable.is_Synchronized, 0);
+					dbHelper.insertOnduty(onduty);
+				}
+				WebservicesHelper ws = new WebservicesHelper(mContext);
+				ws.addSchedule(thisSchedule, pins);
+
+				Intent resultIntent = new Intent();
+				setResult(Activity.RESULT_OK, resultIntent);
+				finish();
+			}
+		}
+
+	}
+
+	/**
+	 * Edit activity
+	 * */
+	private void editSchedule() {
+		if (composeType == DatabaseHelper.EXISTED) {
 			ContentValues cv = new ContentValues();
 			cv.put(ScheduleTable.start_Time, thisSchedule.getStarttime());
 			cv.put(ScheduleTable.schedule_Description, thisSchedule.getDesp());
@@ -424,6 +510,128 @@ public class CreateNewScheduleActivity extends Activity implements
 			setResult(Activity.RESULT_OK, resultIntent);
 			finish();
 		}
+	}
+
+//	public void composeScheduleDone() {
+//		if (this.thisSchedule.getService_ID().equals("0")) {
+//			Toast.makeText(this,
+//					"You should choose an activity this schedule belongs to",
+//					Toast.LENGTH_LONG).show();
+//			return;
+//		}
+//		thisSchedule.setDesp(view.et_new_activity_description.getText()
+//				.toString());
+//		if (composeType == DatabaseHelper.NEW) {
+//			ContentValues cv = new ContentValues();
+//			cv.put(ScheduleTable.own_ID, thisSchedule.getOwner_ID());
+//			cv.put(ScheduleTable.schedule_ID, thisSchedule.getSchedule_ID());
+//			cv.put(ScheduleTable.last_Modified, "upload");
+//			cv.put(ScheduleTable.start_Time, thisSchedule.getStarttime());
+//			cv.put(ScheduleTable.schedule_Description, thisSchedule.getDesp());
+//			cv.put(ScheduleTable.end_Time, thisSchedule.getEndtime());
+//			cv.put(ScheduleTable.service_ID, thisSchedule.getService_ID());
+//			cv.put(ScheduleTable.is_Deleted, 0);
+//			cv.put(ScheduleTable.is_Synchronized, 0);
+//			dbHelper.insertSchedule(cv);
+//			for (int i = 0; i < pins.size(); i++) {
+//				ContentValues onduty = new ContentValues();
+//				onduty.put(OndutyTable.schedule_ID,
+//						thisSchedule.getSchedule_ID());
+//				onduty.put(OndutyTable.service_ID, thisSchedule.getService_ID());
+//				onduty.put(OndutyTable.participant_ID, pins.get(i));
+//				onduty.put(OndutyTable.last_Modified, "");
+//				onduty.put(OndutyTable.is_Deleted, 0);
+//				onduty.put(OndutyTable.is_Synchronized, 0);
+//				dbHelper.insertOnduty(onduty);
+//			}
+//			WebservicesHelper ws = new WebservicesHelper(mContext);
+//			ws.addSchedule(thisSchedule, pins);
+//
+//			Intent resultIntent = new Intent();
+//			setResult(Activity.RESULT_OK, resultIntent);
+//			finish();
+//		} else {
+//			ContentValues cv = new ContentValues();
+//			cv.put(ScheduleTable.start_Time, thisSchedule.getStarttime());
+//			cv.put(ScheduleTable.schedule_Description, thisSchedule.getDesp());
+//			cv.put(ScheduleTable.end_Time, thisSchedule.getEndtime());
+//			cv.put(ScheduleTable.service_ID, thisSchedule.getService_ID());
+//			cv.put(ScheduleTable.is_Deleted, 0);
+//			cv.put(ScheduleTable.is_Synchronized, 0);
+//			dbHelper.updateSchedule(thisSchedule.getSchedule_ID(), cv);
+//			dbHelper.deleteRelatedOnduty(thisSchedule.getSchedule_ID());
+//			for (int i = 0; i < pins.size(); i++) {
+//				ContentValues onduty = new ContentValues();
+//				onduty.put(OndutyTable.schedule_ID,
+//						thisSchedule.getSchedule_ID());
+//				onduty.put(OndutyTable.service_ID,
+//						thisSchedule.getSchedule_ID());
+//				onduty.put(OndutyTable.participant_ID, pins.get(i));
+//				onduty.put(OndutyTable.last_Modified, "");
+//				onduty.put(OndutyTable.is_Deleted, 0);
+//				onduty.put(OndutyTable.is_Synchronized, 0);
+//				dbHelper.insertOnduty(onduty);
+//			}
+//
+//			WebservicesHelper ws = new WebservicesHelper(mContext);
+//			ws.updateSchedule(thisSchedule, pins);
+//			Intent resultIntent = new Intent();
+//			setResult(Activity.RESULT_OK, resultIntent);
+//			finish();
+//		}
+//
+//	}
+
+	/**
+	 * delete schedule update to database
+	 * */
+	public void deleteSchedule() {
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+		alertDialog.setTitle(mContext.getResources()
+				.getString(R.string.caution));
+		alertDialog.setMessage(mContext.getResources().getString(
+				R.string.delete_schedule));
+		alertDialog.setPositiveButton(
+				mContext.getResources().getString(R.string.ok),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						ContentValues scv = new ContentValues();
+						scv.put(ScheduleTable.is_Deleted, 1);
+						scv.put(ScheduleTable.is_Synchronized, 0);
+
+						int schedule_id = thisSchedule.getSchedule_ID();
+						dbHelper.updateSchedule(schedule_id, scv);
+						List<Integer> onduties = dbHelper
+								.getOndutyRecordsForSchedule(schedule_id);
+						for (int j = 0; j < onduties.size(); j++) {
+							ContentValues ocv = new ContentValues();
+							ocv.put(OndutyTable.is_Deleted, 1);
+							ocv.put(OndutyTable.is_Synchronized, 0);
+							int onduty_id = onduties.get(j);
+							dbHelper.updateSchedule(onduty_id, ocv);
+						}
+
+						WebservicesHelper ws = new WebservicesHelper(mContext);
+						ws.deleteSchedule(thisSchedule);
+					}
+				});
+		alertDialog.setNegativeButton(
+				mContext.getResources().getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						Toast.makeText(getApplicationContext(),
+								"You clicked on NO", Toast.LENGTH_SHORT).show();
+						dialog.cancel();
+					}
+				});
+		alertDialog.show();
 
 	}
+
+	BroadcastReceiver deleteScheduleComplete = new BroadcastReceiver() {
+		public void onReceive(Context arg0, Intent arg1) {
+			finish();
+		}
+	};
+
 }

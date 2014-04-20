@@ -2,34 +2,27 @@ package com.dling61.calendarschedule.adapter;
 
 import java.util.ArrayList;
 
-import com.dling61.calendarschedule.AddNewActivity;
-import com.dling61.calendarschedule.AddNewContactActivity;
 import com.dling61.calendarschedule.R;
-import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.Participant;
-import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.Utils;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ParticipantAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	public ArrayList<Participant> participants;
-	private Typeface thinface;
-	private Typeface regularface;
-	private Typeface lightface;
+
 	Context mContext;
 	boolean isCheck = false;
 	boolean isShowFull = false;// show full information or breif
-	
+
 	public ParticipantAdapter(Context context,
 			ArrayList<Participant> participants, boolean isCheck,
 			boolean isShowFull) {
@@ -38,24 +31,11 @@ public class ParticipantAdapter extends BaseAdapter {
 		this.participants = participants;
 		this.isCheck = isCheck;
 		this.isShowFull = isShowFull;
-		thinface = Typeface.createFromAsset(mContext.getAssets(),
-				"fonts/Roboto-Regular.ttf");
+
 	}
 
 	public void setParticipants(ArrayList<Participant> participants) {
 		this.participants = participants;
-	}
-
-	public void setThinface(Typeface thinface) {
-		this.thinface = thinface;
-	}
-
-	public void setRegularface(Typeface regularface) {
-		this.regularface = regularface;
-	}
-
-	public void setLightface(Typeface lightface) {
-		this.lightface = lightface;
 	}
 
 	@Override
@@ -80,7 +60,7 @@ public class ParticipantAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup arg2) {
 		// TODO Auto-generated method stub
 
-		ParticipantViewHolder viewHolder;
+		 ParticipantViewHolder viewHolder;
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.participantcell, null);
 			viewHolder = new ParticipantViewHolder();
@@ -90,51 +70,67 @@ public class ParticipantAdapter extends BaseAdapter {
 					.findViewById(R.id.participant_email_tv);
 			viewHolder.mobile_tv = (TextView) convertView
 					.findViewById(R.id.participant_mobile_tv);
-			viewHolder.cb_check = (CheckBox) convertView
+			viewHolder.cb_check = (ImageView) convertView
 					.findViewById(R.id.cb_check);
-			viewHolder.name_tv.setTypeface(thinface);
-			viewHolder.email_tv.setTypeface(thinface);
-			viewHolder.mobile_tv.setTypeface(thinface);
+			viewHolder.name_tv.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.email_tv.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.mobile_tv.setTypeface(Utils.getTypeFace(mContext));
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ParticipantViewHolder) convertView.getTag();
 		}
+
+		final Participant participant = participants.get(position);
 		if (isCheck) {
 			viewHolder.cb_check.setVisibility(View.VISIBLE);
+			if(participant.isChecked)
+			{
+			viewHolder.cb_check.setImageResource(R.drawable.check_box_selected);;
+			}
+			else
+			{
+				viewHolder.cb_check.setImageResource(R.drawable.check_box_unselected);
+			}
+			
 		} else {
 			viewHolder.cb_check.setVisibility(View.GONE);
 		}
 
-		final Participant participant = participants.get(position);
 		viewHolder.name_tv.setText(participant.getName());
-		viewHolder.name_tv.setTypeface(lightface);
+
 		if (isShowFull) {
 			viewHolder.email_tv.setText(participant.getEmail());
-			viewHolder.email_tv.setTypeface(thinface);
+
 			viewHolder.mobile_tv.setText(participant.getMobile());
-			viewHolder.mobile_tv.setTypeface(thinface);
+
 			viewHolder.email_tv.setVisibility(View.VISIBLE);
 			viewHolder.mobile_tv.setVisibility(View.VISIBLE);
 		} else {
 			viewHolder.email_tv.setVisibility(View.GONE);
 			viewHolder.mobile_tv.setVisibility(View.GONE);
 		}
-		convertView.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
-				Intent inforActivityIntent = new Intent(mContext,
-						AddNewContactActivity.class);
-				inforActivityIntent.putExtra(CommConstant.TYPE,
-						DatabaseHelper.EXISTED);
-				inforActivityIntent.putExtra(CommConstant.CONTACT_ID,
-						participant.getID());
-				mContext.startActivity(inforActivityIntent);
-
-			}
-		});
+		final ParticipantViewHolder view=viewHolder;
+//		convertView.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				if (isCheck) {
+//					participant.isChecked = !participant.isChecked;
+//					participants.add(position, participant);
+//					view.cb_check.setChecked(participant.isChecked);
+//				} 
+//				if(isShowFull){
+//					Intent inforActivityIntent = new Intent(mContext,
+//							AddNewContactActivity.class);
+//					inforActivityIntent.putExtra(CommConstant.TYPE,
+//							DatabaseHelper.EXISTED);
+//					inforActivityIntent.putExtra(CommConstant.CONTACT_ID,
+//							participant.getID());
+//					mContext.startActivity(inforActivityIntent);
+//				}
+//			}
+//		});
 		return convertView;
 	}
 
@@ -142,7 +138,7 @@ public class ParticipantAdapter extends BaseAdapter {
 		TextView name_tv;
 		TextView email_tv;
 		TextView mobile_tv;
-		CheckBox cb_check;
+		ImageView cb_check;
 	}
 
 }

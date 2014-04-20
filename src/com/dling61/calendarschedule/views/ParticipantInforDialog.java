@@ -1,32 +1,29 @@
 package com.dling61.calendarschedule.views;
 
 import com.dling61.calendarschedule.R;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 /**
  * @author Huyen
  * 
  */
-public class PopupDialog extends Dialog {
+public class ParticipantInforDialog extends Dialog {
 
 	public Context mContext;
 	public Dialog d;
 	public ListView list_item;
-	public TextView tv_title;
-	String title = "";
+	public Button btn_cancel;
 
-	public PopupDialog(Context mContext, String title) {
+	public ParticipantInforDialog(Context mContext) {
 		super(mContext);
 		this.mContext = mContext;
-		this.title = title;
 	}
 
 	@Override
@@ -34,11 +31,10 @@ public class PopupDialog extends Dialog {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-		setContentView(R.layout.popup_layout);
+		setContentView(R.layout.participant_infor_dialog);
 		setCanceledOnTouchOutside(true);
 		list_item = (ListView) findViewById(R.id.list_item);
-		tv_title = (TextView) findViewById(R.id.tv_title);
-		tv_title.setText(title);
+		btn_cancel=(Button)findViewById(R.id.btn_cancel);
 
 	}
 

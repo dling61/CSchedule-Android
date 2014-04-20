@@ -4,20 +4,23 @@ import java.util.ArrayList;
 
 import com.dling61.calendarschedule.AddNewContactActivity;
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
-import com.dling61.calendarschedule.R;
+import com.dling61.calendarschedule.adapter.ActivityAdapter;
 import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.MyActivity;
 import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
-import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.ContactView;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,6 +58,23 @@ public class ContactFragment extends Fragment implements OnClickListener {
 
 		onClickListener();
 	}
+	
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+		IntentFilter filterRefreshUpdate = new IntentFilter();
+		filterRefreshUpdate.addAction(CommConstant.DELETE_CONTACT_COMPLETE);
+		filterRefreshUpdate.addAction(CommConstant.PARTICIPANT_READY);
+		filterRefreshUpdate.addAction(CommConstant.ADD_CONTACT_SUCCESS);
+		getActivity().registerReceiver(contactDownloadComplete, filterRefreshUpdate);
+	}
+	@Override
+	public void onDetach() {
+		// TODO Auto-generated method stub
+		super.onDetach();
+		getActivity().unregisterReceiver(contactDownloadComplete);
+	}
 
 	private void initData() {
 		if (tab) {
@@ -84,8 +104,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_participant) {
-			Intent intent = new Intent(mContext,
-					AddNewContactActivity.class);
+			Intent intent = new Intent(mContext, AddNewContactActivity.class);
 			intent.putExtra("type", DatabaseHelper.NEW);
 			mContext.startActivity(intent);
 		}
@@ -131,81 +150,69 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		this.view = (ContactView) view;
 		return view;
 	}
+	BroadcastReceiver contactDownloadComplete = new BroadcastReceiver() {
+		public void onReceive(Context arg0, Intent arg1) {
+			DatabaseHelper dbHelper = DatabaseHelper
+					.getSharedDatabaseHelper(mContext);
+			ArrayList<Participant> participants = dbHelper.getParticipants();
+//			dbHelper.close();
+			adapter = new ParticipantAdapter(mContext, participants, tab ? false
+					: true, true);
+			view.list_contact.setAdapter(adapter);
+			view.list_contact.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						final int position, long id) {
+					final Participant participantSelected = adapter.participants
+							.get(position);
 
+					Intent inforActivityIntent = new Intent(mContext,
+							AddNewContactActivity.class);
+					inforActivityIntent.putExtra(CommConstant.TYPE,
+							DatabaseHelper.EXISTED);
+					inforActivityIntent.putExtra(CommConstant.CONTACT_ID,
+							participantSelected.getID());
+					mContext.startActivity(inforActivityIntent);
+
+				}
+			});
+		}
+	};
 	@Override
 	public void onResume() {
 		super.onResume();
-		// mContext.registerReceiver(activityDownloadComplete, new IntentFilter(
-		// CommConstant.PARTICIPANT_READY));
-		DatabaseHelper dbHelper = DatabaseHelper
-				.getSharedDatabaseHelper(mContext);
-		ArrayList<Participant> participants = dbHelper.getParticipants();
-		dbHelper.close();
-		adapter = new ParticipantAdapter(mContext, participants, tab ? false
-				: true,true);
-		view.list_contact.setAdapter(adapter);
+//		 mContext.registerReceiver(contactDownloadComplete, new IntentFilter(
+//		 CommConstant.PARTICIPANT_READY));
+//		DatabaseHelper dbHelper = DatabaseHelper
+//				.getSharedDatabaseHelper(mContext);
+//		ArrayList<Participant> participants = dbHelper.getParticipants();
+////		dbHelper.close();
+//		adapter = new ParticipantAdapter(mContext, participants, tab ? false
+//				: true, true);
+//		view.list_contact.setAdapter(adapter);
 //		view.list_contact.setOnItemClickListener(new OnItemClickListener() {
 //			@Override
 //			public void onItemClick(AdapterView<?> parent, View view,
 //					final int position, long id) {
 //				final Participant participantSelected = adapter.participants
 //						.get(position);
-//				String activity_name=myActivity != null ? myActivity.getActivity_name()
-//						: " my activity";
-//				String title = mContext.getResources().getString(
-//						R.string.confirm_title)
-//						+ " "
-//						+ participantSelected.getName()
-//						+ " "
-//						+ mContext.getResources().getString(R.string.into)
-//						+ activity_name;
-//				final ConfirmDialog confirmDialog = new ConfirmDialog(mContext,
-//						title);
-//				confirmDialog.show();
-//				confirmDialog.btnOk.setOnClickListener(new OnClickListener() {
 //
-//					@Override
-//					public void onClick(View v) {
-//						// TODO Auto-generated method stub
-//						WebservicesHelper ws = new WebservicesHelper(mContext);
-//						ws.postSharedmemberToActivity(
-//								participantSelected.getID(),
-//								CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
-//								activity_id);
-//						confirmDialog.dismiss();
-//					}
-//				});
-//				confirmDialog.btnCancel
-//						.setOnClickListener(new OnClickListener() {
-//
-//							@Override
-//							public void onClick(View v) {
-//								confirmDialog.dismiss();
-//							}
-//						});
+//				Intent inforActivityIntent = new Intent(mContext,
+//						AddNewContactActivity.class);
+//				inforActivityIntent.putExtra(CommConstant.TYPE,
+//						DatabaseHelper.EXISTED);
+//				inforActivityIntent.putExtra(CommConstant.CONTACT_ID,
+//						participantSelected.getID());
+//				mContext.startActivity(inforActivityIntent);
 //
 //			}
 //		});
 	}
 
-	// BroadcastReceiver activityDownloadComplete = new BroadcastReceiver() {
-	// public void onReceive(Context arg0, Intent arg1) {
-	// DatabaseHelper dbHelper = DatabaseHelper
-	// .getSharedDatabaseHelper(mContext);
-	// Log.i("broadcast", "activities are ready");
-	// ArrayList<Participant> activities = dbHelper.getParticipants();
-	// dbHelper.close();
-	// ParticipantAdapter adapter = new ParticipantAdapter(mContext,
-	// activities);
-	// view.list_contact.setAdapter(adapter);
-	//
-	// }
-	// };
-
 	@Override
 	public void onPause() {
 		super.onPause();
-		// mContext.unregisterReceiver(activityDownloadComplete);
+//		 mContext.unregisterReceiver(contactDownloadComplete);
 
 	}
 
@@ -213,5 +220,11 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	public void onDestroy() {
 		super.onDestroy();
 
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

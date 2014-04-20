@@ -14,7 +14,7 @@ public class MyActivity {
 	private String starttime = "";
 	private String endtime = "";
 	private String desp = "";
-	private int otc_offset = -1;
+	private float otc_offset = -1;
 	private int role = -1;
 
 	public MyActivity(String id, int ownid, int alrt, int rep, String name,
@@ -144,18 +144,13 @@ public class MyActivity {
 		this.desp = desp;
 	}
 
-	/**
-	 * @return the otc_offset
-	 */
-	public int getOtc_offset() {
+	
+
+	public float getOtc_offset() {
 		return otc_offset;
 	}
 
-	/**
-	 * @param otc_offset
-	 *            the otc_offset to set
-	 */
-	public void setOtc_offset(int otc_offset) {
+	public void setOtc_offset(float otc_offset) {
 		this.otc_offset = otc_offset;
 	}
 

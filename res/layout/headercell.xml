@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:background = "#DDD">
-    
+    android:layout_height="50dp"
+    android:background="#DDD" >
+
     <TextView
         android:id="@+id/schedule_weekday_tv"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
         android:layout_marginLeft="20dp"
-        android:textSize="10sp"
-        android:textColor="#FFF"/>
-    
+        android:textColor="@color/bg_login_title_bar"
+       android:textSize="@dimen/text_name"></TextView>
     <TextView
         android:id="@+id/schedule_date_tv"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:layout_marginRight="20dp"
-        android:textSize="10sp"
-        android:textColor="#FFF"/>
-    
+        android:textColor="@color/bg_login_title_bar"
+        android:textSize="@dimen/text_name" />
 
 </RelativeLayout>

@@ -8,7 +8,7 @@
         android:id="@+id/member_topbar"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:background="#0099cc" 
+        android:background="@color/bg_login_title_bar" 
        
         android:layout_alignParentBottom="true">
 

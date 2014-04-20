@@ -3,6 +3,7 @@ package com.dling61.calendarschedule;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.models.ParticipantTable;
+import com.dling61.calendarschedule.models.SharedMemberTable;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.SharedReference;
@@ -10,10 +11,12 @@ import com.dling61.calendarschedule.views.AddParticipantView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -48,25 +51,27 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			int ownerid = ref.getCurrentOwnerId(mContext);
 			thisParticipant = new Participant(newParticipantID, null, null,
 					null, ownerid);
-			view.btn_remove_activity.setVisibility(View.GONE);
+			view.btn_remove_contact.setVisibility(View.GONE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			view.tv_title.setText(mContext.getResources().getString(
 					R.string.edit_participant));
 			selectedParticipantID = myIntent.getIntExtra(
 					CommConstant.CONTACT_ID, -1);
 			thisParticipant = dbHelper.getParticipant(selectedParticipantID);
-			view.btn_remove_activity.setVisibility(View.VISIBLE);
+			view.btn_remove_contact.setVisibility(View.VISIBLE);
 			if (thisParticipant != null) {
 				view.et_email.setText(thisParticipant.getEmail());
 				view.et_mobile.setText(thisParticipant.getMobile());
 				view.et_name.setText(thisParticipant.getName());
 			}
 		}
-		view.et_email.setText(thisParticipant.getEmail());
-		view.et_name.setText(thisParticipant.getName());
-		view.et_mobile.setText(thisParticipant.getMobile());
+//		view.et_email.setText(thisParticipant.getEmail());
+//		view.et_name.setText(thisParticipant.getName());
+//		view.et_mobile.setText(thisParticipant.getMobile());
 
 		onClickListener();
+		registerReceiver(deleteContactComplete, new IntentFilter(
+				CommConstant.DELETE_CONTACT_COMPLETE));
 	}
 
 	@Override
@@ -79,7 +84,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	private void onClickListener() {
 		view.layout_next.setOnClickListener(this);
 		view.layout_back.setOnClickListener(this);
-		view.btn_remove_activity.setOnClickListener(this);
+		view.btn_remove_contact.setOnClickListener(this);
 	}
 
 	@Override
@@ -91,43 +96,54 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 
 		} else if (v == view.layout_back) {
 			((Activity) mContext).finish();
-		} else if (v == view.btn_remove_activity) {
+		} else if (v == view.btn_remove_contact) {
 			if (selectedParticipantID > 0) {
 				removeParticipant();
 			}
 		}
 	}
-
+	BroadcastReceiver deleteContactComplete = new BroadcastReceiver() {
+		public void onReceive(Context arg0, Intent arg1) {
+			finish();
+		}
+	};
 	/**
 	 * Remove participant
 	 * */
 	private void removeParticipant() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-		alertDialog.setTitle(mContext.getResources()
-				.getString(R.string.caution));
-		alertDialog.setMessage(mContext.getResources().getString(
-				R.string.delete_contact));
-		alertDialog.setPositiveButton(
-				mContext.getResources().getString(R.string.ok),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						if (thisParticipant != null) {
-							WebservicesHelper ws = new WebservicesHelper(
-									mContext);
-							ws.deleteParticipant(thisParticipant);
-						}
-					}
-				});
-		alertDialog.setNegativeButton(
-				mContext.getResources().getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						// Toast.makeText(mContext, "You clicked on NO",
-						// Toast.LENGTH_SHORT).show();
-						dialog.cancel();
-					}
-				});
-		alertDialog.show();
+		
+		 runOnUiThread(new Runnable(){
+		        public void run() {
+		        	AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+		    		alertDialog.setTitle(mContext.getResources()
+		    				.getString(R.string.caution));
+		    		alertDialog.setMessage(mContext.getResources().getString(
+		    				R.string.delete_contact));
+		    		alertDialog.setPositiveButton(
+		    				mContext.getResources().getString(R.string.ok),
+		    				new DialogInterface.OnClickListener() {
+		    					public void onClick(DialogInterface dialog, int which) {
+		    						if (thisParticipant != null) {
+		    							WebservicesHelper ws = new WebservicesHelper(
+		    									mContext);
+		    							ws.deleteParticipant(thisParticipant);
+		    						}
+		    					}
+		    				});
+		    		alertDialog.setNegativeButton(
+		    				mContext.getResources().getString(R.string.cancel),
+		    				new DialogInterface.OnClickListener() {
+		    					public void onClick(DialogInterface dialog, int which) {
+		    						// Toast.makeText(mContext, "You clicked on NO",
+		    						// Toast.LENGTH_SHORT).show();
+		    						dialog.cancel();
+		    					}
+		    				});
+		    		alertDialog.show();
+		        }
+		    });
+		
+		
 	}
 
 	/**
@@ -160,6 +176,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			newParticipant.put(ParticipantTable.is_Deleted, 0);
 			newParticipant.put(ParticipantTable.is_Sychronized, 0);
 			dbHelper.insertParticipant(newParticipant);
+			
 			WebservicesHelper ws = new WebservicesHelper(mContext);
 			ws.addParticipant(thisParticipant);
 		} else if (composeType == DatabaseHelper.EXISTED) {
@@ -174,9 +191,19 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			cv.put(ParticipantTable.is_Sychronized, 0);
 			dbHelper.updateParticipant(thisParticipant.getID(), cv);
 
+			
+			
+			
+			
 			WebservicesHelper ws = new WebservicesHelper(mContext);
 			ws.updateParticipant(thisParticipant);
 		}
 
+	}
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		unregisterReceiver(deleteContactComplete);
 	}
 }

@@ -16,12 +16,14 @@ import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.views.ActivityView;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -45,23 +47,23 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 	Context mContext;
 	ArrayList<MyActivity> activities;
 	ActivityAdapter adapter;
-	DatabaseHelper dbHelper; 
-			
+	DatabaseHelper dbHelper;
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mContext = getActivity();
-		dbHelper=DatabaseHelper.getSharedDatabaseHelper(mContext);
-//		initData();
+		dbHelper = DatabaseHelper.getSharedDatabaseHelper(mContext);
+		// initData();
 		onClickListener();
 	}
 
-//	private void initData() {
-//		dbHelper= DatabaseHelper
-//				.getSharedDatabaseHelper(mContext);
-//		WebservicesHelper ws = new WebservicesHelper(mContext);
-//		ws.getAllActivitys(mContext);
-//	}
+	// private void initData() {
+	// dbHelper= DatabaseHelper
+	// .getSharedDatabaseHelper(mContext);
+	// WebservicesHelper ws = new WebservicesHelper(mContext);
+	// ws.getAllActivitys(mContext);
+	// }
 
 	public static ActivityFragment getInstance() {
 		return ActivityFragment.getInstance();
@@ -96,16 +98,30 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 	}
 
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		// IntentFilter filterRefreshUpdate = new IntentFilter();
+		// filterRefreshUpdate.addAction(CommConstant.DELETE_ACTIVITY_COMPLETE);
+		// filterRefreshUpdate.addAction(CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
+		// getActivity().registerReceiver(activityDownloadComplete,
+		// filterRefreshUpdate);
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
-		// mContext.registerReceiver(activityDownloadComplete, new IntentFilter(
-		// CommConstant.ACTIVITY_DOWNLOAD_SUCCESS));
-		
-		Log.i("get activity", "activities");
-		activities = dbHelper.getActivities();
-		dbHelper.close();
-		adapter = new ActivityAdapter(mContext, activities);
-		view.listview.setAdapter(adapter);
+		// IntentFilter filterRefreshUpdate = new IntentFilter();
+		// filterRefreshUpdate.addAction(CommConstant.DELETE_ACTIVITY_COMPLETE);
+		// filterRefreshUpdate.addAction(CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
+		// mContext.registerReceiver(activityDownloadComplete,
+		// filterRefreshUpdate);
+
+		// Log.i("get activity", "activities");
+		// activities = dbHelper.getActivities();
+		// dbHelper.close();
+		// adapter = new ActivityAdapter(mContext, activities);
+		// view.listview.setAdapter(adapter);
 	}
 
 	BroadcastReceiver activityDownloadComplete = new BroadcastReceiver() {
@@ -114,18 +130,65 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 					.getSharedDatabaseHelper(mContext);
 			Log.i("broadcast", "activities are ready");
 			ArrayList<MyActivity> activities = dbHelper.getActivities();
-			dbHelper.close();
-			ActivityAdapter adapter = new ActivityAdapter(mContext, activities);
-			view.listview.setAdapter(adapter);
-
+			// ActivityAdapter activityAdapter = (ActivityAdapter) view.listview
+			// .getAdapter();
+			// if (activityAdapter != null && activityAdapter.mItems != null
+			// && activityAdapter.mItems.size() > 0) {
+			// // dbHelper.close();
+			// // ActivityAdapter adapter = new ActivityAdapter(mContext,
+			// // activities);
+			// // view.listview.setAdapter(adapter);
+			// // ActivityAdapter adapter = new ActivityAdapter(mContext,
+			// // activities);
+			// // view.listview.setAdapter(adapter);
+			// int activity_size = activityAdapter.mItems.size();
+			// if (arg1.getAction().equals(
+			// CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY)) {
+			// String activity_id = arg1
+			// .getStringExtra(CommConstant.ACTIVITY_ID);
+			// MyActivity activity = dbHelper.getActivity(activity_id);
+			// if (activity != null) {
+			// for (int i = 0; i < activity_size; i++) {
+			// if (activityAdapter.mItems.get(i).getActivity_ID()
+			// .equals(activity.getActivity_ID())) {
+			// activityAdapter.mItems.set(i, activity);
+			// break;
+			// }
+			// }
+			// activityAdapter.notifyDataSetChanged();
+			// }
+			// }
+			// } else {
+			ActivityAdapter activityAdapter = new ActivityAdapter(mContext,
+					activities);
+			view.listview.setAdapter(activityAdapter);
+			// }
 		}
 	};
+
+	// BroadcastReceiver addMemberDownloadComplete = new BroadcastReceiver() {
+	// public void onReceive(Context arg0, Intent arg1) {
+	// DatabaseHelper dbHelper = DatabaseHelper
+	// .getSharedDatabaseHelper(mContext);
+	// Log.i("broadcast", "activities are ready");
+	// String
+	// activity_id=arg1.getStringExtra(CommConstant.ADD_SHARED_MEMBER_FROM_ACTIVITY);
+	// MyActivity activities = dbHelper.getActivity(activity_id);
+	// ActivityAdapter activityAdapter=(ActivityAdapter)
+	// view.listview.getAdapter();
+	// if(activityAdapter!=null&&activityAdapter.)
+	// // dbHelper.close();
+	// ActivityAdapter adapter = new ActivityAdapter(mContext, activities);
+	// view.listview.setAdapter(adapter);
+	//
+	// }
+	// };
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		MenuInflater inflater =getActivity().getMenuInflater();
+		MenuInflater inflater = getActivity().getMenuInflater();
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 		int position = info.position;
 		if (v == view.listview) {
@@ -149,106 +212,138 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
 		final int position = info.position;
 		switch (item.getItemId()) {
-			case R.id.edit_activity:
-			{
-				MyActivity selectedActivity = activities.get(position);
-				Intent newIntent = new Intent(mContext,AddNewActivity.class);
-				newIntent.putExtra(CommConstant.TYPE, DatabaseHelper.EXISTED);
-				newIntent.putExtra(CommConstant.ACTIVITY_ID, selectedActivity.getActivity_ID());
-				this.startActivityForResult(newIntent, 3);
-				break;
-			}			
-			
-			case R.id.mail_activity:
-			{
-				MyActivity ma = this.activities.get(position);
-				Intent i = new Intent(Intent.ACTION_SEND);
-				i.setType("message/rfc822");
-				i.putExtra(Intent.EXTRA_EMAIL  , new String[]{});
-				i.putExtra(Intent.EXTRA_SUBJECT, ma.getActivity_name());
-				i.putExtra(Intent.EXTRA_TEXT   , ma.getDesp() + "\n\n" + "Download form\n" + "www.androidapps.com/CSchedule\n" + "to check more" );
-				try {
-				    startActivity(Intent.createChooser(i, "Send mail..."));
-				} catch (android.content.ActivityNotFoundException ex) {
-				    Toast.makeText(mContext, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-				}
-				break;
+		case R.id.edit_activity: {
+			MyActivity selectedActivity = activities.get(position);
+			Intent newIntent = new Intent(mContext, AddNewActivity.class);
+			newIntent.putExtra(CommConstant.TYPE, DatabaseHelper.EXISTED);
+			newIntent.putExtra(CommConstant.ACTIVITY_ID,
+					selectedActivity.getActivity_ID());
+			this.startActivityForResult(newIntent, 3);
+			break;
+		}
+
+		case R.id.mail_activity: {
+			MyActivity ma = this.activities.get(position);
+			Intent i = new Intent(Intent.ACTION_SEND);
+			i.setType("message/rfc822");
+			i.putExtra(Intent.EXTRA_EMAIL, new String[] {});
+			i.putExtra(Intent.EXTRA_SUBJECT, ma.getActivity_name());
+			i.putExtra(Intent.EXTRA_TEXT, ma.getDesp() + "\n\n"
+					+ "Download form\n" + "www.androidapps.com/CSchedule\n"
+					+ "to check more");
+			try {
+				startActivity(Intent.createChooser(i, "Send mail..."));
+			} catch (android.content.ActivityNotFoundException ex) {
+				Toast.makeText(mContext,
+						"There are no email clients installed.",
+						Toast.LENGTH_SHORT).show();
 			}
-			
-			case R.id.share_activity:
-			{
-				MyActivity ma = this.activities.get(position);
-//				Intent newIntent = new Intent(mContext,S.class);
-//				newIntent.putExtra("type", DatabaseHelper.EXISTED);
-//				System.out.println("___Share ID "+ma.get_ID());
-//				newIntent.putExtra("serviceid", ma.get_ID());
-//				this.startActivityForResult(newIntent, 10);
-				break;
-			}
-			
-			case R.id.delete_activity:
-			{
-				AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-		        alertDialog.setTitle("Caution");
-		        alertDialog.setMessage("Are you sure you want delete this activity and related schedules?");
-		        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog,int which) {
-//		            Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-		            	MyActivity ma = activities.get(position);
-		            	activities.remove(position);
-		            	adapter.setItems(activities);	  
-		            	adapter.notifyDataSetChanged();
-		            	ContentValues cv = new ContentValues();
-		            	cv.put(ActivityTable.is_Deleted, 1);
-		            	cv.put(ActivityTable.is_Synchronized, 0);
-		            	dbHelper.updateActivity(ma.getActivity_ID(), cv);
-		            	List<Schedule> sbelongtoa = dbHelper.getSchedulesBelongtoActivity(ma.getActivity_ID());
-		            	for (int i = 0; i < sbelongtoa.size(); i++)
-		            	{
-		            		ContentValues scv = new ContentValues();
-			            	scv.put(ScheduleTable.is_Deleted, 1);
-			            	scv.put(ScheduleTable.is_Synchronized, 0);
-			            	int schedule_id = sbelongtoa.get(i).getSchedule_ID();
-			            	dbHelper.updateSchedule(schedule_id,scv);
-			            	List<Integer> onduties = dbHelper.getOndutyRecordsForSchedule(schedule_id);
-			            	for (int j = 0 ; j < onduties.size(); j++)
-			            	{
-			            		ContentValues ocv = new ContentValues();
-				            	ocv.put(OndutyTable.is_Deleted, 1);
-				            	ocv.put(OndutyTable.is_Synchronized, 0);
-				            	int onduty_id = onduties.get(j);
-				            	dbHelper.updateSchedule(onduty_id,ocv);
-			            	}
-		            	}
-		            	
-		            	WebservicesHelper ws=new WebservicesHelper(mContext);
-		            	ws.deleteActivity(ma);
-		            }
-		        });
-		        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) {
-		            Toast.makeText(mContext, "You clicked on NO", Toast.LENGTH_SHORT).show();
-		            dialog.cancel();
-		            }
-		        });
-		        alertDialog.show();
-		        break;
-			}
-			
+			break;
+		}
+
+		case R.id.share_activity: {
+			MyActivity ma = this.activities.get(position);
+			// Intent newIntent = new Intent(mContext,S.class);
+			// newIntent.putExtra("type", DatabaseHelper.EXISTED);
+			// System.out.println("___Share ID "+ma.get_ID());
+			// newIntent.putExtra("serviceid", ma.get_ID());
+			// this.startActivityForResult(newIntent, 10);
+			break;
+		}
+
+		case R.id.delete_activity: {
+			AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+			alertDialog.setTitle("Caution");
+			alertDialog
+					.setMessage("Are you sure you want delete this activity and related schedules?");
+			alertDialog.setPositiveButton("YES",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							// Toast.makeText(getApplicationContext(),
+							// "You clicked on YES", Toast.LENGTH_SHORT).show();
+							MyActivity ma = activities.get(position);
+							activities.remove(position);
+							adapter.setItems(activities);
+							adapter.notifyDataSetChanged();
+							ContentValues cv = new ContentValues();
+							cv.put(ActivityTable.is_Deleted, 1);
+							cv.put(ActivityTable.is_Synchronized, 0);
+							dbHelper.updateActivity(ma.getActivity_ID(), cv);
+							List<Schedule> sbelongtoa = dbHelper
+									.getSchedulesBelongtoActivity(ma
+											.getActivity_ID());
+							for (int i = 0; i < sbelongtoa.size(); i++) {
+								ContentValues scv = new ContentValues();
+								scv.put(ScheduleTable.is_Deleted, 1);
+								scv.put(ScheduleTable.is_Synchronized, 0);
+								int schedule_id = sbelongtoa.get(i)
+										.getSchedule_ID();
+								dbHelper.updateSchedule(schedule_id, scv);
+								List<Integer> onduties = dbHelper
+										.getOndutyRecordsForSchedule(schedule_id);
+								for (int j = 0; j < onduties.size(); j++) {
+									ContentValues ocv = new ContentValues();
+									ocv.put(OndutyTable.is_Deleted, 1);
+									ocv.put(OndutyTable.is_Synchronized, 0);
+									int onduty_id = onduties.get(j);
+									dbHelper.updateSchedule(onduty_id, ocv);
+								}
+							}
+
+							WebservicesHelper ws = new WebservicesHelper(
+									mContext);
+							ws.deleteActivity(ma);
+						}
+					});
+			alertDialog.setNegativeButton("NO",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							Toast.makeText(mContext, "You clicked on NO",
+									Toast.LENGTH_SHORT).show();
+							dialog.cancel();
+						}
+					});
+			alertDialog.show();
+			break;
+		}
+
 		}
 		return false;
 	}
-	
+
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+		IntentFilter filterRefreshUpdate = new IntentFilter();
+		filterRefreshUpdate.addAction(CommConstant.DELETE_ACTIVITY_COMPLETE);
+		filterRefreshUpdate.addAction(CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
+		filterRefreshUpdate.addAction(CommConstant.UPDATE_SCHEDULE);
+		filterRefreshUpdate
+				.addAction(CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
+		filterRefreshUpdate
+				.addAction(CommConstant.ADD_SHARED_MEMBER_FROM_ACTIVITY);
+		getActivity().registerReceiver(activityDownloadComplete,
+				filterRefreshUpdate);
+	}
+
+	@Override
+	public void onDetach() {
+		// TODO Auto-generated method stub
+		super.onDetach();
+		getActivity().unregisterReceiver(activityDownloadComplete);
+	}
+
 	@Override
 	public void onPause() {
 		super.onPause();
-		// mContext.unregisterReceiver(activityDownloadComplete);
+		// getActivity().unregisterReceiver(activityDownloadComplete);
 	}
 
 	@Override

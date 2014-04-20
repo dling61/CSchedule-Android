@@ -20,234 +20,294 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/compose_schedule_done_btn"
+        <LinearLayout
+            android:id="@+id/layout_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_back_selector"
+            android:padding="@dimen/margin_left" >
+
+            <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/ic_back"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-            android:onClick="composeScheduleDone"
-            android:text="Done"
-            android:textColor="#FFF"
-            android:textSize="15sp" />
+            android:background="@drawable/btn_back_selector"
+            android:padding="@dimen/margin_left" >
+
+            <ImageView
+                android:id="@+id/btn_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/next"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_back_selector"
+            android:padding="@dimen/margin_left"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@+id/btn_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/save"
+                android:textSize="15sp" />
+        </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/composeScheduleItems"
+    <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/compose_schedule_topbar"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:background="#ECECEC"
-        android:cacheColorHint="#00000000"
-        android:orientation="vertical"
-        android:showDividers="middle" >
+        android:layout_centerHorizontal="true" >
 
-        <RelativeLayout
-            android:id="@+id/layout_new_activity_name"
+        <LinearLayout
+            android:id="@+id/composeScheduleItems"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp" >
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="#ECECEC"
+            android:cacheColorHint="#00000000"
+            android:orientation="vertical"
+            android:showDividers="middle" >
 
-            <TextView
-                android:id="@+id/tv_new_activity_name"
-                android:layout_width="@dimen/width_tv_add_activity"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:text="@string/activity_name"
-                android:textColor="@color/color_textview"
-                android:textSize="@dimen/text_size"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/et_new_activity_name"
+            <RelativeLayout
+                android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top"
-                android:layout_toRightOf="@id/tv_new_activity_name"
-                android:textColor="@color/color_textview" />
-        </RelativeLayout>
+                android:layout_marginTop="15dp" >
 
-        <RelativeLayout
-            android:id="@+id/layout_start"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_top" >
+                <TextView
+                    android:id="@+id/tv_new_activity_name"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/activity_name"
+                    android:textColor="@color/color_textview"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tv_start"
-                android:layout_width="@dimen/width_tv_add_activity"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:text="@string/start"
-                android:textColor="@color/color_textview"
-                android:textSize="@dimen/text_size"
-                android:textStyle="bold" />
+                <EditText
+                    android:id="@+id/et_new_activity_name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_toRightOf="@id/tv_new_activity_name"
+                    android:textColor="@color/color_textview" />
+            </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/layout_start"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/margin_top"
-                android:layout_toRightOf="@id/tv_start"
-                android:paddingBottom="@dimen/margin_top" >
+                android:layout_marginTop="@dimen/margin_top" >
+
+                <TextView
+                    android:id="@+id/tv_start"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/start"
+                    android:textColor="@color/color_textview"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_toRightOf="@id/tv_start"
+                    android:paddingBottom="@dimen/margin_top" >
 
-                    <EditText
-                        android:id="@+id/et_startTime"
+                    <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:inputType="datetime"
-                        android:textColor="@color/color_textview" />
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <EditText
+                            android:id="@+id/et_startTime"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_top"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:inputType="datetime"
+                            android:textColor="@color/color_textview" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <EditText
+                            android:id="@+id/et_startDate"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_top"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:inputType="date"
+                            android:textColor="@color/color_textview" />
+                    </LinearLayout>
                 </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_end"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top" >
+
+                <TextView
+                    android:id="@+id/tv_end"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/end"
+                    android:textColor="@color/color_textview"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_toRightOf="@id/tv_end"
+                    android:paddingBottom="@dimen/margin_top" >
 
-                    <EditText
-                        android:id="@+id/et_startDate"
+                    <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:inputType="date"
-                        android:textColor="@color/color_textview" />
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <EditText
+                            android:id="@+id/et_endTime"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_top"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:inputType="datetime"
+                            android:textColor="@color/color_textview" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <EditText
+                            android:id="@+id/et_endDate"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_top"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:inputType="date"
+                            android:textColor="@color/color_textview" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-        </RelativeLayout>
+            </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/layout_end"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_top" >
-
-            <TextView
-                android:id="@+id/tv_end"
-                android:layout_width="@dimen/width_tv_add_activity"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:text="@string/end"
-                android:textColor="@color/color_textview"
-                android:textSize="@dimen/text_size"
-                android:textStyle="bold" />
-
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/layout_on_duty"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/margin_top"
-                android:layout_toRightOf="@id/tv_end"
-                android:paddingBottom="@dimen/margin_top" >
+                android:layout_marginTop="@dimen/margin_top" >
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tv_on_duty"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/on_duty"
+                    android:textColor="@color/color_textview"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_on_duty"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_toRightOf="@id/tv_on_duty"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:inputType="none"
+                    android:textColor="@color/color_textview" />
+            </RelativeLayout>
 
-                    <EditText
-                        android:id="@+id/et_endTime"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:inputType="datetime"
-                        android:textColor="@color/color_textview" />
-                </LinearLayout>
+            <RelativeLayout
+                android:id="@+id/layout_description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top" >
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tv_new_activity_description"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/description"
+                    android:textColor="@color/color_textview"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_new_activity_description"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_toRightOf="@id/tv_new_activity_description"
+                    android:minLines="3"
+                    android:textColor="@color/color_textview" />
+            </RelativeLayout>
 
-                    <EditText
-                        android:id="@+id/et_endDate"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:inputType="date"
-                        android:textColor="@color/color_textview" />
-                </LinearLayout>
-            </LinearLayout>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/layout_on_duty"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_top" >
-
-            <TextView
-                android:id="@+id/tv_on_duty"
-                android:layout_width="@dimen/width_tv_add_activity"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:text="@string/on_duty"
-                android:textColor="@color/color_textview"
-                android:textSize="@dimen/text_size"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/et_on_duty"
+            <Button
+                android:id="@+id/btn_remove_schedule"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top"
-                android:layout_toRightOf="@id/tv_on_duty"
-                android:clickable="true"
-                android:focusable="false"
-                android:inputType="none"
-                android:textColor="@color/color_textview" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/layout_description"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_top" >
-
-            <TextView
-                android:id="@+id/tv_new_activity_description"
-                android:layout_width="@dimen/width_tv_add_activity"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:text="@string/description"
-                android:textColor="@color/color_textview"
-                android:textSize="@dimen/text_size"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/et_new_activity_description"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top"
-                android:layout_toRightOf="@id/tv_new_activity_description"
-                android:minLines="3"
-                android:textColor="@color/color_textview" />
-        </RelativeLayout>
-    </LinearLayout>
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/bg_login_title_bar"
+                android:text="@string/remove_activity"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_name"
+                android:visibility="visible" />
+        </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

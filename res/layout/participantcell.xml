@@ -2,21 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/margin_top"
     android:background="@color/bg"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="@dimen/margin_top" >
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
 
-        <CheckBox
+        <ImageView
             android:id="@+id/cb_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:clickable="false"
+            android:src="@drawable/check_box_unselected"
             android:visibility="gone" />
 
         <TextView

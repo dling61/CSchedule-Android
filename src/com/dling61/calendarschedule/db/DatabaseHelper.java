@@ -14,6 +14,7 @@ import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.models.ScheduleTable;
 import com.dling61.calendarschedule.models.SharedMemberTable;
 import com.dling61.calendarschedule.models.Sharedmember;
+import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.SharedReference;
 
 import android.content.ContentValues;
@@ -120,6 +121,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SharedMemberTable.last_modified + " TEXT);");
 	}
 
+	/**
+	 * Re crate database Delete all tables and create them again
+	 * */
+	public void resetActivity() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		// Delete All Rows
+		db.delete(ActivityTable.ActivityTableName, null, null);
+		db.close();
+	}
+
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO Auto-generated method stub
@@ -134,13 +145,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SharedMemberTable.SharedMemberTableName);
 	}
 
+	/**
+	 * get number of activity
+	 * */
+	public int getNumberActivity() {
+		Cursor mCount = this.getWritableDatabase().rawQuery(
+				"select count(*) from " + ActivityTable.ActivityTableName
+						+ " where " + ActivityTable.is_Deleted + "=0 and "
+						+ ActivityTable.own_ID + "="
+						+ new SharedReference().getCurrentOwnerId(context),
+				null);
+		mCount.moveToFirst();
+		int count = mCount.getInt(0);
+		mCount.close();
+		return count;
+	}
+
 	public ArrayList<MyActivity> getActivities() {
 		ArrayList<MyActivity> activities = new ArrayList<MyActivity>();
 		// Cursor c = this.getWritableDatabase().rawQuery("SELECT * FROM " +
 		// ActivityTable.ActivityTableName + " WHERE "
 		// + ActivityTable.is_Deleted + "=0", null);
 		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ActivityTable.ActivityTableName, null);
+				"SELECT * FROM " + ActivityTable.ActivityTableName + " where "
+						+ ActivityTable.is_Deleted + "=0 and "
+						+ ActivityTable.own_ID + "="
+						+ new SharedReference().getCurrentOwnerId(context),
+				null);
 		while (c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
@@ -159,6 +190,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					name, start, end, desp, otc, role);
 			activities.add(newActivity);
 		}
+		c.close();
 		return activities;
 	}
 
@@ -228,7 +260,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ActivityTable.ActivityTableName + " WHERE "
 						+ ActivityTable.service_ID + " = " + service_id, null);
-		while (c.moveToNext()) {
+		if (c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
@@ -357,7 +389,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		ArrayList<Schedule> allschedules = new ArrayList<Schedule>();
 		Cursor c1 = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.is_Deleted + "=0", null);
+						+ ScheduleTable.is_Deleted + "=0 and "
+						+ ScheduleTable.own_ID + "="
+						+ new SharedReference().getCurrentOwnerId(context),
+				null);
 		while (c1.moveToNext()) {
 			int startIndex = c1.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c1.getString(startIndex);
@@ -540,6 +575,59 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			return newSharedmember;
 		}
 		return null;
+	}
+
+	/**
+	 * Get list participants of an activity without role participant i.e. role
+	 * owner and organizer
+	 * */
+	public ArrayList<Participant> getParticipantsOfActivityWithoutRoleParticipant(
+			String activity_id) {
+		Cursor c = this.getWritableDatabase().rawQuery(
+				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
+						+ " WHERE " + SharedMemberTable.service_id + "="
+						+ activity_id + " and " + SharedMemberTable.role
+						+ " <>" + CommConstant.PARTICIPANT, null);
+		ArrayList<Participant> list_participant = new ArrayList<Participant>();
+		while (c.moveToNext()) {
+			int mem_id = c
+					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
+			// int serviceid = c.getInt(c
+			// .getColumnIndex(SharedMemberTable.service_id));
+			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
+			String name = c.getString(c
+					.getColumnIndex(SharedMemberTable.member_name));
+			String email = c.getString(c
+					.getColumnIndex(SharedMemberTable.member_email));
+			String mobile = c.getString(c
+					.getColumnIndex(SharedMemberTable.member_mobile));
+			Participant new_participant = new Participant(mem_id, name, email,
+					mobile, role);
+			list_participant.add(new_participant);
+
+		}
+		return list_participant;
+	}
+
+	/**
+	 * Get list activity of a member joined in
+	 * */
+	public ArrayList<String> getListActivity(String member_id) {
+		Cursor c = this.getWritableDatabase().rawQuery(
+				"SELECT * FROM " + ActivityTable.ActivityTableName + ", "
+						+ SharedMemberTable.SharedMemberTableName + " where "
+						+ ActivityTable.is_Deleted + "=0 and "
+						+ ActivityTable.service_ID + "="
+						+ SharedMemberTable.service_id + " and "
+						+ SharedMemberTable.member_id + "=" + member_id
+						+ " and ", null);
+		ArrayList<String> list_activity_id = new ArrayList<String>();
+		while (c.moveToNext()) {
+			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
+			list_activity_id.add(id);
+
+		}
+		return list_activity_id;
 	}
 
 	/**
@@ -842,6 +930,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return (result == -1) ? false : true;
 	}
 
+	public boolean deleteSharedmember(int memberid, String activityid) {
+		String[] whereArgs = new String[] { String.valueOf(memberid),
+				String.valueOf(activityid) };
+		int result = this.getWritableDatabase().delete(
+				SharedMemberTable.SharedMemberTableName,
+				SharedMemberTable.member_id + "=?" + " AND "
+						+ SharedMemberTable.service_id + "=?", whereArgs);
+		return (result > 0);
+	}
+
 	public boolean updateSharedmember(int memberid, String activityid,
 			ContentValues sharedmember) {
 		String[] whereArgs = new String[] { String.valueOf(memberid),
@@ -851,6 +949,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				sharedmember,
 				SharedMemberTable.member_id + "=?" + " AND "
 						+ SharedMemberTable.service_id + "=?", whereArgs);
+		return (result == 1) ? true : false;
+	}
+
+	/**
+	 * Update member infor into sharedmember when owner change member
+	 * information in page contact
+	 * */
+	public boolean updateSharedmember(int memberid,ContentValues sharedmember) {
+		String[] whereArgs = new String[] { String.valueOf(memberid)};
+		int result = this.getWritableDatabase().update(
+				SharedMemberTable.SharedMemberTableName,
+				sharedmember,
+				SharedMemberTable.member_id + "=?", whereArgs);
 		return (result == 1) ? true : false;
 	}
 

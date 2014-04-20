@@ -24,7 +24,7 @@ public class AddParticipantView extends RelativeLayout {
 	public RelativeLayout layout;
 	public LinearLayout layout_back;
 	public LinearLayout layout_next;
-	public Button btn_remove_activity;
+	public Button btn_remove_contact;
 	public AddParticipantView(Context context) {
 		super(context);
 		this.context = context;
@@ -45,13 +45,13 @@ public class AddParticipantView extends RelativeLayout {
 	}
 
 	public void findViewById(final Context context) {
-		layout=(RelativeLayout) View.inflate(context, R.layout.composeparticipant, this);
+		layout=(RelativeLayout) View.inflate(context, R.layout.add_new_participant, this);
 		et_email = (EditText)findViewById(R.id.compose_participant_email_et);
 		et_name = (EditText)findViewById(R.id.compose_participant_name_et);
 		et_mobile = (EditText)findViewById(R.id.compose_participant_mobile_et);
 		tv_title = (TextView)findViewById(R.id.compose_participant_toptitle);
 		layout_back=(LinearLayout)findViewById(R.id.layout_back);
 		layout_next=(LinearLayout)findViewById(R.id.layout_next);
-		btn_remove_activity=(Button)findViewById(R.id.btn_remove_activity);
+		btn_remove_contact=(Button)findViewById(R.id.btm_remove_contact);
 	}
 }

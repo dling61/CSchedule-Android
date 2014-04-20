@@ -8,6 +8,7 @@
     <string name="createaccount">Create Account</string>
     <string name="cancel">cancel</string>
     <string name="name">Name(*)</string>
+    <string name="participant_name">Name</string>
     <string name="email">Email(*)</string>
     <string name="password">Password(*)</string>
     <string name="please_wait">Please wait...</string>
@@ -15,11 +16,13 @@
     <string name="email_invalid">The email address is invalid</string>
     <string name="password_length_should_be_6">Password length should be 6</string>
     <string name="create_account">Create Account</string>
-    <string name="mobile">Mobile</string>
+    <string name="mobile">Mobile(*)</string>
     <string name="processing">Processing</string>
     <string name="create_acc_failure">Create account failure!</string>
     <string name="login_fail">Login fail!</string>
-
+    <string name="title_email">Email</string>
+<string name="title_mobile">Mobile</string>
+<string name="participant_infor">Participant Infor</string>
     <string-array name="menu_array">
         <item>Schedule</item>
         <item>Contact</item>
@@ -100,7 +103,7 @@
     <string name="end">End</string>
     <string name="on_duty">On Duty</string>
     <string name="add_schedule">Add schedule</string>
-    <string name="edit_schedule">Edit Schedule</string>
+    <string name="edit_schedule">Schedule Information</string>
     <string name="ok">OK</string>
     <string name="confirm_title">Are you sure to add </string>
     <string name="into">to</string>
@@ -113,5 +116,17 @@
     <string name="remove_contact">Remove Contact</string>
     <string name="delete_contact">Are you sure you want delete this contact?</string>
     <string name="delete_contact_error">Have an error occur when deleting this contact</string>
-
+    <string name="create_schedule_error">Have an error occur when creating schedule an activity. Please try again!</string>
+    <string name="start_date_greater_end_date">End date must be less than or equal start date</string>
+    <string name="delete_schedule">Are you sure you want delete this activity and related schedules?</string>
+    <string name="delete_activity_error">Delete activity error</string>
+    <string name="delete_schedule_error">Delete schedule error</string>
+    <string name="update_participant_error">Edit participant information error</string>
+    <string name="add_participant_error">Add participant error</string>
+   <string-array name="participant_infor_array">
+        <item>Call</item>
+        <item>Message</item>
+        <item>Remove</item>
+    </string-array>
+    <string name="delete_participant">Delete partipant</string>
 </resources>

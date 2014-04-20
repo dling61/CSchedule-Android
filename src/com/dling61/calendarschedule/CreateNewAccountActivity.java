@@ -5,6 +5,7 @@ package com.dling61.calendarschedule;
 
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.Utils;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 /**
  * @class LoginActivity
@@ -28,7 +30,7 @@ public class CreateNewAccountActivity extends Activity
 	EditText email_tv;
 	EditText passwd_tv;
 	EditText mobile_tv;
-	Button btn_cancel;
+	LinearLayout layout_back;
 	Button btn_create;
 	ProgressDialog mDialog;
 
@@ -64,7 +66,12 @@ public class CreateNewAccountActivity extends Activity
 		passwd_tv = (EditText) findViewById(R.id.account_password_input);
 		mobile_tv = (EditText) findViewById(R.id.account_mobile_input);
 		btn_create = (Button) findViewById(R.id.btn_create);
-		btn_cancel = (Button) findViewById(R.id.btn_cancel);
+		layout_back = (LinearLayout) findViewById(R.id.layout_back);
+		btn_create.setTypeface(Utils.getTypeFace(mContext));
+		name_tv.setTypeface(Utils.getTypeFace(mContext));
+		email_tv.setTypeface(Utils.getTypeFace(mContext));
+		mobile_tv.setTypeface(Utils.getTypeFace(mContext));
+		
 	}
 
 	@Override
@@ -74,7 +81,7 @@ public class CreateNewAccountActivity extends Activity
 			// mDialog.show();
 			createNewAccount();
 			// mDialog.dismiss();
-		} else if (v == btn_cancel) {
+		} else if (v == layout_back) {
 			finish();
 		}
 
@@ -85,7 +92,7 @@ public class CreateNewAccountActivity extends Activity
 	 * */
 	private void onClickListener() {
 		btn_create.setOnClickListener(this);
-		btn_cancel.setOnClickListener(this);
+		layout_back.setOnClickListener(this);
 	}
 
 	/**

@@ -18,7 +18,8 @@ public class ParticipantActivity extends FragmentActivity {
 		setContentView(R.layout.participant);
 		activity_id=getIntent().getStringExtra(CommConstant.ACTIVITY_ID);
 		ParticipantFragment participantFragment = new ParticipantFragment();
-		participantFragment.setActivity_id(activity_id);		
+		participantFragment.setActivity_id(activity_id);	
+		participantFragment.setType(getIntent().getIntExtra(CommConstant.TYPE, CommConstant.TYPE_CONTACT));
 		getSupportFragmentManager().beginTransaction().replace(R.id.container,participantFragment).commit(); 
 		
 		

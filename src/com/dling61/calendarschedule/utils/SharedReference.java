@@ -184,7 +184,7 @@ public class SharedReference {
 		SharedPreferences appSharedPrefs = context.getSharedPreferences(
 				MY_PREFERENCE, 0);
 		Editor prefsEditor = appSharedPrefs.edit();
-		prefsEditor.putInt(CommConstant.LAST_SCHEDULE_MODIFIED, timeZone);
+		prefsEditor.putInt(TIMEZONE, timeZone);
 		prefsEditor.commit();
 	}
 

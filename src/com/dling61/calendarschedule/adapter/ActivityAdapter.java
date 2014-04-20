@@ -3,7 +3,6 @@ package com.dling61.calendarschedule.adapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import com.dling61.calendarschedule.AddNewActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.db.DatabaseHelper;
@@ -12,24 +11,26 @@ import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.Utils;
-
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
+/**
+ * @author khoahuyen
+ * @class ActivityAdapter
+ * {@code create adapter for activity}
+ * */
 public class ActivityAdapter extends BaseAdapter {
-	private Typeface thinface;
+	
 	private LayoutInflater mInflater;
-	private List<MyActivity> mItems = new ArrayList<MyActivity>();
+	public List<MyActivity> mItems = new ArrayList<MyActivity>();
 	Context mContext;
 
-	HashMap<String, ArrayList<Participant>> listParticipant = new HashMap<String, ArrayList<Participant>>();// .getParticipantsOfActivity(activity.getActivity_ID());
+	HashMap<String, ArrayList<Participant>> listParticipant = new HashMap<String, ArrayList<Participant>>();
 	HashMap<String, String> listParticipantName = new HashMap<String, String>();
 
 	public ActivityAdapter(Context context, List<MyActivity> items) {
@@ -38,10 +39,6 @@ public class ActivityAdapter extends BaseAdapter {
 		mItems = items;
 		mContext = context;
 		DatabaseHelper db = DatabaseHelper.getSharedDatabaseHelper(mContext);
-
-		thinface = Typeface.createFromAsset(mContext.getAssets(),
-				"fonts/Roboto-Regular.ttf");
-
 		// get all participant of activity
 		for (MyActivity activity : mItems) {
 			ArrayList<Participant> arrParticipant = db
@@ -89,10 +86,10 @@ public class ActivityAdapter extends BaseAdapter {
 					.findViewById(R.id.service_descrpition_tv);
 			viewHolder.tv_participant = (TextView) convertView
 					.findViewById(R.id.tv_participant);
-			viewHolder.service_name_tv.setTypeface(thinface);
-			viewHolder.service_time.setTypeface(thinface);
-			viewHolder.service_desp.setTypeface(thinface);
-			viewHolder.tv_participant.setTypeface(thinface);
+			viewHolder.service_name_tv.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.service_time.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.service_desp.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.tv_participant.setTypeface(Utils.getTypeFace(mContext));
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ActivityViewHolder) convertView.getTag();

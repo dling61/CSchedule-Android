@@ -3,11 +3,16 @@
  */
 package com.dling61.calendarschedule.views;
 
+import java.nio.Buffer;
+
 import com.dling61.calendarschedule.R;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -26,6 +31,10 @@ public class AddScheduleView extends RelativeLayout {
 	public EditText et_new_activity_description;
 	public EditText et_startTime;
 	public EditText et_endTime;
+	public LinearLayout layout_next;
+	public LinearLayout layout_back;
+	public LinearLayout layout_save;
+	public Button btn_remove_schedule;
 
 	public AddScheduleView(Context context) {
 		super(context);
@@ -55,5 +64,9 @@ public class AddScheduleView extends RelativeLayout {
 		et_endTime = (EditText) findViewById(R.id.et_endTime);
 		et_on_duty = (EditText) findViewById(R.id.et_on_duty);
 		et_new_activity_description = (EditText) findViewById(R.id.et_new_activity_description);
+		layout_next=(LinearLayout)findViewById(R.id.layout_next);
+		layout_back=(LinearLayout)findViewById(R.id.layout_back);
+		layout_save=(LinearLayout)findViewById(R.id.layout_save);
+		btn_remove_schedule=(Button)findViewById(R.id.btn_remove_schedule);
 	}
 }

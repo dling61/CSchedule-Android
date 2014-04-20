@@ -1,23 +1,48 @@
 package com.dling61.calendarschedule.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.net.Uri;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.AbsListView.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-
-import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.models.Participant;
 
 public class Utils {
 
 	public Utils() {
 		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * Make a phone call
+	 * */
+	public static void makeAPhoneCall(Context mContext, String number) {
+		String phoneNumber = "tel:" + number;
+		Intent callIntent = new Intent(Intent.ACTION_CALL,
+				Uri.parse(phoneNumber));
+		mContext.startActivity(callIntent);
+	}
+	
+	/**
+	 * Send a message 
+	 * */
+	public static void sendAMessage(Context mContext, String number)
+	{
+		mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:"
+                + number)));
 	}
 
 	public static boolean isEmailValid(String email) {
@@ -55,32 +80,70 @@ public class Utils {
 			arrParticipantString += participant.getName() + ",";
 		}
 		if (arrParticipantString.endsWith(",")) {
-			arrParticipantString
-					.substring(0, arrParticipantString.length() - 2);
+			arrParticipantString = arrParticipantString.substring(0,
+					arrParticipantString.length() - 1);
 		}
 		return arrParticipantString;
 	}
-	
-	/***Set full height for listview*/
-	public static void setListViewHeightBasedOnChildren(ListView listView, BaseAdapter listAdapter) {
-	   
-	    if (listAdapter == null)
-	        return;
 
-	    int desiredWidth = MeasureSpec.makeMeasureSpec(listView.getWidth(), MeasureSpec.UNSPECIFIED);
-	    int totalHeight = 0;
-	    View view = null;
-	    for (int i = 0; i < listAdapter.getCount(); i++) {
-	        view = listAdapter.getView(i, view, listView);
-	        if (i == 0)
-	            view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, LayoutParams.WRAP_CONTENT));
+	/*** Set full height for listview */
+	public static void setListViewHeightBasedOnChildren(ListView listView,
+			BaseAdapter listAdapter) {
 
-	        view.measure(desiredWidth, MeasureSpec.UNSPECIFIED);
-	        totalHeight += view.getMeasuredHeight();
-	    }
-	    ViewGroup.LayoutParams params = listView.getLayoutParams();
-	    params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-	    listView.setLayoutParams(params);
-	    listView.requestLayout();
+		if (listAdapter == null)
+			return;
+
+		int desiredWidth = MeasureSpec.makeMeasureSpec(listView.getWidth(),
+				MeasureSpec.UNSPECIFIED);
+		int totalHeight = 0;
+		View view = null;
+		for (int i = 0; i < listAdapter.getCount(); i++) {
+			view = listAdapter.getView(i, view, listView);
+			if (i == 0)
+				view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth,
+						LayoutParams.WRAP_CONTENT));
+
+			view.measure(desiredWidth, MeasureSpec.UNSPECIFIED);
+			totalHeight += view.getMeasuredHeight();
+		}
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+		params.height = totalHeight
+				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+		listView.setLayoutParams(params);
+		listView.requestLayout();
 	}
+
+	/**
+	 * Get normal typeface
+	 * */
+	public static Typeface getTypeFace(Context mContext) {
+		return Typeface.createFromAsset(mContext.getAssets(),
+				"fonts/Roboto-Regular.ttf");
+	}
+
+	/**
+	 * return true if startdate>enddate else return false
+	 * */
+	public static boolean isStartGreaterEnddate(String startDate, String endDate) {
+		Calendar c1 = Calendar.getInstance();
+		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+
+		try {
+			Date start;
+			start = sdf1.parse(startDate);
+			Date end = sdf1.parse(endDate);
+
+			c1.setTime(start);
+
+			if (c1.getTime().before(end)) {
+				return true;
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
 }

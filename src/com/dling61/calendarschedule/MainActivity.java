@@ -68,6 +68,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 	 * finish this activity and start activity login
 	 * */
 	private void signInPressed() {
+		finish();
 		Intent intent = new Intent(this, LoginActivity.class);
 		this.startActivity(intent);
 	}

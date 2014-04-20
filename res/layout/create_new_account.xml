@@ -8,7 +8,7 @@
         android:id="@+id/createaccount_topbar"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:background="@drawable/mainpage_topbar" >
+        android:background="@color/bg_login_title_bar" >
 
         <TextView
             android:id="@+id/signin_top_title"
@@ -16,22 +16,25 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/app_name"
-            android:textColor="#FFF"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btn_cancel"
+        <LinearLayout
+            android:id="@+id/layout_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="8dp"
-            android:background="@drawable/signin_toprightbtn"
-            android:onClick="cancelPressed"
-            android:padding="10dp"
-            android:text="@string/cancel"
-            android:textSize="15sp" />
+            android:padding="@dimen/margin_top" >
+
+            <ImageView
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_back"
+                 />
+        </LinearLayout>
     </RelativeLayout>
 
     <ScrollView
@@ -44,7 +47,7 @@
             android:id="@+id/signin_inputs"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/createaccount_topbar"
+           
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
@@ -59,7 +62,8 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
                 android:hint="@string/name"
-                android:singleLine="true" />
+                android:singleLine="true" 
+                style="@style/edittextStyle"/>
 
             <EditText
                 android:id="@+id/account_mail_input"
@@ -67,6 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
+                style="@style/edittextStyle"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:singleLine="true" />
@@ -79,6 +84,7 @@
                 android:layout_marginBottom="10dp"
                 android:hint="@string/password"
                 android:inputType="textPassword"
+                style="@style/edittextStyle"
                 android:singleLine="true" />
 
             <EditText
@@ -89,6 +95,7 @@
                 android:layout_marginBottom="10dp"
                 android:hint="@string/mobile"
                 android:inputType="number"
+                style="@style/edittextStyle"
                 android:singleLine="true" />
 
             <Button
@@ -97,10 +104,10 @@
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/mainpage_btn"
+                android:background="@color/bg_login_title_bar"
                 android:text="@string/create_account"
-                android:textColor="@color/color_text_title_main"
-                android:textSize="15sp" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_name" />
         </LinearLayout>
     </ScrollView>
 

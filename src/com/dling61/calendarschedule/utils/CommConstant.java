@@ -38,4 +38,14 @@ public class CommConstant {
 	public static final String DELETE_ACTIVITY_COMPLETE="delete.activity.complete";
 	public static final String ACTIVITY_DESCRIPTION="activity_description";
 	public static final String CONTACT_ID="contact_id";
+	public static final int TYPE_CONTACT=1;
+	public static final int TYPE_PARTICIPANT=2;
+	public static final String DATE_FORMAT="yyyy-MM-dd";
+	public static final String DELETE_CONTACT_COMPLETE="delete.contact.complete";
+	public static final String SCHEDULE_ID="schedule_id";
+	public static final String DELETE_SCHEDULE_COMPLETE="delete.schedule.complete";
+	public static final String ADD_CONTACT_SUCCESS="add.contact.success";
+	public static final String UPDATE_SCHEDULE="update.schedule";
+	public static final String DELETE_SHARED_MEMBER_FROM_ACTIVITY="delete.shared.member.activity";
+	public static final String ADD_SHARED_MEMBER_FROM_ACTIVITY="add.shared.member.activity";
 }

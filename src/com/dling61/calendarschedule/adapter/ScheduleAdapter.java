@@ -108,7 +108,7 @@ public class ScheduleAdapter extends BaseAdapter {
 			}
 			Schedule schedule =schedules.get(position);
 			MyActivity activity = dbHelper.getActivity(schedule.getService_ID());
-			String activity_name = activity.getActivity_name();
+			String activity_name = activity!=null?activity.getActivity_name():"";
 			String date = MyDate.getTimeWithAPMFromUTCTime(schedule.getStarttime()) + " to " + 
 					MyDate.getTimeWithAPMFromUTCTime(schedule.getEndtime());
 			List<Integer> memberids = dbHelper.getParticipantsForSchedule(schedule.getSchedule_ID());

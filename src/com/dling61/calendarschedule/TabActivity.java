@@ -11,6 +11,7 @@ import com.dling61.calendarschedule.fragments.ContactFragment;
 import com.dling61.calendarschedule.fragments.ScheduleFragment;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.views.MenuAppView;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import android.content.Context;
 import android.content.Intent;
@@ -137,9 +138,9 @@ public class TabActivity extends FragmentActivity implements
 	private void initData() {
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(mContext);
 		WebservicesHelper ws = new WebservicesHelper(mContext);
-		ws.getAllActivitys(mContext);
+		ws.getAllActivitys(new JsonHttpResponseHandler());
 		ws.getParticipantsFromWeb();
-		ws.getAllActivitys(mContext);
+		ws.getAllSchedule();
 	}
 
 	private List<Fragment> getFragments() {

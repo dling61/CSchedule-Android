@@ -115,7 +115,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_name"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    style="@style/edittextStyle" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -143,7 +144,8 @@
                     android:layout_toRightOf="@id/tv_new_activity_time_zone"
                     android:clickable="true"
                     android:focusable="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    style="@style/edittextStyle" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -172,7 +174,8 @@
                     android:clickable="true"
                     android:focusable="false"
                     android:inputType="none"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black" 
+                    style="@style/edittextStyle" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -200,7 +203,8 @@
                     android:layout_toRightOf="@id/tv_new_activity_repeat"
                     android:clickable="true"
                     android:focusable="false"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black" 
+                    style="@style/edittextStyle" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -227,7 +231,8 @@
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_description"
                     android:minLines="3"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    style="@style/edittextStyle"  />
             </RelativeLayout>
 
             <TextView
@@ -266,7 +271,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="10dp"
-                android:background="@drawable/mainpage_btn"
+                android:background="@color/bg_login_title_bar"
                 android:text="@string/add_participant"
                 android:textColor="@color/white"
                 android:textSize="15sp"
@@ -277,7 +282,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="10dp"
-                android:background="@drawable/mainpage_btn"
+                android:background="@color/bg_login_title_bar"
                 android:text="@string/remove_activity"
                 android:textColor="@color/white"
                 android:textSize="15sp"

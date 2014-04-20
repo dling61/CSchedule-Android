@@ -8,6 +8,7 @@ import com.dling61.calendarschedule.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -17,7 +18,8 @@ import android.widget.RelativeLayout;
  * */
 public class ScheduleView extends RelativeLayout {
 	Context context;
-	public ListView list_schedule;
+//	public ListView list_schedule;
+	public ExpandableListView expand_list_schedule;
 	public ScheduleView(Context context) {
 		super(context);
 		this.context = context;
@@ -41,6 +43,7 @@ public class ScheduleView extends RelativeLayout {
 		// mInflater = (LayoutInflater) context
 		// .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View.inflate(context, R.layout.schedulepage, this);
-		list_schedule=(ListView)findViewById(R.id.list_schedule);
+//		list_schedule=(ListView)findViewById(R.id.list_schedule);
+		expand_list_schedule=(ExpandableListView)findViewById(R.id.list_expandable_schedule);
 	}
 }
