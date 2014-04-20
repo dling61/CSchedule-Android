@@ -23,8 +23,9 @@ public class AddParticipantView extends RelativeLayout {
 	public TextView tv_title;
 	public RelativeLayout layout;
 	public LinearLayout layout_back;
-	public LinearLayout layout_next;
+	public LinearLayout layout_done;
 	public Button btn_remove_contact;
+	public LinearLayout layout_edit;
 	public AddParticipantView(Context context) {
 		super(context);
 		this.context = context;
@@ -51,7 +52,8 @@ public class AddParticipantView extends RelativeLayout {
 		et_mobile = (EditText)findViewById(R.id.compose_participant_mobile_et);
 		tv_title = (TextView)findViewById(R.id.compose_participant_toptitle);
 		layout_back=(LinearLayout)findViewById(R.id.layout_back);
-		layout_next=(LinearLayout)findViewById(R.id.layout_next);
+		layout_done=(LinearLayout)findViewById(R.id.layout_done);
+		layout_edit=(LinearLayout)findViewById(R.id.layout_edit);
 		btn_remove_contact=(Button)findViewById(R.id.btm_remove_contact);
 	}
 }

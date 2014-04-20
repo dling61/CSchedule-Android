@@ -25,7 +25,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layout_next"
+            android:id="@+id/layout_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -35,7 +35,21 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/next" />
+                android:src="@drawable/edit" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/margin_top" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/notification_done" />
         </LinearLayout>
 
         <TextView
@@ -52,15 +66,13 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-      
-        android:layout_centerHorizontal="true"
-           android:layout_below="@id/composeparticipant_topbar" >
+        android:layout_below="@id/composeparticipant_topbar"
+        android:layout_centerHorizontal="true" >
 
         <LinearLayout
             android:id="@+id/compose_participant_components"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-         
             android:layout_margin="@dimen/margin_left"
             android:orientation="vertical" >
 
@@ -155,14 +167,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/mainpage_btn"
                 android:text="@string/remove_contact"
                 android:textColor="@color/white"
                 android:textSize="15sp"
-                android:visibility="visible" 
-                android:layout_gravity="bottom"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"/>
+                android:visibility="visible" />
         </LinearLayout>
     </ScrollView>
 

@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.dling61.calendarschedule.models.Participant;
 
 public class Utils {
@@ -34,6 +36,23 @@ public class Utils {
 		Intent callIntent = new Intent(Intent.ACTION_CALL,
 				Uri.parse(phoneNumber));
 		mContext.startActivity(callIntent);
+	}
+	
+	/**
+	 * Send an email
+	 * */
+	public static void sendAnEmail(Context mContext,String emailAddress)
+	{
+		Intent i = new Intent(Intent.ACTION_SEND);
+		i.setType("message/rfc822");
+		i.putExtra(Intent.EXTRA_EMAIL  , new String[]{emailAddress});
+		i.putExtra(Intent.EXTRA_SUBJECT, "");
+		i.putExtra(Intent.EXTRA_TEXT   , "");
+		try {
+		    mContext.startActivity(Intent.createChooser(i, "Send mail..."));
+		} catch (android.content.ActivityNotFoundException ex) {
+		    Toast.makeText(mContext, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+		}
 	}
 	
 	/**

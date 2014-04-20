@@ -73,10 +73,13 @@ public class CreateNewScheduleActivity extends Activity implements
 
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(this);
 
-		if (activity_id != null || (!activity_id.equals(""))) {
+		if (activity_id != null && (!activity_id.equals(""))) {
 			myActivity = dbHelper.getActivity(activity_id);
 		}
-
+		else
+		{
+			//TODO:make activityname is suggestion activity in system
+		}
 		if (composeType == DatabaseHelper.NEW) {
 			Log.i("next service id", "is " + dbHelper.getNextActivityID());
 			thisSchedule = new Schedule(

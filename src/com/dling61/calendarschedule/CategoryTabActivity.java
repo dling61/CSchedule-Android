@@ -183,6 +183,10 @@ public class CategoryTabActivity extends FragmentActivity implements
 				if (dbHelper.getNumberActivity() > 0) {
 					moveToPage(2);
 				}
+				else 
+				{
+					moveToPage(0);
+				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -96,7 +96,7 @@ public class WebservicesHelper {
 								Log.d("go there", "success not null");
 								// TODO Auto-generated method stub
 								try {
-									if (!response.get("error message")
+									if (!response.get("message")
 											.toString().startsWith("200")) {
 										Toast.makeText(
 												mContext,
@@ -113,7 +113,7 @@ public class WebservicesHelper {
 										((Activity) mContext).finish();
 										Intent intent = new Intent(mContext,
 												LoginActivity.class);
-										intent.putExtra(CommConstant.USERNAME,
+										intent.putExtra(CommConstant.EMAIL,
 												email);
 										intent.putExtra(CommConstant.PASSWORD,
 												password);
@@ -1579,7 +1579,7 @@ public class WebservicesHelper {
 						public void onSuccess(JSONObject response) {
 							Log.i("successful response", response.toString());
 							try {
-								((Activity) mContext).finish();
+								
 								ContentValues cv = new ContentValues();
 								String last_modified = response
 										.getString("lastmodified");
@@ -1588,6 +1588,8 @@ public class WebservicesHelper {
 								cv.put(ParticipantTable.is_Sychronized, 1);
 
 								dbHelper.updateParticipant(id, cv);
+								
+								((Activity) mContext).finish();
 								Intent intent = new Intent(
 										CommConstant.ADD_CONTACT_SUCCESS);
 								mContext.sendBroadcast(intent);

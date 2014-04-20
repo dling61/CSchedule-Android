@@ -114,7 +114,7 @@
     <string name="account">Account</string>
     <string name="activity_description">Activity Description</string>
     <string name="remove_contact">Remove Contact</string>
-    <string name="delete_contact">Are you sure you want delete this contact?</string>
+    <string name="delete_contact">Are you sure you want delete</string>
     <string name="delete_contact_error">Have an error occur when deleting this contact</string>
     <string name="create_schedule_error">Have an error occur when creating schedule an activity. Please try again!</string>
     <string name="start_date_greater_end_date">End date must be less than or equal start date</string>
@@ -129,4 +129,5 @@
         <item>Remove</item>
     </string-array>
     <string name="delete_participant">Delete partipant</string>
+    <string name="your_contact">You can not delete yourself</string>
 </resources>

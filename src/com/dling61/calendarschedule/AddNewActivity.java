@@ -106,10 +106,14 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		this.initViewValues();
 		onClickListener();
 
-		registerReceiver(activityGetSharedMemberComplete, new IntentFilter(
-				CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE));
-		registerReceiver(deleteActivityComplete, new IntentFilter(
-				CommConstant.DELETE_ACTIVITY_COMPLETE));
+		try {
+			registerReceiver(activityGetSharedMemberComplete, new IntentFilter(
+					CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE));
+			registerReceiver(deleteActivityComplete, new IntentFilter(
+					CommConstant.DELETE_ACTIVITY_COMPLETE));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
@@ -140,8 +144,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onPause() {
-		unregisterReceiver(deleteActivityComplete);
-		unregisterReceiver(activityGetSharedMemberComplete);
+		try {
+			unregisterReceiver(deleteActivityComplete);
+			unregisterReceiver(activityGetSharedMemberComplete);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		super.onPause();
 	};
 

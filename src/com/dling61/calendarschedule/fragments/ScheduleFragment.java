@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.adapter.ExpandableListScheduleAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.Schedule;
@@ -43,6 +44,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		super.onActivityCreated(savedInstanceState);
 		mContext = getActivity();
 		// initData();
+		onClickListener();
 
 	}
 
@@ -50,9 +52,22 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		return ScheduleFragment.getInstance();
 	}
 
+	/**
+	 * On click listener
+	 * */
+	private void onClickListener()
+	{
+		view.btn_add_schedule.setOnClickListener(this);
+		
+	}
 	@Override
 	public void onClick(View v) {
-
+		if (v == view.btn_add_schedule) {
+			Intent intent = new Intent(mContext,
+					CreateNewScheduleActivity.class);
+			intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
+			mContext.startActivity(intent);
+		}
 	}
 
 	@Override
@@ -261,13 +276,15 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter(
 					getActivity(), listDateString, listScheduleByDay);
 			view.expand_list_schedule.setAdapter(adapter);
-			view.expand_list_schedule.setOnGroupClickListener(new OnGroupClickListener() {
-				  @Override
-				  public boolean onGroupClick(ExpandableListView parent, View v,
-				                              int groupPosition, long id) { 
-				    return true; // This way the expander cannot be collapsed
-				  }
-				});
+			view.expand_list_schedule
+					.setOnGroupClickListener(new OnGroupClickListener() {
+						@Override
+						public boolean onGroupClick(ExpandableListView parent,
+								View v, int groupPosition, long id) {
+							return true; // This way the expander cannot be
+											// collapsed
+						}
+					});
 			int count = adapter.getGroupCount();
 			for (int position = 1; position <= count; position++)
 				view.expand_list_schedule.expandGroup(position - 1);

@@ -41,7 +41,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.log_in);
 		Intent intent = getIntent();
 		if (intent != null) {
-			username = intent.getStringExtra(CommConstant.USERNAME);
+			username = intent.getStringExtra(CommConstant.EMAIL);
 			password = intent.getStringExtra(CommConstant.PASSWORD);
 		}
 		findViewById();
@@ -56,7 +56,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		txt_email = (TextView) findViewById(R.id.txt_email);
 		txt_password = (TextView) findViewById(R.id.txt_password);
 		layout_back = (RelativeLayout) findViewById(R.id.layout_back);
-		if (username != null && username.equals("")) {
+		if (username != null && (!username.equals(""))) {
 			txt_email.setText(username);
 		}
 		if (password != null && !password.equals("")) {
