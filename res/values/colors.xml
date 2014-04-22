@@ -46,4 +46,8 @@
     <color name="text_button">#ffffff</color>
     <color name="bg_top_bar">#2884cd</color>
     <color name="text_activity_description">#777777</color>
+    <color name="me_unselected">#4b97d5</color>
+    <color name="me_selected">#6e6e6e</color>
+    <color name="today_unselected">#ffffff</color>
+    <color name="today_border">#ededed</color>
 </resources>

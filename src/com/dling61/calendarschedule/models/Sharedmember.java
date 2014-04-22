@@ -7,7 +7,7 @@ public class Sharedmember {
 	private String mobile="";
 	private int role=-1;
 	private int service_id=-1;
-	
+	public boolean isChecked=false;//mark checkbox uncheck
 	public Sharedmember(int p_id,String p_name, String p_email, String p_mobile, int p_role, int s_id)
 	{
 		id = p_id;

@@ -10,6 +10,7 @@ import com.dling61.calendarschedule.models.ActivityTable;
 import com.dling61.calendarschedule.models.MyActivity;
 import com.dling61.calendarschedule.models.OndutyTable;
 import com.dling61.calendarschedule.models.Participant;
+import com.dling61.calendarschedule.models.ParticipantTable;
 import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.models.ScheduleTable;
 import com.dling61.calendarschedule.net.WebservicesHelper;
@@ -630,6 +631,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				newActivity.put(ActivityTable.is_Deleted, 0);
 				newActivity.put(ActivityTable.is_Synchronized, 0);
 				newActivity.put(ActivityTable.last_ModifiedTime, "nouploaded");
+				newActivity.put(ParticipantTable.user_login,
+						new SharedReference().getCurrentOwnerId(mContext));
 				if (dbHelper.insertActivity(newActivity)) {
 
 				}

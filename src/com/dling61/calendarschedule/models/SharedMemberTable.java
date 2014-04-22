@@ -12,4 +12,5 @@ public class SharedMemberTable {
 	public static final String member_email = "member_email";
 	public static final String last_modified = "lastmdf";	
 	public static final String SharedMemberTableName = "SharedMemberTable";
+
 }

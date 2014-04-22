@@ -4,33 +4,99 @@
     android:layout_height="match_parent"
     android:background="@color/bg" >
 
-    <RelativeLayout 
-	    android:id="@+id/add_schedule"
-	    android:layout_width="fill_parent"
-   	 	android:layout_height="55dp"
-    	android:background="@color/bg_login_title_bar"
-    	android:layout_alignParentBottom="true">
-    	<TextView
-    	    android:id="@+id/activity_toptitle"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:layout_centerInParent="true"
-    	    android:text="Activity"
-    	    android:textColor="#FFF"
-    	    android:textSize="20sp"
-    	    android:textStyle="bold"
-    	    android:visibility="gone"/>
-    	<ImageButton
-    	    android:id="@+id/btn_add_activity"
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="wrap_content"
-    	    android:layout_alignParentRight="true"
-    	    android:layout_centerVertical="true"
-    	    android:layout_marginRight="10dp"
-    	    android:background="#0099cc"
-    	    android:src="@drawable/button_add"
-    	   />
-   	</RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/layout_top"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/white" >
+
+        <Button
+            android:id="@+id/btn_today"
+            android:layout_width="70dp"
+            android:layout_height="fill_parent"
+            android:layout_alignBottom="@dimen/margin_top"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_left"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="@dimen/margin_top"
+            android:background="@drawable/today_border"
+            android:text="@string/today" />
+
+        <ImageButton
+            android:id="@+id/btn_refresh"
+            android:layout_width="70dp"
+            android:layout_height="fill_parent"
+            android:layout_alignBottom="@dimen/margin_top"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/margin_left"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="@dimen/margin_top"
+            android:background="@drawable/today_border"
+            android:src="@drawable/img_refresh" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_toLeftOf="@id/btn_refresh"
+            android:layout_toRightOf="@id/btn_today"
+            android:background="@color/white" >
+
+            <Button
+                android:id="@+id/btn_all"
+                android:layout_width="70dp"
+                android:layout_height="fill_parent"
+                android:layout_alignBottom="@dimen/margin_top"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="@dimen/margin_top"
+                android:background="@drawable/me_border"
+                android:text="@string/all" />
+
+            <Button
+                android:id="@+id/btn_me"
+                android:layout_width="70dp"
+                android:layout_height="fill_parent"
+                android:layout_alignBottom="@dimen/margin_top"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="@dimen/margin_top"
+                android:layout_toRightOf="@id/btn_all"
+                android:background="@drawable/me_selected"
+                android:text="@string/me" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/add_schedule"
+        android:layout_width="fill_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/bg_login_title_bar" >
+
+        <TextView
+            android:id="@+id/activity_toptitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Activity"
+            android:textColor="#FFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/btn_add_activity"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="#0099cc"
+            android:src="@drawable/button_add" />
+    </RelativeLayout>
     <!--
          <ListView
         android:id="@+id/list_schedule"
@@ -47,12 +113,13 @@
         android:id="@+id/list_expandable_schedule"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@id/add_schedule"
+        android:layout_below="@id/layout_top"
         android:cacheColorHint="#00000000"
         android:childDivider="#dddddd"
         android:divider="#dddddd"
         android:dividerHeight="1dp"
-        android:groupIndicator="@null"
-        android:layout_above="@id/add_schedule" >
+        android:groupIndicator="@null" >
     </ExpandableListView>
 
 </RelativeLayout>

@@ -3,31 +3,37 @@ package com.dling61.calendarschedule.adapter;
 import java.util.List;
 
 import com.dling61.calendarschedule.R;
+import com.dling61.calendarschedule.adapter.ParticipantAdapter.ParticipantViewHolder;
 import com.dling61.calendarschedule.models.Sharedmember;
+import com.dling61.calendarschedule.utils.Utils;
+import com.dling61.calendarschedule.views.OnDutyView;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class OndutyAdapter extends BaseAdapter {
-	
+
 	private List<Sharedmember> sharedmembers;
 	private List<Integer> existedParticipants;
 	private LayoutInflater inflater;
-	
-	public OndutyAdapter (Context context,List<Sharedmember> sms,List<Integer> existedParticipants)
-	{
+	Context mContext;
+
+	public OndutyAdapter(Context context, List<Sharedmember> sms,
+			List<Integer> existedParticipants) {
 		this.sharedmembers = sms;
 		this.existedParticipants = existedParticipants;
 		inflater = LayoutInflater.from(context);
+		mContext = context;
 	}
-	
-	public void setExistedParticipants(List<Integer> existedParticipants)
-	{
+
+	public void setExistedParticipants(List<Integer> existedParticipants) {
 		this.existedParticipants = existedParticipants;
 	}
 
@@ -50,40 +56,64 @@ public class OndutyAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup arg2) {
+	public View getView(final int position, View convertView, ViewGroup arg2) {
 		// TODO Auto-generated method stub
-		ondutyHolder holder;
-		if (convertView == null)
-		{
-			convertView = inflater.inflate(R.layout.ondutycell, null);
-			holder = new ondutyHolder();
-			holder.checkbox_imgbtn = (ImageButton) convertView.findViewById(R.id.onduty_imgbtn);
-			holder.name_tv = (TextView) convertView.findViewById(R.id.onduty_tv);
-			convertView.setTag(holder);
+		OndutyViewHolder viewHolder;
+		if (convertView == null) {
+			convertView = inflater.inflate(R.layout.participantcell, null);
+			viewHolder = new OndutyViewHolder();
+			viewHolder.name_tv = (TextView) convertView
+					.findViewById(R.id.participant_name_tv);
+			viewHolder.email_tv = (TextView) convertView
+					.findViewById(R.id.participant_email_tv);
+			viewHolder.mobile_tv = (TextView) convertView
+					.findViewById(R.id.participant_mobile_tv);
+			viewHolder.cb_check = (ImageView) convertView
+					.findViewById(R.id.cb_check);
+			viewHolder.email_tv.setVisibility(View.GONE);
+			viewHolder.mobile_tv.setVisibility(View.GONE);
+			viewHolder.name_tv.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.email_tv.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.mobile_tv.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.cb_check.setVisibility(View.VISIBLE);
+			convertView.setTag(viewHolder);
+		} else {
+			viewHolder = (OndutyViewHolder) convertView.getTag();
 		}
-		else
-		{
-			holder = (ondutyHolder) convertView.getTag();
+
+		final Sharedmember sm = sharedmembers.get(position);
+		viewHolder.name_tv.setText(sm.getName());
+		viewHolder.cb_check.setVisibility(View.VISIBLE);
+
+		if (sm.isChecked) {
+			viewHolder.cb_check.setImageResource(R.drawable.check_box_selected);
+		} else {
+			viewHolder.cb_check
+					.setImageResource(R.drawable.check_box_unselected);
 		}
-		
-		Sharedmember sm = sharedmembers.get(position);
-		holder.name_tv.setText(sm.getName());
-		holder.checkbox_imgbtn.setTag(sm.getID());
-		if (this.existedParticipants.contains(sm.getID()))
-		{
-			holder.checkbox_imgbtn.setImageResource(R.drawable.checked);
-		}
-		else
-		{
-			holder.checkbox_imgbtn.setImageResource(R.drawable.unchecked);
-		}
-		
+		final OndutyViewHolder view=viewHolder;
+		convertView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				sm.isChecked = !sm.isChecked;
+				sharedmembers.set(position, sm);
+				if (sm.isChecked) {
+					view.cb_check.setImageResource(R.drawable.check_box_selected);
+				} else {
+					view.cb_check
+							.setImageResource(R.drawable.check_box_unselected);
+				}
+			}
+		});
 		return convertView;
 	}
-	
-	static class ondutyHolder
-	{
-		ImageButton checkbox_imgbtn;
-		TextView	name_tv;
+
+	static class OndutyViewHolder {
+		TextView name_tv;
+		TextView email_tv;
+		TextView mobile_tv;
+		ImageView cb_check;
 	}
 }

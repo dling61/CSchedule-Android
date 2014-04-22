@@ -153,6 +153,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 					int is_synchronized = 1;
 					newActivity.put(ActivityTable.is_Synchronized,
 							is_synchronized);
+					newActivity.put(ActivityTable.user_login, new SharedReference().getCurrentOwnerId(mContext));
 					String last_modified = service.getString("lastmodified");
 					newActivity.put(ActivityTable.last_ModifiedTime,
 							last_modified);
@@ -208,6 +209,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 		ws.getAllActivitys(activityDownloadCompleteHandler);
 		ws.getParticipantsFromWeb();
 		ws.getAllSchedule();
+	
 	}
 
 	// Method to add a TabHost

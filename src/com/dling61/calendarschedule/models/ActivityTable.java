@@ -16,5 +16,6 @@ public class ActivityTable {
 	public static final String sharedrole = "sharedrole";
 	public static final String service_Name = "servicename";	
 	public static final String ActivityTableName = "Activity";
+	public static final String user_login="user_login";
 
 }

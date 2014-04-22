@@ -152,9 +152,16 @@ public class CreateNewScheduleActivity extends Activity implements
 		} else if (v == view.et_startTime) {
 			setStartTime();
 		} else if (v == view.et_on_duty) {
-			Intent intent = new Intent(mContext, ParticipantActivity.class);
+			Intent intent = new Intent(mContext, OndutyActivity.class);
 			intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 			intent.putExtra(CommConstant.TYPE, CommConstant.TYPE_PARTICIPANT);
+			intent.putExtra(CommConstant.SCHEDULE_ID,thisSchedule.getSchedule_ID());
+			List<Integer> pins = new ArrayList<Integer>();
+			if (composeType == DatabaseHelper.EXISTED)
+			{
+				pins = dbHelper.getParticipantsForSchedule(thisSchedule.getSchedule_ID());
+			}
+			intent.putIntegerArrayListExtra("pins", (ArrayList<Integer>) pins);
 			mContext.startActivity(intent);
 		} else if (v == view.layout_next) {
 			createNewSchedule();
@@ -456,6 +463,7 @@ public class CreateNewScheduleActivity extends Activity implements
 				cv.put(ScheduleTable.service_ID, thisSchedule.getService_ID());
 				cv.put(ScheduleTable.is_Deleted, 0);
 				cv.put(ScheduleTable.is_Synchronized, 0);
+				cv.put(ScheduleTable.user_login, new SharedReference().getCurrentOwnerId(mContext));
 				dbHelper.insertSchedule(cv);
 				for (int i = 0; i < pins.size(); i++) {
 					ContentValues onduty = new ContentValues();

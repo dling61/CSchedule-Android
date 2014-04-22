@@ -1,0 +1,9 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <stroke
+        android:width="@dimen/stroke_width_today"
+        android:color="@color/today_border" />
+
+    <solid android:color="@color/today_unselected" />
+
+</shape>

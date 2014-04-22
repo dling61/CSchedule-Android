@@ -2,8 +2,11 @@
  * Develop by Antking
  * */
 package com.dling61.calendarschedule;
+import com.dling61.calendarschedule.net.WebservicesHelper;
+
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
@@ -17,11 +20,12 @@ import android.widget.Button;
 public class MainActivity extends Activity implements View.OnClickListener{
 	Button btn_create_account;
 	Button btn_sign_in;
-
+Context mContext;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mContext=this;
 		findViewById();
 		onClickListener();
 	}

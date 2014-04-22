@@ -236,6 +236,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			newParticipant.put(ParticipantTable.is_Registered, 1);
 			newParticipant.put(ParticipantTable.is_Deleted, 0);
 			newParticipant.put(ParticipantTable.is_Sychronized, 0);
+			newParticipant.put(ParticipantTable.user_login, new SharedReference().getCurrentOwnerId(mContext));
 			dbHelper.insertParticipant(newParticipant);
 
 			WebservicesHelper ws = new WebservicesHelper(mContext);

@@ -130,4 +130,7 @@
     </string-array>
     <string name="delete_participant">Delete partipant</string>
     <string name="your_contact">You can not delete yourself</string>
+    <string name="today">Today</string>
+    <string name="me">Me</string>
+    <string name="all">All</string>
 </resources>

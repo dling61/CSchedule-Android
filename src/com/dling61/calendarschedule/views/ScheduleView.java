@@ -8,9 +8,9 @@ import com.dling61.calendarschedule.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 /**
@@ -23,6 +23,10 @@ public class ScheduleView extends RelativeLayout {
 	public ExpandableListView expand_list_schedule;
 	public RelativeLayout layout_add;
 	public ImageButton btn_add_schedule;
+	public ImageButton btn_refresh;
+	public Button btn_today;
+	public Button btn_all;
+	public Button btn_me;
 	public ScheduleView(Context context) {
 		super(context);
 		this.context = context;
@@ -50,5 +54,9 @@ public class ScheduleView extends RelativeLayout {
 		expand_list_schedule=(ExpandableListView)findViewById(R.id.list_expandable_schedule);
 		layout_add=(RelativeLayout)findViewById(R.id.add_schedule);
 		btn_add_schedule=(ImageButton)findViewById(R.id.btn_add_activity);
+		btn_refresh=(ImageButton)findViewById(R.id.btn_refresh);
+		btn_today=(Button)findViewById(R.id.btn_today);
+		btn_all=(Button)findViewById(R.id.btn_all);
+		btn_me=(Button)findViewById(R.id.btn_me);
 	}
 }

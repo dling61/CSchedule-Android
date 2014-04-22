@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:hint="@string/mobile"
+                android:hint="@string/title_mobile"
                 android:inputType="number"
                 style="@style/edittextStyle"
                 android:textColor="@color/bg_login_title_bar"

@@ -1,10 +1,10 @@
 package com.dling61.calendarschedule.adapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.dling61.calendarschedule.AddNewActivity;
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.db.DatabaseHelper;
@@ -14,7 +14,6 @@ import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.Utils;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -31,6 +30,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 	private ArrayList<String> listSchedulesByDay;
 	private LayoutInflater mInflater;
 	DatabaseHelper dbHelper;
+	boolean isToday;
 
 	public ExpandableListScheduleAdapter(Context context,
 			ArrayList<String> listSchedulesByDay,
@@ -40,6 +40,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		this.listSchedulesByDay = listSchedulesByDay;
 		mInflater = LayoutInflater.from(context);
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
+
 	}
 
 	public Object getChild(int groupPosition, int childPosition) {
@@ -71,7 +72,8 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 			viewHolder = (ScheduleViewHolder) convertView.getTag();
 		}
 
-		final Schedule schedule = (Schedule) getChild(groupPosition, childPosition);
+		final Schedule schedule = (Schedule) getChild(groupPosition,
+				childPosition);
 		MyActivity activity = dbHelper.getActivity(schedule.getService_ID());
 		String activity_name = activity != null ? activity.getActivity_name()
 				: "";
@@ -97,7 +99,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		viewHolder.time_TV.setText(date);
 		viewHolder.participants_TV.setText(members);
 		convertView.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				Intent inforActivityIntent = new Intent(context,
@@ -106,7 +108,8 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 						DatabaseHelper.EXISTED);
 				inforActivityIntent.putExtra(CommConstant.SCHEDULE_ID,
 						schedule.getSchedule_ID());
-				inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID, schedule.getService_ID());
+				inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID,
+						schedule.getService_ID());
 				context.startActivity(inforActivityIntent);
 			}
 		});
@@ -158,12 +161,16 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		// MyDate.transformUTCTimeToCustomStyle(this.getHeader(position));
 		String date_time_str = listSchedulesByDay.get(groupPosition);
 		String[] date_time = date_time_str.split(";");
+
 		if (date_time != null) {
 			viewHolder.weekday_TV.setText(date_time[0] != null ? date_time[0]
 					: "");
 			viewHolder.date_TV
 					.setText(date_time[1] != null ? date_time[1] : "");
+			viewHolder.weekday_TV.setVisibility(View.VISIBLE);
+			viewHolder.date_TV.setVisibility(View.VISIBLE);
 		}
+
 		return convertView;
 	}
 

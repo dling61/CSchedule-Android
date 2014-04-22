@@ -9,4 +9,6 @@ public class OndutyTable {
 	public static final String is_Synchronized = "issynchronized";
 	public static final String last_Modified = "lastmodified";	
 	public static final String OntudyTableName = "OnDuty";
+	public static final String role="role";
+	public static final String user_login="user_login";
 }

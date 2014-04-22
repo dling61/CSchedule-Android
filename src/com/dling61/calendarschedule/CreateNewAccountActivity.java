@@ -106,7 +106,7 @@ public class CreateNewAccountActivity extends Activity
 		String mobile = mobile_tv.getText().toString();
 		boolean isNameOK = !username.equals("");
 		boolean isEmailOK = Utils.isEmailValid(email);
-		boolean isPasswordOK = password.length() == 6;
+		boolean isPasswordOK = password.length() >= 6;
 		boolean isMobileOK = Utils.isMobileValid(mobile);
 
 		String createLog = (isNameOK == false ? "\n"

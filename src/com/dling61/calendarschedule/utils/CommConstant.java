@@ -34,7 +34,7 @@ public class CommConstant {
 	public static final int VIEWER=3;//(Viewer)
 	public static final String ACTIVITY_ID="activity_id";
 	public static final int ROLE_SHARE_MEMBER_ACTIVITY=PARTICIPANT;
-	public static final int ROLE_ASSIGN_MEMBER_SCHEDULE=PARTICIPANT;
+	public static final int ROLE_ASSIGN_MEMBER_SCHEDULE=ORGANIZER;
 	public static final String DELETE_ACTIVITY_COMPLETE="delete.activity.complete";
 	public static final String ACTIVITY_DESCRIPTION="activity_description";
 	public static final String CONTACT_ID="contact_id";
@@ -48,4 +48,5 @@ public class CommConstant {
 	public static final String UPDATE_SCHEDULE="update.schedule";
 	public static final String DELETE_SHARED_MEMBER_FROM_ACTIVITY="delete.shared.member.activity";
 	public static final String ADD_SHARED_MEMBER_FROM_ACTIVITY="add.shared.member.activity";
+	public static final int OWNER=0;
 }

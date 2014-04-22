@@ -1,17 +1,14 @@
 package com.dling61.calendarschedule.adapter;
 
 import java.util.ArrayList;
-
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.utils.Utils;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -83,8 +80,11 @@ public class ParticipantAdapter extends BaseAdapter {
 		final Participant participant = participants.get(position);
 		if (isCheck) {
 			viewHolder.cb_check.setVisibility(View.VISIBLE);
+			
 			if(participant.isChecked)
 			{
+				
+			
 			viewHolder.cb_check.setImageResource(R.drawable.check_box_selected);;
 			}
 			else

@@ -1,6 +1,7 @@
 package com.dling61.calendarschedule.fragments;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.R;
@@ -8,12 +9,16 @@ import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.MyActivity;
 import com.dling61.calendarschedule.models.Participant;
+import com.dling61.calendarschedule.models.SharedMemberTable;
+import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.ParticipantView;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,6 +48,8 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	int type = -1;
 
 	ArrayList<Participant> activityParticipant;
+	
+	ArrayList<Sharedmember> arrSharemember;
 
 	public void setActivity_id(String activity_id) {
 		this.activity_id = activity_id;
@@ -85,28 +92,6 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 		if (v == view.layout_next) {
 			// share schedule
 			if (type == CommConstant.TYPE_CONTACT) {
-				// if (activity_id != null && (!activity_id.equals(""))) {
-				// // list participant of this activity
-				// ArrayList<Participant> activityParticipant = db
-				// .getParticipantsOfActivity(activity_id);
-				// for (Participant participant : adapter.participants) {
-				//
-				// if (participant.isChecked) {
-				// // if this activity haven't contain of this
-				// // participant=> add this participant for this
-				// // activity
-				// // else ignore
-				// if (!activityParticipant.contains(participant)) {
-				// WebservicesHelper ws = new WebservicesHelper(
-				// mContext);
-				// ws.postSharedmemberToActivity(
-				// participant.getID(),
-				// CommConstant.ROLE_ASSIGN_MEMBER_SCHEDULE,
-				// activity_id);
-				// }
-				// }
-				// }
-				// }
 				((Activity) mContext).finish();
 				Intent intent = new Intent(mContext,
 						CreateNewScheduleActivity.class);
@@ -161,31 +146,30 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	public void onResume() {
 		super.onResume();
 		if (activity_id != null && (!activity_id.equals(""))) {
-			DatabaseHelper dbHelper = DatabaseHelper
+			final DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
 			if (type == CommConstant.TYPE_PARTICIPANT) {
-				arrParticipant = dbHelper
-						.getParticipantsOfActivityWithoutRoleParticipant(activity_id);
-				dbHelper.close();
-				adapter = new ParticipantAdapter(mContext, arrParticipant,
-						true, false);
-				view.list_contact.setAdapter(adapter);
-				view.list_contact
-						.setOnItemClickListener(new OnItemClickListener() {
-							@Override
-							public void onItemClick(AdapterView<?> parent,
-									View view, final int position, long id) {
-								final Participant participantSelected = adapter.participants
-										.get(position);
-
-								// TODO Auto-generated method stub
-								participantSelected.isChecked = !participantSelected.isChecked;
-								adapter.participants.set(position,
-										participantSelected);
-								adapter.notifyDataSetChanged();
-
-							}
-						});
+//				arrSharemember = dbHelper.getSharedMemberForActivity(activity_id);
+//				dbHelper.close();
+//				adapter = new ParticipantAdapter(mContext, arrParticipant,
+//						true, false);
+//				view.list_contact.setAdapter(adapter);
+//				view.list_contact
+//						.setOnItemClickListener(new OnItemClickListener() {
+//							@Override
+//							public void onItemClick(AdapterView<?> parent,
+//									View view, final int position, long id) {
+//								final Sharedmember shareMember = adapter.participants
+//										.get(position);
+//
+//								// TODO Auto-generated method stub
+//								participantSelected.isChecked = !participantSelected.isChecked;
+//								adapter.participants.set(position,
+//										participantSelected);
+//								adapter.notifyDataSetChanged();
+//
+//							}
+//						});
 			} else if (type == CommConstant.TYPE_CONTACT) {
 				arrParticipant = dbHelper.getParticipants();
 				activityParticipant = dbHelper
@@ -227,6 +211,18 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 												// else ignore
 												if (!activityParticipant
 														.contains(participantSelected)) {
+													
+//													ContentValues contentValues=new ContentValues();
+//													contentValues.put(SharedMemberTable.service_id, activity_id);
+//													contentValues.put(SharedMemberTable.smid,String.valueOf(new Date().getTime()));
+//													contentValues.put(SharedMemberTable.role, CommConstant.PARTICIPANT);
+//													contentValues.put(SharedMemberTable.member_name,participantSelected.getName());
+//													contentValues.put(SharedMemberTable.member_mobile, participantSelected.getMobile());
+//													contentValues.put(SharedMemberTable.member_id, participantSelected.getID());
+//													contentValues.put(SharedMemberTable.is_Deleted, 0);
+//													contentValues.put(SharedMemberTable.is_Synced, 0);
+//													contentValues.put(SharedMemberTable.member_email, participantSelected.getEmail());
+//													dbHelper.insertSharedmember(contentValues);
 													WebservicesHelper ws = new WebservicesHelper(
 															mContext);
 													ws.postSharedmemberToActivity(
@@ -234,6 +230,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 																	.getID(),
 															CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
 															activity_id);
+													
 												}
 												confirmDialog.dismiss();
 

@@ -27,8 +27,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-	public static final String DB_NAME = "schedule.db";
-	public static final int DB_VERSION = 1;
+	public static final String DB_NAME = "cschedule";
+	public static final int DB_VERSION = 2;
 	public static DatabaseHelper sharedDatabaseHelper;
 	public static final int NEW = 0;
 	public static final int EXISTED = 1;
@@ -69,6 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ParticipantTable.last_Modified + " TEXT,"
 				+ ParticipantTable.is_Deleted + " INTEGER NOT NULL,"
 				+ ParticipantTable.is_Registered + " INTEGER NOT NULL,"
+				+ ParticipantTable.user_login + " text not null,"
 				+ ParticipantTable.is_Sychronized + " INTEGER NOT NULL);");
 
 		db.execSQL("CREATE TABLE " + ActivityTable.ActivityTableName + "("
@@ -84,6 +85,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ActivityTable.sharedrole + " INTEGER NOT NULL,"
 				+ ActivityTable.last_ModifiedTime + " TEXT,"
 				+ ActivityTable.is_Deleted + " INTEGER NOT NULL,"
+				+ ParticipantTable.user_login + " text not null,"
 				+ ActivityTable.is_Synchronized + " INTEGER NOT NULL);");
 
 		db.execSQL("CREATE TABLE " + ScheduleTable.ScheduleTableName + "("
@@ -95,6 +97,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ScheduleTable.own_ID + " INTEGER NOT NULL,"
 				+ ScheduleTable.last_Modified + " TEXT,"
 				+ ScheduleTable.is_Deleted + " INTEGER NOT NULL,"
+				+ ScheduleTable.user_login + " text not null,"
 				+ ScheduleTable.is_Synchronized + " INTEGER NOT NULL);");
 
 		db.execSQL("CREATE TABLE " + OndutyTable.OntudyTableName + "("
@@ -105,6 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ OndutyTable.participant_ID + " INTEGER NOT NULL,"
 				+ OndutyTable.is_Deleted + " INTEGER NOT NULL,"
 				+ OndutyTable.is_Synchronized + " INTEGER NOT NULL,"
+				
 				+ OndutyTable.last_Modified + " TEXT);");
 
 		db.execSQL("CREATE TABLE " + SharedMemberTable.SharedMemberTableName
@@ -118,6 +122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SharedMemberTable.member_mobile + " TEXT,"
 				+ SharedMemberTable.is_Deleted + " INTEGER NOT NULL,"
 				+ SharedMemberTable.is_Synced + " INTEGER NOT NULL,"
+		
 				+ SharedMemberTable.last_modified + " TEXT);");
 	}
 
@@ -143,6 +148,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + OndutyTable.OntudyTableName);
 		db.execSQL("DROP TABLE IF EXISTS "
 				+ SharedMemberTable.SharedMemberTableName);
+		onCreate(db);
+		
 	}
 
 	/**
@@ -169,9 +176,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ActivityTable.ActivityTableName + " where "
 						+ ActivityTable.is_Deleted + "=0 and "
-						+ ActivityTable.own_ID + "="
-						+ new SharedReference().getCurrentOwnerId(context),
-				null);
+						+ ActivityTable.user_login + "='"
+						+ new SharedReference().getCurrentOwnerId(context)
+						+ "'", null);
+		while (c.moveToNext()) {
+			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
+			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
+			int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
+			int repeat = c.getInt(c.getColumnIndex(ActivityTable.repeat));
+			String name = c.getString(c
+					.getColumnIndex(ActivityTable.service_Name));
+			String start = c.getString(c
+					.getColumnIndex(ActivityTable.start_time));
+			String end = c.getString(c.getColumnIndex(ActivityTable.end_time));
+			String desp = c.getString(c
+					.getColumnIndex(ActivityTable.service_description));
+			int otc = c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
+			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
+			MyActivity newActivity = new MyActivity(id, ownid, alert, repeat,
+					name, start, end, desp, otc, role);
+			activities.add(newActivity);
+		}
+		c.close();
+		return activities;
+	}
+	
+	/**
+	 * Get all activity which haven role: owner or organizer
+	 * */
+	public ArrayList<MyActivity> getActivitiesOwnerOrOrganizer(String user_id) {
+		ArrayList<MyActivity> activities = new ArrayList<MyActivity>();
+		Cursor c = this.getWritableDatabase().rawQuery(
+				"SELECT * FROM " + ActivityTable.ActivityTableName + " where "
+						+ ActivityTable.is_Deleted + "=0 and "
+						+ ActivityTable.user_login + "='"
+						+ new SharedReference().getCurrentOwnerId(context)+"'"
+						+" and ("+ActivityTable.sharedrole+" = "+CommConstant.OWNER
+						+" or "+ActivityTable.sharedrole+" = "+CommConstant.ORGANIZER+")", null);
 		while (c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
@@ -390,9 +431,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c1 = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 						+ ScheduleTable.is_Deleted + "=0 and "
+						+ ScheduleTable.user_login + "='"
+						+ new SharedReference().getCurrentOwnerId(context)
+						+ "'", null);
+		while (c1.moveToNext()) {
+			int startIndex = c1.getColumnIndex(ScheduleTable.start_Time);
+			String startDate = c1.getString(startIndex);
+			int endIndex = c1.getColumnIndex(ScheduleTable.end_Time);
+			String endDate = c1.getString(endIndex);
+			int scheduleIDIndex = c1.getColumnIndex(ScheduleTable.schedule_ID);
+			int sche_id = c1.getInt(scheduleIDIndex);
+			int serviceIndex = c1.getColumnIndex(ScheduleTable.service_ID);
+			int serv_id = c1.getInt(serviceIndex);
+			int ownerIndex = c1.getColumnIndex(ScheduleTable.own_ID);
+			int owner_id = c1.getInt(ownerIndex);
+			int despIndex = c1
+					.getColumnIndex(ScheduleTable.schedule_Description);
+			String desp = c1.getString(despIndex);
+
+			Schedule newSchedule = new Schedule(owner_id, sche_id,
+					serv_id + "", startDate, endDate, desp);
+			allschedules.add(newSchedule);
+		}
+		// If not added,error will occour
+		// IllegalStateException: Process 5808 exceeded cursor quota 100, will
+		// kill it
+		c1.close();
+		// sharedDatabaseHelper.close();
+
+		return allschedules;
+	}
+
+	/**
+	 * Get all schedule create by owner
+	 * */
+	public ArrayList<Schedule> getMeSchedule() {
+		ArrayList<Schedule> allschedules = new ArrayList<Schedule>();
+		Cursor c1 = this.getWritableDatabase().rawQuery(
+				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
+						+ ScheduleTable.is_Deleted + "=0 and "
 						+ ScheduleTable.own_ID + "="
-						+ new SharedReference().getCurrentOwnerId(context),
-				null);
+						+ new SharedReference().getCurrentOwnerId(context)
+						, null);
 		while (c1.moveToNext()) {
 			int startIndex = c1.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c1.getString(startIndex);
@@ -577,6 +657,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
+	/**
+	 * Get list participants of an activity 
+	 * */
+	public ArrayList<Sharedmember> getSharedMemberForActivity(
+			String activity_id) {
+		Cursor c = this.getWritableDatabase().rawQuery(
+				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
+						+ " WHERE " + SharedMemberTable.service_id + "="
+						+ activity_id, null);
+		ArrayList<Sharedmember> list_shared_member = new ArrayList<Sharedmember>();
+		while (c.moveToNext()) {
+			int mem_id = c
+					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
+			// int serviceid = c.getInt(c
+			// .getColumnIndex(SharedMemberTable.service_id));
+			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
+			String name = c.getString(c
+					.getColumnIndex(SharedMemberTable.member_name));
+			String email = c.getString(c
+					.getColumnIndex(SharedMemberTable.member_email));
+			String mobile = c.getString(c
+							.getColumnIndex(SharedMemberTable.member_mobile));
+			int sid=c.getInt(c
+					.getColumnIndex(SharedMemberTable.smid));
+			Sharedmember shareMember=new Sharedmember(mem_id, name, email, mobile, role, sid);
+			list_shared_member.add(shareMember);
+
+		}
+		return list_shared_member;
+	}
+	
+	
+	
 	/**
 	 * Get list participants of an activity without role participant i.e. role
 	 * owner and organizer
@@ -956,11 +1069,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Update member infor into sharedmember when owner change member
 	 * information in page contact
 	 * */
-	public boolean updateSharedmember(int memberid,ContentValues sharedmember) {
-		String[] whereArgs = new String[] { String.valueOf(memberid)};
+	public boolean updateSharedmember(int memberid, ContentValues sharedmember) {
+		String[] whereArgs = new String[] { String.valueOf(memberid) };
 		int result = this.getWritableDatabase().update(
-				SharedMemberTable.SharedMemberTableName,
-				sharedmember,
+				SharedMemberTable.SharedMemberTableName, sharedmember,
 				SharedMemberTable.member_id + "=?", whereArgs);
 		return (result == 1) ? true : false;
 	}

@@ -11,5 +11,5 @@ public class ParticipantTable {
 	public static final String is_Registered = "isregistered";
 	public static final String last_Modified = "lastmodified";	
 	public static final String ParticipantTableName = "Participant";
-	
+	public static final String user_login="user_login";
 }
