@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dling61.calendarschedule.adapter.ParticipantAdapter;
+import com.dling61.calendarschedule.adapter.SharedMemberAdapter;
 import com.dling61.calendarschedule.adapter.TextViewBaseAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.ActivityTable;
@@ -13,6 +14,8 @@ import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.models.ParticipantTable;
 import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.models.ScheduleTable;
+import com.dling61.calendarschedule.models.SharedMemberTable;
+import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
@@ -101,8 +104,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			view.et_new_activity_description.setFocusable(false);
 			view.layout_save.setVisibility(View.VISIBLE);
 			view.layout_next.setVisibility(View.GONE);
-			WebservicesHelper ws = new WebservicesHelper(mContext);
-			ws.getSharedmembersForActivity(activity_id);
 		}
 		this.initViewValues();
 		onClickListener();
@@ -127,20 +128,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-
-		// if (activity_id != null && (!activity_id.equals(""))) {
-		// DatabaseHelper dbHelper = DatabaseHelper
-		// .getSharedDatabaseHelper(mContext);
-		// Log.i("broadcast", "activities are ready");
-		// ArrayList<Participant> list_participant = dbHelper
-		// .getParticipantsOfActivity(activity_id);
-		// // dbHelper.close();
-		// ParticipantAdapter adapter = new ParticipantAdapter(mContext,
-		// list_participant, false, false);
-		// view.list_participant.setAdapter(adapter);
-		// Utils.setListViewHeightBasedOnChildren(view.list_participant,
-		// adapter);
-		// }
 	}
 
 	@Override
@@ -154,41 +141,45 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		super.onPause();
 	};
 
+	/**
+	 * get shared member of activity
+	 * */
+	private void setParticipantOfActivity() {
+		if (activity_id != null && (!activity_id.equals(""))) {
+			DatabaseHelper dbHelper = DatabaseHelper
+					.getSharedDatabaseHelper(mContext);
+			ArrayList<Sharedmember> list_participant = dbHelper
+					.getParticipantsOfActivity(activity_id);
+			final SharedMemberAdapter adapter = new SharedMemberAdapter(
+					mContext, list_participant, false, false, true);
+			view.list_participant.setAdapter(adapter);
+			Utils.setListViewHeightBasedOnChildren(view.list_participant,
+					adapter);
+			view.list_participant.setVisibility(View.VISIBLE);
+			view.list_participant
+					.setOnItemClickListener(new OnItemClickListener() {
+						@Override
+						public void onItemClick(AdapterView<?> parent,
+								View view, final int position, long id) {
+							final Sharedmember participantSelected = adapter.sharedMembers
+									.get(position);
+							participantInforDialog(participant_infor_dialog,
+									participantSelected);
+
+						}
+					});
+		}
+
+	}
+
 	BroadcastReceiver activityGetSharedMemberComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
-			if (activity_id != null && (!activity_id.equals(""))) {
-				DatabaseHelper dbHelper = DatabaseHelper
-						.getSharedDatabaseHelper(mContext);
-				Log.i("broadcast", "activities are ready");
-				ArrayList<Participant> list_participant = dbHelper
-						.getParticipantsOfActivity(activity_id);
-				// dbHelper.close();
-				final ParticipantAdapter adapter = new ParticipantAdapter(
-						mContext, list_participant, false, false);
-				view.list_participant.setAdapter(adapter);
-				Utils.setListViewHeightBasedOnChildren(view.list_participant,
-						adapter);
-				view.list_participant.setVisibility(View.VISIBLE);
-				view.list_participant
-						.setOnItemClickListener(new OnItemClickListener() {
-							@Override
-							public void onItemClick(AdapterView<?> parent,
-									View view, final int position, long id) {
-								final Participant participantSelected = adapter.participants
-										.get(position);
-								participantInforDialog(
-										participant_infor_dialog,
-										participantSelected);
-
-							}
-						});
-			}
-
+			setParticipantOfActivity();
 		}
 	};
 
 	private void participantInforDialog(String[] array,
-			final Participant participant) {
+			final Sharedmember participant) {
 
 		int length = array.length;
 		for (int i = 0; i < length; i++) {
@@ -215,6 +206,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					// remove participant from activity
 					deleteParticipantFromActivity(participant);
 					break;
+				case 3:
+					break;
 				default:
 					break;
 				}
@@ -223,7 +216,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		});
 	}
 
-	public void deleteParticipantFromActivity(final Participant participant) {
+	public void deleteParticipantFromActivity(final Sharedmember participant) {
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 		alertDialog.setTitle(mContext.getResources()
 				.getString(R.string.caution));
@@ -248,7 +241,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		alertDialog.show();
 	}
 
-	public void removeParticipant(Participant participant) {
+	public void removeParticipant(Sharedmember participant) {
 		WebservicesHelper ws = new WebservicesHelper(mContext);
 		ws.deleteSharedmemberOfActivity(participant.getID(), activity_id);
 	}
@@ -368,9 +361,11 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		if (composeType == DatabaseHelper.NEW)
 			view.title_tv.setText(mContext.getResources().getString(
 					R.string.add_activity));
-		else
+		else if (composeType == DatabaseHelper.EXISTED) {
 			view.title_tv.setText(mContext.getResources().getString(
 					R.string.edit_activity));
+			setParticipantOfActivity();
+		}
 
 		String activity_name = thisActivity != null ? thisActivity
 				.getActivity_name() : "";
@@ -385,25 +380,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		repeat_type = thisActivity != null ? thisActivity.getRepeat() : 0;
 		view.et_new_activity_repeat
 				.setText(getAlert(repeat_type, repeat_array));
-
-		// get all participant of activity
-		String activity_id = thisActivity != null ? thisActivity
-				.getActivity_ID() : "";
-		if (activity_id != null && (!activity_id.equals(""))) {
-			ArrayList<Participant> arrParticipant = dbHelper
-					.getParticipantsOfActivity(activity_id);
-			if (arrParticipant != null && arrParticipant.size() > 0) {
-				// view.tv_participant.setText(Utils.getStringNameArrParticipant(arrParticipant));
-				ParticipantAdapter participantAdapter = new ParticipantAdapter(
-						mContext, arrParticipant, true, false);
-				view.list_participant.setAdapter(participantAdapter);
-				view.tv_participant.setVisibility(View.VISIBLE);
-				Utils.setListViewHeightBasedOnChildren(view.list_participant,
-						participantAdapter);
-				// view.list_participant.setVisibility(View.VISIBLE);
-			}
-		}
-
 	}
 
 	/**
@@ -418,19 +394,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 		return "None";
 	}
-
-	// /**
-	// * Get alert index
-	// * */
-	// public int getAlertIndex(String alt,String[]array) {
-	// int size = array.length;
-	// for (int i = 0; i < size; i++) {
-	// if (array[i].equalsIgnoreCase(alt)) {
-	// return i;
-	// }
-	// }
-	// return 0;
-	// }
 
 	@Override
 	public void onClick(View v) {
@@ -448,13 +411,17 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		} else if (v == view.et_new_activity_alert) {
 			popUp(alert_array, ALERT);
 		} else if (v == view.btn_add_paticipant) {
-			finish();
-			Intent intent = new Intent(mContext, ParticipantActivity.class);
-			intent.putExtra(CommConstant.TYPE,
-					CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
-			intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
-			intent.putExtra(CommConstant.TYPE, CommConstant.TYPE_CONTACT);
-			mContext.startActivity(intent);
+			if (composeType == DatabaseHelper.EXISTED) {
+				finish();
+				Intent intent = new Intent(mContext, ParticipantActivity.class);
+				intent.putExtra(CommConstant.TYPE,
+						CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
+				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
+				intent.putExtra(CommConstant.TYPE, CommConstant.TYPE_CONTACT);
+
+				
+				mContext.startActivity(intent);
+			}
 		} else if (v == view.btn_remove_activity) {
 			deleteActivity();
 		} else if (v == view.layout_back) {
@@ -487,6 +454,20 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 
+						ArrayList<Sharedmember> listSharedMemberOfActivity = dbHelper
+								.getSharedMemberForActivity(activity_id);
+						if (listSharedMemberOfActivity != null
+								&& listSharedMemberOfActivity.size() > 0) {
+							for (Sharedmember sharedMember : listSharedMemberOfActivity) {
+								ContentValues cv=new ContentValues();
+								cv.put(SharedMemberTable.is_Deleted, 1);
+								cv.put(SharedMemberTable.is_Synced, 0);								
+								dbHelper.updateSharedmember(sharedMember.getID(),activity_id,cv);
+								WebservicesHelper ws=new WebservicesHelper(mContext);
+								ws.deleteSharedmemberOfActivity(sharedMember.getID(), activity_id);
+							}
+						}
+
 						List<Schedule> sbelongtoa = dbHelper
 								.getSchedulesBelongtoActivity(activity_id);
 						for (int i = 0; i < sbelongtoa.size(); i++) {
@@ -495,17 +476,21 @@ public class AddNewActivity extends Activity implements OnClickListener {
 							scv.put(ScheduleTable.is_Synchronized, 0);
 							int schedule_id = sbelongtoa.get(i)
 									.getSchedule_ID();
-							dbHelper.updateSchedule(schedule_id, scv);
+//							dbHelper.updateSchedule(schedule_id, scv);
 							List<Integer> onduties = dbHelper
 									.getOndutyRecordsForSchedule(schedule_id);
 							for (int j = 0; j < onduties.size(); j++) {
 								ContentValues ocv = new ContentValues();
 								ocv.put(OndutyTable.is_Deleted, 1);
 								ocv.put(OndutyTable.is_Synchronized, 0);
-								int onduty_id = onduties.get(j);
-								dbHelper.updateSchedule(onduty_id, ocv);
+//								int onduty_id = onduties.get(j);
+								dbHelper.updateOnduty(schedule_id, ocv);								
 							}
+							dbHelper.updateSchedule(schedule_id, scv);
+							WebservicesHelper ws=new WebservicesHelper(mContext);
+							ws.deleteSchedule(sbelongtoa.get(i));
 						}
+						
 						ContentValues cv = new ContentValues();
 						cv.put(ActivityTable.is_Deleted, 1);
 						cv.put(ActivityTable.is_Synchronized, 0);
@@ -513,8 +498,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 						WebservicesHelper ws = new WebservicesHelper(mContext);
 						ws.deleteActivity(thisActivity);
-						// WebservicesAPI ws=new WebservicesAPI();
-						// ws.deleteActivity(thisActivity);
 					}
 				});
 		alertDialog.setNegativeButton(

@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.dling61.calendarschedule.models.Participant;
+import com.dling61.calendarschedule.models.Sharedmember;
 
 public class Utils {
 
@@ -93,9 +94,9 @@ public class Utils {
 
 	/** return string name of array participant */
 	public static String getStringNameArrParticipant(
-			ArrayList<Participant> arrParticipant) {
+			ArrayList<Sharedmember> arrParticipant) {
 		String arrParticipantString = "";
-		for (Participant participant : arrParticipant) {
+		for (Sharedmember participant : arrParticipant) {
 			arrParticipantString += participant.getName() + ",";
 		}
 		if (arrParticipantString.endsWith(",")) {

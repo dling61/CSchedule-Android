@@ -3,12 +3,16 @@
  * */
 package com.dling61.calendarschedule;
 
+import java.util.ArrayList;
+
 import com.dling61.calendarschedule.net.WebservicesHelper;
+import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.Utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -136,4 +140,6 @@ public class CreateNewAccountActivity extends Activity
 		}
 
 	}
+	
+	
 }

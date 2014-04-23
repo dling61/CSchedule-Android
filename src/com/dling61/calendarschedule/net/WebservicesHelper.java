@@ -4,7 +4,10 @@
 package com.dling61.calendarschedule.net;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
 import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +25,7 @@ import com.dling61.calendarschedule.models.ParticipantTable;
 import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.models.ScheduleTable;
 import com.dling61.calendarschedule.models.SharedMemberTable;
+import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.SharedReference;
@@ -249,10 +253,26 @@ public class WebservicesHelper {
 									Log.i("SignIn nextscheduleid ",
 											nextscheduleid + "");
 								}
+
+								int nextSharedMemberId = -1;
+								// If it is the first time to establish a
+								// schedule
+								if (nextscheduleidOriginal == 0) {
+									nextscheduleid = idCostant
+											+ nextscheduleidOriginal + 1;
+									Log.i("SignIn nextscheduleid ",
+											nextscheduleid + "");
+								} else {
+									nextscheduleid = nextscheduleidOriginal + 1;
+									Log.i("SignIn nextscheduleid ",
+											nextscheduleid + "");
+								}
+
 								sharedReference.setInformationUserLogined(
 										mContext, username, email, ownerid,
 										nextserviceid, nextmemberid,
 										nextscheduleid);
+								
 
 								uploadRecentEditedActivitiesToWeb();
 								uploadRecentEditedParticipantsToWeb();
@@ -568,7 +588,7 @@ public class WebservicesHelper {
 				ref.getLastestScheduleLastModifiedTime(mContext));
 		client.get(SchedulesUrl, params, new JsonHttpResponseHandler() {
 			public void onSuccess(JSONObject response) {
-				Log.i("successful response", response.toString());
+				Log.i("get schedule item", response.toString());
 				try {
 					JSONArray deletedschedules = response
 							.getJSONArray("deletedschedules");
@@ -608,6 +628,8 @@ public class WebservicesHelper {
 								Schedule.getInt("serviceid"));
 						cv.put(ScheduleTable.is_Deleted, 0);
 						cv.put(ScheduleTable.is_Synchronized, 1);
+						cv.put(ActivityTable.user_login, new SharedReference()
+								.getCurrentOwnerId(mContext));
 
 						int scheduleID = Schedule.getInt("scheduleid");
 						// Log.i("Webservice","schedule " + scheduleID +
@@ -847,6 +869,34 @@ public class WebservicesHelper {
 									// Toast.LENGTH_LONG).show();
 								}
 
+								// add owner of this activity is SharedMember
+								// with share role=owner
+								Participant participant = dbHelper
+										.getParticipant(activity.getOwner_ID());
+
+								ContentValues member = new ContentValues();
+								member.put(SharedMemberTable.smid,
+										dbHelper.getNextParticipantID());
+								if (participant != null) {
+									member.put(SharedMemberTable.member_email,
+											participant.getEmail());
+									member.put(SharedMemberTable.member_mobile,
+											participant.getMobile());
+									member.put(SharedMemberTable.member_name,
+											participant.getName());
+									member.put(SharedMemberTable.member_id,
+											participant.getID());
+
+								}
+								member.put(SharedMemberTable.role,
+										CommConstant.OWNER);
+								member.put(SharedMemberTable.service_id,
+										activity.getActivity_ID());
+								member.put(SharedMemberTable.is_Deleted, 0);
+								member.put(SharedMemberTable.is_Synced, 1);
+
+								dbHelper.insertSharedmember(member);
+
 								SharedReference ref = new SharedReference();
 								ref.setLastestServiceLastModifiedTime(mContext,
 										last_modified);
@@ -911,17 +961,20 @@ public class WebservicesHelper {
 			scheduleParams.put("startdatetime", schedule.getStarttime());
 			scheduleParams.put("enddatetime", schedule.getEndtime());
 			scheduleParams.put("utcoffset", 0);
-			JSONArray jpins = new JSONArray();
-			for (int i = 0; i < pins.size(); i++) {
-				jpins.put(pins.get(i));
-			}
-			scheduleParams.put("members", jpins);
 			JSONObject params = new JSONObject();
 			params.put("ownerid", schedule.getOwner_ID());
 			params.put("serviceid", schedule.getService_ID());
+			JSONArray jpins = new JSONArray();
+			if (pins != null && pins.size() > 0) {
+				for (Integer pin : pins) {
+					jpins.put(pin);
+				}
+			}
+			if (jpins != null && jpins.length() > 0) {
+				scheduleParams.put("members", jpins);
+			}
 			params.put("schedules", scheduleParams);
-
-			client.addHeader("Content-type", "application/json");
+//			client.addHeader("Content-type", "application/json");
 			Log.i("add schedule", params.toString());
 			StringEntity entity = new StringEntity(params.toString());
 			client.post(null, ScheduleUrl, entity, "application/json",
@@ -985,19 +1038,23 @@ public class WebservicesHelper {
 			scheduleParams.put("desp", schedule.getDesp());
 			scheduleParams.put("startdatetime", schedule.getStarttime());
 			scheduleParams.put("enddatetime", schedule.getEndtime());
-			scheduleParams.put("utcoffset", new SharedReference().getTimeZone(mContext));
+			scheduleParams.put("utcoffset",
+					new SharedReference().getTimeZone(mContext));
 			JSONArray jpins = new JSONArray();
-			for (int i = 0; i < pins.size(); i++) {
-				jpins.put(pins.get(i));
+			if (pins != null && pins.size() > 0) {
+				for (Integer pin : pins) {
+					jpins.put(pin);
+				}
 			}
-			scheduleParams.put("members", jpins);
-
+			if (jpins != null && jpins.length() > 0) {
+				scheduleParams.put("members", jpins);
+			}
 			JSONObject params = new JSONObject();
 			params.put("ownerid", schedule.getOwner_ID());
 			params.put("serviceid", schedule.getService_ID());
 			params.put("schedules", scheduleParams);
 
-			client.addHeader("Content-type", "application/json");
+//			client.addHeader("Content-type", "application/json");
 			Log.i("add activity", params.toString());
 			StringEntity entity = new StringEntity(params.toString());
 			client.put(null, ScheduleUrl, entity, "application/json",
@@ -1013,7 +1070,12 @@ public class WebservicesHelper {
 										last_modified);
 								cv.put(ScheduleTable.is_Synchronized, 1);
 								dbHelper.updateSchedule(id, cv);
-								Log.i("last_modified", last_modified);
+//								Log.i("last_modified", last_modified);
+//								Intent intent = new Intent(
+//										CommConstant.UPDATE_SCHEDULE);
+//								mContext.sendBroadcast(intent);
+								// go to schedule
+								CategoryTabActivity.currentPage = 2;
 								Intent intent = new Intent(
 										CommConstant.UPDATE_SCHEDULE);
 								mContext.sendBroadcast(intent);
@@ -1031,6 +1093,7 @@ public class WebservicesHelper {
 							Log.i("fail", e.toString());
 
 						}
+
 						@Override
 						public void onStart() {
 							// TODO Auto-generated method stub
@@ -1042,9 +1105,14 @@ public class WebservicesHelper {
 						public void onFinish() {
 							// TODO Auto-generated method stub
 							super.onFinish();
-							if (progress.isShowing()) {
-								progress.dismiss();
+							try {
+								if (progress.isShowing()) {
+									progress.dismiss();
+								}
+							} catch (Exception ex) {
+								ex.printStackTrace();
 							}
+
 						}
 					});
 		} catch (UnsupportedEncodingException e1) {
@@ -1172,11 +1240,9 @@ public class WebservicesHelper {
 	}
 
 	/**
-	 * Get member join into actiivty
+	 * Get member shared for actiivty
 	 * */
 	public void getSharedmembersForActivity(final String activity_id) {
-		// final ArrayList<Sharedmember> sharedmembers=new
-		// ArrayList<Sharedmember>();
 		String SharedmembersUrl = BaseUrl.BASEURL + "services/" + activity_id
 				+ "/sharedmembers" + "?" + BaseUrl.URL_POST_FIX;
 		Log.i("url is :", SharedmembersUrl);
@@ -1267,6 +1333,9 @@ public class WebservicesHelper {
 		});
 	}
 
+	/**
+	 * Share member to activity
+	 * */
 	public void postSharedmemberToActivity(final int memberid, final int role,
 			final String activityid) {
 		String sharedmemberUrl = BaseUrl.BASEURL + "services/" + activityid
@@ -1278,7 +1347,7 @@ public class WebservicesHelper {
 			sharedmemberParams.put("sharedrole", role);
 			sharedmemberParams.put("memberid", memberid);
 
-			// client.addHeader("Content-type", "application/json");
+			client.addHeader("Content-type", "application/json");
 			// Log.i("add participant", sharedmemberParams.toString());
 			StringEntity entity = new StringEntity(
 					sharedmemberParams.toString());
@@ -1287,13 +1356,6 @@ public class WebservicesHelper {
 						public void onSuccess(JSONObject response) {
 							Log.i("successful sharedmember",
 									response.toString());
-							// Intent intent = new Intent(mContext,
-							// CreateNewScheduleActivity.class);
-							// intent.putExtra(CommConstant.TYPE,
-							// DatabaseHelper.NEW);
-							// intent.putExtra(CommConstant.ACTIVITY_ID,
-							// activityid);
-							// mContext.startActivity(intent);
 							int code = 0;
 							try {
 								code = response.getInt("code");
@@ -1312,11 +1374,6 @@ public class WebservicesHelper {
 								Participant member = dbHelper
 										.getParticipant(memberid);
 								ContentValues cv = new ContentValues();
-//								cv.put(OndutyTable.is_Synchronized, 1);
-//								cv.put(OndutyTable.is_Deleted, 0);
-//								cv.put(OndutyTable.service_ID, activityid);
-//								cv.put(OndutyTable.role, role);
-//								cv.put(OndutyTable.schedule_ID,);
 								cv.put(SharedMemberTable.member_name,
 										member.getName());
 								cv.put(SharedMemberTable.member_id,
@@ -1325,9 +1382,12 @@ public class WebservicesHelper {
 										member.getEmail());
 								cv.put(SharedMemberTable.member_mobile,
 										member.getMobile());
+								cv.put(SharedMemberTable.role, role);
+								cv.put(SharedMemberTable.is_Deleted, 0);
 								cv.put(SharedMemberTable.last_modified,
 										lastmodify);
-								dbHelper.insertSharedmember(cv);
+								cv.put(SharedMemberTable.is_Synced, 1);
+								dbHelper.updateSharedmember(member.getID(), cv);
 								Intent intent = new Intent(
 										CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
 								intent.putExtra(CommConstant.ACTIVITY_ID,
@@ -1782,6 +1842,9 @@ public class WebservicesHelper {
 		}
 	}
 
+	/**
+	 * delete activity
+	 * */
 	public void deleteActivity(MyActivity activity) {
 		String ActivityUrl = BaseUrl.BASEURL + "services/"
 				+ activity.getActivity_ID() + "?" + BaseUrl.URL_POST_FIX;
@@ -1792,14 +1855,34 @@ public class WebservicesHelper {
 				Log.d("delete activity", response.toString());
 				try {
 					if (response.getString("lastmodified") != null) {
+						ArrayList<Sharedmember> listSharedMemberOfActivity = dbHelper
+								.getSharedMemberForActivity(id);
+						if (listSharedMemberOfActivity != null
+								&& listSharedMemberOfActivity.size() > 0) {
+							for (Sharedmember sharedMember : listSharedMemberOfActivity) {
+								dbHelper.deleteSharedmember(
+										sharedMember.getID(), id);
+							}
+						}
+
 						List<Schedule> sbelongtoa = dbHelper
 								.getSchedulesBelongtoActivity(id);
 						for (int i = 0; i < sbelongtoa.size(); i++) {
-							Schedule schedule = sbelongtoa.get(i);
-							dbHelper.deleteRelatedOnduty(schedule
-									.getSchedule_ID());
-							dbHelper.deleteSchedule(schedule.getSchedule_ID());
+							ContentValues scv = new ContentValues();
+							scv.put(ScheduleTable.is_Deleted, 1);
+							scv.put(ScheduleTable.is_Synchronized, 0);
+							int schedule_id = sbelongtoa.get(i)
+									.getSchedule_ID();
+							// (sharedMember.getID(),id);
+
+							List<Integer> onduties = dbHelper
+									.getOndutyRecordsForSchedule(schedule_id);
+							for (int j = 0; j < onduties.size(); j++) {
+								dbHelper.deleteRelatedOnduty(schedule_id);
+							}
+							dbHelper.deleteSchedule(Integer.parseInt(id));
 						}
+
 						dbHelper.deleteActivity(id);
 
 						Log.i("delete activity", "successfully");

@@ -1,6 +1,7 @@
 package com.dling61.calendarschedule;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -114,6 +115,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 				JSONArray services = response.getJSONArray("services");
 				int service_count = services.length();
 
+				WebservicesHelper ws=new WebservicesHelper(mContext);
 				for (int i = 0; i < service_count; i++) {
 					JSONObject service = services.getJSONObject(i);
 					ContentValues newActivity = new ContentValues();
@@ -172,6 +174,9 @@ public class CategoryTabActivity extends FragmentActivity implements
 							Log.i("database", "update service " + serviceName
 									+ " successfully!");
 					}
+					
+					//TODO: will delete if service get all schedule implemented
+					ws.getSchedulesForActivity(activityid);
 				}
 				// SEND broadcast to activity
 				Intent intent = new Intent(
@@ -313,6 +318,9 @@ public class CategoryTabActivity extends FragmentActivity implements
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
+		new SharedReference().setLastestParticipantLastModifiedTime(mContext,"2014-01-01 00:00:00");
+		new SharedReference().setLastestScheduleLastModifiedTime(mContext, "2014-01-01 00:00:00");
+		new SharedReference().setLastestServiceLastModifiedTime(mContext, "2014-01-01 00:00:00");
 
 	}
 

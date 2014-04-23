@@ -127,6 +127,7 @@
         <item>Call</item>
         <item>Message</item>
         <item>Remove</item>
+        <item>Cancel</item>
     </string-array>
     <string name="delete_participant">Delete partipant</string>
     <string name="your_contact">You can not delete yourself</string>

@@ -116,7 +116,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_name"
-                    android:textColor="@color/color_textview" />
+                    android:textColor="@color/color_textview" 
+                    android:clickable="true"
+                            android:focusable="false" />
             </RelativeLayout>
 
             <RelativeLayout

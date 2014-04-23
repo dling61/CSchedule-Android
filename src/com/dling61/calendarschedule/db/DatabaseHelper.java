@@ -746,17 +746,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	/**
 	 * Get participant of an activity
 	 * */
-	public ArrayList<Participant> getParticipantsOfActivity(String activity_id) {
+	public ArrayList<Sharedmember> getParticipantsOfActivity(String activity_id) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
 						+ " WHERE " + SharedMemberTable.service_id + "="
-						+ activity_id, null);
-		ArrayList<Participant> list_participant = new ArrayList<Participant>();
+						+ activity_id+ " and "+SharedMemberTable.is_Deleted+"=0", null);
+		ArrayList<Sharedmember> list_member = new ArrayList<Sharedmember>();
 		while (c.moveToNext()) {
 			int mem_id = c
 					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
-			// int serviceid = c.getInt(c
-			// .getColumnIndex(SharedMemberTable.service_id));
 			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
 			String name = c.getString(c
 					.getColumnIndex(SharedMemberTable.member_name));
@@ -764,12 +762,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(SharedMemberTable.member_email));
 			String mobile = c.getString(c
 					.getColumnIndex(SharedMemberTable.member_mobile));
-			Participant new_participant = new Participant(mem_id, name, email,
-					mobile, role);
-			list_participant.add(new_participant);
+			int sid=c.getInt(c.getColumnIndex(SharedMemberTable.smid));
+			Sharedmember new_participant = new Sharedmember(mem_id, name, email,
+					mobile, role,sid);
+			list_member.add(new_participant);
 
 		}
-		return list_participant;
+		return list_member;
 	}
 
 	public ArrayList<Participant> getParticipants() {
@@ -780,7 +779,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ " WHERE " + ParticipantTable.is_Deleted + "=0"
 						+ " AND " + ParticipantTable.own_ID + "="
 						+ ref.getCurrentOwnerId(context) + " order by "
-						+ ParticipantTable.participant_Name + " ASC", null);
+						+ ParticipantTable.participant_Name + " COLLATE NOCASE ASC", null);
 		while (c.moveToNext()) {
 			int id = c
 					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));

@@ -1,27 +1,22 @@
 package com.dling61.calendarschedule.fragments;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.dling61.calendarschedule.AddNewActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.adapter.ActivityAdapter;
+import com.dling61.calendarschedule.adapter.ActivityNameAdapter;
+import com.dling61.calendarschedule.adapter.TextViewBaseAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
-import com.dling61.calendarschedule.models.ActivityTable;
 import com.dling61.calendarschedule.models.MyActivity;
-import com.dling61.calendarschedule.models.OndutyTable;
-import com.dling61.calendarschedule.models.Schedule;
-import com.dling61.calendarschedule.models.ScheduleTable;
-import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.ActivityView;
+import com.dling61.calendarschedule.views.PopupDialog;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -31,12 +26,12 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * @author Huyen
@@ -101,6 +96,8 @@ public class ActivityForAddScheduleFragment extends Fragment implements OnClickL
 		super.onResume();
 	}
 
+	
+	
 	BroadcastReceiver activityDownloadComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
 			DatabaseHelper dbHelper = DatabaseHelper
@@ -143,6 +140,26 @@ public class ActivityForAddScheduleFragment extends Fragment implements OnClickL
 		}
 	}
 
+	/**
+	 * Return popup time zone
+	 * */
+	public void popUp(final ArrayList<MyActivity>listActivity, final int type) {
+		ActivityNameAdapter adapter = new ActivityNameAdapter(mContext, listActivity);
+		final PopupDialog dialog = new PopupDialog(mContext, mContext.getResources().getString(R.string.activity));
+		dialog.show();
+		dialog.list_item.setAdapter(adapter);
+		dialog.list_item.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				
+				dialog.dismiss();
+
+			}
+		});
+
+	}
+	
 
 	@Override
 	public void onAttach(Activity activity) {

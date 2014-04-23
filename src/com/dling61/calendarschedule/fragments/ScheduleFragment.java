@@ -34,7 +34,7 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 /**
- * @author Huyen return account information by token
+ * @author Huyen
  * 
  */
 public class ScheduleFragment extends Fragment implements OnClickListener {
@@ -127,10 +127,6 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		// IntentFilter filterRefreshUpdate = new IntentFilter();
-		// filterRefreshUpdate.addAction(CommConstant.DELETE_SCHEDULE_COMPLETE);
-		// filterRefreshUpdate.addAction(CommConstant.SCHEDULE_READY);
-		// getActivity().registerReceiver(scheduleReadyComplete,filterRefreshUpdate);
 	}
 
 	@Override
@@ -269,135 +265,14 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-//	/**
-//	 * set data for expandable listview
-//	 * */
-//	private void setAdapterSchedule(
-//			HashMap<String, ArrayList<Schedule>> listScheduleByDay,
-//			ArrayList<String> listDateString) {
-//
-//		ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter(
-//				getActivity(), listDateString, listScheduleByDay);
-//		view.expand_list_schedule.setAdapter(adapter);
-//		view.expand_list_schedule
-//				.setOnGroupClickListener(new OnGroupClickListener() {
-//					@Override
-//					public boolean onGroupClick(ExpandableListView parent,
-//							View v, int groupPosition, long id) {
-//						return true; // This way the expander cannot be
-//										// collapsed
-//					}
-//				});
-//		int count = adapter.getGroupCount();
-//		for (int position = 1; position <= count; position++)
-//			view.expand_list_schedule.expandGroup(position - 1);
-//	}
 
 	BroadcastReceiver scheduleReadyComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
 			Log.d("add schedule","receiver");
-			// DatabaseHelper dbHelper = DatabaseHelper
-			// .getSharedDatabaseHelper(mContext);
-			// ArrayList<Schedule> schedules = dbHelper.getAllSchedules();
-			// ArrayList<String> listDateString = new ArrayList<String>();
-			// HashMap<String, ArrayList<Schedule>> listScheduleByDay = new
-			// HashMap<String, ArrayList<Schedule>>();
-			// if (schedules != null && schedules.size() > 0)
-			// // group schedule same date
-			// for (Schedule schedule : schedules) {
-			//
-			// SimpleDateFormat dateFormat = new SimpleDateFormat(
-			// CommConstant.DATE_TIME_FORMAT);
-			// dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-			// Date date;
-			// try {
-			// date = (Date) dateFormat.parse(schedule.getStarttime());
-			//
-			// String dateString = new SimpleDateFormat("MMM dd, yyyy")
-			// .format(date);
-			//
-			// Calendar c = Calendar.getInstance();
-			//
-			// c.setTime(date);
-			// String dateInWeekString = "";
-			// int dateInWeek = c.get(Calendar.DAY_OF_WEEK);
-			// switch (dateInWeek) {
-			// case Calendar.MONDAY:
-			// dateInWeekString = "Monday";
-			// break;
-			// case Calendar.TUESDAY:
-			// dateInWeekString = "Tuesday";
-			// break;
-			// case Calendar.WEDNESDAY:
-			// dateInWeekString = "Wednesday";
-			// break;
-			// case Calendar.THURSDAY:
-			// dateInWeekString = "Thursday";
-			// break;
-			// case Calendar.FRIDAY:
-			// dateInWeekString = "Friday";
-			// break;
-			// case Calendar.SATURDAY:
-			// dateInWeekString = "Saturday";
-			// case Calendar.SUNDAY:
-			// dateInWeekString = "Sunday";
-			//
-			// default:
-			// break;
-			// }
-			//
-			// String strDateTime = dateInWeekString + ";"
-			// + dateString;
-			// ArrayList<Schedule> listSchedule = listScheduleByDay
-			// .get(strDateTime);
-			// if (listSchedule == null) {
-			// listSchedule = new ArrayList<Schedule>();
-			// }
-			// listSchedule.add(schedule);
-			// listScheduleByDay.put(strDateTime, listSchedule);
-			// } catch (ParseException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// }
-			// Set<String> setKeys = listScheduleByDay.keySet();
-			// List<String> list = new ArrayList<String>(setKeys);
-			// listDateString = (ArrayList<String>) list;
-			//
-			// // ScheduleAdapter adapter = new ScheduleAdapter(mContext,
-			// dbHelper,
-			// // schedules);
-			// // view.list_schedule.setAdapter(adapter);
-			// ExpandableListScheduleAdapter adapter = new
-			// ExpandableListScheduleAdapter(
-			// getActivity(), listDateString, listScheduleByDay);
-			// view.expand_list_schedule.setAdapter(adapter);
-			// view.expand_list_schedule
-			// .setOnGroupClickListener(new OnGroupClickListener() {
-			// @Override
-			// public boolean onGroupClick(ExpandableListView parent,
-			// View v, int groupPosition, long id) {
-			// return true; // This way the expander cannot be
-			// // collapsed
-			// }
-			// });
-			// int count = adapter.getGroupCount();
-			// for (int position = 1; position <= count; position++)
-			// view.expand_list_schedule.expandGroup(position - 1);
-
 			processDataForAdapterListview();
 		}
 
 	};
-
-	
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		// getActivity().unregisterReceiver(scheduleReadyComplete);
-
-	}
 
 	@Override
 	public void onDestroy() {

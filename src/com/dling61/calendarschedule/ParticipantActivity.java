@@ -1,7 +1,10 @@
 package com.dling61.calendarschedule;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
 import com.dling61.calendarschedule.fragments.ParticipantFragment;
 import com.dling61.calendarschedule.utils.CommConstant;
 
@@ -19,6 +22,9 @@ public class ParticipantActivity extends FragmentActivity {
 		activity_id=getIntent().getStringExtra(CommConstant.ACTIVITY_ID);
 		ParticipantFragment participantFragment = new ParticipantFragment();
 		participantFragment.setActivity_id(activity_id);	
+		ArrayList<Integer>selectedParticipant =getIntent()
+				.getIntegerArrayListExtra("pins");
+		participantFragment.setSelectedParticipant(selectedParticipant);
 		participantFragment.setType(getIntent().getIntExtra(CommConstant.TYPE, CommConstant.TYPE_CONTACT));
 		getSupportFragmentManager().beginTransaction().replace(R.id.container,participantFragment).commit(); 
 		

@@ -20,13 +20,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class OndutyActivity extends Activity implements OnItemClickListener,
-		OnClickListener {
+/**
+ * @author khoahuyen
+ * */
+public class OndutyActivity extends Activity implements OnClickListener {
 
 	private DatabaseHelper dbHelper;
 	private List<Sharedmember> sharedmembers;
@@ -62,32 +62,36 @@ public class OndutyActivity extends Activity implements OnItemClickListener,
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == view.layout_done) {
-			if(sharedmembers!=null&&sharedmembers.size()>0)
-			{
-				ArrayList<Integer> listMember=new ArrayList<Integer>();
-				for(Sharedmember member:sharedmembers)
-				{
-					if(member.isChecked)
-					{
-//						list_member_on_duty+=member.getID()+",";
+			if (sharedmembers != null && sharedmembers.size() > 0) {
+				ArrayList<Integer> listMember = new ArrayList<Integer>();
+				for (Sharedmember member : sharedmembers) {
+					if (member.isChecked) {
+						// list_member_on_duty+=member.getID()+",";
 						listMember.add(member.getID());
 					}
 				}
-			
-				if(listMember!=null&&listMember.size()>0)
-				{
-					Schedule schedule=dbHelper.getScheduleSortedByID(schedule_id);
-					//post on duty
-					WebservicesHelper ws=new WebservicesHelper(mContext);
-					ws.updateSchedule(schedule, listMember);
-				}
-				else
-				{
-					//show Toast
-					Toast.makeText(mContext, "You haven't select any member to assign \"On Duty\" ", Toast.LENGTH_LONG).show();
+
+				if (listMember != null && listMember.size() > 0) {
+
+					Schedule schedule = dbHelper
+							.getScheduleSortedByID(schedule_id);
+
+					// post on duty
+					WebservicesHelper ws = new WebservicesHelper(mContext);
+					if (schedule_id > 0) {
+						ws.updateSchedule(schedule, listMember);
+					} else {
+						ws.addSchedule(schedule, listMember);
+					}
+				} else {
+					// show Toast
+					Toast.makeText(
+							mContext,
+							"You haven't select any member to assign \"On Duty\" ",
+							Toast.LENGTH_LONG).show();
 				}
 			}
-			
+
 		}
 	}
 
@@ -137,16 +141,6 @@ public class OndutyActivity extends Activity implements OnItemClickListener,
 		return true;
 	}
 
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-
-		Sharedmember member = sharedmembers.get(arg2);
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		Schedule schedule = dbHelper.getScheduleSortedByID(schedule_id);
-		ws.updateSchedule(schedule, pins);
-
-	}
-
 	public void itemSelected(View v) {
 		ImageButton imgbtn = (ImageButton) v;
 		int tag = (Integer) v.getTag();
@@ -157,14 +151,6 @@ public class OndutyActivity extends Activity implements OnItemClickListener,
 			imgbtn.setImageResource(R.drawable.checked);
 			pins.add((Integer) tag);
 		}
-	}
-
-	public void ondutyDone(View v) {
-		Intent resultIntent = new Intent();
-		resultIntent
-				.putIntegerArrayListExtra("pins", (ArrayList<Integer>) pins);
-		setResult(Activity.RESULT_OK, resultIntent);
-		finish();
 	}
 
 }

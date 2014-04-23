@@ -49,4 +49,7 @@ public class CommConstant {
 	public static final String DELETE_SHARED_MEMBER_FROM_ACTIVITY="delete.shared.member.activity";
 	public static final String ADD_SHARED_MEMBER_FROM_ACTIVITY="add.shared.member.activity";
 	public static final int OWNER=0;
+	public static final String LIST_PARTICIPANT_ID="list_participant_id";
+	public static final String SELECTED_ON_DUTY="select.on.duty";
+	public static final String ON_DUTY_ITEM_SELECTED="select.item.on.duty";
 }
