@@ -196,11 +196,11 @@ public class CreateNewScheduleActivity extends Activity implements
 			intent.putExtra(CommConstant.TYPE, CommConstant.TYPE_PARTICIPANT);
 			intent.putExtra(CommConstant.SCHEDULE_ID,
 					thisSchedule != null ? thisSchedule.getSchedule_ID() : -1);
-			List<Integer> pins = new ArrayList<Integer>();
-			if (composeType == DatabaseHelper.EXISTED) {
-				pins = dbHelper.getParticipantsForSchedule(thisSchedule
-						.getSchedule_ID());
-			}
+//			List<Integer> pins = new ArrayList<Integer>();
+//			if (composeType == DatabaseHelper.EXISTED) {
+//				pins = dbHelper.getParticipantsForSchedule(thisSchedule
+//						.getSchedule_ID());
+//			}
 			intent.putIntegerArrayListExtra("pins", (ArrayList<Integer>) pins);
 			startActivityForResult(intent, REQUEST_CODE);
 		} else if (v == view.layout_next) {
@@ -228,7 +228,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		}
 		view.et_new_activity_name.setText(myActivity != null ? myActivity
 				.getActivity_name() : "");
-		// if (thisSchedule != null) {
+		 if (thisSchedule != null) {
 		pins = dbHelper.getParticipantsForSchedule(thisSchedule
 				.getSchedule_ID());
 		String members = "";
@@ -240,12 +240,15 @@ public class CreateNewScheduleActivity extends Activity implements
 						members = members + p.getName();
 					else
 						members = members + "," + p.getName();
+					p.isChecked=true;
 				}
 			}
 		}
+		
 		view.et_on_duty.setText(members);
+		 }
 
-		String startdate = thisSchedule.getStarttime();
+		String startdate = thisSchedule!=null?thisSchedule.getStarttime():"";
 		String startfulldate = MyDate.getWeekdayFromUTCTime(startdate) + ", "
 				+ MyDate.transformUTCTimeToCustomStyle(startdate);
 		String starttime = MyDate.getTimeWithAPMFromUTCTime(startdate);
@@ -259,7 +262,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		view.et_endDate.setText(endfulldate);
 		view.et_endTime.setText(endtime);
 
-		view.et_new_activity_description.setText(thisSchedule.getDesp());
+		view.et_new_activity_description.setText(thisSchedule!=null?thisSchedule.getDesp():"");
 		// }
 		// }
 	}

@@ -99,6 +99,8 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
+        
+             <activity android:name="com.devsmart.android.activity.FragmentShellActivity" />
     </application>
 
 </manifest>

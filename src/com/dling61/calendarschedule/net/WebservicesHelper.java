@@ -73,7 +73,91 @@ public class WebservicesHelper {
 		}
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
 	}
+	
+	String login="http://www.karfarm.com/users/sign_in";
+	/**
+	 * Create account If success, go to login else show toast notify create
+	 * account failure
+	 * */
+	public void loginKarFarm() {
+		String signUpUrl = login;
+		try {
+			JSONObject jsonParams = new JSONObject();
+			jsonParams.put("email","edjhwang@gmail.com");
+				   jsonParams.put("password","password");
+				   jsonParams.put("csrf_token","gjHIQ0EQzYcuLfPPR2MYhMDZifx9F+b+4BdkG4Ki2ww=");
+//			jsonParams.put(CommConstant.PASSWORD, password);
+//			jsonParams.put(CommConstant.USERNAME, username);
+//			jsonParams.put(CommConstant.MOBILE, mobile);
 
+//			client.addHeader("Content-type", "application/json");
+			StringEntity entity = new StringEntity(jsonParams.toString());
+			
+			client.post(null,signUpUrl,entity,"X-CSRF-Token", new JsonHttpResponseHandler() {
+						public void onSuccess(JSONObject response) {
+							Log.i("karfarm", response.toString());
+
+							if (response != null) {
+								Log.d("go there", "success not null");
+								// TODO Auto-generated method stub
+								try {
+									if (!response.get("error message")
+											.toString().startsWith("200")) {
+										Toast.makeText(
+												mContext,
+												response.get("error message")
+														.toString(),
+												Toast.LENGTH_LONG).show();
+									}
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								
+							}
+						}
+
+						public void onFailure(Throwable e, String response) {
+							if (response != null) {
+								Log.d("karfarm response", response.toString());
+								Toast.makeText(
+										mContext,
+										mContext.getResources().getString(
+												R.string.create_acc_failure)
+												+ "\n" + response.toString(),
+										Toast.LENGTH_LONG).show();
+							}
+
+						}
+
+						@Override
+						public void onStart() {
+							// TODO Auto-generated method stub
+							super.onStart();
+							progress.show();
+						}
+
+						@Override
+						public void onFinish() {
+							// TODO Auto-generated method stub
+							super.onFinish();
+							progress.dismiss();
+						}
+
+					});
+
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+	}
+
+	
+	
 	/**
 	 * Create account If success, go to login else show toast notify create
 	 * account failure
@@ -424,13 +508,16 @@ public class WebservicesHelper {
 	public void getAllActivitys(JsonHttpResponseHandler handler) {
 		String activityUrl = BaseUrl.BASEURL + "services" + "?"
 				+ BaseUrl.URL_POST_FIX;
-		Log.i("url is :", activityUrl);
+		Log.i("get all activity url is :", activityUrl);
 		final SharedReference ref = new SharedReference();
 		int currentOwnerID = ref.getCurrentOwnerId(mContext);
 		RequestParams params = new RequestParams();
 		params.put(CommConstant.OWNER_ID, String.valueOf(currentOwnerID));
+//		params.put(CommConstant.LAST_UPDATE_TIME,
+//				ref.getLastestServiceLastModifiedTime(mContext));
 		params.put(CommConstant.LAST_UPDATE_TIME,
-				ref.getLastestServiceLastModifiedTime(mContext));
+				"2014-04-20 04:17:26");
+		Log.d("param activity all",params.toString());
 		client.addHeader("Content-type", "application/json");
 		client.get(activityUrl, params, handler);
 
@@ -444,7 +531,7 @@ public class WebservicesHelper {
 				+ BaseUrl.URL_POST_FIX;
 		final SharedReference ref = new SharedReference();
 		int currentOwnerID = ref.getCurrentOwnerId(mContext);
-		Log.i("schedules url:", scheduleUrl);
+		Log.i("get all schedule url:", scheduleUrl);
 		RequestParams params = new RequestParams();
 		params.put("ownerid", String.valueOf(currentOwnerID));
 		params.put("lastupdatetime",
@@ -843,7 +930,7 @@ public class WebservicesHelper {
 			JSONObject params = new JSONObject();
 			params.put("ownerid", activity.getOwner_ID());
 			params.put("services", activityParams);
-
+			Log.d("add activity",params.toString());
 			client.addHeader("Content-type", "application/json");
 			Log.i("add activity", params.toString());
 			StringEntity entity = new StringEntity(params.toString());
@@ -869,6 +956,8 @@ public class WebservicesHelper {
 									// Toast.LENGTH_LONG).show();
 								}
 
+//								postSharedmemberToActivity(activity.getOwner_ID(), CommConstant.OWNER, activity.getActivity_ID());
+								
 								// add owner of this activity is SharedMember
 								// with share role=owner
 								Participant participant = dbHelper
@@ -893,7 +982,7 @@ public class WebservicesHelper {
 								member.put(SharedMemberTable.service_id,
 										activity.getActivity_ID());
 								member.put(SharedMemberTable.is_Deleted, 0);
-								member.put(SharedMemberTable.is_Synced, 1);
+								member.put(SharedMemberTable.is_Synced,0);
 
 								dbHelper.insertSharedmember(member);
 
@@ -1159,8 +1248,14 @@ public class WebservicesHelper {
 			public void onFinish() {
 				// TODO Auto-generated method stub
 				super.onFinish();
+				try
+				{
 				if (progress.isShowing()) {
 					progress.dismiss();
+				}
+				}catch(Exception ex)
+				{
+					ex.printStackTrace();
 				}
 			}
 
@@ -1243,15 +1338,15 @@ public class WebservicesHelper {
 	 * Get member shared for actiivty
 	 * */
 	public void getSharedmembersForActivity(final String activity_id) {
-		String SharedmembersUrl = BaseUrl.BASEURL + "services/" + activity_id
+		String sharedmembersUrl = BaseUrl.BASEURL + "services/" + activity_id
 				+ "/sharedmembers" + "?" + BaseUrl.URL_POST_FIX;
-		Log.i("url is :", SharedmembersUrl);
+		Log.i("shared member url :", sharedmembersUrl);
 		int currentOwnerID = mContext.getSharedPreferences("MyPreferences", 0)
 				.getInt("currentownerid", 0);
 		RequestParams params = new RequestParams();
 		params.put("ownerid", String.valueOf(currentOwnerID));
 		params.put("lastupdatetime", "");
-		client.get(SharedmembersUrl, params, new JsonHttpResponseHandler() {
+		client.get(sharedmembersUrl, params, new JsonHttpResponseHandler() {
 			public void onSuccess(JSONObject response) {
 				Log.i("successful response", response.toString());
 				try {
@@ -1340,6 +1435,7 @@ public class WebservicesHelper {
 			final String activityid) {
 		String sharedmemberUrl = BaseUrl.BASEURL + "services/" + activityid
 				+ "/" + "sharedmembers" + "?" + BaseUrl.URL_POST_FIX;
+		Log.d("share member url",sharedmemberUrl);
 		try {
 			JSONObject sharedmemberParams = new JSONObject();
 			sharedmemberParams.put("ownerid",
@@ -1347,6 +1443,8 @@ public class WebservicesHelper {
 			sharedmemberParams.put("sharedrole", role);
 			sharedmemberParams.put("memberid", memberid);
 
+			Log.d("post shared member",sharedmemberParams.toString());
+			
 			client.addHeader("Content-type", "application/json");
 			// Log.i("add participant", sharedmemberParams.toString());
 			StringEntity entity = new StringEntity(

@@ -107,7 +107,8 @@
                     android:text="@string/activity_name"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginRight="@dimen/margin_right" />
 
                 <EditText
                     android:id="@+id/et_new_activity_name"
@@ -135,7 +136,8 @@
                     android:text="@string/time_zone"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" 
+                     android:layout_marginRight="@dimen/margin_right" />
 
                 <EditText
                     android:id="@+id/et_new_activity_time_zone"
@@ -164,7 +166,8 @@
                     android:text="@string/alert"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                     android:layout_marginRight="@dimen/margin_right"  />
 
                 <EditText
                     android:id="@+id/et_new_activity_alert"
@@ -183,7 +186,8 @@
                 android:id="@+id/layout_repeat"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top" >
+                android:layout_marginTop="@dimen/margin_top" 
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/tv_new_activity_repeat"
@@ -194,7 +198,8 @@
                     android:text="@string/repeat"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" 
+                     android:layout_marginRight="@dimen/margin_right" />
 
                 <EditText
                     android:id="@+id/et_new_activity_repeat"
@@ -223,7 +228,8 @@
                     android:text="@string/description"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                     android:layout_marginRight="@dimen/margin_right"  />
 
                 <EditText
                     android:id="@+id/et_new_activity_description"
@@ -231,7 +237,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_description"
-                    android:minLines="3"
+                    
                     android:textColor="@color/black"
                     style="@style/edittextStyle"  />
             </RelativeLayout>
@@ -276,7 +282,8 @@
                 android:text="@string/add_participant"
                 android:textColor="@color/white"
                 android:textSize="15sp"
-                android:visibility="gone" />
+                android:visibility="gone" 
+                android:layout_marginTop="@dimen/margin_top"/>
 
             <Button
                 android:id="@+id/btn_remove_activity"

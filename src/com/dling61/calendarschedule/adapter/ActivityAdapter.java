@@ -8,7 +8,6 @@ import com.dling61.calendarschedule.AddNewActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.MyActivity;
-import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.Utils;

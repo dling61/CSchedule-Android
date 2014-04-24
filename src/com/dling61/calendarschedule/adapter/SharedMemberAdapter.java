@@ -90,7 +90,7 @@ public class SharedMemberAdapter extends BaseAdapter {
 
 				viewHolder.cb_check
 						.setImageResource(R.drawable.check_box_selected);
-				;
+				
 			} else {
 				viewHolder.cb_check
 						.setImageResource(R.drawable.check_box_unselected);

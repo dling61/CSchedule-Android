@@ -2,8 +2,10 @@ package com.dling61.calendarschedule.fragments;
 
 import java.util.ArrayList;
 import java.util.Date;
+
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.R;
+import com.dling61.calendarschedule.adapter.ActivityAdapter;
 import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.adapter.SharedMemberAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
@@ -17,9 +19,11 @@ import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.ParticipantView;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -63,6 +67,31 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 		this.selectedParticipant = selectedParticipant;
 	}
 
+	BroadcastReceiver activityDownloadComplete = new BroadcastReceiver() {
+		public void onReceive(Context arg0, Intent arg1) {
+			initData();
+		}
+	};
+	
+	
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+		IntentFilter filterRefreshUpdate = new IntentFilter();
+		filterRefreshUpdate
+				.addAction(CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
+		getActivity().registerReceiver(activityDownloadComplete,
+				filterRefreshUpdate);
+	}
+
+	@Override
+	public void onDetach() {
+		// TODO Auto-generated method stub
+		super.onDetach();
+		getActivity().unregisterReceiver(activityDownloadComplete);
+	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -88,7 +117,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 			if (type == CommConstant.TYPE_PARTICIPANT) {
 				arrSharemember = dbHelper
 						.getSharedMemberForActivity(activity_id);
-				// dbHelper.close();
+			
 
 				if (arrSharemember != null && arrSharemember.size() > 0) {
 					if (selectedParticipant != null
@@ -169,7 +198,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 										+ participantSelected.getName()
 										+ " "
 										+ mContext.getResources().getString(
-												R.string.into) + activity_name;
+												R.string.into) +" "+activity_name;
 								final ConfirmDialog confirmDialog = new ConfirmDialog(
 										mContext, title);
 								confirmDialog.show();

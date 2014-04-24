@@ -3,14 +3,12 @@ package com.dling61.calendarschedule;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.adapter.SharedMemberAdapter;
 import com.dling61.calendarschedule.adapter.TextViewBaseAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.ActivityTable;
 import com.dling61.calendarschedule.models.MyActivity;
 import com.dling61.calendarschedule.models.OndutyTable;
-import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.models.ParticipantTable;
 import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.models.ScheduleTable;
@@ -54,7 +52,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	String[] timezone_array = null;
 	String[] timezone_value_array = null;
 	String[] repeat_array = null;
-	String[] participant_infor_dialog = null;
+
 	int time_zone = 0;// timezone position
 	int alert_type = 0;
 	int repeat_type = 0;
@@ -163,8 +161,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 								View view, final int position, long id) {
 							final Sharedmember participantSelected = adapter.sharedMembers
 									.get(position);
-							participantInforDialog(participant_infor_dialog,
-									participantSelected);
+							participantInforDialog(participantSelected);
 
 						}
 					});
@@ -178,9 +175,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 	};
 
-	private void participantInforDialog(String[] array,
-			final Sharedmember participant) {
-
+	private void participantInforDialog(final Sharedmember participant) {
+		String[] array = getResources().getStringArray(
+				R.array.participant_infor_array);
+		;
 		int length = array.length;
 		for (int i = 0; i < length; i++) {
 			array[i] += " " + participant.getName();
@@ -342,20 +340,18 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				R.array.timezone_value_array);
 
 		repeat_array = getResources().getStringArray(R.array.repeat_array);
-		participant_infor_dialog = getResources().getStringArray(
-				R.array.participant_infor_array);
 
 		// timezone saved is position in array timezone
 		// SharedReference ref = new SharedReference();
 		// time_zone = ref.getTimeZone(mContext);
 		// set time zone if used to select
-		float timezone = thisActivity != null ? thisActivity.getOtc_offset()
-				: 0;
+		int timezone = new SharedReference().getTimeZone(mContext);
+		// : 0;
 		Log.d("timeze", timezone + "");
-		if (time_zone > 0) {
+		if (timezone <= 0) {
 			view.et_new_activity_time_zone.setText(timezone_array[0]);
 		} else {
-			view.et_new_activity_time_zone.setText(timezone_array[time_zone]);
+			view.et_new_activity_time_zone.setText(timezone_array[timezone]);
 		}
 
 		if (composeType == DatabaseHelper.NEW)
@@ -419,7 +415,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				intent.putExtra(CommConstant.TYPE, CommConstant.TYPE_CONTACT);
 
-				
 				mContext.startActivity(intent);
 			}
 		} else if (v == view.btn_remove_activity) {
@@ -459,12 +454,15 @@ public class AddNewActivity extends Activity implements OnClickListener {
 						if (listSharedMemberOfActivity != null
 								&& listSharedMemberOfActivity.size() > 0) {
 							for (Sharedmember sharedMember : listSharedMemberOfActivity) {
-								ContentValues cv=new ContentValues();
+								ContentValues cv = new ContentValues();
 								cv.put(SharedMemberTable.is_Deleted, 1);
-								cv.put(SharedMemberTable.is_Synced, 0);								
-								dbHelper.updateSharedmember(sharedMember.getID(),activity_id,cv);
-								WebservicesHelper ws=new WebservicesHelper(mContext);
-								ws.deleteSharedmemberOfActivity(sharedMember.getID(), activity_id);
+								cv.put(SharedMemberTable.is_Synced, 0);
+								dbHelper.updateSharedmember(
+										sharedMember.getID(), activity_id, cv);
+								WebservicesHelper ws = new WebservicesHelper(
+										mContext);
+								ws.deleteSharedmemberOfActivity(
+										sharedMember.getID(), activity_id);
 							}
 						}
 
@@ -476,21 +474,22 @@ public class AddNewActivity extends Activity implements OnClickListener {
 							scv.put(ScheduleTable.is_Synchronized, 0);
 							int schedule_id = sbelongtoa.get(i)
 									.getSchedule_ID();
-//							dbHelper.updateSchedule(schedule_id, scv);
+							// dbHelper.updateSchedule(schedule_id, scv);
 							List<Integer> onduties = dbHelper
 									.getOndutyRecordsForSchedule(schedule_id);
 							for (int j = 0; j < onduties.size(); j++) {
 								ContentValues ocv = new ContentValues();
 								ocv.put(OndutyTable.is_Deleted, 1);
 								ocv.put(OndutyTable.is_Synchronized, 0);
-//								int onduty_id = onduties.get(j);
-								dbHelper.updateOnduty(schedule_id, ocv);								
+								// int onduty_id = onduties.get(j);
+								dbHelper.updateOnduty(schedule_id, ocv);
 							}
 							dbHelper.updateSchedule(schedule_id, scv);
-							WebservicesHelper ws=new WebservicesHelper(mContext);
+							WebservicesHelper ws = new WebservicesHelper(
+									mContext);
 							ws.deleteSchedule(sbelongtoa.get(i));
 						}
-						
+
 						ContentValues cv = new ContentValues();
 						cv.put(ActivityTable.is_Deleted, 1);
 						cv.put(ActivityTable.is_Synchronized, 0);
@@ -578,8 +577,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		Log.d("alert_type", alert_type + "");
 		Log.d("repeat_type", repeat_type + "");
 		thisActivity.setRepeat(repeat_type);
+
+		int timezone = new SharedReference().getTimeZone(mContext);
 		thisActivity.setOtc_offset((int) (Float
-				.parseFloat(timezone_value_array[time_zone]) * 3600));
+				.parseFloat(timezone_value_array[timezone]) * 3600));
 		return true;
 	}
 

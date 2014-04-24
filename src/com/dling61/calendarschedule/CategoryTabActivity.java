@@ -175,8 +175,11 @@ public class CategoryTabActivity extends FragmentActivity implements
 									+ " successfully!");
 					}
 					
+					ws.getSharedmembersForActivity(activityid);
 					//TODO: will delete if service get all schedule implemented
 					ws.getSchedulesForActivity(activityid);
+					
+					
 				}
 				// SEND broadcast to activity
 				Intent intent = new Intent(

@@ -1,10 +1,10 @@
 package com.dling61.calendarschedule.adapter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import com.devsmart.android.ui.HorizontalListView;
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.db.DatabaseHelper;
@@ -14,14 +14,23 @@ import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.Utils;
+import com.dling61.calendarschedule.views.DutyScheduleView;
+import com.dling61.calendarschedule.views.ParticipantInforDialog;
+import com.dling61.calendarschedule.views.TextItemView;
+
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 
@@ -31,13 +40,14 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 	private LayoutInflater mInflater;
 	DatabaseHelper dbHelper;
 	boolean isToday;
-
+	
 	public ExpandableListScheduleAdapter(Context context,
 			ArrayList<String> listSchedulesByDay,
 			Map<String, ArrayList<Schedule>> scheduleCollection) {
 		this.context = context;
 		this.scheduleCollection = scheduleCollection;
 		this.listSchedulesByDay = listSchedulesByDay;
+		
 		mInflater = LayoutInflater.from(context);
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
 
@@ -64,6 +74,8 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					.findViewById(R.id.schedule_date_tv);
 			viewHolder.participants_TV = (TextView) convertView
 					.findViewById(R.id.schedule_participants_tv);
+			viewHolder.listview=(HorizontalListView)convertView.findViewById(R.id.listview);
+//			viewHolder.listview=(ListView)convertView.findViewById(R.id.listview);
 			viewHolder.service_TV.setTypeface(Utils.getTypeFace(context));
 			viewHolder.time_TV.setTypeface(Utils.getTypeFace(context));
 			viewHolder.participants_TV.setTypeface(Utils.getTypeFace(context));
@@ -80,24 +92,34 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		String date = MyDate.getTimeWithAPMFromUTCTime(schedule.getStarttime())
 				+ " to "
 				+ MyDate.getTimeWithAPMFromUTCTime(schedule.getEndtime());
-		List<Integer> memberids = dbHelper.getParticipantsForSchedule(schedule
-				.getSchedule_ID());
-		String members = "";
-		for (int i = 0; i < memberids.size(); i++) {
-			Sharedmember sm = dbHelper.getSharedmember(memberids.get(i),
-					schedule.getService_ID());
-			if (sm != null) {
-				if (i == 0) {
-					members = members + sm.getName();
-				} else {
-					members = members + "|" + sm.getName();
-				}
-			}
-		}
+		
+//		String members = "";
+//		for (int i = 0; i < memberids.size(); i++) {
+//			Sharedmember sm = dbHelper.getSharedmember(memberids.get(i),
+//					schedule.getService_ID());
+//			if (sm != null) {
+//				if (i == 0) {
+//					members = members + sm.getName();
+//				} else {
+//					members = members + "|" + sm.getName();
+//				}
+//			}
+//		}
+		
+		
 
 		viewHolder.service_TV.setText(activity_name);
 		viewHolder.time_TV.setText(date);
-		viewHolder.participants_TV.setText(members);
+//		viewHolder.participants_TV.setText(members);
+		List<Integer> memberids = dbHelper.getParticipantsForSchedule(schedule
+				.getSchedule_ID());
+		if(memberids!=null&&memberids.size()>0)
+		{
+			onDutyMemberAdapter adapter=new onDutyMemberAdapter(memberids, activity.getActivity_ID());
+//			adapter.setListParticipantId(memberids, activity.getActivity_ID());
+			
+			viewHolder.listview.setAdapter(adapter);
+		}
 		convertView.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -186,10 +208,112 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		TextView service_TV;
 		TextView time_TV;
 		TextView participants_TV;
+		HorizontalListView listview;// = (HorizontalListView) findViewById(R.id.listview);
+//		ListView listview;
 	}
 
 	static class HeaderViewHolder {
 		TextView weekday_TV;
 		TextView date_TV;
+	}
+	
+	
+	
+	private class onDutyMemberAdapter extends BaseAdapter
+	{		
+		List<Integer> listParticipantId;
+		String activity_id="";
+		
+		public onDutyMemberAdapter(List<Integer> listParticipantId,String activity_id)
+		{
+			this.listParticipantId=listParticipantId;
+			this.activity_id=activity_id;
+					
+		}
+		
+		@Override
+		public int getCount() {
+			return listParticipantId.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			DutyScheduleView holder;
+			//
+			if (convertView==null) {
+				holder = new DutyScheduleView(context);
+				convertView = holder;
+				convertView.setTag(holder);
+			} else {
+				// Get the ViewHolder back to get fast access to the TextView
+				// and the ImageView.
+				holder = (DutyScheduleView) convertView.getTag();
+
+			}
+			int mem_id=listParticipantId.get(position);
+			final Sharedmember sm=dbHelper.getSharedmember(mem_id, activity_id);
+			if(sm!=null)
+			{
+				holder.title.setText(sm.getName());
+			}
+			convertView.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+				participantInforDialog(sm);
+				}
+			});
+			return holder;
+		}
+		
+	};
+	
+	
+	private void participantInforDialog(
+			final Sharedmember participant) {
+		String[] array = context.getResources().getStringArray(
+				R.array.onduty_member_infor_array);
+		int length = array.length;
+		for (int i = 0; i < length; i++) {
+			array[i] += " " + participant.getName();
+		}
+		TextViewBaseAdapter adapter = new TextViewBaseAdapter(context, array);
+
+		final ParticipantInforDialog dialog = new ParticipantInforDialog(
+				context);
+		dialog.show();
+		dialog.list_item.setAdapter(adapter);
+		dialog.list_item.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int position, long arg3) {
+				switch (position) {
+				case 0:
+					Utils.makeAPhoneCall(context, participant.getMobile());
+					break;
+				case 1:
+					Utils.sendAMessage(context, participant.getMobile());
+					break;
+				case 2:
+					Utils.sendAnEmail(context, participant.getEmail());
+					break;
+				case 3:
+					break;
+				default:
+					break;
+				}
+				dialog.dismiss();
+			}
+		});
 	}
 }

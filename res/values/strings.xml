@@ -134,4 +134,11 @@
     <string name="today">Today</string>
     <string name="me">Me</string>
     <string name="all">All</string>
+     <string-array name="onduty_member_infor_array">
+        <item>Make Call</item>
+        <item>Send Message</item>
+        <item>Send Email</item>
+        <item>Cancel</item>
+    </string-array>
+    
 </resources>
