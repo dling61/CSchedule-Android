@@ -418,7 +418,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				mContext.startActivity(intent);
 			}
 		} else if (v == view.btn_remove_activity) {
-			deleteActivity();
+			dialogDeleteActivity();
 		} else if (v == view.layout_back) {
 			((Activity) mContext).finish();
 		} else if (v == view.et_new_activity_description) {
@@ -436,9 +436,61 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * Delete activity
+	 * delete activity
 	 * */
 	private void deleteActivity() {
+
+		ArrayList<Sharedmember> listSharedMemberOfActivity = dbHelper
+				.getSharedMemberForActivity(activity_id);
+		if (listSharedMemberOfActivity != null
+				&& listSharedMemberOfActivity.size() > 0) {
+			for (Sharedmember sharedMember : listSharedMemberOfActivity) {
+				ContentValues cv = new ContentValues();
+				cv.put(SharedMemberTable.is_Deleted, 1);
+				cv.put(SharedMemberTable.is_Synced, 0);
+				dbHelper.updateSharedmember(sharedMember.getID(), activity_id,
+						cv);
+				WebservicesHelper ws = new WebservicesHelper(mContext);
+				ws.deleteSharedmemberOfActivity(sharedMember.getID(),
+						activity_id);
+			}
+		}
+
+		List<Schedule> sbelongtoa = dbHelper
+				.getSchedulesBelongtoActivity(activity_id);
+		for (int i = 0; i < sbelongtoa.size(); i++) {
+			ContentValues scv = new ContentValues();
+			scv.put(ScheduleTable.is_Deleted, 1);
+			scv.put(ScheduleTable.is_Synchronized, 0);
+			int schedule_id = sbelongtoa.get(i).getSchedule_ID();
+			// dbHelper.updateSchedule(schedule_id, scv);
+			List<Integer> onduties = dbHelper
+					.getOndutyRecordsForSchedule(schedule_id);
+			for (int j = 0; j < onduties.size(); j++) {
+				ContentValues ocv = new ContentValues();
+				ocv.put(OndutyTable.is_Deleted, 1);
+				ocv.put(OndutyTable.is_Synchronized, 0);
+				// int onduty_id = onduties.get(j);
+				dbHelper.updateOnduty(schedule_id, ocv);
+			}
+			dbHelper.updateSchedule(schedule_id, scv);
+			WebservicesHelper ws = new WebservicesHelper(mContext);
+			ws.deleteSchedule(sbelongtoa.get(i));
+		}
+
+		ContentValues cv = new ContentValues();
+		cv.put(ActivityTable.is_Deleted, 1);
+		cv.put(ActivityTable.is_Synchronized, 0);
+		dbHelper.updateActivity(activity_id, cv);
+
+		WebservicesHelper ws = new WebservicesHelper(mContext);
+		ws.deleteActivity(thisActivity);
+	}
+
+	/**
+	 * Delete activity
+	 * */
+	private void dialogDeleteActivity() {
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 		alertDialog.setTitle(mContext.getResources()
 				.getString(R.string.caution));
@@ -448,55 +500,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				mContext.getResources().getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-
-						ArrayList<Sharedmember> listSharedMemberOfActivity = dbHelper
-								.getSharedMemberForActivity(activity_id);
-						if (listSharedMemberOfActivity != null
-								&& listSharedMemberOfActivity.size() > 0) {
-							for (Sharedmember sharedMember : listSharedMemberOfActivity) {
-								ContentValues cv = new ContentValues();
-								cv.put(SharedMemberTable.is_Deleted, 1);
-								cv.put(SharedMemberTable.is_Synced, 0);
-								dbHelper.updateSharedmember(
-										sharedMember.getID(), activity_id, cv);
-								WebservicesHelper ws = new WebservicesHelper(
-										mContext);
-								ws.deleteSharedmemberOfActivity(
-										sharedMember.getID(), activity_id);
-							}
-						}
-
-						List<Schedule> sbelongtoa = dbHelper
-								.getSchedulesBelongtoActivity(activity_id);
-						for (int i = 0; i < sbelongtoa.size(); i++) {
-							ContentValues scv = new ContentValues();
-							scv.put(ScheduleTable.is_Deleted, 1);
-							scv.put(ScheduleTable.is_Synchronized, 0);
-							int schedule_id = sbelongtoa.get(i)
-									.getSchedule_ID();
-							// dbHelper.updateSchedule(schedule_id, scv);
-							List<Integer> onduties = dbHelper
-									.getOndutyRecordsForSchedule(schedule_id);
-							for (int j = 0; j < onduties.size(); j++) {
-								ContentValues ocv = new ContentValues();
-								ocv.put(OndutyTable.is_Deleted, 1);
-								ocv.put(OndutyTable.is_Synchronized, 0);
-								// int onduty_id = onduties.get(j);
-								dbHelper.updateOnduty(schedule_id, ocv);
-							}
-							dbHelper.updateSchedule(schedule_id, scv);
-							WebservicesHelper ws = new WebservicesHelper(
-									mContext);
-							ws.deleteSchedule(sbelongtoa.get(i));
-						}
-
-						ContentValues cv = new ContentValues();
-						cv.put(ActivityTable.is_Deleted, 1);
-						cv.put(ActivityTable.is_Synchronized, 0);
-						dbHelper.updateActivity(activity_id, cv);
-
-						WebservicesHelper ws = new WebservicesHelper(mContext);
-						ws.deleteActivity(thisActivity);
+						deleteActivity();
 					}
 				});
 		alertDialog.setNegativeButton(

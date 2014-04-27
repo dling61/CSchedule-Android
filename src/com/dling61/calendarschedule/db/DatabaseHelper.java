@@ -108,7 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ OndutyTable.participant_ID + " INTEGER NOT NULL,"
 				+ OndutyTable.is_Deleted + " INTEGER NOT NULL,"
 				+ OndutyTable.is_Synchronized + " INTEGER NOT NULL,"
-				
+
 				+ OndutyTable.last_Modified + " TEXT);");
 
 		db.execSQL("CREATE TABLE " + SharedMemberTable.SharedMemberTableName
@@ -122,7 +122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SharedMemberTable.member_mobile + " TEXT,"
 				+ SharedMemberTable.is_Deleted + " INTEGER NOT NULL,"
 				+ SharedMemberTable.is_Synced + " INTEGER NOT NULL,"
-		
+
 				+ SharedMemberTable.last_modified + " TEXT);");
 	}
 
@@ -149,7 +149,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS "
 				+ SharedMemberTable.SharedMemberTableName);
 		onCreate(db);
-		
+
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		c.close();
 		return activities;
 	}
-	
+
 	/**
 	 * Get all activity which haven role: owner or organizer
 	 * */
@@ -210,9 +210,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				"SELECT * FROM " + ActivityTable.ActivityTableName + " where "
 						+ ActivityTable.is_Deleted + "=0 and "
 						+ ActivityTable.user_login + "='"
-						+ new SharedReference().getCurrentOwnerId(context)+"'"
-						+" and ("+ActivityTable.sharedrole+" = "+CommConstant.OWNER
-						+" or "+ActivityTable.sharedrole+" = "+CommConstant.ORGANIZER+")", null);
+						+ new SharedReference().getCurrentOwnerId(context)
+						+ "'" + " and (" + ActivityTable.sharedrole + " = "
+						+ CommConstant.OWNER + " or "
+						+ ActivityTable.sharedrole + " = "
+						+ CommConstant.ORGANIZER + ")", null);
 		while (c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
@@ -462,6 +464,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return allschedules;
 	}
 
+	
+	/**
+	 * Get number of schedule
+	 * */
+	public int getNumberSchedule() {
+		int number=0;
+		Cursor c1 = this.getWritableDatabase().rawQuery(
+				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
+						+ ScheduleTable.is_Deleted + "=0 and "
+						+ ScheduleTable.user_login + "='"
+						+ new SharedReference().getCurrentOwnerId(context)
+						+ "'", null);
+		while (c1.moveToNext()) {
+			number=c1.getCount();
+		}
+		// If not added,error will occour
+		// IllegalStateException: Process 5808 exceeded cursor quota 100, will
+		// kill it
+		c1.close();
+		// sharedDatabaseHelper.close();
+
+		return number;
+	}
+	
 	/**
 	 * Get all schedule create by owner
 	 * */
@@ -471,8 +497,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 						+ ScheduleTable.is_Deleted + "=0 and "
 						+ ScheduleTable.own_ID + "="
-						+ new SharedReference().getCurrentOwnerId(context)
-						, null);
+						+ new SharedReference().getCurrentOwnerId(context),
+				null);
 		while (c1.moveToNext()) {
 			int startIndex = c1.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c1.getString(startIndex);
@@ -658,10 +684,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * Get list participants of an activity 
+	 * Get list participants of an activity
 	 * */
-	public ArrayList<Sharedmember> getSharedMemberForActivity(
-			String activity_id) {
+	public ArrayList<Sharedmember> getSharedMemberForActivity(String activity_id) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
 						+ " WHERE " + SharedMemberTable.service_id + "="
@@ -678,18 +703,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			String email = c.getString(c
 					.getColumnIndex(SharedMemberTable.member_email));
 			String mobile = c.getString(c
-							.getColumnIndex(SharedMemberTable.member_mobile));
-			int sid=c.getInt(c
-					.getColumnIndex(SharedMemberTable.smid));
-			Sharedmember shareMember=new Sharedmember(mem_id, name, email, mobile, role, sid);
+					.getColumnIndex(SharedMemberTable.member_mobile));
+			int sid = c.getInt(c.getColumnIndex(SharedMemberTable.smid));
+			Sharedmember shareMember = new Sharedmember(mem_id, name, email,
+					mobile, role, sid);
 			list_shared_member.add(shareMember);
 
 		}
 		return list_shared_member;
 	}
-	
-	
-	
+
 	/**
 	 * Get list participants of an activity without role participant i.e. role
 	 * owner and organizer
@@ -744,13 +767,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	/**
+	 * Get number activity involve
+	 * */
+	public int getNumberActivity(String member_email) {
+		int number = 0;
+		Cursor c = this.getWritableDatabase().rawQuery(
+				"SELECT * FROM " + ActivityTable.ActivityTableName + ", "
+						+ SharedMemberTable.SharedMemberTableName + " where "
+						+ ActivityTable.is_Deleted + "=0 and "
+						+ ActivityTable.service_ID + "="
+						+ SharedMemberTable.service_id + " and "
+						+ SharedMemberTable.member_email + "='" + member_email
+						+ "'", null);
+
+		if (c.moveToNext()) {
+			number = c.getCount();
+		}
+		c.close();
+		return number;
+	}
+
+	/**
 	 * Get participant of an activity
 	 * */
 	public ArrayList<Sharedmember> getParticipantsOfActivity(String activity_id) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
 						+ " WHERE " + SharedMemberTable.service_id + "="
-						+ activity_id+ " and "+SharedMemberTable.is_Deleted+"=0", null);
+						+ activity_id + " and " + SharedMemberTable.is_Deleted
+						+ "=0", null);
 		ArrayList<Sharedmember> list_member = new ArrayList<Sharedmember>();
 		while (c.moveToNext()) {
 			int mem_id = c
@@ -762,9 +807,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(SharedMemberTable.member_email));
 			String mobile = c.getString(c
 					.getColumnIndex(SharedMemberTable.member_mobile));
-			int sid=c.getInt(c.getColumnIndex(SharedMemberTable.smid));
-			Sharedmember new_participant = new Sharedmember(mem_id, name, email,
-					mobile, role,sid);
+			int sid = c.getInt(c.getColumnIndex(SharedMemberTable.smid));
+			Sharedmember new_participant = new Sharedmember(mem_id, name,
+					email, mobile, role, sid);
 			list_member.add(new_participant);
 
 		}
@@ -779,7 +824,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ " WHERE " + ParticipantTable.is_Deleted + "=0"
 						+ " AND " + ParticipantTable.own_ID + "="
 						+ ref.getCurrentOwnerId(context) + " order by "
-						+ ParticipantTable.participant_Name + " COLLATE NOCASE ASC", null);
+						+ ParticipantTable.participant_Name
+						+ " COLLATE NOCASE ASC", null);
 		while (c.moveToNext()) {
 			int id = c
 					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));
@@ -1076,10 +1122,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return (result == 1) ? true : false;
 	}
 
+	/**
+	 * Get number of schedule user participate in
+	 * */
 	public int numbersOfSchedulesUserParticipantIn() {
 		int scheduleCounter = 0;
-		SharedPreferences sp = context.getSharedPreferences("MyPreferences", 0);
-		String userEmail = sp.getString("useremail", "");
+		SharedReference ref = new SharedReference();
+		String userEmail = ref.getEmail(context);
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + OndutyTable.participant_ID + " FROM "
 						+ OndutyTable.OntudyTableName, null);
@@ -1093,32 +1142,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return scheduleCounter;
 	}
 
-	public int numberOfActivitiesUserParticipateIn() {
-		List<Integer> activities = new ArrayList<Integer>();
-		SharedPreferences sp = context.getSharedPreferences("MyPreferences", 0);
-		String userEmail = sp.getString("useremail", "");
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + OndutyTable.participant_ID + ","
-						+ OndutyTable.service_ID + " FROM "
-						+ OndutyTable.OntudyTableName, null);
-		while (c.moveToNext()) {
-			int memberindex = c.getColumnIndex(OndutyTable.participant_ID);
-			int memberid = c.getInt(memberindex);
-			Participant p = this.getParticipant(memberid);
-			if ((p != null) && (p.getEmail().equalsIgnoreCase(userEmail))) {
-				int activityindex = c.getColumnIndex(OndutyTable.service_ID);
-				int activityID = c.getInt(activityindex);
-				if (activities.contains(activityID) == false)
-					activities.add(activityID);
-			}
-		}
-		return activities.size();
-	}
 
 	public static boolean isEmailValid(String email) {
 		boolean isValid = false;
 
-		String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+		String expression = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 		CharSequence inputStr = email;
 
 		Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);

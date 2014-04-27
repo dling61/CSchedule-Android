@@ -68,7 +68,7 @@ public class Utils {
 	public static boolean isEmailValid(String email) {
 		boolean isValid = false;
 
-		String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+		String expression = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 		CharSequence inputStr = email;
 
 		Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);

@@ -171,7 +171,7 @@
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/account_schedules_tv"
+                    android:id="@+id/btn_about"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -181,7 +181,7 @@
                     android:layout_marginTop="10dp"
                     android:gravity="left"
                     android:onClick="about"
-                    android:text="About"
+                    android:text="@string/about"
                     android:textColor="#000"
                     android:textSize="18dp"
                     android:textStyle="bold" />
@@ -195,8 +195,8 @@
                 android:layout_marginRight="0dp"
                 android:layout_marginTop="15dp"
                 android:gravity="left"
-                android:onClick="signout"
-                android:text="Sign out"
+            
+                android:text="@string/sign_out"
                 android:textColor="#000"
                 android:textSize="18dp"
                 android:textStyle="bold" />

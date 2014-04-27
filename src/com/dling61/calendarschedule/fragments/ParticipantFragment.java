@@ -5,7 +5,6 @@ import java.util.Date;
 
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.R;
-import com.dling61.calendarschedule.adapter.ActivityAdapter;
 import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.adapter.SharedMemberAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;

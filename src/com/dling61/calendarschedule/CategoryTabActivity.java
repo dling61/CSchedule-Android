@@ -24,9 +24,13 @@ import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.MenuAppView;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -321,9 +325,30 @@ public class CategoryTabActivity extends FragmentActivity implements
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		new SharedReference().setLastestParticipantLastModifiedTime(mContext,"2014-01-01 00:00:00");
-		new SharedReference().setLastestScheduleLastModifiedTime(mContext, "2014-01-01 00:00:00");
-		new SharedReference().setLastestServiceLastModifiedTime(mContext, "2014-01-01 00:00:00");
+//		new SharedReference().setLastestParticipantLastModifiedTime(mContext,"2014-01-01 00:00:00");
+//		new SharedReference().setLastestScheduleLastModifiedTime(mContext, "2014-01-01 00:00:00");
+//		new SharedReference().setLastestServiceLastModifiedTime(mContext, "2014-01-01 00:00:00");
+		
+		new AlertDialog.Builder(this).setTitle("Sure to Exit?")  
+	    .setIcon(android.R.drawable.ic_dialog_info)  
+	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {  
+	  
+	        @Override  
+	        public void onClick(DialogInterface dialog, int which) {
+	        SharedPreferences sp = getSharedPreferences("MyPreferences", 0)	;
+	        Editor editor = sp.edit();
+	        editor.clear();
+	        editor.commit();
+	        deleteDatabase(DatabaseHelper.DB_NAME);
+	        System.exit(0);
+	        }  
+	    })  
+	    .setNegativeButton("No", new DialogInterface.OnClickListener() {  
+	  
+	        @Override  
+	        public void onClick(DialogInterface dialog, int which) {  
+	        }  
+	    }).show();  
 
 	}
 

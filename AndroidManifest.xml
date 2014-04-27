@@ -94,13 +94,17 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
-         <activity
+        <activity
             android:name=".OndutyActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
-        
-             <activity android:name="com.devsmart.android.activity.FragmentShellActivity" />
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity android:name="com.devsmart.android.activity.FragmentShellActivity" />
     </application>
 
 </manifest>

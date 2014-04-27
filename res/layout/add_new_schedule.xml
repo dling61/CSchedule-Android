@@ -305,7 +305,7 @@
                 android:layout_height="50dp"
                 android:layout_marginBottom="20dp"
                 android:background="@color/bg_login_title_bar"
-                android:text="@string/remove_activity"
+                android:text="@string/remove_schedule"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_name"
                 android:visibility="visible" />

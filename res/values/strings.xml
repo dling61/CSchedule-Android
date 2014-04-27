@@ -21,8 +21,9 @@
     <string name="create_acc_failure">Create account failure!</string>
     <string name="login_fail">Login fail!</string>
     <string name="title_email">Email</string>
-<string name="title_mobile">Mobile</string>
-<string name="participant_infor">Participant Infor</string>
+    <string name="title_mobile">Mobile</string>
+    <string name="participant_infor">Participant Infor</string>
+
     <string-array name="menu_array">
         <item>Schedule</item>
         <item>Contact</item>
@@ -123,22 +124,29 @@
     <string name="delete_schedule_error">Delete schedule error</string>
     <string name="update_participant_error">Edit participant information error</string>
     <string name="add_participant_error">Add participant error</string>
-   <string-array name="participant_infor_array">
+
+    <string-array name="participant_infor_array">
         <item>Call</item>
         <item>Message</item>
         <item>Remove</item>
         <item>Cancel</item>
     </string-array>
+
     <string name="delete_participant">Delete partipant</string>
     <string name="your_contact">You can not delete yourself</string>
     <string name="today">Today</string>
     <string name="me">Me</string>
     <string name="all">All</string>
-     <string-array name="onduty_member_infor_array">
+
+    <string-array name="onduty_member_infor_array">
         <item>Make Call</item>
         <item>Send Message</item>
         <item>Send Email</item>
         <item>Cancel</item>
     </string-array>
-    
+
+    <string name="remove_schedule">Remove Schedule</string>
+    <string name="about">About</string>
+    <string name="sign_out">Sign out</string>
+
 </resources>
