@@ -62,6 +62,9 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	static final int TIMEZONE = 2;
 	String activity_id = "";
 
+	// shared role for privacy
+	int shared_role = CommConstant.OWNER;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -93,6 +96,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			view.layout_next.setVisibility(View.VISIBLE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
+			shared_role = myIntent.getIntExtra(CommConstant.ROLE,
+					CommConstant.OWNER);
 
 			thisActivity = dbHelper.getActivity(activity_id);
 			// set visible when edit
@@ -376,6 +381,33 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		repeat_type = thisActivity != null ? thisActivity.getRepeat() : 0;
 		view.et_new_activity_repeat
 				.setText(getAlert(repeat_type, repeat_array));
+		
+		if(shared_role!=CommConstant.OWNER)
+		{
+			
+			view.et_new_activity_alert.setEnabled(false);
+			view.et_new_activity_time_zone.setEnabled(false);
+			view.et_new_activity_description.setEnabled(false);
+			view.et_new_activity_name.setEnabled(false);
+			view.et_new_activity_repeat.setEnabled(false);
+//			view.btn_add_paticipant.setVisibility(View.GONE);
+//			view.btn_remove_activity.setVisibility(View.GONE);
+			view.layout_save.setEnabled(false);
+		}
+		else
+		{
+			
+			view.et_new_activity_alert.setEnabled(true);
+			view.et_new_activity_time_zone.setEnabled(true);
+			view.et_new_activity_description.setEnabled(true);
+			view.et_new_activity_name.setEnabled(true);
+			view.et_new_activity_repeat.setEnabled(true);
+//			view.btn_add_paticipant.setVisibility(View.VISIBLE);
+//			view.btn_remove_activity.setVisibility(View.VISIBLE);
+			view.layout_save.setEnabled(true);
+			
+		}
+		
 	}
 
 	/**
@@ -397,11 +429,15 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		if (v == view.layout_next) {
 			createNewActivity();
 		} else if (v == view.et_new_activity_time_zone) {
-			SharedReference ref = new SharedReference();
-			time_zone = ref.getTimeZone(mContext);
-			if (time_zone <= 0) {
-				popUp(timezone_array, TIMEZONE);
-			}
+			// if owner, can modify/delete else if is participant, only view
+//			if (shared_role == CommConstant.OWNER) {
+				SharedReference ref = new SharedReference();
+				time_zone = ref.getTimeZone(mContext);
+				if (time_zone <= 0) {
+					popUp(timezone_array, TIMEZONE);
+				}
+//			}
+			
 		} else if (v == view.et_new_activity_repeat) {
 			popUp(repeat_array, REPEAT);
 		} else if (v == view.et_new_activity_alert) {

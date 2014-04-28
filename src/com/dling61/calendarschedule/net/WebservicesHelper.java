@@ -73,91 +73,6 @@ public class WebservicesHelper {
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
 	}
 
-	String login = "http://www.karfarm.com/users/sign_in";
-
-	/**
-	 * Create account If success, go to login else show toast notify create
-	 * account failure
-	 * */
-	public void loginKarFarm() {
-		String signUpUrl = login;
-		try {
-			JSONObject jsonParams = new JSONObject();
-			jsonParams.put("email", "edjhwang@gmail.com");
-			jsonParams.put("password", "password");
-			jsonParams.put("csrf_token",
-					"gjHIQ0EQzYcuLfPPR2MYhMDZifx9F+b+4BdkG4Ki2ww=");
-			// jsonParams.put(CommConstant.PASSWORD, password);
-			// jsonParams.put(CommConstant.USERNAME, username);
-			// jsonParams.put(CommConstant.MOBILE, mobile);
-
-			// client.addHeader("Content-type", "application/json");
-			StringEntity entity = new StringEntity(jsonParams.toString());
-
-			client.post(null, signUpUrl, entity, "X-CSRF-Token",
-					new JsonHttpResponseHandler() {
-						public void onSuccess(JSONObject response) {
-							Log.i("karfarm", response.toString());
-
-							if (response != null) {
-								Log.d("go there", "success not null");
-								// TODO Auto-generated method stub
-								try {
-									if (!response.get("error message")
-											.toString().startsWith("200")) {
-										Toast.makeText(
-												mContext,
-												response.get("error message")
-														.toString(),
-												Toast.LENGTH_LONG).show();
-									}
-								} catch (JSONException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-
-							}
-						}
-
-						public void onFailure(Throwable e, String response) {
-							if (response != null) {
-								Log.d("karfarm response", response.toString());
-								Toast.makeText(
-										mContext,
-										mContext.getResources().getString(
-												R.string.create_acc_failure)
-												+ "\n" + response.toString(),
-										Toast.LENGTH_LONG).show();
-							}
-
-						}
-
-						@Override
-						public void onStart() {
-							// TODO Auto-generated method stub
-							super.onStart();
-							progress.show();
-						}
-
-						@Override
-						public void onFinish() {
-							// TODO Auto-generated method stub
-							super.onFinish();
-							progress.dismiss();
-						}
-
-					});
-
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-	}
-
 	/**
 	 * Create account If success, go to login else show toast notify create
 	 * account failure
@@ -512,12 +427,149 @@ public class WebservicesHelper {
 		int currentOwnerID = ref.getCurrentOwnerId(mContext);
 		RequestParams params = new RequestParams();
 		params.put(CommConstant.OWNER_ID, String.valueOf(currentOwnerID));
-		 params.put(CommConstant.LAST_UPDATE_TIME,
-		 ref.getLastestServiceLastModifiedTime(mContext));
-//		params.put(CommConstant.LAST_UPDATE_TIME, "2014-04-20 04:17:26");
+		params.put(CommConstant.LAST_UPDATE_TIME,
+				ref.getLastestServiceLastModifiedTime(mContext));
+		// params.put(CommConstant.LAST_UPDATE_TIME, "2014-04-20 04:17:26");
 		Log.d("param activity all", params.toString());
 		client.addHeader("Content-type", "application/json");
 		client.get(activityUrl, params, handler);
+
+	}
+	/**
+	 * get all activity of current owner id
+	 * */
+	public void getAllActivitys() {
+		String activityUrl = BaseUrl.BASEURL + "services" + "?"
+				+ BaseUrl.URL_POST_FIX;
+		Log.i("get all activity url is :", activityUrl);
+		final SharedReference ref = new SharedReference();
+		int currentOwnerID = ref.getCurrentOwnerId(mContext);
+		RequestParams params = new RequestParams();
+		params.put(CommConstant.OWNER_ID, String.valueOf(currentOwnerID));
+		params.put(CommConstant.LAST_UPDATE_TIME,
+				ref.getLastestServiceLastModifiedTime(mContext));
+		// params.put(CommConstant.LAST_UPDATE_TIME, "2014-04-20 04:17:26");
+		Log.d("param activity all", params.toString());
+		client.addHeader("Content-type", "application/json");
+		client.get(activityUrl, params,  new JsonHttpResponseHandler() {
+			public void onSuccess(JSONObject response) {
+				final SharedReference ref = new SharedReference();
+				final DatabaseHelper dbHelper = DatabaseHelper
+						.getSharedDatabaseHelper(mContext);
+
+				Log.i("get all activity", response.toString());
+				try {
+					// deleted services and schedule relationship with this
+					// service
+					JSONArray deleted_services = response
+							.getJSONArray("deletedservices");
+					int deleted_services_count = deleted_services.length();
+					if (deleted_services_count > 0) {
+						for (int i = 0; i < deleted_services_count; i++) {
+							String id = deleted_services.getString(i);
+							List<Schedule> sbelongtoa = dbHelper
+									.getSchedulesBelongtoActivity(id);
+							for (int j = 0; j < sbelongtoa.size(); j++) {
+								Schedule schedule = sbelongtoa.get(j);
+								dbHelper.deleteRelatedOnduty(schedule
+										.getSchedule_ID());
+								dbHelper.deleteSchedule(schedule.getSchedule_ID());
+							}
+							dbHelper.deleteActivity(id);
+						}
+					}
+
+					// services
+					JSONArray services = response.getJSONArray("services");
+					int service_count = services.length();
+
+					WebservicesHelper ws=new WebservicesHelper(mContext);
+					for (int i = 0; i < service_count; i++) {
+						JSONObject service = services.getJSONObject(i);
+						ContentValues newActivity = new ContentValues();
+						int ownid = service.getInt("creatorid");
+						newActivity.put(ActivityTable.own_ID, ownid);
+						Log.i("getActivitiesFromWeb own_ID ", ownid + "");
+						String activityid = service.getString("serviceid");
+
+						String serviceName = service.getString("servicename");
+						newActivity.put(ActivityTable.service_Name, serviceName);
+						Log.i("getActivitiesFromWeb service_Name ", serviceName
+								+ "");
+						int role = service.getInt("sharedrole");
+						newActivity.put(ActivityTable.sharedrole, role);
+						Log.i("getActivitiesFromWeb sharedrole ", role + "");
+						int alert = service.getInt("alert");
+						newActivity.put(ActivityTable.alert, alert);
+						Log.i("getActivitiesFromWeb alert ", alert + "");
+						int repeat = service.getInt("repeat");
+						newActivity.put(ActivityTable.repeat, repeat);
+						Log.i("getActivitiesFromWeb repeat ", repeat + "");
+						String starttime = service.getString("startdatetime");
+						newActivity.put(ActivityTable.start_time, starttime);
+						Log.i("getActivitiesFromWeb start_time ", starttime + "");
+						String endtime = service.getString("enddatetime");
+						newActivity.put(ActivityTable.end_time, endtime);
+						Log.i("getActivitiesFromWeb end_time ", endtime + "");
+						String description = service.getString("desp");
+						newActivity.put(ActivityTable.service_description,
+								description);
+						Log.i("getActivitiesFromWeb service_description ",
+								description + "");
+						int otc = new SharedReference().getTimeZone(mContext);
+						newActivity.put(ActivityTable.otc_Offset, otc);
+						int is_deleted = 0;
+						newActivity.put(ActivityTable.is_Deleted, is_deleted);
+						int is_synchronized = 1;
+						newActivity.put(ActivityTable.is_Synchronized,
+								is_synchronized);
+						newActivity.put(ActivityTable.user_login, new SharedReference().getCurrentOwnerId(mContext));
+						String last_modified = service.getString("lastmodified");
+						newActivity.put(ActivityTable.last_ModifiedTime,
+								last_modified);
+						Log.i("getActivitiesFromWeb lastmodified ", last_modified
+								+ "");
+
+						if (dbHelper.isActivityExisted(activityid) == false) {
+							newActivity.put(ActivityTable.service_ID, activityid);
+							Log.i("getActivitiesFromWeb service_ID ", activityid
+									+ "");
+							if (dbHelper.insertActivity(newActivity))
+								Log.i("database", "insert service " + serviceName
+										+ " successfully!");
+						} else {
+							if (dbHelper.updateActivity(activityid, newActivity))
+								Log.i("database", "update service " + serviceName
+										+ " successfully!");
+						}
+						
+						ws.getSharedmembersForActivity(activityid);
+						//TODO: will delete if service get all schedule implemented
+						ws.getSchedulesForActivity(activityid);
+						
+						
+					}
+					// SEND broadcast to activity
+					Intent intent = new Intent(
+							CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
+					mContext.sendBroadcast(intent);
+					ref.setLastestServiceLastModifiedTime(mContext, MyDate
+							.transformLocalDateTimeToUTCFormat(MyDate
+									.getCurrentDateTime()));
+					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			public void onFailure(Throwable e, String response) {
+				// Response failed :(
+				Log.i("webservice", "Get Activities failed");
+			}
+		});
 
 	}
 
@@ -954,47 +1006,39 @@ public class WebservicesHelper {
 									// Toast.LENGTH_LONG).show();
 								}
 
-								// postSharedmemberToActivity(activity.getOwner_ID(),
-								// CommConstant.OWNER,
-								// activity.getActivity_ID());
-
 								// add owner of this activity is SharedMember
 								// with share role=owner
-								Participant participant = dbHelper
-										.getParticipant(activity.getOwner_ID());
+//								ContentValues member = new ContentValues();
+//								member.put(SharedMemberTable.smid,
+//										dbHelper.getNextParticipantID());
+//
+//								SharedReference ref = new SharedReference();
+//								member.put(SharedMemberTable.member_email,
+//										ref.getEmail(mContext));
+//								member.put(SharedMemberTable.member_name,
+//										ref.getUsername(mContext));
+//								member.put(SharedMemberTable.member_id,
+//										ref.getCurrentOwnerId(mContext));
+//								member.put(SharedMemberTable.role,
+//										CommConstant.OWNER);
+//								member.put(SharedMemberTable.service_id,
+//										activity.getActivity_ID());
+//								member.put(SharedMemberTable.is_Deleted, 0);
+//								member.put(SharedMemberTable.is_Synced, 0);
+//
+//								dbHelper.insertSharedmember(member);
 
-								ContentValues member = new ContentValues();
-								member.put(SharedMemberTable.smid,
-										dbHelper.getNextParticipantID());
-								if (participant != null) {
-									member.put(SharedMemberTable.member_email,
-											participant.getEmail());
-									member.put(SharedMemberTable.member_mobile,
-											participant.getMobile());
-									member.put(SharedMemberTable.member_name,
-											participant.getName());
-									member.put(SharedMemberTable.member_id,
-											participant.getID());
-
-								}
-								member.put(SharedMemberTable.role,
-										CommConstant.OWNER);
-								member.put(SharedMemberTable.service_id,
-										activity.getActivity_ID());
-								member.put(SharedMemberTable.is_Deleted, 0);
-								member.put(SharedMemberTable.is_Synced, 0);
-
-								dbHelper.insertSharedmember(member);
-
-								SharedReference ref = new SharedReference();
+								 SharedReference ref = new SharedReference();
 								ref.setLastestServiceLastModifiedTime(mContext,
 										last_modified);
-
-								((Activity) mContext).finish();
+	
+								//get all activity for refresh and synchronize with server
+								getAllActivitys();
+								
 								Intent intent = new Intent(
 										CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
 								mContext.sendBroadcast(intent);
-
+								((Activity) mContext).finish();
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();

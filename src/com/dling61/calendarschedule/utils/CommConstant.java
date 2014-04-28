@@ -52,4 +52,7 @@ public class CommConstant {
 	public static final String LIST_PARTICIPANT_ID="list_participant_id";
 	public static final String SELECTED_ON_DUTY="select.on.duty";
 	public static final String ON_DUTY_ITEM_SELECTED="select.item.on.duty";
+	public static final String ROLE="role";
+	public static final String CREATOR="creator";
 }
+

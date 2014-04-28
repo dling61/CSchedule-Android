@@ -125,6 +125,7 @@ public class ActivityAdapter extends BaseAdapter {
 						DatabaseHelper.EXISTED);
 				inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID,
 						activity.getActivity_ID());
+				inforActivityIntent.putExtra(CommConstant.ROLE, activity.getRole());
 				mContext.startActivity(inforActivityIntent);
 
 			}

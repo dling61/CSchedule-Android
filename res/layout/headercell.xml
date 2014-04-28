@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="#DDD" >
+    android:background="#DDD" 
+    android:layout_marginTop="@dimen/margin_top"
+    android:layout_marginBottom="@dimen/margin_top">
 
     <TextView
         android:id="@+id/schedule_weekday_tv"

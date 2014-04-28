@@ -78,6 +78,8 @@ public class CreateNewScheduleActivity extends Activity implements
 	int REQUEST_CODE = 15;
 	int schedule_id = -1;
 	ProgressDialog progress = null;
+	//creator of this schedule
+	int creator;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,6 +92,8 @@ public class CreateNewScheduleActivity extends Activity implements
 		activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
 
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(this);
+		
+		creator=new SharedReference().getCurrentOwnerId(mContext);
 
 		if (activity_id != null && (!activity_id.equals(""))) {
 			myActivity = dbHelper.getActivity(activity_id);
@@ -97,7 +101,8 @@ public class CreateNewScheduleActivity extends Activity implements
 			// TODO:make activityname is suggestion activity in system
 		}
 		if (composeType == DatabaseHelper.EXISTED) {
-			schedule_id = myIntent.getIntExtra(CommConstant.SCHEDULE_ID, -1);
+			schedule_id = myIntent.getIntExtra(CommConstant.SCHEDULE_ID, -1); 
+			creator=myIntent.getIntExtra(CommConstant.CREATOR,new SharedReference().getCurrentOwnerId(mContext));
 		}
 		initViewValues();
 		
@@ -290,6 +295,38 @@ public class CreateNewScheduleActivity extends Activity implements
 
 		view.et_new_activity_description
 				.setText(thisSchedule != null ? thisSchedule.getDesp() : "");
+		
+		SharedReference ref=new SharedReference();
+		int owner_id=ref.getCurrentOwnerId(mContext);
+		
+		//can create/modify/delete
+		if(creator==owner_id)
+		{
+			view.et_endDate.setEnabled(true);
+			view.et_endTime.setEnabled(true);
+			view.et_startDate.setEnabled(true);
+			view.et_startTime.setEnabled(true);
+			view.et_on_duty.setEnabled(true);
+			view.et_new_activity_description.setEnabled(true);
+			view.et_new_activity_name.setEnabled(true);
+			view.btn_remove_schedule.setVisibility(View.VISIBLE);
+			view.layout_save.setEnabled(true);
+			view.layout_next.setEnabled(true);
+		}
+		else
+		{
+			//only view
+			view.et_endDate.setEnabled(false);
+			view.et_endTime.setEnabled(false);
+			view.et_startDate.setEnabled(false);
+			view.et_startTime.setEnabled(false);
+			view.et_on_duty.setEnabled(false);
+			view.et_new_activity_description.setEnabled(false);
+			view.et_new_activity_name.setEnabled(false);
+			view.btn_remove_schedule.setVisibility(View.VISIBLE);
+			view.layout_save.setEnabled(false);
+			view.layout_next.setEnabled(false);
+		}
 	}
 
 	public void setStartDate() {

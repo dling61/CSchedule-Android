@@ -148,5 +148,6 @@
     <string name="remove_schedule">Remove Schedule</string>
     <string name="about">About</string>
     <string name="sign_out">Sign out</string>
+    <string name="cannot_change_activity">You cannot modify this activity</string>
 
 </resources>

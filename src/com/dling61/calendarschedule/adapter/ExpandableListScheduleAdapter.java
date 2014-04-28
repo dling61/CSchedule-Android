@@ -132,6 +132,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 						schedule.getSchedule_ID());
 				inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID,
 						schedule.getService_ID());
+				inforActivityIntent.putExtra(CommConstant.CREATOR, schedule.getOwner_ID());
 				context.startActivity(inforActivityIntent);
 			}
 		});
