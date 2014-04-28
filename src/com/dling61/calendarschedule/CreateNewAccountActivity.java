@@ -9,6 +9,7 @@ import com.dling61.calendarschedule.utils.Utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -83,6 +84,8 @@ public class CreateNewAccountActivity extends Activity
 			// mDialog.dismiss();
 		} else if (v == layout_back) {
 			finish();
+			Intent intent=new Intent(mContext,MainActivity.class);
+			mContext.startActivity(intent);
 		}
 
 	}
@@ -137,6 +140,13 @@ public class CreateNewAccountActivity extends Activity
 		}
 
 	}
-	
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		Intent intent=new Intent(mContext,MainActivity.class);
+		mContext.startActivity(intent);
+		finish();
+	}
 	
 }

@@ -390,8 +390,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			view.et_new_activity_description.setEnabled(false);
 			view.et_new_activity_name.setEnabled(false);
 			view.et_new_activity_repeat.setEnabled(false);
-//			view.btn_add_paticipant.setVisibility(View.GONE);
-//			view.btn_remove_activity.setVisibility(View.GONE);
+			view.btn_add_paticipant.setVisibility(View.GONE);
+			view.btn_remove_activity.setVisibility(View.GONE);
 			view.layout_save.setEnabled(false);
 		}
 		else
@@ -402,8 +402,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			view.et_new_activity_description.setEnabled(true);
 			view.et_new_activity_name.setEnabled(true);
 			view.et_new_activity_repeat.setEnabled(true);
-//			view.btn_add_paticipant.setVisibility(View.VISIBLE);
-//			view.btn_remove_activity.setVisibility(View.VISIBLE);
+			view.btn_add_paticipant.setVisibility(View.VISIBLE);
+			view.btn_remove_activity.setVisibility(View.VISIBLE);
 			view.layout_save.setEnabled(true);
 			
 		}

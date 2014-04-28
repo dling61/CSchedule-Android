@@ -23,6 +23,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 
 import android.os.Build;
@@ -30,8 +31,12 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -162,8 +167,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	 * activity create new account
 	 * */
 	private void createAccountPressed() {
+		finish();
 		Intent intent = new Intent(this, CreateNewAccountActivity.class);
 		this.startActivity(intent);
 	}
 
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+//		super.onBackPressed();
+		new AlertDialog.Builder(this).setTitle("Sure to Exit?")  
+	    .setIcon(android.R.drawable.ic_dialog_info)  
+	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {  
+	  
+	        @Override  
+	        public void onClick(DialogInterface dialog, int which) {
+	        SharedPreferences sp = getSharedPreferences("MyPreferences", 0)	;
+	        Editor editor = sp.edit();
+	        editor.clear();
+	        editor.commit();
+	        deleteDatabase(DatabaseHelper.DB_NAME);
+	        System.exit(0);
+	        }  
+	    })  
+	    .setNegativeButton("No", new DialogInterface.OnClickListener() {  
+	  
+	        @Override  
+	        public void onClick(DialogInterface dialog, int which) {  
+	        }  
+	    }).show();  
+	}
 }

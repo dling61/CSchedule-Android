@@ -324,7 +324,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		super.onBackPressed();
+//		super.onBackPressed();
 //		new SharedReference().setLastestParticipantLastModifiedTime(mContext,"2014-01-01 00:00:00");
 //		new SharedReference().setLastestScheduleLastModifiedTime(mContext, "2014-01-01 00:00:00");
 //		new SharedReference().setLastestServiceLastModifiedTime(mContext, "2014-01-01 00:00:00");

@@ -1124,14 +1124,24 @@ public class WebservicesHelper {
 								dbHelper.updateSchedule(id, cv);
 								Log.i("last_modified", last_modified);
 
+								
 								// go to schedule
-								CategoryTabActivity.currentPage = 2;
+								if(CategoryTabActivity.currentPage!=2)
+								{
+									CategoryTabActivity.moveToPage(2);
+								}
+//								CategoryTabActivity.currentPage = 2;
+//								CategoryTabActivity.moveToPage(2);
+								
 								Intent intent = new Intent(
 										CommConstant.UPDATE_SCHEDULE);
 								mContext.sendBroadcast(intent);
 
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							catch (Exception e) {
 								e.printStackTrace();
 							}
 

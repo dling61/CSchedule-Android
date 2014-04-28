@@ -97,6 +97,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 			}
 			login(username, password);
 		} else if (v == layout_back) {
+			
+			Intent intent=new Intent(mContext,MainActivity.class);
+			mContext.startActivity(intent);
 			finish();
 		}
 	}
@@ -114,5 +117,14 @@ public class LoginActivity extends Activity implements OnClickListener {
 			e.printStackTrace();
 		}
 
+	}
+	
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		Intent intent=new Intent(mContext,MainActivity.class);
+		mContext.startActivity(intent);
+		finish();
 	}
 }

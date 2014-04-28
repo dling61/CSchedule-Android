@@ -78,7 +78,7 @@ public class CreateNewScheduleActivity extends Activity implements
 	int REQUEST_CODE = 15;
 	int schedule_id = -1;
 	ProgressDialog progress = null;
-	//creator of this schedule
+	// creator of this schedule
 	int creator;
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +92,8 @@ public class CreateNewScheduleActivity extends Activity implements
 		activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
 
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(this);
-		
-		creator=new SharedReference().getCurrentOwnerId(mContext);
+
+		creator = new SharedReference().getCurrentOwnerId(mContext);
 
 		if (activity_id != null && (!activity_id.equals(""))) {
 			myActivity = dbHelper.getActivity(activity_id);
@@ -101,17 +101,16 @@ public class CreateNewScheduleActivity extends Activity implements
 			// TODO:make activityname is suggestion activity in system
 		}
 		if (composeType == DatabaseHelper.EXISTED) {
-			schedule_id = myIntent.getIntExtra(CommConstant.SCHEDULE_ID, -1); 
-			creator=myIntent.getIntExtra(CommConstant.CREATOR,new SharedReference().getCurrentOwnerId(mContext));
+			schedule_id = myIntent.getIntExtra(CommConstant.SCHEDULE_ID, -1);
+			creator = myIntent.getIntExtra(CommConstant.CREATOR,
+					new SharedReference().getCurrentOwnerId(mContext));
 		}
 		initViewValues();
-		
-		
-		
+
 		onClickListener();
 		try {
-//			registerReceiver(deleteScheduleComplete, new IntentFilter(
-//					CommConstant.DELETE_SCHEDULE_COMPLETE));
+			// registerReceiver(deleteScheduleComplete, new IntentFilter(
+			// CommConstant.DELETE_SCHEDULE_COMPLETE));
 			registerReceiver(onDutyComplete, new IntentFilter(
 					CommConstant.ON_DUTY_ITEM_SELECTED));
 		} catch (Exception ex) {
@@ -154,7 +153,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		// TODO Auto-generated method stub
 		super.onPause();
 		try {
-//			unregisterReceiver(deleteScheduleComplete);
+			// unregisterReceiver(deleteScheduleComplete);
 			unregisterReceiver(onDutyComplete);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -243,7 +242,7 @@ public class CreateNewScheduleActivity extends Activity implements
 			view.layout_save.setVisibility(View.GONE);
 			view.title_tv.setText(mContext.getResources().getString(
 					R.string.add_schedule));
-			schedule_id=thisSchedule.getSchedule_ID();
+			schedule_id = thisSchedule.getSchedule_ID();
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			if (schedule_id > 0) {
 				thisSchedule = dbHelper.getScheduleSortedByID(schedule_id);
@@ -259,7 +258,8 @@ public class CreateNewScheduleActivity extends Activity implements
 				String members = "";
 				if (pins != null && pins.size() > 0) {
 					for (int i = 0; i < pins.size(); i++) {
-						Sharedmember p = dbHelper.getSharedmember(pins.get(i),activity_id);
+						Sharedmember p = dbHelper.getSharedmember(pins.get(i),
+								activity_id);
 						if (p != null) {
 							if (i == 0)
 								members = members + p.getName();
@@ -276,7 +276,6 @@ public class CreateNewScheduleActivity extends Activity implements
 
 		view.et_new_activity_name.setText(myActivity != null ? myActivity
 				.getActivity_name() : "");
-	
 
 		String startdate = thisSchedule != null ? thisSchedule.getStarttime()
 				: "";
@@ -295,13 +294,12 @@ public class CreateNewScheduleActivity extends Activity implements
 
 		view.et_new_activity_description
 				.setText(thisSchedule != null ? thisSchedule.getDesp() : "");
-		
-		SharedReference ref=new SharedReference();
-		int owner_id=ref.getCurrentOwnerId(mContext);
-		
-		//can create/modify/delete
-		if(creator==owner_id)
-		{
+
+		SharedReference ref = new SharedReference();
+		int owner_id = ref.getCurrentOwnerId(mContext);
+
+		// can create/modify/delete
+		if (creator == owner_id) {
 			view.et_endDate.setEnabled(true);
 			view.et_endTime.setEnabled(true);
 			view.et_startDate.setEnabled(true);
@@ -312,10 +310,8 @@ public class CreateNewScheduleActivity extends Activity implements
 			view.btn_remove_schedule.setVisibility(View.VISIBLE);
 			view.layout_save.setEnabled(true);
 			view.layout_next.setEnabled(true);
-		}
-		else
-		{
-			//only view
+		} else {
+			// only view
 			view.et_endDate.setEnabled(false);
 			view.et_endTime.setEnabled(false);
 			view.et_startDate.setEnabled(false);
@@ -323,7 +319,7 @@ public class CreateNewScheduleActivity extends Activity implements
 			view.et_on_duty.setEnabled(false);
 			view.et_new_activity_description.setEnabled(false);
 			view.et_new_activity_name.setEnabled(false);
-			view.btn_remove_schedule.setVisibility(View.VISIBLE);
+			view.btn_remove_schedule.setVisibility(View.GONE);
 			view.layout_save.setEnabled(false);
 			view.layout_next.setEnabled(false);
 		}
@@ -516,6 +512,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		view.et_new_activity_name.setText(name);
 		return false;
 	}
+
 	/**
 	 * Check&set data, return true if valid else return false
 	 * */
@@ -552,23 +549,28 @@ public class CreateNewScheduleActivity extends Activity implements
 						new SharedReference().getCurrentOwnerId(mContext));
 
 				dbHelper.insertSchedule(cv);
-				for (int i = 0; i < pins.size(); i++) {
-					ContentValues onduty = new ContentValues();
-					onduty.put(OndutyTable.schedule_ID,
-							thisSchedule.getSchedule_ID());
-					onduty.put(OndutyTable.service_ID,
-							thisSchedule.getService_ID());
-					onduty.put(OndutyTable.participant_ID, pins.get(i));
-					onduty.put(OndutyTable.last_Modified, "");
-					onduty.put(OndutyTable.is_Deleted, 0);
-					onduty.put(OndutyTable.is_Synchronized, 0);
-					dbHelper.insertOnduty(onduty);
+				if (pins != null) {
+					int size = pins.size();
+					if (size > 0) {
+						for (int i = 0; i < size; i++) {
+							ContentValues onduty = new ContentValues();
+							onduty.put(OndutyTable.schedule_ID,
+									thisSchedule.getSchedule_ID());
+							onduty.put(OndutyTable.service_ID,
+									thisSchedule.getService_ID());
+							onduty.put(OndutyTable.participant_ID, pins.get(i));
+							onduty.put(OndutyTable.last_Modified, "");
+							onduty.put(OndutyTable.is_Deleted, 0);
+							onduty.put(OndutyTable.is_Synchronized, 0);
+							dbHelper.insertOnduty(onduty);
+						}
+					}
 				}
 				WebservicesHelper ws = new WebservicesHelper(mContext);
 				ws.addSchedule(thisSchedule, pins);
 				finish();
 			}
-			
+
 		}
 
 	}
@@ -588,7 +590,8 @@ public class CreateNewScheduleActivity extends Activity implements
 			dbHelper.updateSchedule(thisSchedule.getSchedule_ID(), cv);
 			dbHelper.deleteRelatedOnduty(thisSchedule.getSchedule_ID());
 			if (pins != null) {
-				for (int i = 0; i < pins.size(); i++) {
+				int size=pins.size();
+				for (int i = 0; i < size; i++) {
 					ContentValues onduty = new ContentValues();
 					onduty.put(OndutyTable.schedule_ID,
 							thisSchedule.getSchedule_ID());
@@ -608,7 +611,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		}
 	}
 
-	JsonHttpResponseHandler deleteScheduleHandler=new JsonHttpResponseHandler() {
+	JsonHttpResponseHandler deleteScheduleHandler = new JsonHttpResponseHandler() {
 		public void onSuccess(JSONObject response) {
 			try {
 				if (response.getString("lastmodified") != null) {
@@ -638,13 +641,11 @@ public class CreateNewScheduleActivity extends Activity implements
 		public void onFinish() {
 			// TODO Auto-generated method stub
 			super.onFinish();
-			try
-			{
-			if (progress.isShowing()) {
-				progress.dismiss();
-			}
-			}catch(Exception ex)
-			{
+			try {
+				if (progress.isShowing()) {
+					progress.dismiss();
+				}
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -661,7 +662,7 @@ public class CreateNewScheduleActivity extends Activity implements
 					.show();
 		}
 	};
-	
+
 	/**
 	 * delete schedule update to database
 	 * */
@@ -692,7 +693,7 @@ public class CreateNewScheduleActivity extends Activity implements
 						}
 
 						WebservicesHelper ws = new WebservicesHelper(mContext);
-						ws.deleteSchedule(thisSchedule,deleteScheduleHandler);
+						ws.deleteSchedule(thisSchedule, deleteScheduleHandler);
 					}
 				});
 		alertDialog.setNegativeButton(
@@ -708,11 +709,11 @@ public class CreateNewScheduleActivity extends Activity implements
 
 	}
 
-//	BroadcastReceiver deleteScheduleComplete = new BroadcastReceiver() {
-//		public void onReceive(Context arg0, Intent arg1) {
-//			finish();
-//		}
-//	};
+	// BroadcastReceiver deleteScheduleComplete = new BroadcastReceiver() {
+	// public void onReceive(Context arg0, Intent arg1) {
+	// finish();
+	// }
+	// };
 
 	BroadcastReceiver onDutyComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
@@ -745,7 +746,8 @@ public class CreateNewScheduleActivity extends Activity implements
 				String members = "";
 				if (pins != null && pins.size() > 0) {
 					for (int i = 0; i < pins.size(); i++) {
-						Sharedmember p = dbHelper.getSharedmember(pins.get(i),activity_id);
+						Sharedmember p = dbHelper.getSharedmember(pins.get(i),
+								activity_id);
 						if (p != null) {
 							if (i == 0)
 								members = members + p.getName();

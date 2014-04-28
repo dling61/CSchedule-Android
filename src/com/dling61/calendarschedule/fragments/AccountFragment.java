@@ -7,9 +7,14 @@ import com.dling61.calendarschedule.AboutActivity;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.AccountView;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -104,10 +109,27 @@ public class AccountFragment extends Fragment implements OnClickListener {
 	 * Sign out
 	 * */
 	private void signout() {
-		DatabaseHelper dbHelper = DatabaseHelper
-				.getSharedDatabaseHelper(mContext);
-		dbHelper.evacuateDatabase();
-		((Activity) mContext).finish();
+		new AlertDialog.Builder(mContext).setTitle("Do you want to log out?")  
+	    .setIcon(android.R.drawable.ic_dialog_info)  
+	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {  
+	  
+	        @Override  
+	        public void onClick(DialogInterface dialog, int which) {
+	        	DatabaseHelper dbHelper = DatabaseHelper
+	    				.getSharedDatabaseHelper(mContext);
+	    		dbHelper.evacuateDatabase();
+	    		((Activity) mContext).finish();
+	        System.exit(0);
+	        }  
+	    })  
+	    .setNegativeButton("No", new DialogInterface.OnClickListener() {  
+	  
+	        @Override  
+	        public void onClick(DialogInterface dialog, int which) {  
+	        }  
+	    }).show();  
+		
+	
 	}
 
 	/**
