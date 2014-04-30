@@ -9,7 +9,7 @@
         android:id="@+id/top_bar"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:background="@color/bg_login_title_bar" >
+        android:background="@color/me_unselected" >
 
         <TextView
             android:id="@+id/main_top_title"
@@ -27,8 +27,10 @@
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/margin_left"
-        android:background="@color/bg_login_title_bar"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="@dimen/margin_left"
+        android:layout_marginRight="@dimen/margin_left"
+        android:background="@drawable/me_border"
         android:text="@string/signin"
         android:textColor="@color/color_text_title_main"
         android:textSize="@dimen/text_name" />
@@ -38,8 +40,8 @@
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:layout_above="@id/btn_sign_in"
-       android:layout_margin="@dimen/margin_left"
-        android:background="@color/bg_login_title_bar"
+        android:layout_margin="@dimen/margin_left"
+        android:background="@drawable/me_border"
         android:text="@string/createaccount"
         android:textColor="@color/color_text_title_main"
         android:textSize="@dimen/text_name" />
@@ -52,7 +54,7 @@
         android:layout_below="@id/top_bar"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/mainpage_bigicon" 
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:src="@drawable/mainpage_bigicon" />
 
 </RelativeLayout>

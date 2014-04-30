@@ -3,10 +3,7 @@
  */
 package com.dling61.calendarschedule.views;
 
-import java.nio.Buffer;
-
 import com.dling61.calendarschedule.R;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;

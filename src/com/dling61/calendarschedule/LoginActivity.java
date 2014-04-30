@@ -7,6 +7,7 @@ import org.json.JSONException;
 
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.SharedReference;
 
 import android.app.Activity;
 import android.content.Context;
@@ -58,6 +59,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 		layout_back = (RelativeLayout) findViewById(R.id.layout_back);
 		if (username != null && (!username.equals(""))) {
 			txt_email.setText(username);
+		} else {
+			SharedReference ref = new SharedReference();
+			String email = ref.getEmail(mContext);
+			txt_email.setText(email);
 		}
 		if (password != null && !password.equals("")) {
 			txt_password.setText(password);
@@ -97,8 +102,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 			}
 			login(username, password);
 		} else if (v == layout_back) {
-			
-			Intent intent=new Intent(mContext,MainActivity.class);
+
+			Intent intent = new Intent(mContext, MainActivity.class);
 			mContext.startActivity(intent);
 			finish();
 		}
@@ -118,12 +123,12 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		Intent intent=new Intent(mContext,MainActivity.class);
+		Intent intent = new Intent(mContext, MainActivity.class);
 		mContext.startActivity(intent);
 		finish();
 	}

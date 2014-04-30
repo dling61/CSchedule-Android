@@ -14,6 +14,7 @@ import com.dling61.calendarschedule.models.SharedMemberTable;
 import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.ParticipantView;
 
@@ -71,8 +72,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 			initData();
 		}
 	};
-	
-	
+
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
@@ -114,9 +114,11 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 			final DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
 			if (type == CommConstant.TYPE_PARTICIPANT) {
+				
+				view.member_toptitle.setText(mContext.getResources().getString(R.string.select_participant));
+				
 				arrSharemember = dbHelper
 						.getSharedMemberForActivity(activity_id);
-			
 
 				if (arrSharemember != null && arrSharemember.size() > 0) {
 					if (selectedParticipant != null
@@ -135,39 +137,60 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 
 						}
 					}
-						final SharedMemberAdapter adapter = new SharedMemberAdapter(
-								mContext, arrSharemember, true, false, true);
-						view.list_contact.setAdapter(adapter);
-						view.list_contact
-								.setOnItemClickListener(new OnItemClickListener() {
-									@Override
-									public void onItemClick(
-											AdapterView<?> parent, View view,
-											final int position, long id) {
-										final Sharedmember shareMember = adapter.sharedMembers
-												.get(position);
+					final SharedMemberAdapter adapter = new SharedMemberAdapter(
+							mContext, arrSharemember, true, false, true);
+					view.list_contact.setAdapter(adapter);
+					view.list_contact
+							.setOnItemClickListener(new OnItemClickListener() {
+								@Override
+								public void onItemClick(AdapterView<?> parent,
+										View view, final int position, long id) {
+									final Sharedmember shareMember = adapter.sharedMembers
+											.get(position);
 
-										// TODO Auto-generated method stub
-										shareMember.isChecked = !shareMember.isChecked;
-										adapter.sharedMembers.set(position,
-												shareMember);
-										adapter.notifyDataSetChanged();
+									// TODO Auto-generated method stub
+									shareMember.isChecked = !shareMember.isChecked;
+									adapter.sharedMembers.set(position,
+											shareMember);
+									adapter.notifyDataSetChanged();
 
-									}
-								});
-					
+								}
+							});
+
 				}
 			} else if (type == CommConstant.TYPE_CONTACT) {
+				
+				view.member_toptitle.setText(mContext.getResources().getString(R.string.add_participant));
+				
 				arrParticipant = dbHelper.getParticipants();
 				activityParticipant = dbHelper
 						.getParticipantsOfActivity(activity_id);
 
+				
+				if (arrParticipant != null && arrParticipant.size() > 0) {
+
+					int owner_id = new SharedReference()
+							.getCurrentOwnerId(mContext);
+					if (myActivity.getOwner_ID() == owner_id) {
+						String owner_email=new SharedReference().getEmail(mContext);
+						for (Participant ap : arrParticipant) {
+							// remove if owner
+
+							if (ap.getEmail().equals(owner_email)) {
+								arrParticipant.remove(ap);
+								break;
+							}
+						}
+					}
+				}
 				if (activityParticipant != null
 						&& activityParticipant.size() > 0) {
-				
+
 					// remove item have at activityParticipant to arrParticipant
 					for (Sharedmember ap : activityParticipant) {
+
 						if (arrParticipant != null && arrParticipant.size() > 0) {
+
 							int size = arrParticipant.size();
 							for (int i = 0; i < size; i++) {
 								Participant p = arrParticipant.get(i);
@@ -175,6 +198,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 									arrParticipant.remove(p);
 									break;
 								}
+
 							}
 						}
 					}
@@ -197,7 +221,9 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 										+ participantSelected.getName()
 										+ " "
 										+ mContext.getResources().getString(
-												R.string.into) +" "+activity_name;
+												R.string.into)
+										+ " "
+										+ activity_name;
 								final ConfirmDialog confirmDialog = new ConfirmDialog(
 										mContext, title);
 								confirmDialog.show();
@@ -253,12 +279,19 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 													dbHelper.insertSharedmember(contentValues);
 													WebservicesHelper ws = new WebservicesHelper(
 															mContext);
-													ws.postSharedmemberToActivity(
-															participantSelected
-																	.getID(),
-															CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
-															activity_id);
 
+													// if role= owner &
+													// participant selected is
+													// user login, do nothing
+													// int
+													// role=myActivity.getRole();
+													
+														ws.postSharedmemberToActivity(
+																participantSelected
+																		.getID(),
+																CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
+																activity_id);
+													
 												}
 												confirmDialog.dismiss();
 
@@ -303,30 +336,32 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 
 			} else if (type == CommConstant.TYPE_PARTICIPANT) {
 				if (activity_id != null && (!activity_id.equals(""))) {
-					
-//					((Activity) mContext).finish();
-//					
-//					
-//					Intent intent = new Intent(CommConstant.SELECTED_ON_DUTY);
+
+					// ((Activity) mContext).finish();
+					//
+					//
+					// Intent intent = new
+					// Intent(CommConstant.SELECTED_ON_DUTY);
 					ArrayList<Integer> listParticipantOnDuty = new ArrayList<Integer>();
 					for (Sharedmember member : arrSharemember) {
 						if (member.isChecked) {
 							listParticipantOnDuty.add(member.getID());
 						}
 					}
-//					intent.putIntegerArrayListExtra(
-//							CommConstant.ON_DUTY_ITEM_SELECTED,
-//							listParticipantOnDuty);
-//					mContext.sendBroadcast(intent);
-					
-					
-					Intent i = getActivity().getIntent(); // gets the intent that called this intent		
+					// intent.putIntegerArrayListExtra(
+					// CommConstant.ON_DUTY_ITEM_SELECTED,
+					// listParticipantOnDuty);
+					// mContext.sendBroadcast(intent);
+
+					Intent i = getActivity().getIntent(); // gets the intent
+															// that called this
+															// intent
 					i.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 					i.putIntegerArrayListExtra(
 							CommConstant.ON_DUTY_ITEM_SELECTED,
 							listParticipantOnDuty);
 					getActivity().setResult(333, i);
-				
+
 					((Activity) mContext).finish();
 					// // list participant of this activity
 					// DatabaseHelper dbHelper = DatabaseHelper

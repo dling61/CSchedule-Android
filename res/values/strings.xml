@@ -6,7 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="signin">Sign In</string>
     <string name="createaccount">Create Account</string>
-    <string name="cancel">cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="name">Name(*)</string>
     <string name="participant_name">Name</string>
     <string name="email">Email(*)</string>
@@ -31,7 +31,7 @@
         <item>Account</item>
     </string-array>
 
-    <string name="add_activity">Add Activity</string>
+    <string name="add_activity">New Activity</string>
     <string name="edit_activity">Activity Information</string>
 
     <string-array name="alert_array">
@@ -67,16 +67,16 @@
         <item>Canada/Newfoundland-(GMT-03:30) Newfoundland</item>
     </string-array>
     <string-array name="timezone_value_array">
-        <item>-11</item>
-        <item>-10</item>
-        <item>-9</item>
-        <item>-8</item>
-        <item>-7</item>
-        <item>-7</item>
-        <item>-6</item>
-        <item>-5</item>
-        <item>-5</item>
-        <item>-4</item>
+        <item>-11.0</item>
+        <item>-10.0</item>
+        <item>-9.0</item>
+        <item>-8.0</item>
+        <item>-7.0</item>
+        <item>-7.0</item>
+        <item>-6.0</item>
+        <item>-5.0</item>
+        <item>-5.0</item>
+        <item>-4.0</item>
         <item>-3.5</item>
     </string-array>
 
@@ -84,7 +84,7 @@
     <string name="set_start_time">Set Start Time</string>
     <string name="set_end_time">Set End Time</string>
     <string name="next">Next</string>
-    <string name="new_activity">New Activity</string>
+    <string name="new_activity">Add Activity</string>
     <string name="activity_name">Activity name</string>
     <string name="remove_activity">Remove Activity</string>
     <string name="time_zone">Time Zone</string>
@@ -98,37 +98,43 @@
     <string name="create_activity_error">Have an error occur when creating an activity. Please try again!</string>
     <string name="edit_activity_error">Have an error occur when editing an activity. Please try again!</string>
     <string name="add_participant">Add Participant</string>
-    <string name="edit_participant">Edit Participant</string>
+    <string name="add_contact">New Contact</string>
+    <string name="edit_participant">Contact Info</string>
     <string name="participant">Participant</string>
     <string name="start">Start</string>
     <string name="end">End</string>
     <string name="on_duty">On Duty</string>
-    <string name="add_schedule">Add schedule</string>
+    <string name="add_schedule">New schedule</string>
     <string name="edit_schedule">Schedule Information</string>
     <string name="ok">OK</string>
     <string name="confirm_title">Are you sure to add </string>
     <string name="into">to</string>
-    <string name="delete_activity">Are you sure you want delete this activity and related schedules?</string>
+    <string name="delete_activity">Are you sure you want to delete this activity and related schedules?</string>
     <string name="caution">Caution</string>
     <string name="activity">Activity</string>
     <string name="schedule">Schedule</string>
     <string name="account">Account</string>
     <string name="activity_description">Activity Description</string>
     <string name="remove_contact">Remove Contact</string>
-    <string name="delete_contact">Are you sure you want delete</string>
+    <string name="delete_contact">Are you sure you want to delete</string>
     <string name="delete_contact_error">Have an error occur when deleting this contact</string>
     <string name="create_schedule_error">Have an error occur when creating schedule an activity. Please try again!</string>
     <string name="start_date_greater_end_date">End date must be less than or equal start date</string>
-    <string name="delete_schedule">Are you sure you want delete this activity and related schedules?</string>
+    <string name="delete_schedule">Are you sure you want to delete this activity and related schedules?</string>
     <string name="delete_activity_error">Delete activity error</string>
     <string name="delete_schedule_error">Delete schedule error</string>
     <string name="update_participant_error">Edit participant information error</string>
     <string name="add_participant_error">Add participant error</string>
 
-    <string-array name="participant_infor_array">
+    <string-array name="owner_infor_array">
         <item>Call</item>
         <item>Message</item>
         <item>Remove</item>
+        <item>Cancel</item>
+    </string-array>
+    <string-array name="participant_infor_array">
+        <item>Call</item>
+        <item>Message</item>
         <item>Cancel</item>
     </string-array>
 
@@ -149,5 +155,16 @@
     <string name="about">About</string>
     <string name="sign_out">Sign out</string>
     <string name="cannot_change_activity">You cannot modify this activity</string>
+    <string name="contact">Contact</string>
+    <string name="select_participant">Select Participant</string>
+    <string name="have_no_activity_first">When you have already created an activity or </string>
+    <string name="have_no_activity_second">you are participating in an activity created by </string>
+    <string name="have_no_activity_third">someone else, you’ll see it here.</string>
+    <string name="your_activity">Your activity</string>
 
+    <string name="have_no_schedule_first">When you have already created a schedule or </string>
+    <string name="have_no_schedule_second">you are participating in a schedule created by </string>
+    <string name="have_no_schedule_third">someone else, you’ll see it here.</string>
+    <string name="your_schedule">Your schedule</string>
+    
 </resources>

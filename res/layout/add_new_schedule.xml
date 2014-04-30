@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:background="#ECECEC" >
+    android:background="@color/bg" >
 
     <RelativeLayout
         android:id="@+id/compose_schedule_topbar"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:background="@drawable/mainpage_topbar" >
+        android:background="@color/me_unselected" >
 
         <TextView
             android:id="@+id/tv_title"
@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
-                android:background="@drawable/save"
+                android:background="@drawable/notification_done"
                 android:textSize="15sp" />
         </LinearLayout>
     </RelativeLayout>
@@ -116,9 +116,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_name"
-                    android:textColor="@color/color_textview" 
                     android:clickable="true"
-                            android:focusable="false" />
+                    android:focusable="false"
+                    android:textColor="@color/color_textview" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -153,13 +153,13 @@
                         android:orientation="horizontal" >
 
                         <EditText
-                            android:id="@+id/et_startTime"
+                            android:id="@+id/et_startDate"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
-                            android:inputType="datetime"
+                            android:inputType="date"
                             android:textColor="@color/color_textview" />
                     </LinearLayout>
 
@@ -170,13 +170,13 @@
                         android:orientation="horizontal" >
 
                         <EditText
-                            android:id="@+id/et_startDate"
+                            android:id="@+id/et_startTime"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
-                            android:inputType="date"
+                            android:inputType="datetime"
                             android:textColor="@color/color_textview" />
                     </LinearLayout>
                 </LinearLayout>
@@ -214,13 +214,13 @@
                         android:orientation="horizontal" >
 
                         <EditText
-                            android:id="@+id/et_endTime"
+                            android:id="@+id/et_endDate"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
-                            android:inputType="datetime"
+                            android:inputType="date"
                             android:textColor="@color/color_textview" />
                     </LinearLayout>
 
@@ -231,13 +231,13 @@
                         android:orientation="horizontal" >
 
                         <EditText
-                            android:id="@+id/et_endDate"
+                            android:id="@+id/et_endTime"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
-                            android:inputType="date"
+                            android:inputType="datetime"
                             android:textColor="@color/color_textview" />
                     </LinearLayout>
                 </LinearLayout>
@@ -295,7 +295,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_description"
-                    android:minLines="3"
+                    android:maxLines="3"
+                    android:maxLength="200"
                     android:textColor="@color/color_textview" />
             </RelativeLayout>
 
@@ -304,7 +305,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="50dp"
                 android:layout_marginBottom="20dp"
-                android:background="@color/bg_login_title_bar"
+                android:background="@drawable/me_border"
                 android:text="@string/remove_schedule"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_name"

@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:background="#ECECEC" >
+    android:background="@color/bg" >
 
     <RelativeLayout
         android:id="@+id/compose_activity_topbar"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:background="#0099cc" >
+        android:background="@color/bg_login_title_bar" >
 
         <LinearLayout
             android:id="@+id/layout_back"
@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/activity_description"
+            android:text="@string/description"
             android:textColor="#FFF"
             android:textSize="20sp"
             android:textStyle="bold" />

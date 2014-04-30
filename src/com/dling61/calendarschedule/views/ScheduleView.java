@@ -27,6 +27,8 @@ public class ScheduleView extends RelativeLayout {
 	public Button btn_today;
 	public Button btn_all;
 	public Button btn_me;
+	public RelativeLayout layout_no_schedule;
+	public RelativeLayout layout_top;
 	public ScheduleView(Context context) {
 		super(context);
 		this.context = context;
@@ -58,5 +60,7 @@ public class ScheduleView extends RelativeLayout {
 		btn_today=(Button)findViewById(R.id.btn_today);
 		btn_all=(Button)findViewById(R.id.btn_all);
 		btn_me=(Button)findViewById(R.id.btn_me);
+		layout_no_schedule=(RelativeLayout)findViewById(R.id.layout_no_schedule);
+		layout_top=(RelativeLayout)findViewById(R.id.layout_top);
 	}
 }

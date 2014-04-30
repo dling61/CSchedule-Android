@@ -84,6 +84,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 		Intent myIntent = getIntent();
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, 3);
+		view.et_new_activity_description.setFocusable(false);
 		if (composeType == DatabaseHelper.NEW) {
 			Log.i("next service id", "is " + dbHelper.getNextActivityID());
 			thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
@@ -104,7 +105,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			view.btn_add_paticipant.setVisibility(View.VISIBLE);
 			view.btn_remove_activity.setVisibility(View.VISIBLE);
 			view.layout_next.setVisibility(View.GONE);
-			view.et_new_activity_description.setFocusable(false);
+
 			view.layout_save.setVisibility(View.VISIBLE);
 			view.layout_next.setVisibility(View.GONE);
 		}
@@ -159,6 +160,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			Utils.setListViewHeightBasedOnChildren(view.list_participant,
 					adapter);
 			view.list_participant.setVisibility(View.VISIBLE);
+
+			view.tv_participant.setVisibility(View.VISIBLE);
 			view.list_participant
 					.setOnItemClickListener(new OnItemClickListener() {
 						@Override
@@ -182,8 +185,13 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 	private void participantInforDialog(final Sharedmember participant) {
 		String[] array = getResources().getStringArray(
-				R.array.participant_infor_array);
-		;
+				R.array.owner_infor_array);
+
+		if (shared_role != CommConstant.OWNER) {
+			array = getResources().getStringArray(
+					R.array.participant_infor_array);
+		}
+
 		int length = array.length;
 		for (int i = 0; i < length; i++) {
 			array[i] += " " + participant.getName();
@@ -198,21 +206,39 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				switch (position) {
-				case 0:
-					Utils.makeAPhoneCall(mContext, participant.getMobile());
-					break;
-				case 1:
-					Utils.sendAMessage(mContext, participant.getMobile());
-					break;
-				case 2:
-					// remove participant from activity
-					deleteParticipantFromActivity(participant);
-					break;
-				case 3:
-					break;
-				default:
-					break;
+				if (shared_role == CommConstant.OWNER) {
+					switch (position) {
+					case 0:
+						Utils.makeAPhoneCall(mContext, participant.getMobile());
+						break;
+					case 1:
+						Utils.sendAMessage(mContext, participant.getMobile());
+						break;
+					case 2:
+						if (shared_role == CommConstant.OWNER) {
+							// remove participant from activity
+							deleteParticipantFromActivity(participant);
+						}
+						break;
+					case 3:
+						break;
+					default:
+						break;
+					}
+				} else {
+					switch (position) {
+					case 0:
+						Utils.makeAPhoneCall(mContext, participant.getMobile());
+						break;
+					case 1:
+						Utils.sendAMessage(mContext, participant.getMobile());
+						break;
+					case 2:
+
+						break;
+					default:
+						break;
+					}
 				}
 				dialog.dismiss();
 			}
@@ -346,26 +372,53 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 		repeat_array = getResources().getStringArray(R.array.repeat_array);
 
-		// timezone saved is position in array timezone
-		// SharedReference ref = new SharedReference();
-		// time_zone = ref.getTimeZone(mContext);
-		// set time zone if used to select
-		int timezone = new SharedReference().getTimeZone(mContext);
-		// : 0;
-		Log.d("timeze", timezone + "");
-		if (timezone <= 0) {
-			view.et_new_activity_time_zone.setText(timezone_array[0]);
-		} else {
-			view.et_new_activity_time_zone.setText(timezone_array[timezone]);
-		}
-
-		if (composeType == DatabaseHelper.NEW)
+		if (composeType == DatabaseHelper.NEW) {
 			view.title_tv.setText(mContext.getResources().getString(
 					R.string.add_activity));
-		else if (composeType == DatabaseHelper.EXISTED) {
+			// timezone saved is position in array timezone
+			// SharedReference ref = new SharedReference();
+			// time_zone = ref.getTimeZone(mContext);
+			// set time zone if used to select
+			int timezone = new SharedReference().getTimeZone(mContext);
+			// : 0;
+			Log.d("timeze", timezone + "");
+			if (timezone <= 0) {
+				view.et_new_activity_time_zone.setText(timezone_array[0]);
+			} else {
+				view.et_new_activity_time_zone
+						.setText(timezone_array[timezone]);
+			}
+		} else if (composeType == DatabaseHelper.EXISTED) {
 			view.title_tv.setText(mContext.getResources().getString(
 					R.string.edit_activity));
+
+			float timezone = thisActivity.getOtc_offset();
+			view.et_new_activity_time_zone.setText(getTimezone(timezone));
 			setParticipantOfActivity();
+
+			if (shared_role != CommConstant.OWNER) {
+
+				view.et_new_activity_alert.setEnabled(false);
+				view.et_new_activity_time_zone.setEnabled(false);
+				view.et_new_activity_description.setEnabled(false);
+				view.et_new_activity_name.setEnabled(false);
+				view.et_new_activity_repeat.setEnabled(false);
+				view.btn_add_paticipant.setVisibility(View.GONE);
+				view.btn_remove_activity.setVisibility(View.GONE);
+				view.layout_save.setEnabled(false);
+			} else {
+
+				view.et_new_activity_alert.setEnabled(true);
+				view.et_new_activity_time_zone.setEnabled(true);
+				view.et_new_activity_description.setEnabled(true);
+				view.et_new_activity_name.setEnabled(true);
+				view.et_new_activity_repeat.setEnabled(true);
+				view.btn_add_paticipant.setVisibility(View.VISIBLE);
+				view.btn_remove_activity.setVisibility(View.VISIBLE);
+				view.layout_save.setEnabled(true);
+
+			}
+
 		}
 
 		String activity_name = thisActivity != null ? thisActivity
@@ -381,33 +434,25 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		repeat_type = thisActivity != null ? thisActivity.getRepeat() : 0;
 		view.et_new_activity_repeat
 				.setText(getAlert(repeat_type, repeat_array));
-		
-		if(shared_role!=CommConstant.OWNER)
-		{
-			
-			view.et_new_activity_alert.setEnabled(false);
-			view.et_new_activity_time_zone.setEnabled(false);
-			view.et_new_activity_description.setEnabled(false);
-			view.et_new_activity_name.setEnabled(false);
-			view.et_new_activity_repeat.setEnabled(false);
-			view.btn_add_paticipant.setVisibility(View.GONE);
-			view.btn_remove_activity.setVisibility(View.GONE);
-			view.layout_save.setEnabled(false);
+
+	}
+
+	/**
+	 * Return string timezone string
+	 * */
+	public String getTimezone(float timezone) {
+		try {
+			for (int i = 0; i < timezone_value_array.length; i++) {
+				String s = timezone_value_array[i];
+				if (s.equals(timezone + "")) {
+					return timezone_array[i];
+				}
+			}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			ex.printStackTrace();
+
 		}
-		else
-		{
-			
-			view.et_new_activity_alert.setEnabled(true);
-			view.et_new_activity_time_zone.setEnabled(true);
-			view.et_new_activity_description.setEnabled(true);
-			view.et_new_activity_name.setEnabled(true);
-			view.et_new_activity_repeat.setEnabled(true);
-			view.btn_add_paticipant.setVisibility(View.VISIBLE);
-			view.btn_remove_activity.setVisibility(View.VISIBLE);
-			view.layout_save.setEnabled(true);
-			
-		}
-		
+		return "None";
 	}
 
 	/**
@@ -430,14 +475,14 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			createNewActivity();
 		} else if (v == view.et_new_activity_time_zone) {
 			// if owner, can modify/delete else if is participant, only view
-//			if (shared_role == CommConstant.OWNER) {
-				SharedReference ref = new SharedReference();
-				time_zone = ref.getTimeZone(mContext);
-				if (time_zone <= 0) {
-					popUp(timezone_array, TIMEZONE);
-				}
-//			}
-			
+			// if (shared_role == CommConstant.OWNER) {
+			SharedReference ref = new SharedReference();
+			time_zone = ref.getTimeZone(mContext);
+			if (time_zone <= 0) {
+				popUp(timezone_array, TIMEZONE);
+			}
+			// }
+
 		} else if (v == view.et_new_activity_repeat) {
 			popUp(repeat_array, REPEAT);
 		} else if (v == view.et_new_activity_alert) {
@@ -459,13 +504,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			((Activity) mContext).finish();
 		} else if (v == view.et_new_activity_description) {
 			// show an activity to edit description
-			if (composeType == DatabaseHelper.EXISTED) {
-				Intent intent = new Intent(mContext,
-						EditDescriptionActivity.class);
-				intent.putExtra(CommConstant.ACTIVITY_DESCRIPTION,
-						thisActivity.getDesp());
-				startActivityForResult(intent, 0);
-			}
+
+			Intent intent = new Intent(mContext, EditDescriptionActivity.class);
+			intent.putExtra(CommConstant.ACTIVITY_DESCRIPTION,
+					thisActivity.getDesp());
+			startActivityForResult(intent, 0);
+
 		} else if (v == view.layout_save) {
 			editActivity();
 		}

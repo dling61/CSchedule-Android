@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ECECEC" >
+    android:background="@color/bg" >
 
     <RelativeLayout
         android:id="@+id/composeparticipant_topbar"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:background="@color/bg_top_bar" >
+        android:background="@color/me_unselected" >
 
         <LinearLayout
             android:id="@+id/layout_back"
@@ -156,7 +156,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/tv_mobile"
-                    android:hint="@string/mobile"
+                    android:hint="@string/title_mobile"
                     android:inputType="number"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_description" />
@@ -170,7 +170,7 @@
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/mainpage_btn"
+                 android:background="@drawable/me_border"
                 android:text="@string/remove_contact"
                 android:textColor="@color/white"
                 android:textSize="15sp"

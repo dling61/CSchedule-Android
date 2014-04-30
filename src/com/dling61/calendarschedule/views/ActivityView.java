@@ -9,6 +9,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -20,6 +21,7 @@ public class ActivityView extends RelativeLayout {
 	Context context;
 	public ImageButton btn_add_activity;
 	public ListView listview;
+	public RelativeLayout layout_no_activity;
 	public ActivityView(Context context) {
 		super(context);
 		this.context = context;
@@ -44,5 +46,6 @@ public class ActivityView extends RelativeLayout {
 		View.inflate(context, R.layout.activitypage, this);
 		listview=(ListView)findViewById(R.id.activityListView);
 		btn_add_activity=(ImageButton)findViewById(R.id.btn_add_activity);
+		layout_no_activity=(RelativeLayout)findViewById(R.id.layout_no_activity);
 	}
 }

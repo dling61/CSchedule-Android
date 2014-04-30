@@ -8,7 +8,7 @@
         android:id="@+id/createaccount_topbar"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
-        android:background="@color/bg_login_title_bar" >
+        android:background="@color/me_unselected" >
 
         <TextView
             android:id="@+id/signin_top_title"
@@ -26,14 +26,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:padding="@dimen/margin_top" >
+            android:padding="@dimen/margin_top"
+            android:background="@drawable/btn_back_selector" >
 
             <ImageView
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_back"
-                 />
+                android:src="@drawable/ic_back" />
         </LinearLayout>
     </RelativeLayout>
 
@@ -47,7 +47,6 @@
             android:id="@+id/signin_inputs"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-           
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
@@ -57,51 +56,50 @@
 
             <EditText
                 android:id="@+id/account_name_input"
+                style="@style/edittextStyle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
                 android:hint="@string/name"
-                android:singleLine="true" 
-                android:textColor="@color/bg_login_title_bar"
-              
-                style="@style/edittextStyle"/>
+                android:singleLine="true"
+                android:textColor="@color/bg_login_title_bar" />
 
             <EditText
                 android:id="@+id/account_mail_input"
+                style="@style/edittextStyle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                style="@style/edittextStyle"
-                android:textColor="@color/bg_login_title_bar"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColor="@color/bg_login_title_bar" />
 
             <EditText
                 android:id="@+id/account_password_input"
+                style="@style/edittextStyle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
                 android:hint="@string/password"
                 android:inputType="textPassword"
-                style="@style/edittextStyle"
-                android:textColor="@color/bg_login_title_bar"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColor="@color/bg_login_title_bar" />
 
             <EditText
                 android:id="@+id/account_mobile_input"
+                style="@style/edittextStyle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
                 android:hint="@string/title_mobile"
                 android:inputType="number"
-                style="@style/edittextStyle"
-                android:textColor="@color/bg_login_title_bar"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColor="@color/bg_login_title_bar" />
 
             <Button
                 android:id="@+id/btn_create"
@@ -109,7 +107,7 @@
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
-                android:background="@color/bg_login_title_bar"
+                android:background="@drawable/me_border"
                 android:text="@string/create_account"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_name" />

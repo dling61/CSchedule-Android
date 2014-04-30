@@ -9,9 +9,9 @@
         android:id="@+id/tv_title"
         style="@style/confirmTitleStyle"
         android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal"
+        android:layout_margin="@dimen/margin_left"
         android:layout_marginTop="@dimen/margin_top"
-         />
+        android:gravity="center_horizontal" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -32,7 +32,7 @@
                 style="@style/buttonStyleLogin"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="2dp"
-                android:background="@color/bg_top_bar"
+                android:background="@drawable/me_border"
                 android:singleLine="true"
                 android:text="@string/cancel" />
         </LinearLayout>
@@ -48,8 +48,7 @@
                 style="@style/buttonStyleLogin"
                 android:layout_marginLeft="2dp"
                 android:layout_marginRight="10dp"
-               
-                android:background="@color/bg_top_bar"
+                android:background="@drawable/me_border"
                 android:singleLine="true"
                 android:text="@string/ok" />
         </LinearLayout>

@@ -1,4 +1,3 @@
-
 package com.dling61.calendarschedule.adapter;
 
 /**
@@ -14,27 +13,36 @@ import android.widget.TabHost.TabContentFactory;
 public class MyTabFactory implements TabContentFactory {
 
 	private final Context mContext;
+	int imageId;
 
-	public MyTabFactory(Context context) {
+	public MyTabFactory(Context context, int imageId) {
 		mContext = context;
+		this.imageId = imageId;
 	}
 
-	public View createTabRightContent(String tag) {
+	public View createTabRightContent(String tag, int imageId) {
 		TabItemView v = new TabItemView(mContext);
-		tag = tag.toUpperCase();
-		v.setText(tag);
+//		tag = tag.toUpperCase();
+		v.setData(tag, imageId);
 		v.setMinimumWidth(0);
 		v.setMinimumHeight(0);
 		return v;
 	}
 
+	public View createTabContent(String tag, int imageId) {
+		TabItemView v = new TabItemView(mContext);
+//		tag = tag.toUpperCase();
+//		v.right.setVisibility(View.GONE);
+		v.setData(tag, imageId);
+		v.setMinimumWidth(0);
+		v.setMinimumHeight(0);
+		return v;
+	}
+
+	@Override
 	public View createTabContent(String tag) {
-		TabItemView v = new TabItemView(mContext);
-		tag = tag.toUpperCase();
-		v.right.setVisibility(View.GONE);
-		v.setText(tag);
-		v.setMinimumWidth(0);
-		v.setMinimumHeight(0);
-		return v;
+		// TODO Auto-generated method stub
+		return createTabRightContent(tag, imageId);
+	
 	}
 }

@@ -20,7 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 /**
- * @author Huyen 
+ * @author Huyen
  * @category show all activity of login account
  * 
  */
@@ -38,14 +38,14 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 	public static ActivityFragment getInstance() {
 		return ActivityFragment.getInstance();
 	}
-	
+
 	/**
 	 * On click listener all views
 	 * */
 	private void onClickListener() {
-//		registerForContextMenu(view.listview);
+		// registerForContextMenu(view.listview);
 		view.btn_add_activity.setOnClickListener(this);
-	} 
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -75,9 +75,16 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 			DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
 			ArrayList<MyActivity> activities = dbHelper.getActivities();
-			ActivityAdapter activityAdapter = new ActivityAdapter(mContext,
-					activities);
-			view.listview.setAdapter(activityAdapter);
+			if (activities != null && activities.size() > 0) {
+				ActivityAdapter activityAdapter = new ActivityAdapter(mContext,
+						activities);
+				view.listview.setAdapter(activityAdapter);
+				view.listview.setVisibility(View.VISIBLE);
+				view.layout_no_activity.setVisibility(View.GONE);
+			} else {
+				view.listview.setVisibility(View.GONE);
+				view.layout_no_activity.setVisibility(View.VISIBLE);
+			}
 		}
 	};
 
@@ -94,8 +101,8 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 		filterRefreshUpdate
 				.addAction(CommConstant.ADD_SHARED_MEMBER_FROM_ACTIVITY);
 		filterRefreshUpdate.addAction(CommConstant.ADD_CONTACT_SUCCESS);
-		getActivity().registerReceiver(changeAcitivityList,
-				filterRefreshUpdate);
+		getActivity()
+				.registerReceiver(changeAcitivityList, filterRefreshUpdate);
 	}
 
 	@Override

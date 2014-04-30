@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/width_item_tab"
-    android:layout_height="@dimen/height_item_list"
-    android:background="@color/bg" >
+    android:layout_height="@dimen/height_item_list" >
 
     <RelativeLayout
         android:layout_width="@dimen/width_item_tab"
         android:layout_height="@dimen/height_item_list"
         android:background="@drawable/tab_item_selector" >
 
+        <ImageView
+            android:id="@+id/img_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/margin_top"
+            android:src="@drawable/tab_account_normal"
+            android:textStyle="bold" >
+        </ImageView>
+
         <TextView
             android:id="@+id/txtNameApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/img_icon"
             android:layout_centerInParent="true"
+            android:layout_marginBottom="@dimen/margin_top"
             android:maxWidth="150dp"
             android:singleLine="true"
-            android:textColor="@color/bg_login_title_bar"
+            android:text="@string/contact"
+            android:textColor="@drawable/tab_item_text_selector"
             android:textSize="@dimen/text_description"
             android:textStyle="bold" >
         </TextView>
-
-        <RelativeLayout
-            android:id="@+id/right"
-            android:layout_width="2dp"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true" >
-        </RelativeLayout>
     </RelativeLayout>
 
 </RelativeLayout>

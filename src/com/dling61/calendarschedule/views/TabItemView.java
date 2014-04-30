@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,10 +19,11 @@ public class TabItemView extends RelativeLayout {
 	private LayoutInflater mInflater;
 	RelativeLayout row;
 	public TextView txtNameApp;
-	public View right;
+	public ImageView img_icon;
 
-	public void setText(String text) {
+	public void setData(String text,int img_id) {
 		txtNameApp.setText(text);
+		img_icon.setImageResource(img_id);
 	}
 
 	public TabItemView(Context context) {
@@ -48,6 +50,6 @@ public class TabItemView extends RelativeLayout {
 		row = (RelativeLayout) mInflater.inflate(R.layout.tab_item, null);
 		addView(row);
 		txtNameApp = (TextView) row.findViewById(R.id.txtNameApp);
-		right = (View) row.findViewById(R.id.right);
+		img_icon=(ImageView)findViewById(R.id.img_icon);
 	}
 }

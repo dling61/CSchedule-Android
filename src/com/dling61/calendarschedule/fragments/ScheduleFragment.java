@@ -85,26 +85,26 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			processDataForAdapterListview();
 			view.btn_all.setBackgroundResource(R.drawable.me_selected);
 			view.btn_me.setBackgroundResource(R.drawable.me_border);
-//			view.btn_today.setBackgroundResource(R.drawable.today_border);
+			// view.btn_today.setBackgroundResource(R.drawable.today_border);
 		} else if (v == view.btn_me) {
 			type = ME;
 			processDataForAdapterListview();
 			view.btn_all.setBackgroundResource(R.drawable.me_border);
 			view.btn_me.setBackgroundResource(R.drawable.me_selected);
-//			view.btn_today.setBackgroundResource(R.drawable.today_border);
+			// view.btn_today.setBackgroundResource(R.drawable.today_border);
 		}
 		// will show all schedule for all day
 		else if (v == view.btn_refresh) {
 			isToday = false;
 			processDataForAdapterListview();
-//			view.btn_all.setBackgroundResource(R.drawable.me_border);
-//			view.btn_me.setBackgroundResource(R.drawable.me_border);
+			// view.btn_all.setBackgroundResource(R.drawable.me_border);
+			// view.btn_me.setBackgroundResource(R.drawable.me_border);
 			view.btn_today.setBackgroundResource(R.drawable.today_border);
 		} else if (v == view.btn_today) {
 			isToday = true;
 			processDataForAdapterListview();
-//			view.btn_all.setBackgroundResource(R.drawable.me_border);
-//			view.btn_me.setBackgroundResource(R.drawable.me_border);
+			// view.btn_all.setBackgroundResource(R.drawable.me_border);
+			// view.btn_me.setBackgroundResource(R.drawable.me_border);
 			view.btn_today.setBackgroundResource(R.drawable.me_selected);
 		}
 	}
@@ -157,8 +157,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	/**
 	 * process data for adapter to set expandablelistview
 	 * */
-	private void processDataForAdapterListview(
-			) {
+	private void processDataForAdapterListview() {
 		ArrayList<String> listDateString = new ArrayList<String>();
 		HashMap<String, ArrayList<Schedule>> listScheduleByDay = new HashMap<String, ArrayList<Schedule>>();
 		DatabaseHelper dbHelper = DatabaseHelper
@@ -246,7 +245,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			Set<String> setKeys = listScheduleByDay.keySet();
 			List<String> list = new ArrayList<String>(setKeys);
 			listDateString = (ArrayList<String>) list;
-			
+
 			ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter(
 					getActivity(), listDateString, listScheduleByDay);
 			view.expand_list_schedule.setAdapter(adapter);
@@ -262,13 +261,38 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			int count = adapter.getGroupCount();
 			for (int position = 1; position <= count; position++)
 				view.expand_list_schedule.expandGroup(position - 1);
+
+			view.expand_list_schedule.setVisibility(View.VISIBLE);
+			view.layout_top.setVisibility(View.VISIBLE);
+			view.layout_no_schedule.setVisibility(View.GONE);
+			
+		} else {
+			// try {
+			// ExpandableListScheduleAdapter adapter =
+			// (ExpandableListScheduleAdapter) view.expand_list_schedule
+			// .getAdapter();
+			// if (adapter != null) {
+			// adapter.clearAdapter();
+			// }
+			// } catch (Exception ex) {
+			// ex.printStackTrace();
+			// }
+			try {
+				ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
+				view.expand_list_schedule.setAdapter(adapter);
+				view.expand_list_schedule.setVisibility(View.GONE);
+				view.layout_no_schedule.setVisibility(View.VISIBLE);
+				view.layout_top.setVisibility(View.GONE);
+			
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
-
 	BroadcastReceiver scheduleReadyComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
-			Log.d("add schedule","receiver");
+			Log.d("add schedule", "receiver");
 			processDataForAdapterListview();
 		}
 

@@ -98,6 +98,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			setEdittextEditable(view.et_name, true);
 			view.layout_done.setVisibility(View.VISIBLE);
 			view.layout_edit.setVisibility(View.GONE);
+			view.btn_remove_contact.setVisibility(View.GONE);
 		} else if (v == view.et_email) {
 			if (composeType == DatabaseHelper.EXISTED
 					&& (view.layout_edit.getVisibility() == View.VISIBLE)
@@ -211,10 +212,10 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 				mContext.getResources().getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						if (thisParticipant != null) {
+						if (selectedParticipantID >0) {
 							WebservicesHelper ws = new WebservicesHelper(
 									mContext);
-							ws.deleteContact(thisParticipant,
+							ws.deleteContact(selectedParticipantID,
 									deleteContactHandler);
 						}
 						dialog.cancel();
@@ -302,7 +303,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 				.getSharedDatabaseHelper(mContext);
 		if (composeType == DatabaseHelper.NEW) {
 			view.tv_title.setText(mContext.getResources().getString(
-					R.string.add_participant));
+					R.string.add_contact));
 			int newParticipantID = dbHelper.getNextParticipantID();
 			int ownerid = ref.getCurrentOwnerId(mContext);
 			thisParticipant = new Participant(newParticipantID, null, null,

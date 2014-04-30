@@ -1,7 +1,6 @@
 package com.dling61.calendarschedule;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -59,6 +58,8 @@ public class CategoryTabActivity extends FragmentActivity implements
 	public static int currentPage = 0;
 	boolean isActivityDownloadDone = false;
 	boolean isScheduleDownloadDone = false;
+	public static int TAB_SCHEDULE=0;
+	public static int TAB_CONTACT=2;
 
 	public static CategoryTabActivity getTab(Context context) {
 		if (sharedTab == null) {
@@ -152,7 +153,8 @@ public class CategoryTabActivity extends FragmentActivity implements
 							description);
 					Log.i("getActivitiesFromWeb service_description ",
 							description + "");
-					int otc = new SharedReference().getTimeZone(mContext);
+//					int otc = new SharedReference().getTimeZone(mContext);
+					String otc=service.getString("utcoff");
 					newActivity.put(ActivityTable.otc_Offset, otc);
 					int is_deleted = 0;
 					newActivity.put(ActivityTable.is_Deleted, is_deleted);
@@ -194,11 +196,11 @@ public class CategoryTabActivity extends FragmentActivity implements
 								.getCurrentDateTime()));
 				isActivityDownloadDone = true;
 				if (dbHelper.getNumberActivity() > 0) {
-					moveToPage(2);
+					moveToPage(TAB_SCHEDULE);
 				}
 				else 
 				{
-					moveToPage(0);
+					moveToPage(TAB_CONTACT);
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -226,10 +228,11 @@ public class CategoryTabActivity extends FragmentActivity implements
 
 	// Method to add a TabHost
 	private static void addTabRight(CategoryTabActivity activity,
-			TabHost tabHost, TabHost.TabSpec tabSpec, String title) {
-		MyTabFactory myTab = new MyTabFactory(activity);
+			TabHost tabHost, TabHost.TabSpec tabSpec, String title, int imageId) {
+		MyTabFactory myTab = new MyTabFactory(activity,imageId);
 		tabSpec.setContent(myTab);
-		tabSpec.setIndicator(myTab.createTabRightContent(title));
+		View v=myTab.createTabContent(title);
+		tabSpec.setIndicator(v);
 		tabHost.addTab(tabSpec);
 	}
 
@@ -275,15 +278,16 @@ public class CategoryTabActivity extends FragmentActivity implements
 		List<Fragment> fList = new ArrayList<Fragment>();
 
 		// TODO Put here your Fragments
-		ActivityFragment activity = new ActivityFragment();
+		ScheduleFragment schedule = new ScheduleFragment();
 		ContactFragment contact = new ContactFragment();
 		contact.setInSideTab(true);
-		ScheduleFragment schedule = new ScheduleFragment();
+		ActivityFragment activity = new ActivityFragment();
+		
+		
 		AccountFragment account = new AccountFragment();
-
-		fList.add(activity);
-		fList.add(contact);
 		fList.add(schedule);
+		fList.add(contact);
+		fList.add(activity);	
 		fList.add(account);
 
 		return fList;
@@ -293,25 +297,24 @@ public class CategoryTabActivity extends FragmentActivity implements
 	private void initialiseTabHost() {
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
-
+		CategoryTabActivity.addTabRight(CategoryTabActivity.this,
+				this.mTabHost,
+				this.mTabHost.newTabSpec("Tab3").setIndicator("Tab3"),
+				"Schedule",R.drawable.btn_schedule_selector);
+		CategoryTabActivity.addTabRight(CategoryTabActivity.this,
+				this.mTabHost,
+				this.mTabHost.newTabSpec("Tab2").setIndicator("Tab2"),
+				mContext.getResources().getString(R.string.contact),R.drawable.btn_contact_selector);
 		// TODO Put here your Tabs
 		CategoryTabActivity.addTabRight(CategoryTabActivity.this,
 				this.mTabHost,
 				this.mTabHost.newTabSpec("Tab1").setIndicator("Tab1"),
-				"Activity");
-
-		CategoryTabActivity.addTabRight(CategoryTabActivity.this,
-				this.mTabHost,
-				this.mTabHost.newTabSpec("Tab2").setIndicator("Tab2"),
-				"Participant");
+				"Activity",R.drawable.btn_activity_selector);
+	
 		CategoryTabActivity.addTabRight(CategoryTabActivity.this,
 				this.mTabHost,
 				this.mTabHost.newTabSpec("Tab3").setIndicator("Tab3"),
-				"Schedule");
-		CategoryTabActivity.addTabRight(CategoryTabActivity.this,
-				this.mTabHost,
-				this.mTabHost.newTabSpec("Tab3").setIndicator("Tab3"),
-				"Account");
+				"Account",R.drawable.btn_account_selector);
 		mTabHost.getTabWidget().setDividerDrawable(R.drawable.ic_menu_line);
 		mTabHost.setOnTabChangedListener(this);
 	}

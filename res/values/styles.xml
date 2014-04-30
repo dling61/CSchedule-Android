@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -31,6 +31,7 @@
         <item name="android:layout_marginBottom">@dimen/margin_top</item>
         <item name="android:paddingLeft">@dimen/margin_left</item>
         <item name="android:paddingBottom">@dimen/margin_top</item>
+        <item name="android:textSize">@dimen/text_name</item>
     </style>
 
     <style name="buttonStyleLogin" parent="@android:style/TextAppearance.Medium">

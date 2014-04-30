@@ -18,7 +18,10 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/margin_right"
             android:textColor="@color/bg_login_title_bar"
-            android:textSize="@dimen/text_description" />
+            android:textSize="@dimen/text_description" 
+            android:singleLine="true"
+            android:maxLength="20"
+            android:text="ạasdggfggggggggggggggggggggggggggggggggg"/>
 
         <TextView
             android:id="@+id/schedule_servicename_tv"
@@ -26,10 +29,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="20dp"
-            android:maxLength="100"
+            android:maxLength="60"
             android:textColor="@color/black"
             android:textSize="@dimen/text_name"
-            android:textStyle="bold" />
+            android:textStyle="bold" 
+            android:text="âfsfdsjfkdskssgssssfsfsfsfdffdfdffđfdfdfdfdfdfdffggfgfgfgfgfgfgf"
+            android:layout_toLeftOf="@id/schedule_date_tv"
+            android:singleLine="true"/>
     </RelativeLayout>
 
     <TextView

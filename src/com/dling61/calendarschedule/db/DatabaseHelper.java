@@ -1179,6 +1179,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				SharedMemberTable.SharedMemberTableName, null, null);
 		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
 				null);
+		SharedReference ref=new SharedReference();
+		ref.setAccount(context, "");
+		ref.setInformationUserLogined(context, "", "", -1, -1, -1, -1);
+		ref.setLastestParticipantLastModifiedTime(context, "");
+		ref.setLastestScheduleLastModifiedTime(context, "");
+		ref.setLastestServiceLastModifiedTime(context,"");
+		ref.setOwnerId(context, "-1");
+		ref.setTimeZone(context, 0);
+		ref.setUsername(context, "");
 	}
 
 	public int getNextActivityID() {

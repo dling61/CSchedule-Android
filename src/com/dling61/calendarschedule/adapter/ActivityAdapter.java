@@ -14,6 +14,7 @@ import com.dling61.calendarschedule.utils.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -113,6 +114,8 @@ public class ActivityAdapter extends BaseAdapter {
 		viewHolder.tv_participant.setText(listParticipantName.get(activity
 				.getActivity_ID()));
 
+		Log.d("timezone "+activity.getActivity_name(),activity.getOtc_offset()+"");
+		final int role=activity.getRole();
 		convertView.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -125,7 +128,7 @@ public class ActivityAdapter extends BaseAdapter {
 						DatabaseHelper.EXISTED);
 				inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID,
 						activity.getActivity_ID());
-				inforActivityIntent.putExtra(CommConstant.ROLE, activity.getRole());
+				inforActivityIntent.putExtra(CommConstant.ROLE,role);
 				mContext.startActivity(inforActivityIntent);
 
 			}
