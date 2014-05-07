@@ -22,7 +22,7 @@
     <string name="login_fail">Login fail!</string>
     <string name="title_email">Email</string>
     <string name="title_mobile">Mobile</string>
-    <string name="participant_infor">Participant Infor</string>
+    <string name="participant_infor">Participant Info</string>
 
     <string-array name="menu_array">
         <item>Schedule</item>

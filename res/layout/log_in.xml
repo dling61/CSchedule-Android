@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/signin_topbar"
         android:layout_width="fill_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:background="@color/me_unselected" >
 
         <TextView
@@ -22,7 +22,7 @@
         <RelativeLayout
             android:id="@+id/layout_back"
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/btn_back_selector"
             android:padding="@dimen/margin_left" >
 

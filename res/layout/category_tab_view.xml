@@ -26,7 +26,7 @@
                 android:id="@+id/horizontalView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+              
                 android:fillViewport="true"
                 android:scrollbars="none" >
 
@@ -53,12 +53,6 @@
         </LinearLayout>
     </TabHost>
 
-    <RelativeLayout
-        android:id="@+id/shadow"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/menuTop"
-        android:background="@drawable/ic_top_dropshadow" >
-    </RelativeLayout>
+
 
 </RelativeLayout>

@@ -20,6 +20,7 @@ public class TitleBarItemView extends RelativeLayout {
 	public TextView tv_name;
 	public LinearLayout layout_back;
 	public LinearLayout layout_next;
+	public LinearLayout layout_save;
 
 	public void setData(String text, int img_id) {
 	}
@@ -50,5 +51,6 @@ public class TitleBarItemView extends RelativeLayout {
 		tv_name = (TextView) findViewById(R.id.tv_name);
 		layout_back = (LinearLayout) findViewById(R.id.layout_back);
 		layout_next = (LinearLayout) findViewById(R.id.layout_next);
+		layout_save=(LinearLayout)findViewById(R.id.layout_save);
 	}
 }

@@ -24,27 +24,19 @@
 
     <Button
         android:id="@+id/btn_sign_in"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        style="@style/buttonStyle"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="40dp"
         android:layout_marginLeft="@dimen/margin_left"
         android:layout_marginRight="@dimen/margin_left"
-        android:background="@drawable/me_border"
-        android:text="@string/signin"
-        android:textColor="@color/color_text_title_main"
-        android:textSize="@dimen/text_name" />
+        android:text="@string/signin" />
 
     <Button
         android:id="@+id/btn_create_account"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        style="@style/buttonStyle"
         android:layout_above="@id/btn_sign_in"
         android:layout_margin="@dimen/margin_left"
-        android:background="@drawable/me_border"
-        android:text="@string/createaccount"
-        android:textColor="@color/color_text_title_main"
-        android:textSize="@dimen/text_name" />
+        android:text="@string/createaccount" />
 
     <ImageView
         android:id="@+id/mainpage_iconimg"

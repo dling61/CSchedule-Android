@@ -6,7 +6,7 @@
     <RelativeLayout
         android:id="@+id/member_topbar"
         android:layout_width="fill_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:background="@color/bg_login_title_bar"
         android:visibility="visible" >
 

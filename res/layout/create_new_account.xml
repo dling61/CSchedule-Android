@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/createaccount_topbar"
         android:layout_width="fill_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:background="@color/me_unselected" >
 
         <TextView

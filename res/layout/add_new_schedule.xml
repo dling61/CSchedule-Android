@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/compose_schedule_topbar"
         android:layout_width="fill_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:background="@color/me_unselected" >
 
         <TextView
@@ -101,21 +101,18 @@
 
                 <TextView
                     android:id="@+id/tv_new_activity_name"
-                    android:layout_width="@dimen/width_tv_add_activity"
-                    android:layout_height="wrap_content"
+                    style="@style/tvTitleStyle"
                     android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/activity_name"
-                    android:textColor="@color/color_textview"
-                    android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                    
+                    android:text="@string/activity_name" />
 
                 <EditText
                     android:id="@+id/et_new_activity_name"
+                    style="@style/edittextStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_top"
-                    android:layout_toRightOf="@id/tv_new_activity_name"
+                  
+                    android:layout_below="@id/tv_new_activity_name"
                     android:clickable="true"
                     android:focusable="false"
                     android:textColor="@color/color_textview" />
@@ -124,39 +121,34 @@
             <RelativeLayout
                 android:id="@+id/layout_start"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top" >
+                android:layout_height="wrap_content" >
 
                 <TextView
                     android:id="@+id/tv_start"
-                    android:layout_width="@dimen/width_tv_add_activity"
-                    android:layout_height="wrap_content"
+                    style="@style/tvTitleStyle"
                     android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/start"
-                    android:textColor="@color/color_textview"
-                    android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                  
+                    android:text="@string/start" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/margin_top"
-                    android:layout_toRightOf="@id/tv_start"
-                    android:paddingBottom="@dimen/margin_top" >
+                    android:layout_below="@id/tv_start"
+                    android:orientation="horizontal" >
 
                     <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="horizontal" >
+                        android:orientation="horizontal" 
+                        android:layout_marginRight="@dimen/margin_left">
 
                         <EditText
                             android:id="@+id/et_startDate"
+                            style="@style/edittextStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
                             android:inputType="date"
@@ -171,9 +163,9 @@
 
                         <EditText
                             android:id="@+id/et_startTime"
+                            style="@style/edittextStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
                             android:inputType="datetime"
@@ -185,27 +177,21 @@
             <RelativeLayout
                 android:id="@+id/layout_end"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top" >
+                android:layout_height="wrap_content" >
 
                 <TextView
                     android:id="@+id/tv_end"
-                    android:layout_width="@dimen/width_tv_add_activity"
-                    android:layout_height="wrap_content"
+                    style="@style/tvTitleStyle"
                     android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/end"
-                    android:textColor="@color/color_textview"
-                    android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                  
+                    android:text="@string/end" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/margin_top"
-                    android:layout_toRightOf="@id/tv_end"
-                    android:paddingBottom="@dimen/margin_top" >
+                    android:layout_below="@id/tv_end"
+                    android:orientation="horizontal" >
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -215,13 +201,15 @@
 
                         <EditText
                             android:id="@+id/et_endDate"
+                            style="@style/edittextStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
                             android:inputType="date"
-                            android:textColor="@color/color_textview" />
+                            android:textColor="@color/color_textview"
+                            android:layout_marginRight="@dimen/margin_left" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -232,9 +220,9 @@
 
                         <EditText
                             android:id="@+id/et_endTime"
+                            style="@style/edittextStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
                             android:inputType="datetime"
@@ -247,25 +235,22 @@
                 android:id="@+id/layout_on_duty"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top" >
+                >
 
                 <TextView
                     android:id="@+id/tv_on_duty"
-                    android:layout_width="@dimen/width_tv_add_activity"
-                    android:layout_height="wrap_content"
+                    style="@style/tvTitleStyle"
                     android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/on_duty"
-                    android:textColor="@color/color_textview"
-                    android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+                
+                    android:text="@string/on_duty" />
 
                 <EditText
                     android:id="@+id/et_on_duty"
+                    style="@style/edittextStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
-                    android:layout_toRightOf="@id/tv_on_duty"
+                    android:layout_below="@id/tv_on_duty"
                     android:clickable="true"
                     android:focusable="false"
                     android:inputType="none"
@@ -276,39 +261,33 @@
                 android:id="@+id/layout_description"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top" >
+              >
 
                 <TextView
                     android:id="@+id/tv_new_activity_description"
-                    android:layout_width="@dimen/width_tv_add_activity"
-                    android:layout_height="wrap_content"
+                    style="@style/tvTitleStyle"
                     android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:text="@string/description"
-                    android:textColor="@color/color_textview"
-                    android:textSize="@dimen/text_size"
-                    android:textStyle="bold" />
+               
+                    android:text="@string/description" />
 
                 <EditText
                     android:id="@+id/et_new_activity_description"
+                    style="@style/edittextStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
-                    android:layout_toRightOf="@id/tv_new_activity_description"
-                    android:maxLines="3"
+                    android:layout_below="@id/tv_new_activity_description"
                     android:maxLength="200"
+                    android:maxLines="3"
                     android:textColor="@color/color_textview" />
             </RelativeLayout>
 
             <Button
                 android:id="@+id/btn_remove_schedule"
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
+                style="@style/buttonStyle"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/me_border"
+                android:layout_marginTop="@dimen/margin_top"
                 android:text="@string/remove_schedule"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_name"
                 android:visibility="visible" />
         </LinearLayout>
     </ScrollView>

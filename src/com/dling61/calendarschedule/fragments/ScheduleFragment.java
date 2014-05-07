@@ -202,25 +202,25 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 						int dateInWeek = c.get(Calendar.DAY_OF_WEEK);
 						switch (dateInWeek) {
 						case Calendar.MONDAY:
-							dateInWeekString = "Monday";
+							dateInWeekString = "Mon";
 							break;
 						case Calendar.TUESDAY:
-							dateInWeekString = "Tuesday";
+							dateInWeekString = "Tue";
 							break;
 						case Calendar.WEDNESDAY:
-							dateInWeekString = "Wednesday";
+							dateInWeekString = "Wed";
 							break;
 						case Calendar.THURSDAY:
-							dateInWeekString = "Thursday";
+							dateInWeekString = "Thu";
 							break;
 						case Calendar.FRIDAY:
-							dateInWeekString = "Friday";
+							dateInWeekString = "Fri";
 							break;
 						case Calendar.SATURDAY:
-							dateInWeekString = "Saturday";
+							dateInWeekString = "Sat";
 							break;
 						case Calendar.SUNDAY:
-							dateInWeekString = "Sunday";
+							dateInWeekString = "Sun";
 							break;
 						default:
 							break;

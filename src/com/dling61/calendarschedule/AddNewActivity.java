@@ -452,7 +452,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			ex.printStackTrace();
 
 		}
-		return "None";
+		return timezone_array[0];
 	}
 
 	/**

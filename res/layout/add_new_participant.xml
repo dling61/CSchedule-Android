@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/composeparticipant_topbar"
         android:layout_width="fill_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:background="@color/me_unselected" >
 
         <LinearLayout
@@ -164,16 +164,12 @@
 
             <Button
                 android:id="@+id/btm_remove_contact"
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
+                style="@style/buttonStyle"
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                 android:background="@drawable/me_border"
                 android:text="@string/remove_contact"
-                android:textColor="@color/white"
-                android:textSize="15sp"
                 android:visibility="visible" />
         </LinearLayout>
     </ScrollView>
