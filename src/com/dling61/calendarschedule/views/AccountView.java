@@ -21,7 +21,7 @@ public class AccountView extends RelativeLayout {
 	public TextView account_email_tv;
 	public TextView number_activities_tv;
 	public TextView number_schedules_tv;
-	public Button btn_about;
+	public Button btn_feedback;
 	public Button btn_signout_account;
 	public AccountView(Context context) {
 		super(context);
@@ -48,7 +48,7 @@ public class AccountView extends RelativeLayout {
 		account_name_tv = (TextView)findViewById(R.id.account_showfullname_tv);
 		number_activities_tv = (TextView)findViewById(R.id.account_activity_number_tv);
 		number_schedules_tv = (TextView)findViewById(R.id.account_schedule_number_tv);
-		btn_about=(Button)findViewById(R.id.btn_about);
+		btn_feedback=(Button)findViewById(R.id.btn_feedback);
 		btn_signout_account=(Button)findViewById(R.id.btn_signout_account);
 	}
 }

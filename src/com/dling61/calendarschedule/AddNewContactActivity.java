@@ -130,7 +130,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		SharedReference ref = new SharedReference();
 		int currentOwnerId = ref.getCurrentOwnerId(mContext);
 		Log.d("current ownerid", currentOwnerId + "");
-		Log.d("participant id", thisParticipant.getID() + "");
+		Log.d("participant delete", thisParticipant.getID() + "");
 		if (thisParticipant.getID() == currentOwnerId) {
 			Toast.makeText(mContext,
 					mContext.getResources().getString(R.string.your_contact),
@@ -215,8 +215,12 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 						if (selectedParticipantID >0) {
 							WebservicesHelper ws = new WebservicesHelper(
 									mContext);
-							ws.deleteContact(selectedParticipantID,
-									deleteContactHandler);
+//							ws.deleteContact(selectedParticipantID,
+//									deleteContactHandler);
+							ws.deleteParticipant(thisParticipant);
+//							String urlDeleteContact = BaseUrl.BASEURL + "members/"
+//									+selectedParticipantID + "?" + BaseUrl.URL_POST_FIX;
+//							JSONParser.deleteFromUrl(urlDeleteContact);
 						}
 						dialog.cancel();
 					}
@@ -274,6 +278,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		if (composeType == DatabaseHelper.NEW) {
 			cv.put(ParticipantTable.own_ID, thisParticipant.getOwnerID());
 			cv.put(ParticipantTable.participant_ID, thisParticipant.getID());
+			Log.d("add member id",thisParticipant.getID()+"");
 			cv.put(ParticipantTable.user_login,
 					new SharedReference().getCurrentOwnerId(mContext));
 			dbHelper.insertParticipant(cv);

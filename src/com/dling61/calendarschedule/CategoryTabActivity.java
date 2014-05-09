@@ -59,7 +59,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	boolean isActivityDownloadDone = false;
 	boolean isScheduleDownloadDone = false;
 	public static int TAB_SCHEDULE=0;
-	public static int TAB_CONTACT=2;
+	public static int TAB_ACTIVITY=2;
 
 	public static CategoryTabActivity getTab(Context context) {
 		if (sharedTab == null) {
@@ -200,7 +200,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 				}
 				else 
 				{
-					moveToPage(TAB_CONTACT);
+					moveToPage(TAB_ACTIVITY);
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block

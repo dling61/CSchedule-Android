@@ -476,13 +476,7 @@ public class CreateNewScheduleActivity extends Activity implements
 							+ MyDate.transformUTCDateToLocalDate(
 									MyDate.STANDARD,
 									thisSchedule.getStarttime()).split(" ")[1]));
-			if (MyDate.IsFirstDateLaterThanSecondDate(
-					this.thisSchedule.getStarttime(),
-					this.thisSchedule.getEndtime())) {
-				this.thisSchedule.setEndtime(this.thisSchedule.getStarttime());
-				this.view.et_endDate.setText(this.view.et_startDate.getText());
-				this.view.et_endTime.setText(this.view.et_startTime.getText());
-			}
+		
 		} else {
 
 			this.view.et_endDate.setText(fulldate);
@@ -497,7 +491,13 @@ public class CreateNewScheduleActivity extends Activity implements
 									MyDate.STANDARD,
 									thisSchedule.getStarttime()).split(" ")[1]));
 		}
-
+		if (MyDate.IsFirstDateLaterThanSecondDate(
+				this.thisSchedule.getStarttime(),
+				this.thisSchedule.getEndtime())) {
+			this.thisSchedule.setEndtime(this.thisSchedule.getStarttime());
+			this.view.et_endDate.setText(this.view.et_startDate.getText());
+			this.view.et_endTime.setText(this.view.et_startTime.getText());
+		}
 	}
 
 	@SuppressLint("NewApi")
@@ -520,16 +520,7 @@ public class CreateNewScheduleActivity extends Activity implements
 							.transformUTCDateToLocalDate(MyDate.STANDARD,
 									thisSchedule.getStarttime()).split(" ")[0]
 							+ " " + hourstr + ":" + minutestr + ":" + "00"));
-			if (MyDate.IsFirstDateLaterThanSecondDate(
-					this.thisSchedule.getStarttime(),
-					this.thisSchedule.getEndtime())) {
-				this.thisSchedule.setEndtime(this.thisSchedule.getEndtime());
-				this.view.et_endDate.setText(this.view.et_startDate.getText());
-				this.view.et_endTime.setText(this.view.et_startTime.getText());
-
-			} else {
-
-			}
+			
 
 		} else {
 			this.view.et_endTime.setText(time);
@@ -549,6 +540,14 @@ public class CreateNewScheduleActivity extends Activity implements
 
 			}
 		}
+		if (MyDate.IsFirstDateLaterThanSecondDate(
+				this.thisSchedule.getStarttime(),
+				this.thisSchedule.getEndtime())) {
+			this.thisSchedule.setEndtime(this.thisSchedule.getEndtime());
+			this.view.et_endDate.setText(this.view.et_startDate.getText());
+			this.view.et_endTime.setText(this.view.et_startTime.getText());
+
+		} 
 	}
 
 	@Override

@@ -951,12 +951,12 @@ public class WebservicesHelper {
 						int participantID = Participant.getInt("memberid");
 
 						if (dbHelper.isParticipantExisted(participantID) == false) {
-							int participant_ID = (Participant
-									.getInt("memberid") + 1);
+							// int participant_ID = (Participant
+							// .getInt("memberid"));
 							cv.put(ParticipantTable.participant_ID,
-									participant_ID);
+									participantID);
 							Log.i("getParticipantsFromWeb participant_ID ",
-									participant_ID + "");
+									participantID + "");
 							if (dbHelper.insertParticipant(cv))
 								Log.i("database", "insert participant "
 										+ Participant.getString("membername")
@@ -1164,7 +1164,7 @@ public class WebservicesHelper {
 								Intent intent = new Intent(
 										CommConstant.UPDATE_SCHEDULE);
 								mContext.sendBroadcast(intent);
-
+								((Activity) mContext).finish();
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -1186,6 +1186,28 @@ public class WebservicesHelper {
 											+ "\n" + response.toString(),
 									Toast.LENGTH_LONG).show();
 
+						}
+
+						@Override
+						public void onStart() {
+							// TODO Auto-generated method stub
+							super.onStart();
+							try {
+								progress.show();
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+
+						@Override
+						public void onFinish() {
+							// TODO Auto-generated method stub
+							super.onFinish();
+							try {
+								progress.dismiss();
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
 						}
 					});
 		} catch (UnsupportedEncodingException e1) {
@@ -1246,9 +1268,12 @@ public class WebservicesHelper {
 								// mContext.sendBroadcast(intent);
 								// go to schedule
 								CategoryTabActivity.currentPage = 2;
+
+								((Activity) mContext).finish();
 								Intent intent = new Intent(
 										CommConstant.UPDATE_SCHEDULE);
 								mContext.sendBroadcast(intent);
+
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -1365,6 +1390,78 @@ public class WebservicesHelper {
 						.show();
 			}
 		});
+	}
+
+	/**
+	 * send feedback
+	 * */
+	public void sendFeedBack(String feedBackStr) {
+
+		String feedback = BaseUrl.BASEURL + "feedback" + "?"
+				+ BaseUrl.URL_POST_FIX;
+		Log.d("feedback link", feedback);
+		try {
+			JSONObject sharedmemberParams = new JSONObject();
+			sharedmemberParams.put("ownerid",
+					new SharedReference().getCurrentOwnerId(mContext));
+			sharedmemberParams.put("feedback", feedBackStr);
+			client.addHeader("Content-type", "application/json");
+			StringEntity entity = new StringEntity(
+					sharedmemberParams.toString());
+			Log.d("body feedback", sharedmemberParams.toString());
+			client.post(null, feedback, entity, "application/json",
+					new JsonHttpResponseHandler() {
+
+						@Override
+						public void onSuccess(String response) {
+
+							Log.i("successful feedback", response.toString());
+							if (response.startsWith("200")) {
+								Toast.makeText(
+										mContext,
+										mContext.getResources().getString(
+												R.string.send_feedback_success),
+										Toast.LENGTH_LONG).show();
+							} else if (response.startsWith("201")) {
+								Toast.makeText(mContext,
+										"Not valid content in the feedback",
+										Toast.LENGTH_LONG).show();
+							}
+
+						}
+
+						public void onFailure(Throwable e, String response) {
+							// Response failed :(
+							Toast.makeText(mContext, response,
+									Toast.LENGTH_LONG).show();
+							Log.i("failure response", response);
+							Log.i("fail", e.toString());
+
+						}
+
+						@Override
+						public void onStart() {
+							// TODO Auto-generated method stub
+							super.onStart();
+							progress.show();
+						}
+
+						@Override
+						public void onFinish() {
+							// TODO Auto-generated method stub
+							super.onFinish();
+							if (progress.isShowing()) {
+								progress.dismiss();
+							}
+						}
+					});
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void uploadRecentNewActivitiesToWeb() {
@@ -1741,18 +1838,24 @@ public class WebservicesHelper {
 			client.post(null, ParticipantUrl, entity, "application/json",
 					new JsonHttpResponseHandler() {
 						public void onSuccess(JSONObject response) {
-							Log.i("successful response", response.toString());
+							Log.i("add participant response",
+									response.toString());
 							try {
-
-								ContentValues cv = new ContentValues();
 								String last_modified = response
 										.getString("lastmodified");
-								cv.put(ParticipantTable.last_Modified,
-										last_modified);
-								cv.put(ParticipantTable.is_Sychronized, 1);
+								if (last_modified != null
+										&& (!last_modified.equals(""))) {
+									ContentValues cv = new ContentValues();
+									cv.put(ParticipantTable.last_Modified,
+											last_modified);
+									cv.put(ParticipantTable.is_Sychronized, 1);
 
-								dbHelper.updateParticipant(id, cv);
-
+									dbHelper.updateParticipant(id, cv);
+								} else {
+									Toast.makeText(mContext,
+											response.toString(),
+											Toast.LENGTH_LONG).show();
+								}
 								((Activity) mContext).finish();
 								Intent intent = new Intent(
 										CommConstant.ADD_CONTACT_SUCCESS);
@@ -1912,11 +2015,12 @@ public class WebservicesHelper {
 						cv.put(ParticipantTable.is_Sychronized, 1);
 						// dbHelper.updateParticipant(id, cv);
 						dbHelper.deleteParticipant(id);
-						((Activity) mContext).finish();
-						Intent intent = new Intent(
-								CommConstant.DELETE_CONTACT_COMPLETE);
-						mContext.sendBroadcast(intent);
+
 					}
+					((Activity) mContext).finish();
+					Intent intent = new Intent(
+							CommConstant.DELETE_CONTACT_COMPLETE);
+					mContext.sendBroadcast(intent);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -24,11 +24,11 @@
 
         <ImageButton
             android:id="@+id/btn_add_activity"
+            style="@style/buttonStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            style="@style/buttonStyle"
             android:src="@drawable/button_add" />
     </RelativeLayout>
 
@@ -71,7 +71,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_left"
                 android:gravity="center"
                 android:text="@string/have_no_activity_first"
                 android:textColor="@color/text_activity_description" />
@@ -80,7 +79,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_left"
                 android:gravity="center"
                 android:text="@string/have_no_activity_second"
                 android:textColor="@color/text_activity_description" />
@@ -89,7 +87,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_left"
                 android:gravity="center"
                 android:text="@string/have_no_activity_third"
                 android:textColor="@color/text_activity_description" />

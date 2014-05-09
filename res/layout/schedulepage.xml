@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@id/btn_all"
-                    android:background="@drawable/me_selected"
+                    android:background="@drawable/me_border"
                     android:padding="@dimen/margin_top"
                     android:text="@string/me"
                     android:textColor="@color/white" />
@@ -109,13 +109,13 @@
             android:id="@+id/list_expandable_schedule"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
+            android:layout_margin="@dimen/margin_left"
             android:cacheColorHint="#00000000"
             android:childDivider="#dddddd"
             android:divider="#dddddd"
             android:dividerHeight="1dp"
             android:groupIndicator="@null"
-            android:visibility="gone"
-            android:layout_margin="@dimen/margin_left" >
+            android:visibility="gone" >
         </ExpandableListView>
     </LinearLayout>
 
@@ -124,6 +124,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@id/add_schedule"
+        android:layout_below="@id/layout_top"
         android:layout_centerInParent="true"
         android:background="@color/white"
         android:visibility="gone" >
@@ -148,7 +149,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_left"
                 android:gravity="center"
                 android:text="@string/have_no_schedule_first"
                 android:textColor="@color/text_activity_description" />
@@ -157,7 +157,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_left"
                 android:gravity="center"
                 android:text="@string/have_no_schedule_second"
                 android:textColor="@color/text_activity_description" />
@@ -166,7 +165,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/margin_left"
                 android:gravity="center"
                 android:text="@string/have_no_schedule_third"
                 android:textColor="@color/text_activity_description" />

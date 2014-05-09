@@ -159,7 +159,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor mCount = this.getWritableDatabase().rawQuery(
 				"select count(*) from " + ActivityTable.ActivityTableName
 						+ " where " + ActivityTable.is_Deleted + "=0 and "
-						+ ActivityTable.own_ID + "="
+						+ ActivityTable.user_login + "="
 						+ new SharedReference().getCurrentOwnerId(context),
 				null);
 		mCount.moveToFirst();
@@ -435,7 +435,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ScheduleTable.is_Deleted + "=0 and "
 						+ ScheduleTable.user_login + "='"
 						+ new SharedReference().getCurrentOwnerId(context)
-						+ "'", null);
+						+ "' order  by datetime(" + ScheduleTable.start_Time
+						+ ") ASC", null);
+		String sql = "SELECT * FROM " + ScheduleTable.ScheduleTableName
+				+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
+				+ ScheduleTable.user_login + "='"
+				+ new SharedReference().getCurrentOwnerId(context)
+				+ "' order  by datetime(" + ScheduleTable.start_Time + ") ASC";
+		Log.d("get all schedule", sql);
+
 		while (c1.moveToNext()) {
 			int startIndex = c1.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c1.getString(startIndex);
@@ -464,12 +472,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return allschedules;
 	}
 
-	
 	/**
 	 * Get number of schedule
 	 * */
 	public int getNumberSchedule() {
-		int number=0;
+		int number = 0;
 		Cursor c1 = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 						+ ScheduleTable.is_Deleted + "=0 and "
@@ -477,7 +484,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ new SharedReference().getCurrentOwnerId(context)
 						+ "'", null);
 		while (c1.moveToNext()) {
-			number=c1.getCount();
+			number = c1.getCount();
 		}
 		// If not added,error will occour
 		// IllegalStateException: Process 5808 exceeded cursor quota 100, will
@@ -487,7 +494,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		return number;
 	}
-	
+
 	/**
 	 * Get all schedule create by owner
 	 * */
@@ -496,9 +503,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c1 = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 						+ ScheduleTable.is_Deleted + "=0 and "
-						+ ScheduleTable.own_ID + "="
-						+ new SharedReference().getCurrentOwnerId(context),
-				null);
+						+ ScheduleTable.user_login + "='"
+						+ new SharedReference().getCurrentOwnerId(context)
+						+ "' and " + ScheduleTable.own_ID + "<>"
+						+ new SharedReference().getCurrentOwnerId(context)
+						+ " order  by datetime(" + ScheduleTable.start_Time
+						+ ") ASC", null);
+		Log.d("me schedule","SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
+						+ ScheduleTable.is_Deleted + "=0 and "
+						+ ScheduleTable.user_login + "='"
+						+ new SharedReference().getCurrentOwnerId(context)
+						+ "' and " + ScheduleTable.own_ID + "<>"
+						+ new SharedReference().getCurrentOwnerId(context)
+						+ " order  by datetime(" + ScheduleTable.start_Time
+						+ ") ASC");
 		while (c1.moveToNext()) {
 			int startIndex = c1.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c1.getString(startIndex);
@@ -1142,7 +1160,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		return scheduleCounter;
 	}
 
-
 	public static boolean isEmailValid(String email) {
 		boolean isValid = false;
 
@@ -1179,15 +1196,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				SharedMemberTable.SharedMemberTableName, null, null);
 		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
 				null);
-		SharedReference ref=new SharedReference();
-		ref.setAccount(context, "");
-		ref.setInformationUserLogined(context, "", "", -1, -1, -1, -1);
-		ref.setLastestParticipantLastModifiedTime(context, "");
-		ref.setLastestScheduleLastModifiedTime(context, "");
-		ref.setLastestServiceLastModifiedTime(context,"");
-		ref.setOwnerId(context, "-1");
-		ref.setTimeZone(context, 0);
-		ref.setUsername(context, "");
+		// SharedReference ref=new SharedReference();
+		// ref.setAccount(context, "");
+		// ref.setInformationUserLogined(context, "", "", -1, -1, -1, -1);
+		// ref.setLastestParticipantLastModifiedTime(context, "");
+		// ref.setLastestScheduleLastModifiedTime(context, "");
+		// ref.setLastestServiceLastModifiedTime(context,"");
+		// ref.setOwnerId(context, "-1");
+		// ref.setTimeZone(context, 0);
+		// ref.setUsername(context, "");
+		SharedPreferences settings = context.getSharedPreferences(
+				SharedReference.MY_PREFERENCE, Context.MODE_PRIVATE);
+		settings.edit().clear().commit();
 	}
 
 	public int getNextActivityID() {
@@ -1201,9 +1221,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public int getNextParticipantID() {
 		SharedPreferences sp = context.getSharedPreferences("MyPreferences", 0);
-		int nextid = sp.getInt("nextmemberid", -1);
+		int nextid = sp.getInt(CommConstant.NEXT_MEMBER_ID, -1);
 		Editor editor = sp.edit();
-		editor.putInt("nextmemberid", nextid + 1);
+		editor.putInt(CommConstant.NEXT_MEMBER_ID, nextid + 1);
 		editor.commit();
 		return nextid;
 	}

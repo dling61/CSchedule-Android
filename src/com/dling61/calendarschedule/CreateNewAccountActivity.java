@@ -102,13 +102,13 @@ public class CreateNewAccountActivity extends Activity
 	 * create new account
 	 * */
 	private void createNewAccount() {
-		String username = name_tv.getText().toString();
-		String email = email_tv.getText().toString();
-		String password = passwd_tv.getText().toString();
+		String username = name_tv.getText().toString().trim();
+		String email = email_tv.getText().toString().trim();
+		String password = passwd_tv.getText().toString().trim();
 
-		String mobile = mobile_tv.getText().toString();
+		String mobile = mobile_tv.getText().toString().trim();
 		boolean isNameOK = !username.equals("");
-		boolean isEmailOK = Utils.isEmailValid(email);
+		boolean isEmailOK = (Utils.isEmailValid(email))&&(!username.equals(""));
 		boolean isPasswordOK = password.length() >= 6;
 		boolean isMobileOK = Utils.isMobileValid(mobile);
 

@@ -8,7 +8,7 @@ public class SharedReference {
 	final String USERNAME = "username";
 	final String OWNER_ID = "owner_id";
 	final String USER_ACCOUNT = "user_account";
-	final String MY_PREFERENCE = "MyPreferences";
+	public static final String MY_PREFERENCE = "MyPreferences";
 	final String TIMEZONE = "time_zone";
 
 	/**

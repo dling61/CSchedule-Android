@@ -163,8 +163,10 @@
     <string name="your_activity">Your activity</string>
 
     <string name="have_no_schedule_first">When you have already created a schedule or </string>
-    <string name="have_no_schedule_second">you are participating in a schedule created by </string>
+    <string name="have_no_schedule_second">you are participating in an activity created by </string>
     <string name="have_no_schedule_third">someone else, you’ll see it here.</string>
     <string name="your_schedule">Your schedule</string>
-    
+    <string name="feedback">Feedback</string>
+    <string name="send_feedback_success">You sent feedback to us successfully</string>
+    <string name="please_enter_feedback">Please enter your feedback</string>
 </resources>

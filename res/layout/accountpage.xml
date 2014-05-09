@@ -172,7 +172,7 @@
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/btn_about"
+                    android:id="@+id/btn_feedback"
                     android:layout_width="fill_parent"
                     android:layout_height="50dp"
                     android:layout_alignParentLeft="true"
@@ -182,7 +182,7 @@
                     android:background="@drawable/me_border"
                     android:gravity="left|center_vertical"
                     android:paddingLeft="@dimen/margin_left"
-                    android:text="@string/about"
+                    android:text="@string/feedback"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size"
                     android:textStyle="bold" />

@@ -1,6 +1,9 @@
 package com.dling61.calendarschedule.adapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +12,7 @@ import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.MyActivity;
+import com.dling61.calendarschedule.models.MyObject;
 import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.utils.CommConstant;
@@ -16,9 +20,7 @@ import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.DutyScheduleView;
 import com.dling61.calendarschedule.views.ParticipantInforDialog;
-import com.dling61.calendarschedule.views.TextItemView;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -28,7 +30,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -40,6 +41,8 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 	private LayoutInflater mInflater;
 	DatabaseHelper dbHelper;
 	boolean isToday;
+	Date nearestDate;// date nearest current date
+	public int group_position_scrolled = 0;// scroll to nearest date
 
 	public ExpandableListScheduleAdapter() {
 
@@ -51,10 +54,17 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		this.context = context;
 		this.scheduleCollection = scheduleCollection;
 		this.listSchedulesByDay = listSchedulesByDay;
-
+		
 		mInflater = LayoutInflater.from(context);
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
 
+		
+		
+	
+	}
+
+	public void setNearestDate(Date nearestDate) {
+		this.nearestDate = nearestDate;
 	}
 
 	public Object getChild(int groupPosition, int childPosition) {
@@ -201,9 +211,12 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		// String date =
 		// MyDate.transformUTCTimeToCustomStyle(this.getHeader(position));
 		String date_time_str = listSchedulesByDay.get(groupPosition);
+
 		if (date_time_str != null) {
 			String[] date_time = date_time_str.split(";");
+
 			if (date_time != null) {
+
 				viewHolder.weekday_TV
 						.setText(date_time[0] != null ? date_time[0] : "");
 				viewHolder.date_TV.setText(date_time[1] != null ? date_time[1]

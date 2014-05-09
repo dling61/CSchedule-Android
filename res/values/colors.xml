@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-     <!-- 主应用程序 -->
+
+    <!-- 主应用程序 -->
     <color name="title_icon">#ff000000</color>
     <color name="text_minor">#ff666666</color>
     <color name="application_backcolor">#fff6eade</color>
@@ -50,4 +51,9 @@
     <color name="me_selected">#6e6e6e</color>
     <color name="today_unselected">#ffffff</color>
     <color name="today_border">#ededed</color>
+    <color name="light_font">#FBFBFB</color>
+    <color name="grey_font">#ff9e9e9e</color>
+    <color name="text_shadow">#bcbcbc</color>
+    <color name="text_shadow_white">#FFFFFF</color>
+
 </resources>

@@ -1,37 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/bg" >
 
     <RelativeLayout
-        android:id="@+id/about_topbar"
+        android:id="@+id/feedback_topbar"
         android:layout_width="fill_parent"
-        android:layout_height="55dp"
-        android:background="@drawable/mainpage_topbar" >
+        android:layout_height="wrap_content"
+        android:background="@color/me_unselected" >
+
+        <LinearLayout
+            android:id="@+id/layout_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_back_selector"
+            android:padding="@dimen/margin_left" >
+
+            <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/ic_back"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btn_back_selector"
+            android:padding="@dimen/margin_left"
+            android:visibility="visible" >
+
+            <ImageView
+                android:id="@+id/btn_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/notification_done"
+                android:textSize="15sp" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/account_toptitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="About"
+            android:text="@string/feedback"
             android:textColor="#FFF"
             android:textSize="20sp"
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/about_topbar"
-        android:fillViewport="true" >
+   
 
-            <ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/about_cschedule" />
+        <EditText
+            android:id="@+id/ed_feedback"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="200"
+            android:maxLines="4"
+            android:minLines="4"
+            android:textColor="@color/black"
+            android:layout_margin="@dimen/margin_left"
+            android:layout_below="@id/feedback_topbar" />
 
-    </ScrollView>
 
 </RelativeLayout>

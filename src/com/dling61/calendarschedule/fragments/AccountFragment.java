@@ -3,7 +3,7 @@
  */
 package com.dling61.calendarschedule.fragments;
 
-import com.dling61.calendarschedule.AboutActivity;
+import com.dling61.calendarschedule.FeedBackActivity;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.AccountView;
@@ -41,14 +41,14 @@ public class AccountFragment extends Fragment implements OnClickListener {
 	}
 
 	private void onClickListener() {
-		view.btn_about.setOnClickListener(this);
+		view.btn_feedback.setOnClickListener(this);
 		view.btn_signout_account.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
-		if (v == view.btn_about) {
-			about();
+		if (v == view.btn_feedback) {
+			feedback();
 		} else if (v == view.btn_signout_account) {
 			signout();
 		}
@@ -133,8 +133,8 @@ public class AccountFragment extends Fragment implements OnClickListener {
 	/**
 	 * About
 	 * */
-	private void about() {
-		Intent aboutintent = new Intent(mContext, AboutActivity.class);
+	private void feedback() {
+		Intent aboutintent = new Intent(mContext, FeedBackActivity.class);
 		this.startActivity(aboutintent);
 	}
 }

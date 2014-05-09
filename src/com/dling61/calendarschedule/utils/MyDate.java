@@ -41,6 +41,8 @@ public class MyDate {
         
 	}
 	
+	
+	
 	public static String transformLocalDateTimeToUTCFormat(String localDatetime)
 	{
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -66,6 +68,38 @@ public class MyDate {
 	    Date d = new Date();
 	    return df.format(d);
 	}
+	
+	public static String transformCurrentDateUTCDateToLocalDate (int format)
+	{
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date value = null;
+        try {
+            value = formatter.parse(getCurrentDateTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        SimpleDateFormat dateFormatter = null;
+        switch (format)
+        {
+        	case STANDARD:
+        		 dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        		 break;
+        	case SIMPLE:
+        		 dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        		 break;
+        }
+       
+        dateFormatter.setTimeZone(TimeZone.getDefault());
+        String dt = dateFormatter.format(value);
+        return dt;
+        
+	}
+	
+	
 	
 	public static String getWeekdayFromUTCTime (String UTCTime)
 	{
@@ -141,10 +175,6 @@ public class MyDate {
 		else if (monthInt.equalsIgnoreCase("04"))
 		{
 			monthEn = "Apr";
-		}
-		else if (monthInt.equalsIgnoreCase("05"))
-		{
-			monthEn = "Feb";
 		}
 		else if (monthInt.equalsIgnoreCase("05"))
 		{

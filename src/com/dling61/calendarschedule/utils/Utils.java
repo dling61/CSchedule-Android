@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -65,20 +66,24 @@ public class Utils {
                 + number)));
 	}
 
-	public static boolean isEmailValid(String email) {
-		boolean isValid = false;
+//	public static boolean isEmailValid(String email) {
+//		boolean isValid = false;
+//
+//		String expression = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+//		CharSequence inputStr = email;
+//
+//		Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+//		Matcher matcher = pattern.matcher(inputStr);
+//		if (matcher.matches()) {
+//			isValid = true;
+//		}
+//		return isValid;
+//	}
 
-		String expression = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-		CharSequence inputStr = email;
-
-		Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-		Matcher matcher = pattern.matcher(inputStr);
-		if (matcher.matches()) {
-			isValid = true;
+	public final static boolean isEmailValid(CharSequence target) {
+		  return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
 		}
-		return isValid;
-	}
-
+	
 	// Check whether the mobile number is valid
 	public static boolean isMobileValid(String mobile) {
 		boolean isValid = false;

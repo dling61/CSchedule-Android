@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +17,9 @@ import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.adapter.ExpandableListScheduleAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.Schedule;
+import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.views.ScheduleView;
 
 import android.app.Activity;
@@ -45,14 +49,19 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	final int ME = 2;
 	final int TODAY = 3;
 	int REFRESH = 4;
-	int type = ME;
+	int type = ALL;
 	boolean isToday = false;
+	long now = 0;
+	List<Date> dates;
+	int group_scroll = 0;
+	String FORMAT_MMM_DD_YYYY = "MMM dd, yyyy";// format MMM-dd-yyyy
+	String FORMAT_FULL_DATE = "yyyy-MM-dd HH:mm:ss";// yyyy-MM-dd HH:mm:ss
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mContext = getActivity();
-		// initData();
+		initData();
 		onClickListener();
 
 	}
@@ -96,7 +105,10 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		// will show all schedule for all day
 		else if (v == view.btn_refresh) {
 			isToday = false;
-			processDataForAdapterListview();
+			// processDataForAdapterListview();
+			view.btn_refresh.setEnabled(false);
+			initData();
+
 			// view.btn_all.setBackgroundResource(R.drawable.me_border);
 			// view.btn_me.setBackgroundResource(R.drawable.me_border);
 			view.btn_today.setBackgroundResource(R.drawable.today_border);
@@ -154,6 +166,18 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 	}
 
+	private void initData() {
+		// get all data after that, go to tab
+
+		WebservicesHelper ws = new WebservicesHelper(mContext);
+		ws.getAllActivitys();
+		ws.getParticipantsFromWeb();
+		ws.getAllSchedule();
+		now = new Date().getTime();
+		dates = new ArrayList<Date>();
+
+	}
+
 	/**
 	 * process data for adapter to set expandablelistview
 	 * */
@@ -162,13 +186,25 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		HashMap<String, ArrayList<Schedule>> listScheduleByDay = new HashMap<String, ArrayList<Schedule>>();
 		DatabaseHelper dbHelper = DatabaseHelper
 				.getSharedDatabaseHelper(mContext);
+
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();// =
 																	// dbHelper.getAllSchedules();
+		dates.clear();
+
+		SimpleDateFormat fullDatetimeFormat = new SimpleDateFormat(
+				FORMAT_FULL_DATE);
+		SimpleDateFormat formatMmmDdYyyy = new SimpleDateFormat(
+				FORMAT_MMM_DD_YYYY);
+
 		switch (type) {
 		case ME:
+			view.btn_me.setBackgroundResource(R.drawable.me_selected);
+			view.btn_all.setBackgroundResource(R.drawable.me_unselected);
 			schedules = dbHelper.getMeSchedule();
 			break;
 		case ALL:
+			view.btn_me.setBackgroundResource(R.drawable.me_unselected);
+			view.btn_all.setBackgroundResource(R.drawable.me_selected);
 			schedules = dbHelper.getAllSchedules();
 			break;
 		default:
@@ -177,23 +213,29 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 		if (schedules != null && schedules.size() > 0) {
 			Date today = new Date();
-			String todayStr = new SimpleDateFormat("MMM dd, yyyy")
-					.format(today);
+			String todayStr = fullDatetimeFormat.format(today);
+
+			String todayStrLess = formatMmmDdYyyy.format(today);
+
 			// group schedule same date
 			for (Schedule schedule : schedules) {
 
-				SimpleDateFormat dateFormat = new SimpleDateFormat(
-						CommConstant.DATE_TIME_FORMAT);
-				dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+				fullDatetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 				Date date;
 				try {
-					date = (Date) dateFormat.parse(schedule.getStarttime());
+					date = (Date) fullDatetimeFormat.parse(schedule
+							.getStarttime());
 
-					String dateString = new SimpleDateFormat("MMM dd, yyyy")
-							.format(date);
+					String dateString = formatMmmDdYyyy.format(date);
 
+					String dateStr = fullDatetimeFormat.format(date);
+					// only add today or future day
+					if (!MyDate.IsFirstDateLaterThanSecondDate(dateStr,
+							todayStr)) {
+						dates.add(date);
+					}
 					if ((!isToday)
-							|| (isToday && todayStr
+							|| (isToday && todayStrLess
 									.equalsIgnoreCase(dateString))) {
 						Calendar c = Calendar.getInstance();
 
@@ -228,6 +270,10 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 						String strDateTime = dateInWeekString + ";"
 								+ dateString;
+
+						// MyObject myObject=new MyObject();
+						// myObject.setDateTime(new Date(strDateTime));
+						// dateGroupList.add(myObject);
 						ArrayList<Schedule> listSchedule = listScheduleByDay
 								.get(strDateTime);
 						if (listSchedule == null) {
@@ -235,9 +281,12 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 						}
 						listSchedule.add(schedule);
 						listScheduleByDay.put(strDateTime, listSchedule);
+
 					}
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -246,46 +295,119 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			List<String> list = new ArrayList<String>(setKeys);
 			listDateString = (ArrayList<String>) list;
 
-			ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter(
-					getActivity(), listDateString, listScheduleByDay);
-			view.expand_list_schedule.setAdapter(adapter);
-			view.expand_list_schedule
-					.setOnGroupClickListener(new OnGroupClickListener() {
-						@Override
-						public boolean onGroupClick(ExpandableListView parent,
-								View v, int groupPosition, long id) {
-							return true; // This way the expander cannot be
-											// collapsed
+			try
+
+			{
+				if (listDateString != null && listDateString.size() > 0) {
+					// sort listDateString by date
+					// sort group
+					Collections.sort(listDateString, new Comparator<String>() {
+						public int compare(String date1, String date2) {
+							if (date1 != null && date2 != null) {
+								String[] date_time_1 = date1.split(";");
+								String[] date_time_2 = date2.split(";");
+								if (date_time_1 != null && date_time_2 != null) {
+
+									return (new Date(date_time_1[1]))
+											.compareTo(new Date(date_time_2[1]));
+								}
+							}
+							return 0;
 						}
 					});
-			int count = adapter.getGroupCount();
-			for (int position = 1; position <= count; position++)
-				view.expand_list_schedule.expandGroup(position - 1);
+					long min = Long.MAX_VALUE;
+					for (int pos = 0; pos < listDateString.size(); pos++) {
+						String date_time_str = listDateString.get(pos);
+						if (date_time_str != null) {
+							String[] date_time = date_time_str.split(";");
+
+							if (date_time != null) {
+
+								try {
+									Date date1 = formatMmmDdYyyy
+											.parse(date_time[1]);
+									//
+
+									long diff1 = Math
+											.abs(date1.getTime() - now);
+									if (min > diff1) {
+										min = diff1;
+										group_scroll = pos;
+									}
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+
+					}
+
+					ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter(
+							getActivity(), listDateString, listScheduleByDay);
+					view.expand_list_schedule.setAdapter(adapter);
+					// adapter.setNearestDate(closest);
+					Log.d("scroll position", group_scroll + "");
+
+					view.expand_list_schedule
+							.setOnGroupClickListener(new OnGroupClickListener() {
+								@Override
+								public boolean onGroupClick(
+										ExpandableListView parent, View v,
+										int groupPosition, long id) {
+									return true; // This way the expander cannot
+													// be
+													// collapsed
+								}
+							});
+					int count = adapter.getGroupCount();
+					for (int position = 1; position <= count; position++)
+						view.expand_list_schedule.expandGroup(position - 1);
+
+					// scroll to nearest
+					view.expand_list_schedule.setSelectedGroup(group_scroll);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 
 			view.expand_list_schedule.setVisibility(View.VISIBLE);
 			view.layout_top.setVisibility(View.VISIBLE);
+			view.btn_refresh.setVisibility(View.VISIBLE);
+			view.btn_me.setVisibility(View.VISIBLE);
+			view.btn_all.setVisibility(View.VISIBLE);
+			view.btn_today.setVisibility(View.VISIBLE);
 			view.layout_no_schedule.setVisibility(View.GONE);
-			
+
 		} else {
-			// try {
-			// ExpandableListScheduleAdapter adapter =
-			// (ExpandableListScheduleAdapter) view.expand_list_schedule
-			// .getAdapter();
-			// if (adapter != null) {
-			// adapter.clearAdapter();
-			// }
-			// } catch (Exception ex) {
-			// ex.printStackTrace();
-			// }
-			try {
-				ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
-				view.expand_list_schedule.setAdapter(adapter);
-				view.expand_list_schedule.setVisibility(View.GONE);
-				view.layout_no_schedule.setVisibility(View.VISIBLE);
-				view.layout_top.setVisibility(View.GONE);
-			
-			} catch (Exception ex) {
-				ex.printStackTrace();
+
+			ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
+			view.expand_list_schedule.setAdapter(adapter);
+
+			ArrayList<Schedule> listSchedules = new ArrayList<>();
+			switch (type) {
+			case ME:
+				listSchedules = dbHelper.getAllSchedules();
+				break;
+			case ALL:
+				listSchedules = dbHelper.getMeSchedule();
+				break;
+			default:
+				break;
+			}
+			if (listSchedules == null || listSchedules.size() == 0) {
+				try {
+					view.expand_list_schedule.setVisibility(View.GONE);
+					view.layout_no_schedule.setVisibility(View.VISIBLE);
+					view.layout_top.setVisibility(View.VISIBLE);
+					view.btn_refresh.setVisibility(View.VISIBLE);
+					view.btn_me.setVisibility(View.GONE);
+					view.btn_all.setVisibility(View.GONE);
+					view.btn_today.setVisibility(View.GONE);
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
@@ -294,6 +416,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		public void onReceive(Context arg0, Intent arg1) {
 			Log.d("add schedule", "receiver");
 			processDataForAdapterListview();
+			view.btn_refresh.setEnabled(true);
 		}
 
 	};

@@ -10,6 +10,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -23,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.StrictMode;
+import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class JSONParser {
@@ -37,9 +39,6 @@ public class JSONParser {
 	}
 
 	public String getJsonFromURL(String url) {
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-				.permitAll().build();
-		StrictMode.setThreadPolicy(policy);
 		String responeStr = "";
 		try {
 
@@ -63,7 +62,7 @@ public class JSONParser {
 	}
 
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
-	public String getJsonFromURLPostNameValuePair(String url,
+	public static String getJsonFromURLPostNameValuePair(String url,
 			List<NameValuePair> params) {
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
 				.permitAll().build();
@@ -74,14 +73,58 @@ public class JSONParser {
 		HttpConnectionParams.setSoTimeout(timeoutParam, 10000);
 
 		HttpClient client = new DefaultHttpClient(timeoutParam);
+
 		HttpPost post = new HttpPost(url);
+		post.addHeader("Content-type", "application/json");
 		String content = null;
 		try {
 			UrlEncodedFormEntity e = new UrlEncodedFormEntity(params, "UTF-8");
 			post.setEntity(e);
 			ResponseHandler<String> handler = new BasicResponseHandler();
-			content = client.execute(post, handler);
+			HttpResponse httpResponse = client.execute(post);
+			content=httpResponse.getStatusLine().toString();
+//			HttpEntity entity = httpResponse.getEntity();
+//
+//			if (entity != null) {
+//				content = EntityUtils.toString(entity);
+//
+//			}
+			Log.d("post fb", content);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
 
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
+	public static String deleteFromUrl(String url) {
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+				.permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+
+		HttpParams timeoutParam = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(timeoutParam, 3000);
+		HttpConnectionParams.setSoTimeout(timeoutParam, 10000);
+
+		HttpClient client = new DefaultHttpClient(timeoutParam);
+
+		HttpDelete post = new HttpDelete(url);
+		post.addHeader("Content-type", "application/json");
+		String content = null;
+		try {
+			// UrlEncodedFormEntity e = new UrlEncodedFormEntity(params,
+			// "UTF-8");
+			// post.setEntity(e);
+//			ResponseHandler<String> handler = new BasicResponseHandler();
+//			content = client.execute(post, handler);
+			HttpResponse httpResponse = client.execute(post);
+			HttpEntity entity = httpResponse.getEntity();
+			Log.d("delete contact status",httpResponse.getStatusLine().toString());
+			if (entity != null) {
+				content = EntityUtils.toString(entity);
+
+			}
+			Log.d("delete contact jsonstr", content);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
