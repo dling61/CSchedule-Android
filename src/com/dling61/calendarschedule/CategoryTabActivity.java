@@ -49,7 +49,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 		OnTabChangeListener, OnPageChangeListener {
 
 	MyPagerAdapter pageAdapter;
-	private static ViewPager mViewPager;
+	public static ViewPager mViewPager;
 	private TabHost mTabHost;
 	Context mContext;
 	HorizontalScrollView horizontalView;

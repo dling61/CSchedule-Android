@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.devsmart.android.ui.HorizontalListView;
+import com.dling61.calendarschedule.CategoryTabActivity;
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.db.DatabaseHelper;
@@ -132,10 +133,8 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 			if (memberids != null && memberids.size() > 0) {
 				onDutyMemberAdapter adapter = new onDutyMemberAdapter(
 						memberids, activity.getActivity_ID());
-				// adapter.setListParticipantId(memberids,
-				// activity.getActivity_ID());
-
 				viewHolder.listview.setAdapter(adapter);
+				
 			}
 			convertView.setOnClickListener(new OnClickListener() {
 
