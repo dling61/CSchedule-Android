@@ -32,7 +32,7 @@
     </string-array>
 
     <string name="add_activity">New Activity</string>
-    <string name="edit_activity">Activity Information</string>
+    <string name="edit_activity">Activity Info</string>
 
     <string-array name="alert_array">
         <item>None</item>
