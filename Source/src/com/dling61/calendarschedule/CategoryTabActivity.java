@@ -20,6 +20,7 @@ import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.SharedReference;
+import com.dling61.calendarschedule.views.CustomViewPager;
 import com.dling61.calendarschedule.views.MenuAppView;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -49,7 +50,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 		OnTabChangeListener, OnPageChangeListener {
 
 	MyPagerAdapter pageAdapter;
-	private static ViewPager mViewPager;
+	private static CustomViewPager mViewPager;
 	private TabHost mTabHost;
 	Context mContext;
 	HorizontalScrollView horizontalView;
@@ -73,7 +74,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.category_tab_view);
 		mContext = this;
-		mViewPager = (ViewPager) findViewById(R.id.viewpager);
+		mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
 		horizontalView = (HorizontalScrollView) findViewById(R.id.horizontalView);
 		menuApp = (MenuAppView) findViewById(R.id.menuTop);
 		// Tab Initialization

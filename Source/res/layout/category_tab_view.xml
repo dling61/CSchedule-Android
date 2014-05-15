@@ -45,7 +45,7 @@
                 android:layout_weight="0"
                 android:background="@color/bg" />
 
-            <android.support.v4.view.ViewPager
+            <com.dling61.calendarschedule.views.CustomViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"

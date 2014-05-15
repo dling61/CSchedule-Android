@@ -99,17 +99,19 @@ public class ParticipantAdapter extends BaseAdapter {
 
 		viewHolder.name_tv.setText(participant.getName());
 
-		if (isShowFull) {
-			viewHolder.email_tv.setText(participant.getEmail());
-
-			viewHolder.mobile_tv.setText(participant.getMobile());
-
-			viewHolder.email_tv.setVisibility(View.VISIBLE);
-			viewHolder.mobile_tv.setVisibility(View.VISIBLE);
-		} else {
-			viewHolder.email_tv.setVisibility(View.GONE);
-			viewHolder.mobile_tv.setVisibility(View.GONE);
-		}
+		viewHolder.email_tv.setVisibility(View.GONE);
+		viewHolder.mobile_tv.setVisibility(View.GONE);
+//		if (isShowFull) {
+//			viewHolder.email_tv.setText(participant.getEmail());
+//
+//			viewHolder.mobile_tv.setText(participant.getMobile());
+//
+//			viewHolder.email_tv.setVisibility(View.VISIBLE);
+//			viewHolder.mobile_tv.setVisibility(View.VISIBLE);
+//		} else {
+//			viewHolder.email_tv.setVisibility(View.GONE);
+//			viewHolder.mobile_tv.setVisibility(View.GONE);
+//		}
 		final ParticipantViewHolder view=viewHolder;
 //		convertView.setOnClickListener(new OnClickListener() {
 //
