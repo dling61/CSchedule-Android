@@ -54,13 +54,10 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		this.context = context;
 		this.scheduleCollection = scheduleCollection;
 		this.listSchedulesByDay = listSchedulesByDay;
-		
+
 		mInflater = LayoutInflater.from(context);
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
 
-		
-		
-	
 	}
 
 	public void setNearestDate(Date nearestDate) {
@@ -335,11 +332,17 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 				case 2:
 					Utils.sendAnEmail(context, participant.getEmail());
 					break;
-				case 3:
-					break;
 				default:
 					break;
 				}
+				dialog.dismiss();
+			}
+		});
+		dialog.btn_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
 				dialog.dismiss();
 			}
 		});

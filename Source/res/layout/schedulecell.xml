@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@android:color/transparent"
     android:orientation="vertical" >
 
     <RelativeLayout
@@ -20,7 +20,8 @@
             android:singleLine="true"
             android:text="ạasdggfggggggggggggggggggggggggggggggggg"
             android:textColor="@color/bg_login_title_bar"
-            android:textSize="@dimen/text_description" />
+            android:textSize="@dimen/text_description" 
+               android:layout_marginRight="@dimen/margin_left" />
 
         <TextView
             android:id="@+id/schedule_servicename_tv"
