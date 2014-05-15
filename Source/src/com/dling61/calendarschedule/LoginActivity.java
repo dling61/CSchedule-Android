@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +34,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	TextView txt_password;
 	RelativeLayout layout_back;
 	String username, password = "";
-
+LinearLayout layoutForgetPassword;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -57,6 +58,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		txt_email = (TextView) findViewById(R.id.txt_email);
 		txt_password = (TextView) findViewById(R.id.txt_password);
 		layout_back = (RelativeLayout) findViewById(R.id.layout_back);
+		layoutForgetPassword=(LinearLayout)findViewById(R.id.layoutForgetPassword);
 		if (username != null && (!username.equals(""))) {
 			txt_email.setText(username);
 		} else {
@@ -75,6 +77,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	private void onClickListener() {
 		signin_btn.setOnClickListener(this);
 		layout_back.setOnClickListener(this);
+		layoutForgetPassword.setOnClickListener(this);
 	}
 
 	@Override
@@ -106,6 +109,12 @@ public class LoginActivity extends Activity implements OnClickListener {
 			Intent intent = new Intent(mContext, MainActivity.class);
 			mContext.startActivity(intent);
 			finish();
+		}
+		else if(v==layoutForgetPassword)
+		{
+			Intent intent = new Intent(mContext, ForgetPasswordActivity.class);
+			mContext.startActivity(intent);
+//			finish();
 		}
 	}
 

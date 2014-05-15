@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/margin_top"
     android:layout_marginTop="@dimen/margin_top"
-    android:background="@color/white" >
+    android:background="@color/bg_participant_activity_title" >
 
     <TextView
         android:id="@+id/schedule_weekday_tv"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginBottom="@dimen/margin_top"
@@ -21,18 +21,14 @@
     <TextView
         android:id="@+id/schedule_date_tv"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginBottom="@dimen/margin_top"
         android:textColor="@color/bg_login_title_bar"
-        android:textSize="@dimen/text_description" />
+        android:textSize="@dimen/text_description"
+        android:layout_marginRight="@dimen/margin_left" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:layout_below="@id/schedule_weekday_tv"
-        android:background="@color/me_unselected" >
-    </LinearLayout>
+   
 
 </RelativeLayout>

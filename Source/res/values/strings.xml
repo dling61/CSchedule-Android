@@ -127,14 +127,13 @@
     <string name="add_participant_error">Add participant error</string>
 
     <string-array name="owner_infor_array">
-        <item>Call</item>
-        <item>Message</item>
+        <item>Make Call To</item>
+        <item>Send Message To</item>
         <item>Remove</item>
-        <item>Cancel</item>
     </string-array>
     <string-array name="participant_infor_array">
-        <item>Call</item>
-        <item>Message</item>
+        <item>Make Call To</item>
+        <item>Send Message To</item>
         <item>Cancel</item>
     </string-array>
 
@@ -145,10 +144,9 @@
     <string name="all">All</string>
 
     <string-array name="onduty_member_infor_array">
-        <item>Make Call</item>
-        <item>Send Message</item>
-        <item>Send Email</item>
-        <item>Cancel</item>
+        <item>Make Call To</item>
+        <item>Send Message To</item>
+        <item>Send Email To</item>
     </string-array>
 
     <string name="remove_schedule">Remove Schedule</string>
@@ -169,4 +167,11 @@
     <string name="feedback">Feedback</string>
     <string name="send_feedback_success">You sent feedback to us successfully</string>
     <string name="please_enter_feedback">Please enter your feedback</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="request_password_reset">Request Password Reset</string>
+    <string name="enter_email">Enter either your email address associated with the account</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="email_does_not_exist">Email doesn’t exist</string>
+    <string name="reset_password_succesfully">An email sent to your email. Please check.</string>
+    <string name="no_network">No network connection. Please try again.</string>
 </resources>

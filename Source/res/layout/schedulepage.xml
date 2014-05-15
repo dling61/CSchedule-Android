@@ -14,8 +14,8 @@
 
         <Button
             android:id="@+id/btn_today"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/width_btn_schedule_page"
+            android:layout_height="@dimen/height_btn_schedule_page"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/margin_right"
@@ -25,14 +25,14 @@
 
         <ImageButton
             android:id="@+id/btn_refresh"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/width_btn_schedule_page"
+            android:layout_height="@dimen/height_btn_schedule_page"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/margin_left"
             android:background="@drawable/today_border"
             android:padding="@dimen/margin_top"
-            android:src="@drawable/img_refresh" />
+            android:src="@drawable/refresh" />
 
         <RelativeLayout
             android:layout_width="fill_parent"
@@ -47,8 +47,8 @@
 
                 <Button
                     android:id="@+id/btn_all"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/width_btn_schedule_page"
+                    android:layout_height="@dimen/height_btn_schedule_page"
                     android:layout_centerVertical="true"
                     android:background="@drawable/me_border"
                     android:padding="@dimen/margin_top"
@@ -57,8 +57,8 @@
 
                 <Button
                     android:id="@+id/btn_me"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/width_btn_schedule_page"
+             		android:layout_height="@dimen/height_btn_schedule_page"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@id/btn_all"
                     android:background="@drawable/me_border"
@@ -109,10 +109,13 @@
             android:id="@+id/list_expandable_schedule"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:layout_margin="@dimen/margin_left"
+            android:layout_marginBottom="@dimen/margin_right"
+            android:layout_marginTop="@dimen/margin_left"
             android:cacheColorHint="#00000000"
             android:childDivider="#dddddd"
-            android:divider="#dddddd"
+            android:childIndicatorLeft="@dimen/margin_left"
+            android:childIndicatorRight="@dimen/margin_right"
+            android:divider="@android:color/transparent"
             android:dividerHeight="1dp"
             android:groupIndicator="@null"
             android:visibility="gone" >

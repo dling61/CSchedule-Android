@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ECECEC" >
+    android:background="#ffffff" >
 
     <RelativeLayout
         android:id="@+id/compose_activity_topbar"
@@ -19,34 +19,33 @@
             android:singleLine="true"
             android:text="@string/participant_infor"
             android:textColor="#FFF"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_name"
             android:textStyle="bold" />
-
     </RelativeLayout>
 
     <ListView
         android:id="@+id/list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg"
-        android:cacheColorHint="@color/bg"
-        android:divider="@color/gray"
+        android:layout_below="@id/compose_activity_topbar"
+       android:background="#ffffff"
+        android:cacheColorHint="@color/white"
+        android:divider="@color/divider_list"
         android:dividerHeight="1dp"
         android:scrollbars="@null"
-        android:visibility="visible" 
-        android:layout_below="@id/compose_activity_topbar">
+        android:visibility="visible" >
     </ListView>
 
     <Button
         android:id="@+id/btn_cancel"
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/height_item_dialog"
         android:layout_below="@id/list_item"
-        android:layout_marginBottom="10dp"
-        android:background="@color/bg_login_title_bar"
+        android:background="@color/red_remove"
         android:text="@string/cancel"
         android:textColor="@color/white"
-        android:textSize="15sp"
-        android:visibility="gone" />
+        android:textSize="@dimen/text_name"
+        android:visibility="visible"
+        android:textStyle="bold" />
 
 </RelativeLayout>

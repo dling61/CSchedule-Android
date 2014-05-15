@@ -37,6 +37,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
@@ -108,6 +109,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 			view.layout_save.setVisibility(View.VISIBLE);
 			view.layout_next.setVisibility(View.GONE);
+			hideKeyboard();
 		}
 		this.initViewValues();
 		onClickListener();
@@ -122,6 +124,21 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	//hide keyboard
+	private void hideKeyboard()
+	{
+		 try
+	        {
+	            InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+	            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+	         }
+	        catch (Exception e)
+	        {
+	            // Ignore exceptions if any
+	                Log.e("KeyBoardUtil", e.toString(), e);
+	        }
+	}
+	
 	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
 			finish();
@@ -240,6 +257,14 @@ public class AddNewActivity extends Activity implements OnClickListener {
 						break;
 					}
 				}
+				dialog.dismiss();
+			}
+		});
+		dialog.btn_cancel.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
 				dialog.dismiss();
 			}
 		});

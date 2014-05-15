@@ -155,6 +155,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 			DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
 			ArrayList<Participant> participants = dbHelper.getParticipants();
+//			dbHelper.close();
 			adapter = new ParticipantAdapter(mContext, participants, tab ? false
 					: true, true);
 			view.list_contact.setAdapter(adapter);
@@ -180,6 +181,32 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
+//		 mContext.registerReceiver(contactDownloadComplete, new IntentFilter(
+//		 CommConstant.PARTICIPANT_READY));
+//		DatabaseHelper dbHelper = DatabaseHelper
+//				.getSharedDatabaseHelper(mContext);
+//		ArrayList<Participant> participants = dbHelper.getParticipants();
+////		dbHelper.close();
+//		adapter = new ParticipantAdapter(mContext, participants, tab ? false
+//				: true, true);
+//		view.list_contact.setAdapter(adapter);
+//		view.list_contact.setOnItemClickListener(new OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view,
+//					final int position, long id) {
+//				final Participant participantSelected = adapter.participants
+//						.get(position);
+//
+//				Intent inforActivityIntent = new Intent(mContext,
+//						AddNewContactActivity.class);
+//				inforActivityIntent.putExtra(CommConstant.TYPE,
+//						DatabaseHelper.EXISTED);
+//				inforActivityIntent.putExtra(CommConstant.CONTACT_ID,
+//						participantSelected.getID());
+//				mContext.startActivity(inforActivityIntent);
+//
+//			}
+//		});
 	}
 
 	@Override
