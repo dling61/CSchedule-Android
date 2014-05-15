@@ -26,28 +26,12 @@
     </style>
 
     <style name="edittextStyle" parent="@android:style/TextAppearance.Medium">
-        <item name="android:background">@drawable/border_edittext_selector</item>
+        <item name="android:background">@drawable/edit_text_bg_border</item>
         <item name="android:layout_marginTop">@dimen/margin_top</item>
         <item name="android:layout_marginBottom">@dimen/margin_top</item>
+        <item name="android:paddingLeft">@dimen/margin_left</item>
         <item name="android:paddingBottom">@dimen/margin_top</item>
         <item name="android:textSize">@dimen/text_name</item>
-        <item name="android:textColorHint">@color/border_textview</item>
-        <item name="android:textColor">@color/edittext</item>
-        <item name="android:padding">@dimen/margin_left</item>
-    </style>
-
-    <style name="edittextStyleDate" parent="@android:style/TextAppearance.Medium">
-        <item name="android:background">@drawable/border_edittext_selector</item>
-        <item name="android:layout_marginTop">@dimen/margin_top</item>
-        <item name="android:layout_marginBottom">@dimen/margin_top</item>
-        <item name="android:paddingBottom">@dimen/margin_top</item>
-        <item name="android:textSize">@dimen/text_name</item>
-        <item name="android:textColorHint">@color/border_textview</item>
-        <item name="android:textColor">@color/edittext</item>
-        <item name="android:paddingTop">@dimen/margin_left</item>
-        <item name="android:paddingBottom">@dimen/margin_left</item>
-        <item name="android:paddingLeft">2dp</item>
-        <item name="android:paddingRight">2dp</item>
     </style>
 
     <style name="buttonStyle" parent="@android:style/TextAppearance.Medium">
@@ -58,22 +42,11 @@
         <item name="android:padding">@dimen/margin_left</item>
         <item name="android:background">@drawable/me_border</item>
     </style>
-
-    <style name="buttonRemoveStyle" parent="@android:style/TextAppearance.Medium">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/text_name</item>
-        <item name="android:padding">@dimen/margin_left</item>
-        <item name="android:background">@drawable/btn_remove_selector</item>
-    </style>
-
-    <style name="tvTitleStyle" parent="@android:style/TextAppearance.Medium">
+<style name="tvTitleStyle" parent="@android:style/TextAppearance.Medium">
         <item name="android:layout_width">@dimen/width_tv_add_activity</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/textview</item>
+        <item name="android:textColor">@color/me_unselected</item>
         <item name="android:textSize">@dimen/text_name</item>
-        <item name="android:textStyle">bold</item>
+       
     </style>
-
 </resources>

@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="@dimen/height_item_dialog"
-    android:background="@android:color/transparent" 
+    android:layout_height="40dp"
+    android:background="@color/bg" 
     >
 
     <TextView
@@ -10,10 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:text="àafffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-        android:textColor="@color/text_dialog"
+        android:textColor="@color/color_textview"
         android:textSize="@dimen/text_size"
-        android:paddingRight="@dimen/margin_left"
-        android:paddingTop="@dimen/margin_left"
-        android:paddingBottom="@dimen/margin_left" />
+        android:padding="@dimen/margin_left" />
 
 </RelativeLayout>

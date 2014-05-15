@@ -86,6 +86,8 @@
             android:id="@+id/composeActivityItems"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_left"
+            android:layout_marginRight="@dimen/margin_right"
             android:background="@color/bg"
             android:cacheColorHint="@color/white"
             android:orientation="vertical"
@@ -95,18 +97,19 @@
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
                 android:layout_marginTop="15dp" >
 
                 <TextView
                     android:id="@+id/tv_new_activity_name"
-                    style="@style/tvTitleStyle"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/margin_right"
                     android:singleLine="true"
-                    android:text="@string/activity_name" />
+                    android:text="@string/activity_name"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_name" />
 
                 <EditText
                     android:id="@+id/et_new_activity_name"
@@ -115,25 +118,25 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_name"
-                    android:textColor="@color/black" 
-                    android:singleLine="true"/>
+                    android:textColor="@color/black" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_new_activity_time_zone"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
                 android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_new_activity_time_zone"
-                    style="@style/tvTitleStyle"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/time_zone" />
+                    android:text="@string/time_zone"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_name" />
 
                 <EditText
                     android:id="@+id/et_new_activity_time_zone"
@@ -144,25 +147,25 @@
                     android:layout_toRightOf="@id/tv_new_activity_time_zone"
                     android:clickable="true"
                     android:focusable="false"
-                    android:textColor="@color/black"
-                    android:singleLine="true" />
+                    android:textColor="@color/black" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_alert"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
                 android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_new_activity_alert"
-                    style="@style/tvTitleStyle"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/alert" />
+                    android:text="@string/alert"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_name" />
 
                 <EditText
                     android:id="@+id/et_new_activity_alert"
@@ -174,26 +177,26 @@
                     android:clickable="true"
                     android:focusable="false"
                     android:inputType="none"
-                    android:textColor="@color/black"
-                    android:singleLine="true" />
+                    android:textColor="@color/black" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_repeat"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
                 android:layout_marginTop="@dimen/margin_top"
                 android:visibility="gone" >
 
                 <TextView
                     android:id="@+id/tv_new_activity_repeat"
-                    style="@style/tvTitleStyle"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/repeat" />
+                    android:text="@string/repeat"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size" />
 
                 <EditText
                     android:id="@+id/et_new_activity_repeat"
@@ -211,17 +214,18 @@
                 android:id="@+id/layout_description"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
                 android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_new_activity_description"
-                    style="@style/tvTitleStyle"
+                    android:layout_width="@dimen/width_tv_add_activity"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/description" />
+                    android:text="@string/description"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_name" />
 
                 <EditText
                     android:id="@+id/et_new_activity_description"
@@ -231,28 +235,21 @@
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_description"
                     android:maxLength="200"
-                    android:maxLines="4"
                     android:minLines="4"
+                    android:maxLines="4"
                     android:textColor="@color/black" />
             </RelativeLayout>
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/tv_participant"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top"
-                android:background="@color/bg_participant_activity_title" >
-
-                <TextView
-                    android:id="@+id/tv_participant"
-                    style="@style/tvTitleStyle"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:background="@color/bg_participant_activity_title"
-                    android:text="@string/participant"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    android:textColor="@color/me_unselected" />
-            </RelativeLayout>
+                android:layout_marginTop="10dip"
+                android:text="@string/participant"
+                android:textColor="@color/color_textview"
+                android:textSize="@dimen/text_name"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -271,8 +268,6 @@
                 android:divider="@color/gray"
                 android:dividerHeight="1dp"
                 android:scrollbars="@null"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
                 android:visibility="gone" >
             </ListView>
 
@@ -280,18 +275,15 @@
                 android:id="@+id/btn_add_paticipant"
                 style="@style/buttonStyle"
                 android:layout_marginBottom="10dp"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
                 android:layout_marginTop="@dimen/margin_top"
                 android:text="@string/add_participant"
                 android:visibility="gone" />
 
             <Button
                 android:id="@+id/btn_remove_activity"
-                style="@style/buttonRemoveStyle"
+                style="@style/buttonStyle"
                 android:layout_marginBottom="10dp"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
+                android:background="@drawable/me_border"
                 android:text="@string/remove_activity"
                 android:visibility="gone" />
         </LinearLayout>

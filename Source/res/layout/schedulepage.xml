@@ -21,8 +21,7 @@
             android:layout_marginRight="@dimen/margin_right"
             android:background="@drawable/today_border"
             android:padding="@dimen/margin_top"
-            android:text="@string/today"
-           />
+            android:text="@string/today" />
 
         <ImageButton
             android:id="@+id/btn_refresh"
@@ -110,13 +109,10 @@
             android:id="@+id/list_expandable_schedule"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:layout_marginBottom="@dimen/margin_right"
-            android:layout_marginTop="@dimen/margin_left"
+            android:layout_margin="@dimen/margin_left"
             android:cacheColorHint="#00000000"
             android:childDivider="#dddddd"
-            android:childIndicatorLeft="@dimen/margin_left"
-            android:childIndicatorRight="@dimen/margin_right"
-            android:divider="@android:color/transparent"
+            android:divider="#dddddd"
             android:dividerHeight="1dp"
             android:groupIndicator="@null"
             android:visibility="gone" >

@@ -80,16 +80,18 @@
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top" >
+                android:layout_marginTop="15dp" >
 
                 <TextView
                     android:id="@+id/tv_email"
-                    style="@style/tvTitleStyle"
-                    android:layout_width="@dimen/width_tv_add_contact"
+                    android:layout_width="@dimen/width_tv_add_activity"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/title_email" />
+                    android:text="@string/title_email"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/compose_participant_email_et"
@@ -98,23 +100,27 @@
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/tv_email"
                     android:hint="@string/email"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_description" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top" >
+                android:layout_marginTop="15dp" >
 
                 <TextView
                     android:id="@+id/tv_name"
-                    style="@style/tvTitleStyle"
-                    android:layout_width="@dimen/width_tv_add_contact"
+                    android:layout_width="@dimen/width_tv_add_activity"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/participant_name" />
+                    android:text="@string/participant_name"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/compose_participant_name_et"
@@ -122,23 +128,27 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/tv_name"
-                    android:hint="@string/name" />
+                    android:hint="@string/name"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_description" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top" >
+                android:layout_marginTop="15dp" >
 
                 <TextView
                     android:id="@+id/tv_mobile"
-                    style="@style/tvTitleStyle"
-                    android:layout_width="@dimen/width_tv_add_contact"
+                    android:layout_width="@dimen/width_tv_add_activity"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/title_mobile" />
+                    android:text="@string/title_mobile"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/compose_participant_mobile_et"
@@ -147,16 +157,18 @@
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/tv_mobile"
                     android:hint="@string/title_mobile"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_description" />
             </RelativeLayout>
 
             <Button
                 android:id="@+id/btm_remove_contact"
-                style="@style/buttonRemoveStyle"
+                style="@style/buttonStyle"
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="bottom"
-                android:layout_marginBottom="@dimen/margin_top"
-                android:layout_marginTop="@dimen/margin_top"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/remove_contact"
                 android:visibility="visible" />
         </LinearLayout>

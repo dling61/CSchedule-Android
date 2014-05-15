@@ -1,16 +1,22 @@
 package com.dling61.calendarschedule;
 
 import java.util.ArrayList;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
 import com.dling61.calendarschedule.net.BaseUrl;
 import com.dling61.calendarschedule.net.JSONParser;
+import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.SharedReference;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;

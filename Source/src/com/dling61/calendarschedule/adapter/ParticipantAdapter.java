@@ -73,8 +73,6 @@ public class ParticipantAdapter extends BaseAdapter {
 			viewHolder.name_tv.setTypeface(Utils.getTypeFace(mContext));
 			viewHolder.email_tv.setTypeface(Utils.getTypeFace(mContext));
 			viewHolder.mobile_tv.setTypeface(Utils.getTypeFace(mContext));
-			viewHolder.email_tv.setVisibility(View.GONE);
-			viewHolder.mobile_tv.setVisibility(View.GONE);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ParticipantViewHolder) convertView.getTag();
@@ -83,9 +81,11 @@ public class ParticipantAdapter extends BaseAdapter {
 		final Participant participant = participants.get(position);
 		if (isCheck) {
 			viewHolder.cb_check.setVisibility(View.VISIBLE);
-			viewHolder.name_tv.setTextColor(mContext.getResources().getColor(R.color.textview));
+			
 			if(participant.isChecked)
-			{				
+			{
+				
+			
 			viewHolder.cb_check.setImageResource(R.drawable.check_box_selected);;
 			}
 			else
@@ -95,23 +95,21 @@ public class ParticipantAdapter extends BaseAdapter {
 			
 		} else {
 			viewHolder.cb_check.setVisibility(View.GONE);
-			viewHolder.name_tv.setTextColor(mContext.getResources().getColor(R.color.me_unselected));
 		}
 
 		viewHolder.name_tv.setText(participant.getName());
-		
 
-//		if (isShowFull) {
-//			viewHolder.email_tv.setText(participant.getEmail());
-//
-//			viewHolder.mobile_tv.setText(participant.getMobile());
-//
-//			viewHolder.email_tv.setVisibility(View.VISIBLE);
-//			viewHolder.mobile_tv.setVisibility(View.VISIBLE);
-//		} else {
-//			viewHolder.email_tv.setVisibility(View.GONE);
-//			viewHolder.mobile_tv.setVisibility(View.GONE);
-//		}
+		if (isShowFull) {
+			viewHolder.email_tv.setText(participant.getEmail());
+
+			viewHolder.mobile_tv.setText(participant.getMobile());
+
+			viewHolder.email_tv.setVisibility(View.VISIBLE);
+			viewHolder.mobile_tv.setVisibility(View.VISIBLE);
+		} else {
+			viewHolder.email_tv.setVisibility(View.GONE);
+			viewHolder.mobile_tv.setVisibility(View.GONE);
+		}
 		final ParticipantViewHolder view=viewHolder;
 //		convertView.setOnClickListener(new OnClickListener() {
 //
