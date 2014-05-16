@@ -62,4 +62,7 @@
     <color name="divider_list">#eeeeee</color>
     <color name="edittext">#4a4a4a</color>
 <color name="textview">#4a4a4a</color>
+<color name="onduty_border">#e6e6e6</color>
+<color name="onduty_bg">#f1f1f1</color>
+<color name="on_duty_text">#808080</color>
 </resources>

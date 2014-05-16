@@ -1,20 +1,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="30dp"
-    android:background="@color/white" >
+    android:layout_height="wrap_content"
+    android:background="@drawable/onduty_border"
+    android:layout_marginRight="@dimen/margin_right" 
+>
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:paddingRight="@dimen/margin_right"
-        android:shadowColor="@color/text_shadow"
-        android:shadowDx="5"
-        android:shadowDy="5"
-        android:shadowRadius="2"
+        android:layout_centerInParent="true"
+        
+      
         android:text="àCa"
-        android:textColor="@color/color_textview"
+        android:textColor="@color/on_duty_text"
         android:textSize="@dimen/text_size" />
 
 </RelativeLayout>
