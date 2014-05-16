@@ -22,21 +22,21 @@
             android:layout_height="fill_parent"
             android:orientation="vertical" >
 
-            <HorizontalScrollView
+        <!--     <HorizontalScrollView
                 android:id="@+id/horizontalView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
               
                 android:fillViewport="true"
-                android:scrollbars="none" >
+                android:scrollbars="none" > -->
 
                 <TabWidget
                     android:id="@android:id/tabs"
-                    android:layout_width="@dimen/width_item_tab"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
                     android:orientation="horizontal" />
-            </HorizontalScrollView>
+           <!--  </HorizontalScrollView> -->
 
             <FrameLayout
                 android:id="@android:id/tabcontent"

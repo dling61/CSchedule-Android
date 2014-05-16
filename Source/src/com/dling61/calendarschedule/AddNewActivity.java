@@ -109,7 +109,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 			view.layout_save.setVisibility(View.VISIBLE);
 			view.layout_next.setVisibility(View.GONE);
-			hideKeyboard();
+			
 		}
 		this.initViewValues();
 		onClickListener();
@@ -124,20 +124,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	//hide keyboard
-	private void hideKeyboard()
-	{
-		 try
-	        {
-	            InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-	            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-	         }
-	        catch (Exception e)
-	        {
-	            // Ignore exceptions if any
-	                Log.e("KeyBoardUtil", e.toString(), e);
-	        }
-	}
+	
 	
 	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {

@@ -53,7 +53,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	private static CustomViewPager mViewPager;
 	private TabHost mTabHost;
 	Context mContext;
-	HorizontalScrollView horizontalView;
+//	HorizontalScrollView horizontalView;
 	public MenuAppView menuApp;
 	public static CategoryTabActivity sharedTab;
 	public static int currentPage = 0;
@@ -75,7 +75,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 		setContentView(R.layout.category_tab_view);
 		mContext = this;
 		mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
-		horizontalView = (HorizontalScrollView) findViewById(R.id.horizontalView);
+//		horizontalView = (HorizontalScrollView) findViewById(R.id.horizontalView);
 		menuApp = (MenuAppView) findViewById(R.id.menuTop);
 		// Tab Initialization
 		initialiseTabHost();
@@ -255,14 +255,14 @@ public class CategoryTabActivity extends FragmentActivity implements
 		currentPage = pos;
 		this.mTabHost.setCurrentTab(pos);
 		View tabView = mTabHost.getTabWidget().getChildAt(pos);
-		if (tabView != null) {
-			final int width = horizontalView.getWidth();
-			final int scrollPos = tabView.getLeft()
-					- (width - tabView.getWidth()) / 2;
-			horizontalView.scrollTo(scrollPos, 0);
-		} else {
-			horizontalView.scrollBy(positionOffsetPixels, 0);
-		}
+//		if (tabView != null) {
+//			final int width = horizontalView.getWidth();
+//			final int scrollPos = tabView.getLeft()
+//					- (width - tabView.getWidth()) / 2;
+//			horizontalView.scrollTo(scrollPos, 0);
+//		} else {
+//			horizontalView.scrollBy(positionOffsetPixels, 0);
+//		}
 
 	}
 
