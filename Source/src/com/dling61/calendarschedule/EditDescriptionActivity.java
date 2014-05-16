@@ -1,6 +1,8 @@
 package com.dling61.calendarschedule;
 
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.Utils;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -77,7 +79,8 @@ public class EditDescriptionActivity extends Activity implements
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		if (v == layout_back) {			
+		if (v == layout_back) {		
+			Utils.hideKeyboard(EditDescriptionActivity.this, ed_description);
 			Intent i = getIntent(); // gets the intent that called this intent			
 			i.putExtra(CommConstant.ACTIVITY_DESCRIPTION, ed_description
 					.getText().toString().trim());

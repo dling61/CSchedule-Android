@@ -101,17 +101,19 @@ public class ParticipantAdapter extends BaseAdapter {
 
 		viewHolder.email_tv.setVisibility(View.GONE);
 		viewHolder.mobile_tv.setVisibility(View.GONE);
-//		if (isShowFull) {
+		if (isShowFull) {
 //			viewHolder.email_tv.setText(participant.getEmail());
 //
 //			viewHolder.mobile_tv.setText(participant.getMobile());
 //
 //			viewHolder.email_tv.setVisibility(View.VISIBLE);
 //			viewHolder.mobile_tv.setVisibility(View.VISIBLE);
-//		} else {
+			viewHolder.name_tv.setTextColor(mContext.getResources().getColor(R.color.me_unselected));
+		} else {
 //			viewHolder.email_tv.setVisibility(View.GONE);
 //			viewHolder.mobile_tv.setVisibility(View.GONE);
-//		}
+			viewHolder.name_tv.setTextColor(mContext.getResources().getColor(R.color.color_textview));
+		}
 		final ParticipantViewHolder view=viewHolder;
 //		convertView.setOnClickListener(new OnClickListener() {
 //

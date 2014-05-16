@@ -43,7 +43,8 @@
         <item>2 hours before</item>
         <item>1 day before</item>
         <item>2 day before</item>
-        <item>On date of event</item>
+        <item>3 day before</item>
+         <item>7 day before</item>
     </string-array>
     <string-array name="repeat_array">
         <item>None</item>

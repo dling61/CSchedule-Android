@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_name"
-                    android:textColor="@color/black" 
+                 
                     android:singleLine="true"/>
             </RelativeLayout>
 
@@ -144,7 +144,7 @@
                     android:layout_toRightOf="@id/tv_new_activity_time_zone"
                     android:clickable="true"
                     android:focusable="false"
-                    android:textColor="@color/black"
+                  
                     android:singleLine="true" />
             </RelativeLayout>
 
@@ -174,7 +174,7 @@
                     android:clickable="true"
                     android:focusable="false"
                     android:inputType="none"
-                    android:textColor="@color/black"
+                
                     android:singleLine="true" />
             </RelativeLayout>
 
@@ -204,7 +204,7 @@
                     android:layout_toRightOf="@id/tv_new_activity_repeat"
                     android:clickable="true"
                     android:focusable="false"
-                    android:textColor="@color/black" />
+                     />
             </RelativeLayout>
 
             <RelativeLayout
@@ -233,7 +233,7 @@
                     android:maxLength="200"
                     android:maxLines="4"
                     android:minLines="4"
-                    android:textColor="@color/black" />
+                    android:gravity="top"/>
             </RelativeLayout>
 
             <RelativeLayout

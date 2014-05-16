@@ -84,7 +84,9 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == view.layout_done) {
-
+			Utils.hideKeyboard(AddNewContactActivity.this, view.et_email);
+			Utils.hideKeyboard(AddNewContactActivity.this, view.et_mobile);
+			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
 			addContact();
 		} else if (v == view.layout_back) {
 			((Activity) mContext).finish();

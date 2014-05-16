@@ -497,6 +497,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == view.layout_next) {
+			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
 			createNewActivity();
 		} else if (v == view.et_new_activity_time_zone) {
 			// if owner, can modify/delete else if is participant, only view
@@ -536,6 +537,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			startActivityForResult(intent, 0);
 
 		} else if (v == view.layout_save) {
+			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
 			editActivity();
 		}
 	}
