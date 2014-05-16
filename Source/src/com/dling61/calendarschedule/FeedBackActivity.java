@@ -1,16 +1,21 @@
 package com.dling61.calendarschedule;
 
 import java.util.ArrayList;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
 import com.dling61.calendarschedule.net.BaseUrl;
 import com.dling61.calendarschedule.net.JSONParser;
 import com.dling61.calendarschedule.utils.SharedReference;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -108,15 +113,22 @@ public class FeedBackActivity extends Activity implements OnClickListener {
 		protected String doInBackground(String... params) {
 			// if register successfully, it's logged in automatically on server
 			try {
-				ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-				param.add(new BasicNameValuePair("ownerid",
-						new SharedReference()
-								.getCurrentOwnerId(FeedBackActivity.this) + ""));
-				param.add(new BasicNameValuePair("feedback", feedback));
+//				ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+//				param.add(new BasicNameValuePair("ownerid",
+//						new SharedReference()
+//								.getCurrentOwnerId(FeedBackActivity.this) + ""));
+//				param.add(new BasicNameValuePair("feedback", feedback));
+				
+				
+				JSONObject sharedmemberParams = new JSONObject();
+				sharedmemberParams.put("ownerid",
+						new SharedReference().getCurrentOwnerId(mContext));
+				sharedmemberParams.put("feedback", feedback);
+				
+				Log.d("param",sharedmemberParams.toString());
 				String feedbackLink = BaseUrl.BASEURL + "feedback" + "?"
 						+ BaseUrl.URL_POST_FIX;
-				return JSONParser.getJsonFromURLPostNameValuePair(feedbackLink,
-						param);
+				return JSONParser.getJsonFromURLPostNameValuePair(feedbackLink,sharedmemberParams.toString());
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();

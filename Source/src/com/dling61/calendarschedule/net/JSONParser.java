@@ -12,6 +12,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
@@ -96,6 +97,44 @@ public class JSONParser {
 		return content;
 	}
 
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
+	public static String getJsonFromURLPostNameValuePair(String url,
+			String params) {
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+				.permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+
+		HttpParams timeoutParam = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(timeoutParam, 3000);
+		HttpConnectionParams.setSoTimeout(timeoutParam, 10000);
+
+		HttpClient client = new DefaultHttpClient(timeoutParam);
+
+		HttpPost post = new HttpPost(url);
+		post.addHeader("Content-type", "application/json");
+		String content = null;
+		try {
+			StringEntity entity = new StringEntity(
+					params.toString());
+			post.setEntity(entity);
+		
+			ResponseHandler<String> handler = new BasicResponseHandler();
+			HttpResponse httpResponse = client.execute(post);
+			content=httpResponse.getStatusLine().toString();
+//			HttpEntity entity = httpResponse.getEntity();
+//
+//			if (entity != null) {
+//				content = EntityUtils.toString(entity);
+//
+//			}
+			Log.d("post fb", content);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
+
+	
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 	public static String deleteFromUrl(String url) {
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
