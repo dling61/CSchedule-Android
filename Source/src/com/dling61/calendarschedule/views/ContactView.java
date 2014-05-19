@@ -21,6 +21,7 @@ public class ContactView extends RelativeLayout {
 	public ListView list_contact;
 	public ImageButton btn_add_participant;
 	public ImageButton btn_next;
+	public RelativeLayout layout_no_contact;
 	public ContactView(Context context) {
 		super(context);
 		this.context = context;
@@ -44,5 +45,6 @@ public class ContactView extends RelativeLayout {
 		list_contact=(ListView)findViewById(R.id.list_contact);
 		btn_add_participant=(ImageButton)findViewById(R.id.btn_add_participant);
 		btn_next=(ImageButton)findViewById(R.id.btn_next);
+		layout_no_contact=(RelativeLayout)findViewById(R.id.layout_no_contact);
 	}
 }

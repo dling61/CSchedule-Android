@@ -108,30 +108,14 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					+ " to "
 					+ MyDate.getTimeWithAPMFromUTCTime(schedule.getEndtime());
 
-			// String members = "";
-			// for (int i = 0; i < memberids.size(); i++) {
-			// Sharedmember sm = dbHelper.getSharedmember(memberids.get(i),
-			// schedule.getService_ID());
-			// if (sm != null) {
-			// if (i == 0) {
-			// members = members + sm.getName();
-			// } else {
-			// members = members + "|" + sm.getName();
-			// }
-			// }
-			// }
-
 			viewHolder.service_TV.setText(activity_name);
-			viewHolder.time_TV.setText(date);
+			viewHolder.time_TV.setText(date.toLowerCase());
 			// viewHolder.participants_TV.setText(members);
 			List<Integer> memberids = dbHelper
 					.getParticipantsForSchedule(schedule.getSchedule_ID());
 			if (memberids != null && memberids.size() > 0) {
-				onDutyMemberAdapter adapter = new onDutyMemberAdapter(
+				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(
 						memberids, activity.getActivity_ID());
-				// adapter.setListParticipantId(memberids,
-				// activity.getActivity_ID());
-
 				viewHolder.listview.setAdapter(adapter);
 			}
 			convertView.setOnClickListener(new OnClickListener() {
@@ -247,11 +231,11 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		TextView date_TV;
 	}
 
-	private class onDutyMemberAdapter extends BaseAdapter {
+	private class OnDutyMemberAdapter extends BaseAdapter {
 		List<Integer> listParticipantId;
 		String activity_id = "";
 
-		public onDutyMemberAdapter(List<Integer> listParticipantId,
+		public OnDutyMemberAdapter(List<Integer> listParticipantId,
 				String activity_id) {
 			this.listParticipantId = listParticipantId;
 			this.activity_id = activity_id;
@@ -292,60 +276,68 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					activity_id);
 			if (sm != null) {
 				holder.title.setText(sm.getName());
-			}
-			convertView.setOnClickListener(new OnClickListener() {
+				convertView.setOnClickListener(new OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-					participantInforDialog(sm);
-				}
-			});
+					@Override
+					public void onClick(View v) {
+						participantInforDialog(sm);
+					}
+				});
+			}
+			else
+			{
+				holder.setVisibility(View.GONE);
+				convertView.setVisibility(View.GONE);
+			}
 			return holder;
 		}
 
 	};
 
 	private void participantInforDialog(final Sharedmember participant) {
-		String[] array = context.getResources().getStringArray(
-				R.array.onduty_member_infor_array);
-		int length = array.length;
-		for (int i = 0; i < length; i++) {
-			array[i] += " " + participant.getName();
-		}
-		TextViewBaseAdapter adapter = new TextViewBaseAdapter(context, array);
+		if (participant != null) {
+			String[] array = context.getResources().getStringArray(
+					R.array.onduty_member_infor_array);
+			int length = array.length;
+			for (int i = 0; i < length; i++) {
+				array[i] += " " + participant.getName();
+			}
+			TextViewBaseAdapter adapter = new TextViewBaseAdapter(context,
+					array);
 
-		final ParticipantInforDialog dialog = new ParticipantInforDialog(
-				context);
-		dialog.show();
-		dialog.list_item.setAdapter(adapter);
-		dialog.list_item.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int position, long arg3) {
-				switch (position) {
-				case 0:
-					Utils.makeAPhoneCall(context, participant.getMobile());
-					break;
-				case 1:
-					Utils.sendAMessage(context, participant.getMobile());
-					break;
-				case 2:
-					Utils.sendAnEmail(context, participant.getEmail());
-					break;
-				default:
-					break;
+			final ParticipantInforDialog dialog = new ParticipantInforDialog(
+					context);
+			dialog.show();
+			dialog.list_item.setAdapter(adapter);
+			dialog.list_item.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					switch (position) {
+					case 0:
+						Utils.makeAPhoneCall(context, participant.getMobile());
+						break;
+					case 1:
+						Utils.sendAMessage(context, participant.getMobile());
+						break;
+					case 2:
+						Utils.sendAnEmail(context, participant.getEmail());
+						break;
+					default:
+						break;
+					}
+					dialog.dismiss();
 				}
-				dialog.dismiss();
-			}
-		});
-		dialog.btn_cancel.setOnClickListener(new OnClickListener() {
+			});
+			dialog.btn_cancel.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				dialog.dismiss();
-			}
-		});
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					dialog.dismiss();
+				}
+			});
+		}
 	}
 
 	public void clearAdapter() {

@@ -14,7 +14,7 @@
     <string name="please_wait">Please wait...</string>
     <string name="username_empty">The username cannot be empty</string>
     <string name="email_invalid">The email address is invalid</string>
-    <string name="password_length_should_be_6">Password length should be 6</string>
+    <string name="password_is_not_blank">Password is not blank</string>
     <string name="create_account">Create Account</string>
     <string name="mobile">Mobile(*)</string>
     <string name="processing">Processing</string>
@@ -44,7 +44,7 @@
         <item>1 day before</item>
         <item>2 day before</item>
         <item>3 day before</item>
-         <item>7 day before</item>
+        <item>7 day before</item>
     </string-array>
     <string-array name="repeat_array">
         <item>None</item>
@@ -160,7 +160,6 @@
     <string name="have_no_activity_second">you are participating in an activity created by </string>
     <string name="have_no_activity_third">someone else, you’ll see it here.</string>
     <string name="your_activity">Your activity</string>
-
     <string name="have_no_schedule_first">When you have already created a schedule or </string>
     <string name="have_no_schedule_second">you are participating in an activity created by </string>
     <string name="have_no_schedule_third">someone else, you’ll see it here.</string>
@@ -170,9 +169,12 @@
     <string name="please_enter_feedback">Please enter your feedback</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="request_password_reset">Request Password Reset</string>
-    <string name="enter_email">Enter either your email address associated with the account</string>
+    <string name="enter_email">Enter your email address associated with the account</string>
     <string name="reset_password">Reset Password</string>
     <string name="email_does_not_exist">Email doesn’t exist</string>
     <string name="reset_password_succesfully">An email sent to your email. Please check.</string>
     <string name="no_network">No network connection. Please try again.</string>
+    <string name="title_contact">Your contact</string>
+    <string name="have_no_contact">You have not create contact yet</string>
+
 </resources>

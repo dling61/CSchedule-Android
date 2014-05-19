@@ -111,11 +111,11 @@ public class Utils {
 			ArrayList<Sharedmember> arrParticipant) {
 		String arrParticipantString = "";
 		for (Sharedmember participant : arrParticipant) {
-			arrParticipantString += participant.getName() + ",";
+			arrParticipantString += participant.getName() + ", ";
 		}
-		if (arrParticipantString.endsWith(",")) {
+		if (arrParticipantString.endsWith(", ")) {
 			arrParticipantString = arrParticipantString.substring(0,
-					arrParticipantString.length() - 1);
+					arrParticipantString.length() - 2);
 		}
 		return arrParticipantString;
 	}

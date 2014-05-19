@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg" >
+    android:background="@color/bg_schedule" >
 
     <RelativeLayout
         android:id="@+id/layout_top"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/margin_top"
+        android:layout_margin="10dp"
         android:visibility="visible" >
 
         <Button
@@ -20,23 +20,25 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/margin_right"
             android:background="@drawable/today_border"
-            android:padding="@dimen/margin_top"
-            android:text="@string/today" />
+            android:text="@string/today"
+            android:textColor="@color/text_today_schedule" 
+            android:textSize="17dp"/>
 
         <ImageButton
             android:id="@+id/btn_refresh"
             android:layout_width="@dimen/width_btn_schedule_page"
             android:layout_height="@dimen/height_btn_schedule_page"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/margin_left"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="7dp"
             android:background="@drawable/today_border"
-            android:padding="@dimen/margin_top"
+            android:padding="3dp"
             android:src="@drawable/refresh" />
 
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/btn_refresh"
             android:layout_toRightOf="@id/btn_today" >
 
@@ -50,21 +52,21 @@
                     android:layout_width="@dimen/width_btn_schedule_page"
                     android:layout_height="@dimen/height_btn_schedule_page"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/me_border"
-                    android:padding="@dimen/margin_top"
+                    android:background="@drawable/me_selected"
                     android:text="@string/all"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/btn_schedule_unselected"
+                     android:textSize="17dp" />
 
                 <Button
                     android:id="@+id/btn_me"
                     android:layout_width="@dimen/width_btn_schedule_page"
-             		android:layout_height="@dimen/height_btn_schedule_page"
+                    android:layout_height="@dimen/height_btn_schedule_page"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@id/btn_all"
-                    android:background="@drawable/me_border"
-                    android:padding="@dimen/margin_top"
+                    android:background="@drawable/btn_schedule_unselected"
                     android:text="@string/me"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/me_selected"
+                     android:textSize="17dp" />
             </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
@@ -109,10 +111,9 @@
             android:id="@+id/list_expandable_schedule"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:layout_marginBottom="@dimen/margin_right"
-            android:layout_marginTop="@dimen/margin_left"
+            android:layout_marginBottom="5dp"
             android:cacheColorHint="#00000000"
-            android:childDivider="#dddddd"
+            android:childDivider="@color/bg_participant_activity_title"
             android:childIndicatorLeft="@dimen/margin_left"
             android:childIndicatorRight="@dimen/margin_right"
             android:divider="@android:color/transparent"

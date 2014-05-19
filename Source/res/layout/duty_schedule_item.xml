@@ -1,19 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/onduty_border"
-    android:layout_marginRight="@dimen/margin_right" 
->
+    android:layout_marginRight="@dimen/margin_right"
+    android:background="@drawable/onduty_border" >
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        
-      
-        android:text="àCa"
         android:textColor="@color/on_duty_text"
-        android:textSize="@dimen/text_size" />
+        android:textSize="@dimen/text_size"
+        android:text="Huyen Nguyen Thi"/>
 
 </RelativeLayout>

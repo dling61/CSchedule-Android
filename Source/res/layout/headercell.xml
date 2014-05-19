@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/margin_top"
-    android:layout_marginTop="@dimen/margin_top"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp"
     android:background="@color/bg_participant_activity_title" >
 
     <TextView
@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="@dimen/margin_top"
         android:layout_marginLeft="@dimen/margin_left"
         android:textColor="@color/bg_login_title_bar"
         android:textSize="@dimen/text_name" >
@@ -24,11 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="@dimen/margin_top"
+        android:layout_marginRight="@dimen/margin_left"
         android:textColor="@color/bg_login_title_bar"
-        android:textSize="@dimen/text_description"
-        android:layout_marginRight="@dimen/margin_left" />
-
-   
+        android:textSize="@dimen/text_description" />
 
 </RelativeLayout>

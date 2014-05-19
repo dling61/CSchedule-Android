@@ -93,6 +93,7 @@ public class ActivityAdapter extends BaseAdapter {
 			viewHolder.service_desp.setTypeface(Utils.getTypeFace(mContext));
 			viewHolder.tv_participant.setTypeface(Utils.getTypeFace(mContext));
 			viewHolder.service_time.setVisibility(View.GONE);
+			viewHolder.service_desp.setVisibility(View.GONE);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ActivityViewHolder) convertView.getTag();
@@ -110,7 +111,9 @@ public class ActivityAdapter extends BaseAdapter {
 //				.getEndtime());
 //		String endTime = endWeekday + "," + " " + endDate;
 //		viewHolder.service_time.setText(startTime + " to " + endTime);
-		viewHolder.service_desp.setText(activity.getDesp());
+//		viewHolder.service_desp.setText(activity.getDesp());
+		
+		
 		viewHolder.tv_participant.setText(listParticipantName.get(activity
 				.getActivity_ID()));
 

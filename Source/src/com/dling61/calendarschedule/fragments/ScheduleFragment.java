@@ -93,14 +93,18 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			type = ALL;
 			processDataForAdapterListview();
 			view.btn_all.setBackgroundResource(R.drawable.me_selected);
-			view.btn_me.setBackgroundResource(R.drawable.me_border);
+			view.btn_me.setBackgroundResource(R.drawable.btn_schedule_unselected);
+			view.btn_all.setTextColor(mContext.getResources().getColor(R.color.white));
+			view.btn_me.setTextColor(mContext.getResources().getColor(R.color.text_today_schedule));
+			
 			// view.btn_today.setBackgroundResource(R.drawable.today_border);
 		} else if (v == view.btn_me) {
 			type = ME;
 			processDataForAdapterListview();
-			view.btn_all.setBackgroundResource(R.drawable.me_border);
+			view.btn_all.setBackgroundResource(R.drawable.btn_schedule_unselected);
 			view.btn_me.setBackgroundResource(R.drawable.me_selected);
-			// view.btn_today.setBackgroundResource(R.drawable.today_border);
+			view.btn_all.setTextColor(mContext.getResources().getColor(R.color.text_today_schedule));
+			view.btn_me.setTextColor(mContext.getResources().getColor(R.color.white));
 		}
 		// will show all schedule for all day
 		else if (v == view.btn_refresh) {
@@ -112,12 +116,15 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			// view.btn_all.setBackgroundResource(R.drawable.me_border);
 			// view.btn_me.setBackgroundResource(R.drawable.me_border);
 			view.btn_today.setBackgroundResource(R.drawable.today_border);
+			view.btn_today.setTextColor(mContext.getResources().getColor(R.color.me_selected));
 		} else if (v == view.btn_today) {
 			isToday = true;
 			processDataForAdapterListview();
 			// view.btn_all.setBackgroundResource(R.drawable.me_border);
 			// view.btn_me.setBackgroundResource(R.drawable.me_border);
 			view.btn_today.setBackgroundResource(R.drawable.me_selected);
+			view.btn_today.setTextColor(mContext.getResources().getColor(R.color.btn_schedule_unselected));
+			
 		}
 	}
 
@@ -196,15 +203,19 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		SimpleDateFormat formatMmmDdYyyy = new SimpleDateFormat(
 				FORMAT_MMM_DD_YYYY);
 
-		switch (type) {
+		switch (type) {	
 		case ME:
+			view.btn_all.setBackgroundResource(R.drawable.btn_schedule_unselected);
 			view.btn_me.setBackgroundResource(R.drawable.me_selected);
-			view.btn_all.setBackgroundResource(R.drawable.me_unselected);
+			view.btn_all.setTextColor(mContext.getResources().getColor(R.color.text_today_schedule));
+			view.btn_me.setTextColor(mContext.getResources().getColor(R.color.white));
 			schedules = dbHelper.getMeSchedule();
 			break;
 		case ALL:
-			view.btn_me.setBackgroundResource(R.drawable.me_unselected);
 			view.btn_all.setBackgroundResource(R.drawable.me_selected);
+			view.btn_me.setBackgroundResource(R.drawable.btn_schedule_unselected);
+			view.btn_all.setTextColor(mContext.getResources().getColor(R.color.white));
+			view.btn_me.setTextColor(mContext.getResources().getColor(R.color.text_today_schedule));
 			schedules = dbHelper.getAllSchedules();
 			break;
 		default:
@@ -234,8 +245,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 							todayStr)) {
 						dates.add(date);
 					}
-					if ((!isToday)
-							|| (isToday && todayStrLess
+					if ((!isToday)|| (isToday && todayStrLess
 									.equalsIgnoreCase(dateString))) {
 						Calendar c = Calendar.getInstance();
 

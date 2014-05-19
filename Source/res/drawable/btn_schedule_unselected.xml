@@ -1,8 +1,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" >
 
-        <stroke
+    <stroke
         android:width="@dimen/stroke_width_today"
         android:color="@color/me_selected" />
-     <solid android:color="@color/me_selected" />
+
+    <solid android:color="@color/btn_schedule_unselected" />
 
 </shape>

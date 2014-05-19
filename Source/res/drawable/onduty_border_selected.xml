@@ -2,18 +2,19 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"> 
 <solid android:color="@color/me_unselected"/>    
 
-<stroke android:width="3dp"
+<stroke android:width="1dp"
         android:color="@color/me_unselected"
         />
 
-<padding android:left="@dimen/margin_left"
-         android:top="@dimen/margin_left"
-         android:right="@dimen/margin_left"
-         android:bottom="@dimen/margin_left"
+<padding android:left="15dp"
+         android:top="2dp"
+         android:right="15dp"
+         android:bottom="2dp"
          /> 
 
-<corners android:bottomRightRadius="@dimen/margin_left" 
-         android:bottomLeftRadius="@dimen/margin_left"
-         android:topLeftRadius="@dimen/margin_left"
-         android:topRightRadius="@dimen/margin_left"/> 
+<corners android:bottomRightRadius="5dp" 
+         android:bottomLeftRadius="5dp"
+         android:topLeftRadius="5dp"
+         android:topRightRadius="5dp"/> 
 </shape>
+

@@ -109,7 +109,7 @@ public class CreateNewAccountActivity extends Activity
 		String mobile = mobile_tv.getText().toString().trim();
 		boolean isNameOK = !username.equals("");
 		boolean isEmailOK = (Utils.isEmailValid(email))&&(!username.equals(""));
-		boolean isPasswordOK = password.length() >= 6;
+		boolean isPasswordOK = password.length() >= 1;
 		boolean isMobileOK = Utils.isMobileValid(mobile);
 
 		String createLog = (isNameOK == false ? "\n"
@@ -118,7 +118,7 @@ public class CreateNewAccountActivity extends Activity
 						+ getResources().getString(R.string.email_invalid) : "")
 				+ (isPasswordOK == false ? "\n"
 						+ getResources().getString(
-								R.string.password_length_should_be_6) : "");
+								R.string.password_is_not_blank) : "");
 		if (!createLog.equals("")) {
 			Toast.makeText(this, createLog, Toast.LENGTH_LONG).show();
 			return;

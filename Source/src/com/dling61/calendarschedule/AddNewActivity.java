@@ -491,7 +491,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			// if (shared_role == CommConstant.OWNER) {
 			SharedReference ref = new SharedReference();
 			time_zone = ref.getTimeZone(mContext);
-			if (time_zone <= 0) {
+			if (time_zone <= 0&&type==DatabaseHelper.NEW) {
 				popUp(timezone_array, TIMEZONE);
 			}
 			// }

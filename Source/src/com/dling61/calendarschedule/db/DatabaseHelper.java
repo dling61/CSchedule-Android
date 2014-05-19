@@ -921,10 +921,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			int memberid = c.getInt(memberid_Index);
 			memberids.add(memberid);
 		}
-
-		// Add this to prevent collapse
 		c.close();
-		// sharedDatabaseHelper.close();
 		return memberids;
 	}
 
