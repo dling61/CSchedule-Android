@@ -12,6 +12,7 @@ import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.Utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -124,7 +125,8 @@ public class ActivityAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-
+				((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+					      R.anim.animation_leave);
 				Intent inforActivityIntent = new Intent(mContext,
 						AddNewActivity.class);
 				inforActivityIntent.putExtra(CommConstant.TYPE,

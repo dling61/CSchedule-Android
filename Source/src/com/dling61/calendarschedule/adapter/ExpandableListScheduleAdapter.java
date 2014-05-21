@@ -1,8 +1,6 @@
 package com.dling61.calendarschedule.adapter;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +10,6 @@ import com.dling61.calendarschedule.CreateNewScheduleActivity;
 import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.MyActivity;
-import com.dling61.calendarschedule.models.MyObject;
 import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.utils.CommConstant;
@@ -21,6 +18,7 @@ import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.DutyScheduleView;
 import com.dling61.calendarschedule.views.ParticipantInforDialog;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -122,6 +120,8 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 
 				@Override
 				public void onClick(View v) {
+					((Activity) context).overridePendingTransition(R.anim.animation_enter,
+						      R.anim.animation_leave);
 					Intent inforActivityIntent = new Intent(context,
 							CreateNewScheduleActivity.class);
 					inforActivityIntent.putExtra(CommConstant.TYPE,

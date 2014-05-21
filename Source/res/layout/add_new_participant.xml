@@ -4,69 +4,16 @@
     android:layout_height="match_parent"
     android:background="@color/bg" >
 
-    <RelativeLayout
-        android:id="@+id/composeparticipant_topbar"
+     <com.dling61.calendarschedule.views.TitleBarView
+        android:id="@+id/titleBar"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/me_unselected" >
-
-        <LinearLayout
-            android:id="@+id/layout_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:padding="@dimen/margin_top" >
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_back" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:padding="@dimen/margin_top" >
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/edit" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_done"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:padding="@dimen/margin_top" >
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/notification_done" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/compose_participant_toptitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/add_participant"
-            android:textColor="@color/text_button"
-            android:textSize="@dimen/text_name"
-            android:textStyle="bold" />
-    </RelativeLayout>
+        android:layout_height="wrap_content" >
+    </com.dling61.calendarschedule.views.TitleBarView>
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/composeparticipant_topbar"
+        android:layout_below="@id/titleBar"
         android:layout_centerHorizontal="true" >
 
         <LinearLayout

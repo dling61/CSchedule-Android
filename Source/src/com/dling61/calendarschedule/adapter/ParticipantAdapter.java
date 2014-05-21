@@ -29,7 +29,6 @@ public class ParticipantAdapter extends BaseAdapter {
 		this.isCheck = isCheck;
 		this.isShowFull = isShowFull;
 
-
 	}
 
 	public void setParticipants(ArrayList<Participant> participants) {
@@ -58,7 +57,7 @@ public class ParticipantAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup arg2) {
 		// TODO Auto-generated method stub
 
-		 ParticipantViewHolder viewHolder;
+		ParticipantViewHolder viewHolder;
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.participantcell, null);
 			viewHolder = new ParticipantViewHolder();
@@ -81,61 +80,26 @@ public class ParticipantAdapter extends BaseAdapter {
 		final Participant participant = participants.get(position);
 		if (isCheck) {
 			viewHolder.cb_check.setVisibility(View.VISIBLE);
-			
-			if(participant.isChecked)
-			{
-				
-			
-			viewHolder.cb_check.setImageResource(R.drawable.check_box_selected);;
+			if (participant.isChecked) {
+				viewHolder.cb_check
+						.setImageResource(R.drawable.check_box_selected);
+			} else {
+				viewHolder.cb_check
+						.setImageResource(R.drawable.check_box_unselected);
 			}
-			else
-			{
-				viewHolder.cb_check.setImageResource(R.drawable.check_box_unselected);
-			}
-			
 		} else {
 			viewHolder.cb_check.setVisibility(View.GONE);
 		}
-
 		viewHolder.name_tv.setText(participant.getName());
-
 		viewHolder.email_tv.setVisibility(View.GONE);
 		viewHolder.mobile_tv.setVisibility(View.GONE);
 		if (isShowFull) {
-//			viewHolder.email_tv.setText(participant.getEmail());
-//
-//			viewHolder.mobile_tv.setText(participant.getMobile());
-//
-//			viewHolder.email_tv.setVisibility(View.VISIBLE);
-//			viewHolder.mobile_tv.setVisibility(View.VISIBLE);
-			viewHolder.name_tv.setTextColor(mContext.getResources().getColor(R.color.me_unselected));
+			viewHolder.name_tv.setTextColor(mContext.getResources().getColor(
+					R.color.me_unselected));
 		} else {
-//			viewHolder.email_tv.setVisibility(View.GONE);
-//			viewHolder.mobile_tv.setVisibility(View.GONE);
-			viewHolder.name_tv.setTextColor(mContext.getResources().getColor(R.color.color_textview));
+			viewHolder.name_tv.setTextColor(mContext.getResources().getColor(
+					R.color.color_textview));
 		}
-		final ParticipantViewHolder view=viewHolder;
-//		convertView.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				if (isCheck) {
-//					participant.isChecked = !participant.isChecked;
-//					participants.add(position, participant);
-//					view.cb_check.setChecked(participant.isChecked);
-//				} 
-//				if(isShowFull){
-//					Intent inforActivityIntent = new Intent(mContext,
-//							AddNewContactActivity.class);
-//					inforActivityIntent.putExtra(CommConstant.TYPE,
-//							DatabaseHelper.EXISTED);
-//					inforActivityIntent.putExtra(CommConstant.CONTACT_ID,
-//							participant.getID());
-//					mContext.startActivity(inforActivityIntent);
-//				}
-//			}
-//		});
 		return convertView;
 	}
 

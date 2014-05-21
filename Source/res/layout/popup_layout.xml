@@ -2,17 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-      android:background="#ffffff"
+    android:background="#ffffff"
     android:orientation="vertical"
     android:padding="10dip" >
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        style="@style/title_bar_tv"
         android:layout_marginTop="10dip"
         android:textColor="@color/color_textview"
-        android:textSize="@dimen/text_size"
         android:textStyle="bold" />
 
     <LinearLayout

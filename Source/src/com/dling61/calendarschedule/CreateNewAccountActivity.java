@@ -5,6 +5,7 @@ package com.dling61.calendarschedule;
 
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.Utils;
+import com.dling61.calendarschedule.views.TitleBarView;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -31,10 +32,9 @@ public class CreateNewAccountActivity extends Activity
 	EditText email_tv;
 	EditText passwd_tv;
 	EditText mobile_tv;
-	LinearLayout layout_back;
 	Button btn_create;
 	ProgressDialog mDialog;
-
+TitleBarView titleBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -67,12 +67,14 @@ public class CreateNewAccountActivity extends Activity
 		passwd_tv = (EditText) findViewById(R.id.account_password_input);
 		mobile_tv = (EditText) findViewById(R.id.account_mobile_input);
 		btn_create = (Button) findViewById(R.id.btn_create);
-		layout_back = (LinearLayout) findViewById(R.id.layout_back);
 		btn_create.setTypeface(Utils.getTypeFace(mContext));
 		name_tv.setTypeface(Utils.getTypeFace(mContext));
 		email_tv.setTypeface(Utils.getTypeFace(mContext));
 		mobile_tv.setTypeface(Utils.getTypeFace(mContext));
+		titleBar=(TitleBarView)findViewById(R.id.titleBar);
 		
+		titleBar.tv_name.setText(getResources().getString(R.string.create_account));
+		titleBar.layout_next.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -82,7 +84,7 @@ public class CreateNewAccountActivity extends Activity
 			// mDialog.show();
 			createNewAccount();
 			// mDialog.dismiss();
-		} else if (v == layout_back) {
+		} else if (v == titleBar.layout_back) {
 			finish();
 			Intent intent=new Intent(mContext,MainActivity.class);
 			mContext.startActivity(intent);
@@ -95,7 +97,7 @@ public class CreateNewAccountActivity extends Activity
 	 * */
 	private void onClickListener() {
 		btn_create.setOnClickListener(this);
-		layout_back.setOnClickListener(this);
+		titleBar.layout_back.setOnClickListener(this);
 	}
 
 	/**

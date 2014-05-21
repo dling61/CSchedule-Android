@@ -2,13 +2,13 @@
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
@@ -21,7 +21,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/bg_top_bar</item>
-        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:textSize">@dimen/title_tv</item>
         <item name="android:textColorHint">@color/bg_top_bar</item>
     </style>
 
@@ -72,8 +72,33 @@
         <item name="android:layout_width">@dimen/width_tv_add_activity</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/textview</item>
-        <item name="android:textSize">@dimen/text_name</item>
+        <item name="android:textSize">@dimen/text_tv</item>
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="tvContactName" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">@dimen/width_tv_add_activity</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_name</item>
+          <item name="android:textColor">@color/textview</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="confirm_btn" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_description</item>
+        <item name="android:padding">@dimen/margin_left</item>
+        <item name="android:background">@drawable/me_border</item>
+    </style>
+    
+    <style name="title_bar_tv" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/title_bar_tv</item>
+        <item name="android:textSize">@dimen/title_tv</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
 </resources>

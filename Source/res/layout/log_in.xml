@@ -4,43 +4,15 @@
     android:layout_height="match_parent"
     android:background="@color/bg" >
 
-    <RelativeLayout
-        android:id="@+id/signin_topbar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/me_unselected" >
-
-        <TextView
-            android:id="@+id/signin_top_title_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/app_name"
-            android:textColor="@color/color_text_title_main"
-            android:textSize="@dimen/text_name" />
-
-        <RelativeLayout
-            android:id="@+id/layout_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btn_back_selector"
-            android:padding="@dimen/margin_left" >
-
-            <ImageView
-                android:id="@+id/signin_topright_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_back" />
-        </RelativeLayout>
-    </RelativeLayout>
+     <com.dling61.calendarschedule.views.TitleBarView
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/titleBar"/>
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/signin_topbar"
+        android:layout_below="@id/titleBar"
         android:layout_centerHorizontal="true" >
 
         <LinearLayout

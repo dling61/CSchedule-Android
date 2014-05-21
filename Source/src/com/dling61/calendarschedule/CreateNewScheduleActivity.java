@@ -18,6 +18,7 @@ import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.AddScheduleView;
+import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.PopupDialog;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -169,10 +170,10 @@ public class CreateNewScheduleActivity extends Activity implements
 		view.et_endTime.setOnClickListener(this);
 		view.et_startTime.setOnClickListener(this);
 		view.et_on_duty.setOnClickListener(this);
-		view.layout_next.setOnClickListener(this);
+		view.titleBar.layout_next.setOnClickListener(this);
 		view.btn_remove_schedule.setOnClickListener(this);
-		view.layout_back.setOnClickListener(this);
-		view.layout_save.setOnClickListener(this);
+		view.titleBar.layout_back.setOnClickListener(this);
+		view.titleBar.layout_save.setOnClickListener(this);
 		view.et_new_activity_name.setOnClickListener(this);
 		view.et_new_activity_description.setOnClickListener(this);
 	}
@@ -235,13 +236,13 @@ public class CreateNewScheduleActivity extends Activity implements
 						Toast.LENGTH_LONG).show();
 			}
 
-		} else if (v == view.layout_next) {
+		} else if (v == view.titleBar.layout_next) {
 			createNewSchedule();
 		} else if (v == view.btn_remove_schedule) {
 			deleteSchedule();
-		} else if (v == view.layout_back) {
+		} else if (v == view.titleBar.layout_back) {
 			((Activity) mContext).finish();
-		} else if (v == view.layout_save) {
+		} else if (v == view.titleBar.layout_save) {
 			editSchedule();
 		} else if (v == view.et_new_activity_name) {
 			if (composeType == DatabaseHelper.NEW) {
@@ -283,19 +284,53 @@ public class CreateNewScheduleActivity extends Activity implements
 						MyDate.transformLocalDateTimeToUTCFormat(MyDate
 								.getCurrentDateTime()), "");
 				view.btn_remove_schedule.setVisibility(View.GONE);
-				view.layout_next.setVisibility(View.VISIBLE);
-				view.layout_save.setVisibility(View.GONE);
-				view.title_tv.setText(mContext.getResources().getString(
+				view.titleBar.layout_next.setVisibility(View.VISIBLE);
+				view.titleBar.layout_save.setVisibility(View.GONE);
+				view.titleBar.tv_name.setText(mContext.getResources().getString(
 						R.string.add_schedule));
 				schedule_id = thisSchedule.getSchedule_ID();
+				
+				DatabaseHelper dbHelper = DatabaseHelper
+						.getSharedDatabaseHelper(mContext);
+				final ArrayList<MyActivity> listActivity = dbHelper
+						.getActivitiesOwnerOrOrganizer(new SharedReference()
+								.getCurrentOwnerId(mContext) + "");
+				
+				//have no activity before and show popup
+				if(listActivity==null||listActivity.size()==0)
+				{
+					final ConfirmDialog dialog=new ConfirmDialog(mContext, mContext.getResources().getString(R.string.no_activity_for_create_schedule));
+					dialog.show();
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+							finish();
+							Intent intent=new Intent("goToActivity");
+							sendBroadcast(intent);
+							
+						}
+					});
+					dialog.btnCancel.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							dialog.dismiss();
+							finish();
+						}
+					});
+				}
+				
 			} else if (composeType == DatabaseHelper.EXISTED) {
 				if (schedule_id > 0) {
 					thisSchedule = dbHelper.getScheduleSortedByID(schedule_id);
 				}
 				view.btn_remove_schedule.setVisibility(View.VISIBLE);
-				view.layout_next.setVisibility(View.GONE);
-				view.layout_save.setVisibility(View.VISIBLE);
-				view.title_tv.setText(mContext.getResources().getString(
+				view.titleBar.layout_next.setVisibility(View.GONE);
+				view.titleBar.layout_save.setVisibility(View.VISIBLE);
+				view.titleBar.tv_name.setText(mContext.getResources().getString(
 						R.string.edit_schedule));
 				if (thisSchedule != null) {
 					pins = dbHelper.getParticipantsForSchedule(thisSchedule
@@ -309,7 +344,7 @@ public class CreateNewScheduleActivity extends Activity implements
 								if (i == 0)
 									members = members + p.getName();
 								else
-									members = members + "," + p.getName();
+									members = members + ", " + p.getName();
 								p.isChecked = true;
 							}
 						}
@@ -353,8 +388,8 @@ public class CreateNewScheduleActivity extends Activity implements
 				view.et_new_activity_description.setEnabled(true);
 				view.et_new_activity_name.setEnabled(true);
 				// view.btn_remove_schedule.setVisibility(View.VISIBLE);
-				view.layout_save.setEnabled(true);
-				view.layout_next.setEnabled(true);
+				view.titleBar.layout_save.setEnabled(true);
+				view.titleBar.layout_next.setEnabled(true);
 			} else {
 				// only view
 				view.et_endDate.setEnabled(false);
@@ -365,8 +400,8 @@ public class CreateNewScheduleActivity extends Activity implements
 				view.et_new_activity_description.setEnabled(false);
 				view.et_new_activity_name.setEnabled(false);
 				view.btn_remove_schedule.setVisibility(View.GONE);
-				view.layout_save.setEnabled(false);
-				view.layout_next.setEnabled(false);
+				view.titleBar.layout_save.setEnabled(false);
+				view.titleBar.layout_next.setEnabled(false);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();

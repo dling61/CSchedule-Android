@@ -14,6 +14,7 @@
         android:textSize="@dimen/text_size"
         android:paddingRight="@dimen/margin_left"
         android:paddingTop="@dimen/margin_left"
-        android:paddingBottom="@dimen/margin_left" />
+        android:paddingBottom="@dimen/margin_left"
+        android:singleLine="true" />
 
 </RelativeLayout>

@@ -77,6 +77,8 @@ public class SharedMemberAdapter extends BaseAdapter {
 			viewHolder.name_tv.setTypeface(Utils.getTypeFace(mContext));
 			viewHolder.email_tv.setTypeface(Utils.getTypeFace(mContext));
 			viewHolder.mobile_tv.setTypeface(Utils.getTypeFace(mContext));
+			viewHolder.tv_role = (TextView) convertView
+					.findViewById(R.id.tv_role);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ParticipantViewHolder) convertView.getTag();
@@ -90,7 +92,7 @@ public class SharedMemberAdapter extends BaseAdapter {
 
 				viewHolder.cb_check
 						.setImageResource(R.drawable.check_box_selected);
-				
+
 			} else {
 				viewHolder.cb_check
 						.setImageResource(R.drawable.check_box_unselected);
@@ -102,9 +104,12 @@ public class SharedMemberAdapter extends BaseAdapter {
 
 		String participant_name = participant.getName();
 		if (isAttachRoleName) {
-			if(participant.getRole()!=CommConstant.PARTICIPANT)
-			{
-			participant_name += "(" + getRole(participant.getRole()) + ")";
+			if (participant.getRole() != CommConstant.PARTICIPANT) {
+				viewHolder.tv_role.setText("(" + getRole(participant.getRole())
+						+ ")");
+				viewHolder.tv_role.setVisibility(View.VISIBLE);
+			} else {
+				viewHolder.tv_role.setVisibility(View.GONE);
 			}
 		}
 		viewHolder.name_tv.setText(participant_name);
@@ -163,6 +168,7 @@ public class SharedMemberAdapter extends BaseAdapter {
 		TextView email_tv;
 		TextView mobile_tv;
 		ImageView cb_check;
+		TextView tv_role;
 	}
 
 }

@@ -20,8 +20,7 @@ import android.widget.TextView;
 public class ParticipantView extends RelativeLayout {
 	Context context;
 	public ListView list_contact;
-	public LinearLayout layout_next;
-	public TextView member_toptitle;
+	public TitleBarView titleBar;
 	public ParticipantView(Context context) {
 		super(context);
 		this.context = context;
@@ -43,7 +42,7 @@ public class ParticipantView extends RelativeLayout {
 	public void findViewById(final Context context) {
 		View.inflate(context, R.layout.participant_view, this);
 		list_contact=(ListView)findViewById(R.id.list_contact);
-		layout_next=(LinearLayout)findViewById(R.id.layout_next);
-		member_toptitle=(TextView)findViewById(R.id.member_toptitle);
+		titleBar=(TitleBarView)findViewById(R.id.titleBar);
+		titleBar.layout_back.setVisibility(View.GONE);
 	}
 }

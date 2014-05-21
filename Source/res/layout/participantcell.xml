@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:background="@color/bg"
     android:orientation="vertical"
-    android:paddingTop="@dimen/margin_top" 
-    android:paddingBottom="@dimen/margin_top">
+    android:paddingBottom="@dimen/margin_top"
+    android:paddingTop="@dimen/margin_top" >
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -24,13 +24,23 @@
 
         <TextView
             android:id="@+id/participant_name_tv"
-            style="@style/tvTitleStyle"
+            style="@style/tvContactName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/cb_check"
             android:text="Text" />
+        <TextView
+            android:id="@+id/tv_role"
+            style="@style/tvContactName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/participant_name_tv"
+            android:layout_toLeftOf="@id/cb_check"
+            android:layout_toRightOf="@id/participant_name_tv"
+            android:textSize="@dimen/text_tv"
+            android:layout_centerVertical="true"
+            android:textStyle="bold" />
     </RelativeLayout>
 
     <TextView

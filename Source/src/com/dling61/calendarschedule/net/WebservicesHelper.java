@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.dling61.calendarschedule.AddNewActivity;
 import com.dling61.calendarschedule.CategoryTabActivity;
 import com.dling61.calendarschedule.LoginActivity;
 import com.dling61.calendarschedule.R;
@@ -118,6 +119,9 @@ public class WebservicesHelper {
 									}
 									try {
 										if (response.get(CommConstant.OWNER_ID) != null) {
+											
+											((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+												      R.anim.animation_leave);
 											((Activity) mContext).finish();
 											Intent intent = new Intent(
 													mContext,
@@ -299,6 +303,12 @@ public class WebservicesHelper {
 									uploadRecentNewParticipantsToWeb();
 									uploadRecentNewSchedulesToWeb();
 
+									
+									
+									
+									((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+										      R.anim.animation_leave);
+									
 									((Activity) mContext).finish();
 									Intent intent = new Intent(mContext,
 											CategoryTabActivity.class);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.dling61.calendarschedule.AddNewContactActivity;
 import com.dling61.calendarschedule.CreateNewScheduleActivity;
+import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.adapter.ParticipantAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.MyActivity;
@@ -11,6 +12,7 @@ import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.views.ContactView;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -103,6 +105,8 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_participant) {
+			((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+				      R.anim.animation_leave);
 			Intent intent = new Intent(mContext, AddNewContactActivity.class);
 			intent.putExtra("type", DatabaseHelper.NEW);
 			mContext.startActivity(intent);

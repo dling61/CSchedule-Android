@@ -8,6 +8,8 @@ import org.json.JSONException;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.SharedReference;
+import com.dling61.calendarschedule.utils.Utils;
+import com.dling61.calendarschedule.views.TitleBarView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,9 +18,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -30,11 +31,12 @@ import android.widget.Toast;
 public class LoginActivity extends Activity implements OnClickListener {
 	Button signin_btn;
 	Context mContext;
-	TextView txt_email;
-	TextView txt_password;
-	RelativeLayout layout_back;
+	EditText txt_email;
+	EditText txt_password;
+
 	String username, password = "";
-LinearLayout layoutForgetPassword;
+	LinearLayout layoutForgetPassword;
+	TitleBarView titleBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -54,10 +56,13 @@ LinearLayout layoutForgetPassword;
 	 * Find view by Id
 	 * */
 	private void findViewById() {
+		titleBar=(TitleBarView)findViewById(R.id.titleBar);
+		titleBar.tv_name.setText(getResources().getString(R.string.signin));
+		titleBar.layout_next.setVisibility(View.GONE);
 		signin_btn = (Button) findViewById(R.id.signin_btn);
-		txt_email = (TextView) findViewById(R.id.txt_email);
-		txt_password = (TextView) findViewById(R.id.txt_password);
-		layout_back = (RelativeLayout) findViewById(R.id.layout_back);
+		txt_email = (EditText) findViewById(R.id.txt_email);
+		txt_password = (EditText) findViewById(R.id.txt_password);
+		
 		layoutForgetPassword=(LinearLayout)findViewById(R.id.layoutForgetPassword);
 		if (username != null && (!username.equals(""))) {
 			txt_email.setText(username);
@@ -76,7 +81,7 @@ LinearLayout layoutForgetPassword;
 	 * */
 	private void onClickListener() {
 		signin_btn.setOnClickListener(this);
-		layout_back.setOnClickListener(this);
+		titleBar.layout_back.setOnClickListener(this);
 		layoutForgetPassword.setOnClickListener(this);
 	}
 
@@ -104,14 +109,17 @@ LinearLayout layoutForgetPassword;
 				return;
 			}
 			login(username, password);
-		} else if (v == layout_back) {
-
+		} else if (v == titleBar.layout_back) {
+			overridePendingTransition(R.anim.animation_leave,
+				      R.anim.animation_enter);
 			Intent intent = new Intent(mContext, MainActivity.class);
 			mContext.startActivity(intent);
 			finish();
 		}
 		else if(v==layoutForgetPassword)
 		{
+			overridePendingTransition(R.anim.animation_leave,
+				      R.anim.animation_enter);
 			Intent intent = new Intent(mContext, ForgetPasswordActivity.class);
 			mContext.startActivity(intent);
 //			finish();
@@ -123,6 +131,9 @@ LinearLayout layoutForgetPassword;
 	 * */
 	public void login(String email, String password) {
 
+		Utils.hideKeyboard((Activity)mContext,txt_email);
+		Utils.hideKeyboard((Activity)mContext, txt_password);
+		
 		WebservicesHelper helper = new WebservicesHelper(mContext);
 		try {
 			helper.login(email, password);
@@ -137,6 +148,8 @@ LinearLayout layoutForgetPassword;
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
+		overridePendingTransition(R.anim.animation_leave,
+			      R.anim.animation_enter);
 		Intent intent = new Intent(mContext, MainActivity.class);
 		mContext.startActivity(intent);
 		finish();

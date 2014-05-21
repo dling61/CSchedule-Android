@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/compose_activity_topbar"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/height_title_bar"
         android:background="@color/bg_login_title_bar"
         android:padding="@dimen/margin_left" >
 

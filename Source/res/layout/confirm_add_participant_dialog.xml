@@ -29,7 +29,7 @@
 
             <Button
                 android:id="@+id/btn_cancel"
-                style="@style/buttonStyle"
+                style="@style/confirm_btn"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="2dp"
                 android:background="@drawable/me_border"
@@ -45,7 +45,7 @@
 
             <Button
                 android:id="@+id/btn_ok"
-                style="@style/buttonStyle"
+                style="@style/confirm_btn"
                 android:layout_marginLeft="2dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/me_border"

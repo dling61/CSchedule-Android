@@ -55,17 +55,17 @@
         <item>Every year</item>
     </string-array>
     <string-array name="timezone_array">
-        <item>US/Samoa-(GMT-11:00) Samoa</item>
-        <item>US/Hawaii-(GMT-10:00) Hawaii</item>
-        <item>US/Alaska-(GMT-09:00) Alaska</item>
-        <item>US/Pacific-(GMT-08:00) Pacific Time (US-Canada)</item>
-        <item>US/Arizona-(GMT-07:00) Arizona</item>
-        <item>US/Mountain-(GMT-07:00) Mountain Time (US-Canada)</item>
-        <item>US/Central-(GMT-06:00) Central Time (US-Canada)</item>
-        <item>US/Eastern-(GMT-05:00) Eastern Time (US-Canada)</item>
-        <item>US/East-Indiana-(GMT-05:00) Indiana (East)</item>
-        <item>Canada/Atlantic-(GMT-04:00) Atlantic Time (Canada)</item>
-        <item>Canada/Newfoundland-(GMT-03:30) Newfoundland</item>
+        <item>US/Samoa-(GMT-11:00)</item>
+        <item>US/Hawaii-(GMT-10:00)</item>
+        <item>US/Alaska-(GMT-09:00)</item>
+        <item>US/Pacific-(GMT-08:00)</item>
+        <item>US/Arizona-(GMT-07:00)</item>
+        <item>US/Mountain-(GMT-07:00)</item>
+        <item>US/Central-(GMT-06:00)</item>
+        <item>US/Eastern-(GMT-05:00)</item>
+        <item>US/East-Indiana-(GMT-05:00)</item>
+        <item>Canada/Atlantic-(GMT-04:00)</item>
+        <item>Canada/Newfoundland-(GMT-03:30)</item>
     </string-array>
     <string-array name="timezone_value_array">
         <item>-11.0</item>
@@ -176,5 +176,6 @@
     <string name="no_network">No network connection. Please try again.</string>
     <string name="title_contact">Your contact</string>
     <string name="have_no_contact">You have not create contact yet</string>
+    <string name="no_activity_for_create_schedule">You need to create an activity first before creating a schedule here</string>
 
 </resources>

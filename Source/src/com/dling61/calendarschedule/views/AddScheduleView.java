@@ -19,7 +19,7 @@ import android.widget.TextView;
  * */
 public class AddScheduleView extends RelativeLayout {
 	Context context;
-	public TextView title_tv;
+
 	public EditText et_new_activity_name;
 	public View layout;
 	public EditText et_startDate;
@@ -28,10 +28,8 @@ public class AddScheduleView extends RelativeLayout {
 	public EditText et_new_activity_description;
 	public EditText et_startTime;
 	public EditText et_endTime;
-	public LinearLayout layout_next;
-	public LinearLayout layout_back;
-	public LinearLayout layout_save;
 	public Button btn_remove_schedule;
+	public TitleBarView titleBar;
 
 	public AddScheduleView(Context context) {
 		super(context);
@@ -53,17 +51,15 @@ public class AddScheduleView extends RelativeLayout {
 
 	public void findViewById(final Context context) {
 		layout = View.inflate(context, R.layout.add_new_schedule, this);
-		title_tv = (TextView) findViewById(R.id.tv_title);
+
 		et_new_activity_name = (EditText) findViewById(R.id.et_new_activity_name);
 		et_startDate = (EditText) findViewById(R.id.et_startDate);
 		et_endDate = (EditText) findViewById(R.id.et_endDate);
 		et_startTime = (EditText) findViewById(R.id.et_startTime);
 		et_endTime = (EditText) findViewById(R.id.et_endTime);
 		et_on_duty = (EditText) findViewById(R.id.et_on_duty);
-		et_new_activity_description = (EditText) findViewById(R.id.et_new_activity_description);
-		layout_next=(LinearLayout)findViewById(R.id.layout_next);
-		layout_back=(LinearLayout)findViewById(R.id.layout_back);
-		layout_save=(LinearLayout)findViewById(R.id.layout_save);
+		et_new_activity_description = (EditText) findViewById(R.id.et_new_activity_description);	
 		btn_remove_schedule=(Button)findViewById(R.id.btn_remove_schedule);
+		titleBar=(TitleBarView)findViewById(R.id.titleBar);
 	}
 }

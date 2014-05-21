@@ -85,6 +85,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_schedule) {
+			((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+				      R.anim.animation_leave);
 			Intent intent = new Intent(mContext,
 					CreateNewScheduleActivity.class);
 			intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);

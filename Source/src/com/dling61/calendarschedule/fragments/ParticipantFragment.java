@@ -97,9 +97,6 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 		mContext = getActivity();
 
 		initData();
-		// if (type == DatabaseHelper.NEW) {
-
-		// }
 
 		onClickListener();
 	}
@@ -114,9 +111,10 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 			final DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
 			if (type == CommConstant.TYPE_PARTICIPANT) {
-				
-				view.member_toptitle.setText(mContext.getResources().getString(R.string.select_participant));
-				
+
+				view.titleBar.tv_name.setText(mContext.getResources()
+						.getString(R.string.select_participant));
+
 				arrSharemember = dbHelper
 						.getSharedMemberForActivity(activity_id);
 
@@ -159,20 +157,20 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 
 				}
 			} else if (type == CommConstant.TYPE_CONTACT) {
-				
-				view.member_toptitle.setText(mContext.getResources().getString(R.string.add_participant));
-				
+
+				view.titleBar.tv_name.setText(mContext.getResources()
+						.getString(R.string.add_participant));
+
 				arrParticipant = dbHelper.getParticipants();
 				activityParticipant = dbHelper
 						.getParticipantsOfActivity(activity_id);
 
-				
 				if (arrParticipant != null && arrParticipant.size() > 0) {
-
 					int owner_id = new SharedReference()
 							.getCurrentOwnerId(mContext);
 					if (myActivity.getOwner_ID() == owner_id) {
-						String owner_email=new SharedReference().getEmail(mContext);
+						String owner_email = new SharedReference()
+								.getEmail(mContext);
 						for (Participant ap : arrParticipant) {
 							// remove if owner
 
@@ -285,13 +283,13 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 													// user login, do nothing
 													// int
 													// role=myActivity.getRole();
-													
-														ws.postSharedmemberToActivity(
-																participantSelected
-																		.getID(),
-																CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
-																activity_id);
-													
+
+													ws.postSharedmemberToActivity(
+															participantSelected
+																	.getID(),
+															CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
+															activity_id);
+
 												}
 												confirmDialog.dismiss();
 
@@ -319,14 +317,16 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	}
 
 	private void onClickListener() {
-		view.layout_next.setOnClickListener(this);
+		view.titleBar.layout_next.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
-		if (v == view.layout_next) {
+		if (v == view.titleBar.layout_next) {
 			// share schedule
 			if (type == CommConstant.TYPE_CONTACT) {
+				((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+					      R.anim.animation_leave);
 				((Activity) mContext).finish();
 				Intent intent = new Intent(mContext,
 						CreateNewScheduleActivity.class);
@@ -336,23 +336,16 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 
 			} else if (type == CommConstant.TYPE_PARTICIPANT) {
 				if (activity_id != null && (!activity_id.equals(""))) {
-
-					// ((Activity) mContext).finish();
-					//
-					//
-					// Intent intent = new
-					// Intent(CommConstant.SELECTED_ON_DUTY);
 					ArrayList<Integer> listParticipantOnDuty = new ArrayList<Integer>();
 					for (Sharedmember member : arrSharemember) {
 						if (member.isChecked) {
 							listParticipantOnDuty.add(member.getID());
 						}
 					}
-					// intent.putIntegerArrayListExtra(
-					// CommConstant.ON_DUTY_ITEM_SELECTED,
-					// listParticipantOnDuty);
-					// mContext.sendBroadcast(intent);
 
+					
+					((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+						      R.anim.animation_leave);
 					Intent i = getActivity().getIntent(); // gets the intent
 															// that called this
 															// intent
@@ -361,31 +354,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 							CommConstant.ON_DUTY_ITEM_SELECTED,
 							listParticipantOnDuty);
 					getActivity().setResult(333, i);
-
-					((Activity) mContext).finish();
-					// // list participant of this activity
-					// DatabaseHelper dbHelper = DatabaseHelper
-					// .getSharedDatabaseHelper(mContext);
-					// ArrayList<Participant> activityParticipant = dbHelper
-					// .getParticipantsOfActivity(activity_id);
-					// for (Participant participant : adapter.participants) {
-					//
-					// if (participant.isChecked) {
-					// // if this activity haven't contain of this
-					// // participant=> add this participant for this
-					// // activity
-					// // else ignore
-					// if (!activityParticipant.contains(participant)) {
-					// WebservicesHelper ws = new WebservicesHelper(
-					// mContext);
-					// ws.postSharedmemberToActivity(
-					// participant.getID(),
-					// CommConstant.ROLE_ASSIGN_MEMBER_SCHEDULE,
-					// activity_id);
-					// }
-					// }
-					// }
-
+					((Activity) mContext).finish();				
 				}
 			}
 		}

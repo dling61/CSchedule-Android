@@ -72,10 +72,10 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	 * On click listener all views
 	 * */
 	private void onClickListener() {
-		view.layout_done.setOnClickListener(this);
-		view.layout_back.setOnClickListener(this);
+		view.titleBar.layout_save.setOnClickListener(this);
+		view.titleBar.layout_back.setOnClickListener(this);
 		view.btn_remove_contact.setOnClickListener(this);
-		view.layout_edit.setOnClickListener(this);
+		view.titleBar.layout_edit.setOnClickListener(this);
 		view.et_email.setOnClickListener(this);
 		view.et_mobile.setOnClickListener(this);
 	}
@@ -83,33 +83,34 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		if (v == view.layout_done) {
+		if (v == view.titleBar.layout_save) {
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_email);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_mobile);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
 			addContact();
-		} else if (v == view.layout_back) {
+		} else if (v == view.titleBar.layout_back) {
 			((Activity) mContext).finish();
 		} else if (v == view.btn_remove_contact) {
 			if (selectedParticipantID > 0) {
 				removeParticipant();
 			}
-		} else if (v == view.layout_edit) {
+		} else if (v == view.titleBar.layout_edit) {
 			setEdittextEditable(view.et_email, true);
 			setEdittextEditable(view.et_mobile, true);
 			setEdittextEditable(view.et_name, true);
-			view.layout_done.setVisibility(View.VISIBLE);
-			view.layout_edit.setVisibility(View.GONE);
+			view.titleBar.layout_save.setVisibility(View.VISIBLE);
+			view.titleBar.layout_next.setVisibility(View.GONE);
 			view.btn_remove_contact.setVisibility(View.GONE);
+			view.titleBar.layout_edit.setVisibility(View.GONE);
 		} else if (v == view.et_email) {
 			if (composeType == DatabaseHelper.EXISTED
-					&& (view.layout_edit.getVisibility() == View.VISIBLE)
+					&& (view.titleBar.layout_next.getVisibility() == View.VISIBLE)
 					&& (!thisParticipant.getEmail().equals(""))) {
 				Utils.sendAnEmail(mContext, thisParticipant.getEmail());
 			}
 		} else if (v == view.et_mobile) {
 			if (composeType == DatabaseHelper.EXISTED
-					&& (view.layout_edit.getVisibility() == View.VISIBLE)
+					&& (view.titleBar.layout_next.getVisibility() == View.VISIBLE)
 					&& (!thisParticipant.getMobile().equals(""))) {
 				Utils.makeAPhoneCall(mContext, thisParticipant.getMobile());
 			}
@@ -309,7 +310,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		DatabaseHelper dbHelper = DatabaseHelper
 				.getSharedDatabaseHelper(mContext);
 		if (composeType == DatabaseHelper.NEW) {
-			view.tv_title.setText(mContext.getResources().getString(
+			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.add_contact));
 			int newParticipantID = dbHelper.getNextParticipantID();
 			int ownerid = ref.getCurrentOwnerId(mContext);
@@ -319,18 +320,20 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			setEdittextEditable(view.et_email, true);
 			setEdittextEditable(view.et_mobile, true);
 			setEdittextEditable(view.et_name, true);
-			view.layout_edit.setVisibility(View.GONE);
-			view.layout_done.setVisibility(View.VISIBLE);
+			view.titleBar.layout_next.setVisibility(View.GONE);
+			view.titleBar.layout_save.setVisibility(View.VISIBLE);
+			view.titleBar.layout_edit.setVisibility(View.GONE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
-			view.tv_title.setText(mContext.getResources().getString(
+			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.edit_participant));
 			thisParticipant = dbHelper.getParticipant(selectedParticipantID);
 			view.btn_remove_contact.setVisibility(View.VISIBLE);
 			setEdittextEditable(view.et_email, false);
 			setEdittextEditable(view.et_mobile, false);
 			setEdittextEditable(view.et_name, false);
-			view.layout_edit.setVisibility(View.VISIBLE);
-			view.layout_done.setVisibility(View.GONE);
+			view.titleBar.layout_next.setVisibility(View.GONE);
+			view.titleBar.layout_edit.setVisibility(View.VISIBLE);
+			view.titleBar.layout_save.setVisibility(View.GONE);
 
 			if (thisParticipant != null) {
 				view.et_email.setText(thisParticipant.getEmail());

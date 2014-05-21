@@ -4,82 +4,16 @@
     android:layout_height="fill_parent"
     android:background="@color/bg" >
 
-    <RelativeLayout
-        android:id="@+id/compose_schedule_topbar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/me_unselected" >
-
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Add Schedule"
-            android:textColor="#FFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/layout_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/btn_back_selector"
-            android:padding="@dimen/margin_left" >
-
-            <ImageView
-                android:id="@+id/btn_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/ic_back"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/btn_back_selector"
-            android:padding="@dimen/margin_left" >
-
-            <ImageView
-                android:id="@+id/btn_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/next"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/btn_back_selector"
-            android:padding="@dimen/margin_left"
-            android:visibility="gone" >
-
-            <ImageView
-                android:id="@+id/btn_save"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/notification_done"
-                android:textSize="15sp" />
-        </LinearLayout>
-    </RelativeLayout>
+    <com.dling61.calendarschedule.views.TitleBarView
+        android:id="@+id/titleBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </com.dling61.calendarschedule.views.TitleBarView>
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/compose_schedule_topbar"
+        android:layout_below="@id/titleBar"
         android:layout_centerHorizontal="true" >
 
         <LinearLayout
@@ -103,8 +37,8 @@
                     android:id="@+id/tv_new_activity_name"
                     style="@style/tvTitleStyle"
                     android:layout_alignParentLeft="true"
-                    android:text="@string/activity_name" 
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:text="@string/activity_name" />
 
                 <EditText
                     android:id="@+id/et_new_activity_name"
@@ -113,8 +47,7 @@
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/tv_new_activity_name"
                     android:clickable="true"
-                    android:focusable="false"
-                     />
+                    android:focusable="false" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -150,8 +83,7 @@
                             android:layout_height="wrap_content"
                             android:clickable="true"
                             android:focusable="false"
-                            android:inputType="date" 
-                            />
+                            android:inputType="date" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -167,8 +99,7 @@
                             android:layout_height="fill_parent"
                             android:clickable="true"
                             android:focusable="false"
-                            android:inputType="datetime"
-                             />
+                            android:inputType="datetime" />
                     </LinearLayout>
                 </LinearLayout>
             </RelativeLayout>
@@ -207,9 +138,7 @@
                             android:layout_marginTop="@dimen/margin_top"
                             android:clickable="true"
                             android:focusable="false"
-                            android:inputType="date"
-                           
-                           />
+                            android:inputType="date" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -225,9 +154,7 @@
                             android:layout_height="wrap_content"
                             android:clickable="true"
                             android:focusable="false"
-                            android:inputType="datetime"
-                           
-                            />
+                            android:inputType="datetime" />
                     </LinearLayout>
                 </LinearLayout>
             </RelativeLayout>
@@ -253,8 +180,7 @@
                     android:layout_toRightOf="@id/tv_on_duty"
                     android:clickable="true"
                     android:focusable="false"
-                    android:inputType="none"
-                    />
+                    android:inputType="none" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -276,11 +202,10 @@
                     android:layout_height="fill_parent"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_description"
+                    android:gravity="top"
                     android:maxLength="200"
                     android:maxLines="4"
-                    android:minLines="4"
-                    android:gravity="top"
-                    />
+                    android:minLines="4" />
             </RelativeLayout>
 
             <Button

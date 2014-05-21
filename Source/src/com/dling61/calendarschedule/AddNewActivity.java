@@ -2,6 +2,8 @@ package com.dling61.calendarschedule;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import com.dling61.calendarschedule.adapter.SharedMemberAdapter;
 import com.dling61.calendarschedule.adapter.TextViewBaseAdapter;
@@ -37,7 +39,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
@@ -94,8 +95,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 							.getCurrentDateTime()),
 					MyDate.transformLocalDateTimeToUTCFormat(MyDate
 							.getCurrentDateTime()), "", 0, 0);
-			view.layout_save.setVisibility(View.GONE);
-			view.layout_next.setVisibility(View.VISIBLE);
+			view.titleBar.layout_save.setVisibility(View.GONE);
+			view.titleBar.layout_next.setVisibility(View.VISIBLE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
 			shared_role = myIntent.getIntExtra(CommConstant.ROLE,
@@ -105,11 +106,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			// set visible when edit
 			view.btn_add_paticipant.setVisibility(View.VISIBLE);
 			view.btn_remove_activity.setVisibility(View.VISIBLE);
-			view.layout_next.setVisibility(View.GONE);
-
-			view.layout_save.setVisibility(View.VISIBLE);
-			view.layout_next.setVisibility(View.GONE);
-			
+			view.titleBar.layout_next.setVisibility(View.GONE);
+			view.titleBar.layout_save.setVisibility(View.VISIBLE);
 		}
 		this.initViewValues();
 		onClickListener();
@@ -360,10 +358,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		view.et_new_activity_repeat.setOnClickListener(this);
 		view.btn_add_paticipant.setOnClickListener(this);
 		view.btn_remove_activity.setOnClickListener(this);
-		view.layout_next.setOnClickListener(this);
-		view.layout_back.setOnClickListener(this);
+		view.titleBar.layout_next.setOnClickListener(this);
+		view.titleBar.layout_back.setOnClickListener(this);
 		view.et_new_activity_description.setOnClickListener(this);
-		view.layout_save.setOnClickListener(this);
+		view.titleBar.layout_save.setOnClickListener(this);
 	}
 
 	@Override
@@ -379,13 +377,24 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	public void initViewValues() {
 		alert_array = getResources().getStringArray(R.array.alert_array);
 		timezone_array = getResources().getStringArray(R.array.timezone_array);
+		
+		TimeZone tz = TimeZone.getDefault(); 
+		String currentTimezoneName=tz.getDisplayName(false, TimeZone.SHORT);
+		String timezoneCurrent=currentTimezoneName.substring(3,6);
+//		int mGMTOffset = tz.getRawOffset();  
+//		long currentTimezoneId=TimeUnit.HOURS.convert(mGMTOffset,TimeUnit.MILLISECONDS);
+		Log.d("currentTimezoneId",currentTimezoneName+"");
+		String currentTimeZone=tz.getID()+"-("+currentTimezoneName+") ";
+		timezone_array[0]=currentTimeZone;//current device timezone
+		Log.d("timezone name",tz.getID()+"-("+currentTimezoneName+") ");
 		timezone_value_array = getResources().getStringArray(
 				R.array.timezone_value_array);
+		timezone_value_array[0]=timezoneCurrent;
 
 		repeat_array = getResources().getStringArray(R.array.repeat_array);
 
 		if (composeType == DatabaseHelper.NEW) {
-			view.title_tv.setText(mContext.getResources().getString(
+			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.add_activity));
 			// timezone saved is position in array timezone
 			// SharedReference ref = new SharedReference();
@@ -401,7 +410,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 						.setText(timezone_array[timezone]);
 			}
 		} else if (composeType == DatabaseHelper.EXISTED) {
-			view.title_tv.setText(mContext.getResources().getString(
+			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.edit_activity));
 
 			float timezone = thisActivity.getOtc_offset();
@@ -417,7 +426,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				view.et_new_activity_repeat.setEnabled(false);
 				view.btn_add_paticipant.setVisibility(View.GONE);
 				view.btn_remove_activity.setVisibility(View.GONE);
-				view.layout_save.setEnabled(false);
+				view.titleBar.layout_save.setEnabled(false);
 			} else {
 
 				view.et_new_activity_alert.setEnabled(true);
@@ -427,7 +436,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				view.et_new_activity_repeat.setEnabled(true);
 				view.btn_add_paticipant.setVisibility(View.VISIBLE);
 				view.btn_remove_activity.setVisibility(View.VISIBLE);
-				view.layout_save.setEnabled(true);
+				view.titleBar.layout_save.setEnabled(true);
 
 			}
 
@@ -483,7 +492,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		if (v == view.layout_next) {
+		if (v == view.titleBar.layout_next) {
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
 			createNewActivity();
 		} else if (v == view.et_new_activity_time_zone) {
@@ -491,10 +500,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			// if (shared_role == CommConstant.OWNER) {
 			SharedReference ref = new SharedReference();
 			time_zone = ref.getTimeZone(mContext);
-			if (time_zone <= 0&&type==DatabaseHelper.NEW) {
+//			if (time_zone <= 0&&type==DatabaseHelper.NEW) {
 				popUp(timezone_array, TIMEZONE);
-			}
-			// }
+//			}
+			
 
 		} else if (v == view.et_new_activity_repeat) {
 			popUp(repeat_array, REPEAT);
@@ -508,12 +517,11 @@ public class AddNewActivity extends Activity implements OnClickListener {
 						CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				intent.putExtra(CommConstant.TYPE, CommConstant.TYPE_CONTACT);
-
 				mContext.startActivity(intent);
 			}
 		} else if (v == view.btn_remove_activity) {
 			dialogDeleteActivity();
-		} else if (v == view.layout_back) {
+		} else if (v == view.titleBar.layout_back) {
 			((Activity) mContext).finish();
 		} else if (v == view.et_new_activity_description) {
 			// show an activity to edit description
@@ -523,7 +531,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					thisActivity.getDesp());
 			startActivityForResult(intent, 0);
 
-		} else if (v == view.layout_save) {
+		} else if (v == view.titleBar.layout_save) {
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
 			editActivity();
 		}
