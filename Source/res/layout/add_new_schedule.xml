@@ -53,7 +53,8 @@
             <RelativeLayout
                 android:id="@+id/layout_start"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" >
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_start"
@@ -64,21 +65,21 @@
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_toRightOf="@id/tv_start"
                     android:orientation="horizontal" >
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_marginRight="@dimen/margin_left"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="2dp"
                         android:layout_weight="1"
                         android:orientation="horizontal" >
 
                         <EditText
                             android:id="@+id/et_startDate"
-                            style="@style/edittextStyleDate"
+                            style="@style/dateStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:clickable="true"
@@ -88,13 +89,13 @@
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:orientation="horizontal" >
 
                         <EditText
                             android:id="@+id/et_startTime"
-                            style="@style/edittextStyleDate"
+                            style="@style/dateStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
                             android:clickable="true"
@@ -107,7 +108,8 @@
             <RelativeLayout
                 android:id="@+id/layout_end"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" >
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_end"
@@ -125,17 +127,16 @@
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="horizontal" >
 
                         <EditText
                             android:id="@+id/et_endDate"
-                            style="@style/edittextStyleDate"
+                            style="@style/dateStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="@dimen/margin_left"
-                            android:layout_marginTop="@dimen/margin_top"
+                            android:layout_marginRight="2dp"
                             android:clickable="true"
                             android:focusable="false"
                             android:inputType="date" />
@@ -143,13 +144,13 @@
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:orientation="horizontal" >
 
                         <EditText
                             android:id="@+id/et_endTime"
-                            style="@style/edittextStyleDate"
+                            style="@style/dateStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:clickable="true"
@@ -162,7 +163,8 @@
             <RelativeLayout
                 android:id="@+id/layout_on_duty"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_on_duty"
@@ -175,8 +177,7 @@
                     android:id="@+id/et_on_duty"
                     style="@style/edittextStyle"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/tv_on_duty"
                     android:clickable="true"
                     android:focusable="false"
@@ -186,14 +187,16 @@
             <RelativeLayout
                 android:id="@+id/layout_description"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_new_activity_description"
                     style="@style/tvTitleStyle"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/description" />
+                    android:text="@string/description"
+                    android:visibility="gone" />
 
                 <EditText
                     android:id="@+id/et_new_activity_description"
@@ -203,6 +206,7 @@
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_description"
                     android:gravity="top"
+                    android:hint="@string/description"
                     android:maxLength="200"
                     android:maxLines="4"
                     android:minLines="4" />
@@ -212,7 +216,7 @@
                 android:id="@+id/btn_remove_schedule"
                 style="@style/buttonRemoveStyle"
                 android:layout_marginBottom="20dp"
-                android:layout_marginTop="@dimen/margin_top"
+                android:layout_marginTop="20dp"
                 android:text="@string/remove_schedule"
                 android:visibility="visible" />
         </LinearLayout>

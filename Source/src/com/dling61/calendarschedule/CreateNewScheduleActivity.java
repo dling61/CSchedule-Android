@@ -216,6 +216,8 @@ public class CreateNewScheduleActivity extends Activity implements
 		} else if (v == view.et_on_duty) {
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
+				overridePendingTransition(R.anim.animation_enter,
+				      R.anim.animation_leave);
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				intent.putExtra(CommConstant.TYPE,
@@ -251,6 +253,8 @@ public class CreateNewScheduleActivity extends Activity implements
 		} else if (v == view.et_new_activity_description) {
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
+				overridePendingTransition(R.anim.animation_enter,
+				      R.anim.animation_leave);
 				// show an activity to edit description
 				Intent intent = new Intent(mContext,
 						EditDescriptionActivity.class);
@@ -750,75 +754,52 @@ public class CreateNewScheduleActivity extends Activity implements
 	 * delete schedule update to database
 	 * */
 	public void deleteSchedule() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-		alertDialog.setTitle(mContext.getResources()
-				.getString(R.string.caution));
-		alertDialog.setMessage(mContext.getResources().getString(
+		
+		final ConfirmDialog dialog=new ConfirmDialog(mContext, mContext.getResources().getString(
 				R.string.delete_schedule));
-		alertDialog.setPositiveButton(
-				mContext.getResources().getString(R.string.ok),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
+		dialog.show();
+		dialog.btnOk.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				try {
+					ContentValues scv = new ContentValues();
+					scv.put(ScheduleTable.is_Deleted, 1);
+					scv.put(ScheduleTable.is_Synchronized, 0);
 
-						try {
-							ContentValues scv = new ContentValues();
-							scv.put(ScheduleTable.is_Deleted, 1);
-							scv.put(ScheduleTable.is_Synchronized, 0);
-
-							int schedule_id = thisSchedule.getSchedule_ID();
-							dbHelper.updateSchedule(schedule_id, scv);
-							List<Integer> onduties = dbHelper
-									.getOndutyRecordsForSchedule(schedule_id);
-							for (int j = 0; j < onduties.size(); j++) {
-								ContentValues ocv = new ContentValues();
-								ocv.put(OndutyTable.is_Deleted, 1);
-								ocv.put(OndutyTable.is_Synchronized, 0);
-								int onduty_id = onduties.get(j);
-								dbHelper.updateSchedule(onduty_id, ocv);
-							}
-
-							WebservicesHelper ws = new WebservicesHelper(
-									mContext);
-							ws.deleteSchedule(thisSchedule,
-									deleteScheduleHandler);
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
+					int schedule_id = thisSchedule.getSchedule_ID();
+					dbHelper.updateSchedule(schedule_id, scv);
+					List<Integer> onduties = dbHelper
+							.getOndutyRecordsForSchedule(schedule_id);
+					for (int j = 0; j < onduties.size(); j++) {
+						ContentValues ocv = new ContentValues();
+						ocv.put(OndutyTable.is_Deleted, 1);
+						ocv.put(OndutyTable.is_Synchronized, 0);
+						int onduty_id = onduties.get(j);
+						dbHelper.updateSchedule(onduty_id, ocv);
 					}
-				});
-		alertDialog.setNegativeButton(
-				mContext.getResources().getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						Toast.makeText(getApplicationContext(),
-								"You clicked on NO", Toast.LENGTH_SHORT).show();
-						dialog.cancel();
-					}
-				});
-		alertDialog.show();
 
+					WebservicesHelper ws = new WebservicesHelper(
+							mContext);
+					ws.deleteSchedule(thisSchedule,
+							deleteScheduleHandler);
+					
+					dialog.dismiss();
+					
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		dialog.btnCancel.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
 	}
 
-	// BroadcastReceiver onDutyComplete = new BroadcastReceiver() {
-	// public void onReceive(Context arg0, Intent arg1) {
-	// pins = arg1
-	// .getIntegerArrayListExtra(CommConstant.ON_DUTY_ITEM_SELECTED);
-	// String members = "";
-	// if (pins != null && pins.size() > 0) {
-	// for (int i = 0; i < pins.size(); i++) {
-	// Participant p = dbHelper.getParticipant(pins.get(i));
-	// if (p != null) {
-	// if (i == 0)
-	// members = members + p.getName();
-	// else
-	// members = members + "," + p.getName();
-	// }
-	// }
-	// }
-	// view.et_on_duty.setText(members);
-	//
-	// }
-	// };
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);

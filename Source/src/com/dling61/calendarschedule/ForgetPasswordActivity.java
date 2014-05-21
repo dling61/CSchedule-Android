@@ -4,10 +4,15 @@
 package com.dling61.calendarschedule;
 
 import java.util.ArrayList;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
 import com.dling61.calendarschedule.net.BaseUrl;
 import com.dling61.calendarschedule.net.JSONParser;
+import com.dling61.calendarschedule.utils.Utils;
+import com.dling61.calendarschedule.views.TitleBarView;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,6 +22,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,9 +35,10 @@ import android.widget.Toast;
 public class ForgetPasswordActivity extends Activity implements OnClickListener {
 	Button btn_reset_password;
 	Context mContext;
-	TextView txt_email;
-	RelativeLayout layout_back;
+	EditText txt_email;
+//	RelativeLayout layout_back;
 	String email;
+	TitleBarView titleBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +55,11 @@ public class ForgetPasswordActivity extends Activity implements OnClickListener 
 	 * */
 	private void findViewById() {
 		btn_reset_password = (Button) findViewById(R.id.btn_reset_password);
-		txt_email = (TextView) findViewById(R.id.txt_email);
-		layout_back = (RelativeLayout) findViewById(R.id.layout_back);
+		txt_email = (EditText) findViewById(R.id.txt_email);
+//		layout_back = (RelativeLayout) findViewById(R.id.layout_back);
+		titleBar=(TitleBarView)findViewById(R.id.titleBar);
+		titleBar.tv_name.setText(getResources().getString(R.string.forgot_password));
+		titleBar.layout_next.setVisibility(View.GONE);
 	}
 
 	/**
@@ -57,7 +67,7 @@ public class ForgetPasswordActivity extends Activity implements OnClickListener 
 	 * */
 	private void onClickListener() {
 		btn_reset_password.setOnClickListener(this);
-		layout_back.setOnClickListener(this);
+		titleBar.layout_back.setOnClickListener(this);
 	}
 
 	@Override
@@ -77,8 +87,8 @@ public class ForgetPasswordActivity extends Activity implements OnClickListener 
 			}
 			new ForgetPasswordTask(mContext,email).execute();
 			
-		} else if (v == layout_back) {
-
+		} else if (v == titleBar.layout_back) {
+			Utils.hideKeyboard(ForgetPasswordActivity.this,txt_email);
 			
 			finish();
 		}

@@ -2,6 +2,7 @@ package com.dling61.calendarschedule;
 
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.Utils;
+import com.dling61.calendarschedule.views.TitleBarView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -21,8 +22,8 @@ public class EditDescriptionActivity extends Activity implements
 	String description = "";
 	Context mContext;
 	EditText ed_description;
-	LinearLayout layout_back;
-
+	
+TitleBarView titleBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,7 +31,9 @@ public class EditDescriptionActivity extends Activity implements
 		mContext = this;
 		setContentView(R.layout.edit_description_activity);
 		ed_description = (EditText) findViewById(R.id.et_activity_description);
-		layout_back=(LinearLayout)findViewById(R.id.layout_back);
+		titleBar=(TitleBarView)findViewById(R.id.titleBar);
+		titleBar.tv_name.setText(getResources().getString(R.string.description));
+		titleBar.layout_next.setVisibility(View.GONE);
 		description = getIntent().getStringExtra(
 				CommConstant.ACTIVITY_DESCRIPTION);
 		ed_description.setText(description);
@@ -66,7 +69,7 @@ public class EditDescriptionActivity extends Activity implements
 	 * On Click listener
 	 * */
 	public void onClickListener() {
-		layout_back.setOnClickListener(this);
+		titleBar.layout_back.setOnClickListener(this);
 	}
 
 	@Override
@@ -79,8 +82,10 @@ public class EditDescriptionActivity extends Activity implements
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		if (v == layout_back) {		
+		if (v == titleBar.layout_back) {		
 			Utils.hideKeyboard(EditDescriptionActivity.this, ed_description);
+			
+			overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 			Intent i = getIntent(); // gets the intent that called this intent			
 			i.putExtra(CommConstant.ACTIVITY_DESCRIPTION, ed_description
 					.getText().toString().trim());

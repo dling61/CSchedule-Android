@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import com.dling61.calendarschedule.net.BaseUrl;
 import com.dling61.calendarschedule.net.JSONParser;
 import com.dling61.calendarschedule.utils.SharedReference;
+import com.dling61.calendarschedule.utils.Utils;
+import com.dling61.calendarschedule.views.TitleBarView;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -26,25 +28,27 @@ import android.widget.Toast;
 public class FeedBackActivity extends Activity implements OnClickListener {
 
 	EditText edFeedback;
-	LinearLayout layout_back;
-	LinearLayout layout_send;
+//	LinearLayout layout_back;
+//	LinearLayout layout_send;
 	Context mContext;
-
+TitleBarView titleBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.aboutpage);
 		mContext = this;
 		edFeedback = (EditText) findViewById(R.id.ed_feedback);
-		layout_back = (LinearLayout) findViewById(R.id.layout_back);
-		layout_send = (LinearLayout) findViewById(R.id.layout_send);
+		titleBar=(TitleBarView)findViewById(R.id.titleBar);
+		titleBar.tv_name.setText(getResources().getString(R.string.feedback));
+		titleBar.layout_save.setVisibility(View.VISIBLE);
+		titleBar.layout_next.setVisibility(View.GONE);
 
 		onClickListener();
 	}
 
 	private void onClickListener() {
-		layout_back.setOnClickListener(this);
-		layout_send.setOnClickListener(this);
+		titleBar.layout_back.setOnClickListener(this);
+		titleBar.layout_save.setOnClickListener(this);
 	}
 
 	@Override
@@ -57,24 +61,14 @@ public class FeedBackActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		if (v == layout_back) {
+		if (v == titleBar.layout_back) {
+			Utils.hideKeyboard(FeedBackActivity.this,edFeedback);
+			
 			finish();
-		} else if (v == layout_send) {
+		} else if (v == titleBar.layout_save) {
 			String feedback = edFeedback.getText().toString().trim();
 			if (feedback != null && (!feedback.equals(""))) {
-				// WebservicesHelper ws = new WebservicesHelper(
-				// FeedBackActivity.this);
-				// ws.sendFeedBack(feedback);
-				// ArrayList<NameValuePair> params=new
-				// ArrayList<NameValuePair>();
-				// params.add(new BasicNameValuePair("ownerid",new
-				// SharedReference().getCurrentOwnerId(FeedBackActivity.this)+""));
-				// params.add(new BasicNameValuePair("feedback",feedback));
-				// String feedbackLink = BaseUrl.BASEURL + "feedback"+ "?" +
-				// BaseUrl.URL_POST_FIX;
-				// JSONParser.getJsonFromURLPostNameValuePair(feedbackLink,
-				// params);
-
+				
 				new FeedbackTask(mContext, feedback).execute();
 			} else {
 				Toast.makeText(
@@ -112,14 +106,7 @@ public class FeedBackActivity extends Activity implements OnClickListener {
 		@Override
 		protected String doInBackground(String... params) {
 			// if register successfully, it's logged in automatically on server
-			try {
-//				ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-//				param.add(new BasicNameValuePair("ownerid",
-//						new SharedReference()
-//								.getCurrentOwnerId(FeedBackActivity.this) + ""));
-//				param.add(new BasicNameValuePair("feedback", feedback));
-				
-				
+			try {				
 				JSONObject sharedmemberParams = new JSONObject();
 				sharedmemberParams.put("ownerid",
 						new SharedReference().getCurrentOwnerId(mContext));

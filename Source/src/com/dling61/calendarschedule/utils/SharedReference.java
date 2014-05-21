@@ -192,8 +192,8 @@ public class SharedReference {
 	 * getTimeZone position in timezone array value
 	 * */
 	public int getTimeZone(Context context) {
-		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, 0);
-		int timeZone = sp.getInt(TIMEZONE,0);
+		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, -100);
+		int timeZone = sp.getInt(TIMEZONE,-100);
 		return timeZone;
 	}
 

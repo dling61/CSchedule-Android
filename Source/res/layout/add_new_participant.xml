@@ -31,9 +31,7 @@
 
                 <TextView
                     android:id="@+id/tv_email"
-                    style="@style/tvTitleStyle"
-                    android:layout_width="@dimen/width_tv_add_contact"
-                    android:layout_height="wrap_content"
+                   style="@style/tvContactName"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:text="@string/title_email" />
@@ -56,9 +54,7 @@
 
                 <TextView
                     android:id="@+id/tv_name"
-                    style="@style/tvTitleStyle"
-                    android:layout_width="@dimen/width_tv_add_contact"
-                    android:layout_height="wrap_content"
+                  style="@style/tvContactName"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:text="@string/participant_name" />
@@ -80,9 +76,8 @@
 
                 <TextView
                     android:id="@+id/tv_mobile"
-                    style="@style/tvTitleStyle"
-                    android:layout_width="@dimen/width_tv_add_contact"
-                    android:layout_height="wrap_content"
+                    style="@style/tvContactName"
+            
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:text="@string/title_mobile" />
@@ -100,10 +95,9 @@
             <Button
                 android:id="@+id/btm_remove_contact"
                 style="@style/buttonRemoveStyle"
-                android:layout_alignParentBottom="true"
-                android:layout_gravity="bottom"
+                
                 android:layout_marginBottom="@dimen/margin_top"
-                android:layout_marginTop="@dimen/margin_top"
+                android:layout_marginTop="20dp"
                 android:text="@string/remove_contact"
                 android:visibility="visible" />
         </LinearLayout>

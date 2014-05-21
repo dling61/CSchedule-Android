@@ -7,6 +7,7 @@ import com.dling61.calendarschedule.FeedBackActivity;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.AccountView;
+import com.dling61.calendarschedule.views.ConfirmDialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -107,27 +108,29 @@ public class AccountFragment extends Fragment implements OnClickListener {
 	 * Sign out
 	 * */
 	private void signout() {
-		new AlertDialog.Builder(mContext).setTitle("Do you want to log out?")  
-	    .setIcon(android.R.drawable.ic_dialog_info)  
-	    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {  
-	  
-	        @Override  
-	        public void onClick(DialogInterface dialog, int which) {
-	        	DatabaseHelper dbHelper = DatabaseHelper
-	    				.getSharedDatabaseHelper(mContext);
-	    		dbHelper.evacuateDatabase();
-	    		((Activity) mContext).finish();
-	        System.exit(0);
-	        }  
-	    })  
-	    .setNegativeButton("No", new DialogInterface.OnClickListener() {  
-	  
-	        @Override  
-	        public void onClick(DialogInterface dialog, int which) {  
-	        }  
-	    }).show();  
-		
-	
+		final ConfirmDialog dialog = new ConfirmDialog(mContext,
+				"Do you want to log out?");
+		dialog.show();
+		dialog.btnCancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+				DatabaseHelper dbHelper = DatabaseHelper
+						.getSharedDatabaseHelper(mContext);
+				dbHelper.evacuateDatabase();
+				((Activity) mContext).finish();
+				System.exit(0);
+			}
+		});
+
 	}
 
 	/**

@@ -30,6 +30,7 @@ import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.utils.Utils;
+import com.dling61.calendarschedule.views.LoadingPopupViewHolder;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -55,7 +56,22 @@ public class WebservicesHelper {
 	// progress dialog
 	ProgressDialog progress = null;
 	DatabaseHelper dbHelper;
+LoadingPopupViewHolder loadingPopup;
+	// show loading
+		public void showLoading(Context mContext) {
+			if (loadingPopup == null) {
+				loadingPopup = new LoadingPopupViewHolder(mContext,
+					CategoryTabActivity.DIALOG_LOADING_THEME);
+			}
+			loadingPopup.setCancelable(false);
+			loadingPopup.show();
+		}
 
+		public void dimissDialog() {
+			if (loadingPopup != null && loadingPopup.isShowing()) {
+				loadingPopup.dismiss();
+			}
+		}
 	/**
 	 * Constructor initial progress dialog
 	 * */
@@ -824,6 +840,18 @@ public class WebservicesHelper {
 						// Response failed :(
 						Log.i("webservice", "Get Schedules failed");
 					}
+					@Override
+					public void onStart() {
+						// TODO Auto-generated method stub
+						super.onStart();
+						showLoading(mContext);
+					}
+					@Override
+					public void onFinish() {
+						// TODO Auto-generated method stub
+						super.onFinish();
+						dimissDialog();
+					}
 				});
 			} else {
 				Toast.makeText(mContext,
@@ -1149,6 +1177,18 @@ public class WebservicesHelper {
 							public void onFailure(Throwable e, String response) {
 								// Response failed :(
 								Log.i("webservice", "Get Activities failed");
+							}
+							@Override
+							public void onStart() {
+								// TODO Auto-generated method stub
+								super.onStart();
+								showLoading(mContext);
+							}
+							@Override
+							public void onFinish() {
+								// TODO Auto-generated method stub
+								super.onFinish();
+								dimissDialog();
 							}
 						});
 			} else {

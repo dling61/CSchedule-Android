@@ -22,6 +22,7 @@ import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.CustomViewPager;
+import com.dling61.calendarschedule.views.LoadingPopupViewHolder;
 import com.dling61.calendarschedule.views.MenuAppView;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -65,6 +66,8 @@ public class CategoryTabActivity extends FragmentActivity implements
 	boolean isScheduleDownloadDone = false;
 	public static int TAB_SCHEDULE = 0;
 	public static int TAB_ACTIVITY = 2;
+	LoadingPopupViewHolder loadingPopup;
+	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
 
 	public static CategoryTabActivity getTab(Context context) {
 		if (sharedTab == null) {
@@ -245,6 +248,14 @@ public class CategoryTabActivity extends FragmentActivity implements
 			// Response failed :(
 			Log.i("webservice", "Get Activities failed");
 		}
+
+		public void onStart() {
+			showLoading(mContext);
+		};
+
+		public void onFinish() {
+			dimissDialog();
+		};
 	};
 
 	private void initData() {
@@ -255,6 +266,22 @@ public class CategoryTabActivity extends FragmentActivity implements
 		ws.getParticipantsFromWeb();
 		ws.getAllSchedule();
 
+	}
+
+	// show loading
+	public void showLoading(Context mContext) {
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(mContext,
+					DIALOG_LOADING_THEME);
+		}
+		loadingPopup.setCancelable(false);
+		loadingPopup.show();
+	}
+
+	public void dimissDialog() {
+		if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
+		}
 	}
 
 	// Method to add a TabHost
@@ -362,8 +389,8 @@ public class CategoryTabActivity extends FragmentActivity implements
 	 */
 	@Override
 	public void onBackPressed() {
-		final ConfirmDialog dialog = new ConfirmDialog(CategoryTabActivity.this,
-				"Sure to Exit?");
+		final ConfirmDialog dialog = new ConfirmDialog(
+				CategoryTabActivity.this, "Sure to Exit?");
 		dialog.show();
 		dialog.btnCancel.setOnClickListener(new OnClickListener() {
 

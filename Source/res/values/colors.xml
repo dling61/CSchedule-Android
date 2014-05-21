@@ -71,4 +71,6 @@
     <color name="text_today_schedule">#007aff</color>
     <color name="btn_schedule_unselected">#ffffff</color>
     <color name="title_bar_tv">#ffffff</color>
+      <color name="bg_loading">#AA000000</color>
+    <color name="bg_black">#77000000</color>
 </resources>

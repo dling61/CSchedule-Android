@@ -107,7 +107,7 @@
     <string name="on_duty">On Duty</string>
     <string name="add_schedule">New schedule</string>
     <string name="edit_schedule">Schedule Info</string>
-    <string name="ok">OK</string>
+    <string name="ok">Ok</string>
     <string name="confirm_title">Are you sure to add </string>
     <string name="into">to</string>
     <string name="delete_activity">Are you sure you want to delete this activity and related schedules?</string>

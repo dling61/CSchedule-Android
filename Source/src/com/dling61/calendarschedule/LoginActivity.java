@@ -118,8 +118,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 		else if(v==layoutForgetPassword)
 		{
-			overridePendingTransition(R.anim.animation_leave,
-				      R.anim.animation_enter);
+			overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
 			Intent intent = new Intent(mContext, ForgetPasswordActivity.class);
 			mContext.startActivity(intent);
 //			finish();

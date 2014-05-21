@@ -11,6 +11,8 @@ import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.AddParticipantView;
+import com.dling61.calendarschedule.views.ConfirmDialog;
+import com.dling61.calendarschedule.views.LoadingPopupViewHolder;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import android.app.Activity;
@@ -89,6 +91,9 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
 			addContact();
 		} else if (v == view.titleBar.layout_back) {
+			Utils.hideKeyboard(AddNewContactActivity.this, view.et_email);
+			Utils.hideKeyboard(AddNewContactActivity.this, view.et_mobile);
+			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
 			((Activity) mContext).finish();
 		} else if (v == view.btn_remove_contact) {
 			if (selectedParticipantID > 0) {
@@ -190,52 +195,63 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		public void onStart() {
 			// TODO Auto-generated method stub
 			super.onStart();
-			progress.show();
+			showLoading(mContext);
 		}
 
 		@Override
 		public void onFinish() {
 			// TODO Auto-generated method stub
 			super.onFinish();
-			progress.dismiss();
+			// progress.dismiss();
+			dimissDialog();
 		}
 	};
+	LoadingPopupViewHolder loadingPopup;
+
+	// show loading
+	public void showLoading(Context mContext) {
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(mContext,
+					CategoryTabActivity.DIALOG_LOADING_THEME);
+		}
+		loadingPopup.setCancelable(false);
+		loadingPopup.show();
+	}
+
+	public void dimissDialog() {
+		if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
+		}
+	}
 
 	/**
 	 * Show alert delete contact Call ws delete contact if click yes
 	 * */
 	private void showAlertDeleteContact() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-		alertDialog.setTitle(mContext.getResources()
-				.getString(R.string.caution));
-		alertDialog.setMessage(mContext.getResources().getString(
-				R.string.delete_contact)
-				+ " " + thisParticipant.getName() + "?");
-		alertDialog.setPositiveButton(
-				mContext.getResources().getString(R.string.ok),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						if (selectedParticipantID >0) {
-							WebservicesHelper ws = new WebservicesHelper(
-									mContext);
-//							ws.deleteContact(selectedParticipantID,
-//									deleteContactHandler);
-							ws.deleteParticipant(thisParticipant);
-//							String urlDeleteContact = BaseUrl.BASEURL + "members/"
-//									+selectedParticipantID + "?" + BaseUrl.URL_POST_FIX;
-//							JSONParser.deleteFromUrl(urlDeleteContact);
-						}
-						dialog.cancel();
-					}
-				});
-		alertDialog.setNegativeButton(
-				mContext.getResources().getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-		alertDialog.show();
+		final ConfirmDialog dialog = new ConfirmDialog(mContext, mContext
+				.getResources().getString(R.string.delete_contact)
+				+ " "
+				+ thisParticipant.getName() + "?");
+		dialog.show();
+		dialog.btnCancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+
+		dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if (selectedParticipantID > 0) {
+					WebservicesHelper ws = new WebservicesHelper(mContext);
+					ws.deleteParticipant(thisParticipant);
+				}
+			}
+		});
 	}
 
 	/**
@@ -281,7 +297,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		if (composeType == DatabaseHelper.NEW) {
 			cv.put(ParticipantTable.own_ID, thisParticipant.getOwnerID());
 			cv.put(ParticipantTable.participant_ID, thisParticipant.getID());
-			Log.d("add member id",thisParticipant.getID()+"");
+			Log.d("add member id", thisParticipant.getID() + "");
 			cv.put(ParticipantTable.user_login,
 					new SharedReference().getCurrentOwnerId(mContext));
 			dbHelper.insertParticipant(cv);
