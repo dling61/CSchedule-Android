@@ -28,7 +28,7 @@ import android.widget.Toast;
  * @version 1.0
  * @Date April 8th,2014 @ This class helps users login to app}
  * */
-public class LoginActivity extends Activity implements OnClickListener {
+public class LoginActivity extends BaseActivity implements OnClickListener {
 	Button signin_btn;
 	Context mContext;
 	EditText txt_email;
@@ -110,15 +110,15 @@ public class LoginActivity extends Activity implements OnClickListener {
 			}
 			login(username, password);
 		} else if (v == titleBar.layout_back) {
-			overridePendingTransition(R.anim.animation_leave,
-				      R.anim.animation_enter);
+			
 			Intent intent = new Intent(mContext, MainActivity.class);
 			mContext.startActivity(intent);
 			finish();
 		}
 		else if(v==layoutForgetPassword)
 		{
-			overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+			overridePendingTransition(R.anim.animation_enter,
+				      R.anim.animation_leave);
 			Intent intent = new Intent(mContext, ForgetPasswordActivity.class);
 			mContext.startActivity(intent);
 //			finish();
@@ -147,8 +147,13 @@ public class LoginActivity extends Activity implements OnClickListener {
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		overridePendingTransition(R.anim.animation_leave,
-			      R.anim.animation_enter);
+		
+		if(WebservicesHelper.loadingPopup!=null&&WebservicesHelper.loadingPopup.isShowing())
+		{
+			WebservicesHelper.loadingPopup.dismiss();
+		}
+		overridePendingTransition(R.anim.push_left_in,
+			      R.anim.push_left_out);
 		Intent intent = new Intent(mContext, MainActivity.class);
 		mContext.startActivity(intent);
 		finish();

@@ -78,13 +78,13 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	}
 
 	private void initData() {
-		if (tab) {
-			view.btn_add_participant.setVisibility(View.VISIBLE);
-			view.btn_next.setVisibility(View.GONE);
-		} else {
-			view.btn_add_participant.setVisibility(View.GONE);
-			view.btn_next.setVisibility(View.VISIBLE);
-		}
+//		if (tab) {
+//			view.btn_add_participant.setVisibility(View.VISIBLE);
+//
+//		} else {
+//			view.btn_add_participant.setVisibility(View.GONE);
+//			
+//		}
 		DatabaseHelper db = DatabaseHelper.getSharedDatabaseHelper(mContext);
 		if (activity_id != null && (!activity_id.equals(""))) {
 			myActivity = db.getActivity(activity_id);
@@ -99,7 +99,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 
 	private void onClickListener() {
 		view.btn_add_participant.setOnClickListener(this);
-		view.btn_next.setOnClickListener(this);
+//		view.btn_next.setOnClickListener(this);
 	}
 
 	@Override
@@ -115,29 +115,29 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		 * When clicking on “next”, call API to create shared members for this
 		 * activity in the server
 		 */
-		else if (v == view.btn_next) {
-			// get list participant checked, share with viewer role
-			if (adapter != null && adapter.participants != null) {
-
-				// ArrayList<Participant> listParticipantSelected=new
-				// ArrayList<Participant>();
-				WebservicesHelper ws = new WebservicesHelper(mContext);
-
-				for (Participant participant : adapter.participants) {
-					if (participant.isChecked) {
-						ws.postSharedmemberToActivity(participant.getID(),
-								CommConstant.VIEWER, activity_id);
-					}
-
-				}
-				Intent intent = new Intent(mContext,
-						CreateNewScheduleActivity.class);
-				intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
-				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
-				mContext.startActivity(intent);
-			}
-			// ws.alterSharedmemberToActivity(memberid, role, activityid);
-		}
+//		else if (v == view.btn_next) {
+//			// get list participant checked, share with viewer role
+//			if (adapter != null && adapter.participants != null) {
+//
+//				// ArrayList<Participant> listParticipantSelected=new
+//				// ArrayList<Participant>();
+//				WebservicesHelper ws = new WebservicesHelper(mContext);
+//
+//				for (Participant participant : adapter.participants) {
+//					if (participant.isChecked) {
+//						ws.postSharedmemberToActivity(participant.getID(),
+//								CommConstant.VIEWER, activity_id);
+//					}
+//
+//				}
+//				Intent intent = new Intent(mContext,
+//						CreateNewScheduleActivity.class);
+//				intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
+//				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
+//				mContext.startActivity(intent);
+//			}
+//			// ws.alterSharedmemberToActivity(memberid, role, activityid);
+//		}
 	}
 
 	@Override

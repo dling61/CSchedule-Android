@@ -25,12 +25,9 @@ import com.dling61.calendarschedule.views.CustomViewPager;
 import com.dling61.calendarschedule.views.LoadingPopupViewHolder;
 import com.dling61.calendarschedule.views.MenuAppView;
 import com.loopj.android.http.JsonHttpResponseHandler;
-
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -38,12 +35,10 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 
@@ -66,8 +61,11 @@ public class CategoryTabActivity extends FragmentActivity implements
 	boolean isScheduleDownloadDone = false;
 	public static int TAB_SCHEDULE = 0;
 	public static int TAB_ACTIVITY = 2;
-	LoadingPopupViewHolder loadingPopup;
+	public static LoadingPopupViewHolder loadingPopup;
 	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
+	public static boolean flag_schedule = false;
+	public static boolean flag_activity = false;
+	public static boolean flag_contact = false;
 
 	public static CategoryTabActivity getTab(Context context) {
 		if (sharedTab == null) {
@@ -81,6 +79,11 @@ public class CategoryTabActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.category_tab_view);
 		mContext = this;
+		loadingPopup = new LoadingPopupViewHolder(mContext,
+				DIALOG_LOADING_THEME);
+		loadingPopup.setCancelable(false);
+
+		
 		mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
 		// horizontalView = (HorizontalScrollView)
 		// findViewById(R.id.horizontalView);
@@ -103,16 +106,25 @@ public class CategoryTabActivity extends FragmentActivity implements
 			ex.printStackTrace();
 		}
 	}
-
-	@Override
-	protected void onPause() {
+//
+//	@Override
+//	protected void onPause() {
+//		try {
+//			unregisterReceiver(goToActivity);
+//
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//		}
+//		super.onPause();
+//	};
+	
+	protected void onDestroy() {
 		try {
 			unregisterReceiver(goToActivity);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		super.onPause();
 	};
 
 	/**
@@ -249,18 +261,22 @@ public class CategoryTabActivity extends FragmentActivity implements
 			Log.i("webservice", "Get Activities failed");
 		}
 
-		public void onStart() {
-			showLoading(mContext);
-		};
-
+		// public void onStart() {
+		// showLoading(mContext);
+		// };
+		//
 		public void onFinish() {
-			dimissDialog();
+			CategoryTabActivity.flag_activity = true;
+			if (flag_activity && flag_contact && flag_schedule
+					&& loadingPopup.isShowing()) {
+				dimissDialog();
+			}
 		};
 	};
 
 	private void initData() {
 		// get all data after that, go to tab
-
+		showLoading(mContext);
 		WebservicesHelper ws = new WebservicesHelper(mContext);
 		ws.getAllActivitys(activityDownloadCompleteHandler);
 		ws.getParticipantsFromWeb();
@@ -405,10 +421,10 @@ public class CategoryTabActivity extends FragmentActivity implements
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				SharedPreferences sp = getSharedPreferences("MyPreferences", 0);
-				Editor editor = sp.edit();
-				editor.clear();
-				editor.commit();
+//				SharedPreferences sp = getSharedPreferences("MyPreferences", 0);
+//				Editor editor = sp.edit();
+//				editor.clear();
+//				editor.commit();
 				deleteDatabase(DatabaseHelper.DB_NAME);
 				System.exit(0);
 			}

@@ -18,6 +18,8 @@ public class ParticipantActivity extends FragmentActivity {
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
+		overridePendingTransition(R.anim.animation_enter,
+			      R.anim.animation_leave);
 		setContentView(R.layout.participant);
 		activity_id=getIntent().getStringExtra(CommConstant.ACTIVITY_ID);
 		ParticipantFragment participantFragment = new ParticipantFragment();
@@ -26,8 +28,13 @@ public class ParticipantActivity extends FragmentActivity {
 				.getIntegerArrayListExtra("pins");
 		participantFragment.setSelectedParticipant(selectedParticipant);
 		participantFragment.setType(getIntent().getIntExtra(CommConstant.TYPE, CommConstant.TYPE_CONTACT));
-		getSupportFragmentManager().beginTransaction().replace(R.id.container,participantFragment).commit(); 
-		
-		
+		getSupportFragmentManager().beginTransaction().replace(R.id.container,participantFragment).commit(); 	
+	}
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		overridePendingTransition(R.anim.push_left_in,
+			      R.anim.push_left_out);
 	}
 }

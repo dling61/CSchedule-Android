@@ -4,7 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="width_tv_add_activity">90dp</dimen>
-   
     <dimen name="margin_left">10dp</dimen>
     <dimen name="margin_right">10dp</dimen>
     <dimen name="margin_top">10dp</dimen>
@@ -23,5 +22,6 @@
     <dimen name="text_tv">14sp</dimen>
     <dimen name="height_title_bar">50dp</dimen>
     <dimen name="title_tv">20sp</dimen>
+    <dimen name="margin_top_block">30dp</dimen>
 
 </resources>

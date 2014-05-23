@@ -20,8 +20,8 @@ import android.widget.TextView;
 public class AddActivityView extends RelativeLayout {
 	Context context;
 	public EditText et_new_activity_name;
-	public EditText et_new_activity_time_zone;
-	public EditText et_new_activity_alert;
+	public TextView et_new_activity_time_zone;
+	public TextView et_new_activity_alert;
 	public EditText et_new_activity_repeat;
 	public EditText et_new_activity_description;
 	public View layout;
@@ -30,7 +30,8 @@ public class AddActivityView extends RelativeLayout {
 	public ListView list_participant;
 	public TextView tv_participant;
 	public TitleBarView titleBar;
-
+	public RelativeLayout layoutAlert;
+public RelativeLayout layoutTimeZone;
 	public AddActivityView(Context context) {
 		super(context);
 		this.context = context;
@@ -53,8 +54,8 @@ public class AddActivityView extends RelativeLayout {
 		layout = View.inflate(context, R.layout.add_new_activity, this);
 		titleBar = (TitleBarView) findViewById(R.id.titleBar);
 		et_new_activity_name = (EditText) findViewById(R.id.et_new_activity_name);
-		et_new_activity_time_zone = (EditText) findViewById(R.id.et_new_activity_time_zone);
-		et_new_activity_alert = (EditText) findViewById(R.id.et_new_activity_alert);
+		et_new_activity_time_zone = (TextView) findViewById(R.id.et_new_activity_time_zone);
+		et_new_activity_alert = (TextView) findViewById(R.id.et_new_activity_alert);
 		et_new_activity_repeat = (EditText) findViewById(R.id.et_new_activity_repeat);
 		et_new_activity_description = (EditText) findViewById(R.id.et_new_activity_description);
 		btn_add_paticipant = (Button) findViewById(R.id.btn_add_paticipant);
@@ -63,5 +64,7 @@ public class AddActivityView extends RelativeLayout {
 		tv_participant = (TextView) findViewById(R.id.tv_participant);
 		
 		titleBar.layout_back.setVisibility(View.VISIBLE);
+		layoutAlert=(RelativeLayout)findViewById(R.id.layoutAlert);
+		layoutTimeZone=(RelativeLayout)findViewById(R.id.layout_timeZone);
 	}
 }

@@ -10,6 +10,8 @@ public class ContactActivity extends FragmentActivity {
 	String activity_id="";
 	@Override
 	protected void onCreate(Bundle arg0) {
+		overridePendingTransition(R.anim.animation_enter,
+			      R.anim.animation_leave);
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
 		setContentView(R.layout.participant);
@@ -21,5 +23,12 @@ public class ContactActivity extends FragmentActivity {
 		getSupportFragmentManager().beginTransaction().replace(R.id.container,contactFragment).commit(); 
 		
 		
+	}
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		overridePendingTransition(R.anim.push_left_in,
+			      R.anim.push_left_out);
 	}
 }

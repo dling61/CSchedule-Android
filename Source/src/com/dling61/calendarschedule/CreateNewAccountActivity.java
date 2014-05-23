@@ -7,7 +7,6 @@ import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.TitleBarView;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 /**
  * @class LoginActivity
@@ -25,7 +23,7 @@ import android.widget.Toast;
  * @Date April 8th,2014 @ This class will show when click button create new
  *       account}
  * */
-public class CreateNewAccountActivity extends Activity
+public class CreateNewAccountActivity extends BaseActivity
 		implements OnClickListener {
 	Context mContext;
 	EditText name_tv;
@@ -37,6 +35,7 @@ public class CreateNewAccountActivity extends Activity
 TitleBarView titleBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+	
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 

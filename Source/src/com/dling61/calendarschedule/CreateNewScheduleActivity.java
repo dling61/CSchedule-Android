@@ -24,7 +24,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -32,7 +31,6 @@ import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,7 +51,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * @category add new schedule
  * */
 // @SuppressLint("NewApi")
-public class CreateNewScheduleActivity extends Activity implements
+public class CreateNewScheduleActivity extends BaseActivity implements
 		OnDateSetListener, OnTimeSetListener, OnMenuItemClickListener,
 		OnClickListener {
 
@@ -80,6 +78,7 @@ public class CreateNewScheduleActivity extends Activity implements
 	int creator;
 
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		view = new AddScheduleView(mContext);
@@ -311,8 +310,10 @@ public class CreateNewScheduleActivity extends Activity implements
 						public void onClick(View v) {
 							dialog.dismiss();
 							finish();
-							Intent intent=new Intent("goToActivity");
-							sendBroadcast(intent);
+							overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+							CategoryTabActivity.currentPage=CategoryTabActivity.TAB_ACTIVITY;
+//							Intent intent=new Intent("goToActivity");
+//							sendBroadcast(intent);
 							
 						}
 					});
@@ -355,6 +356,10 @@ public class CreateNewScheduleActivity extends Activity implements
 					}
 
 					view.et_on_duty.setText(members);
+					if(members.equals(""))
+					{
+						view.et_on_duty.setText("Choose Participant");
+					}
 				}
 			}
 

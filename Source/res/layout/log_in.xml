@@ -58,7 +58,7 @@
                 android:orientation="horizontal"
                 android:paddingTop="@dimen/margin_top"
                 android:paddingBottom="@dimen/margin_top"
-                android:background="@drawable/btn_back_selector" >
+                >
 
                 <TextView
                     android:id="@+id/tvForget"
@@ -68,12 +68,12 @@
                     android:singleLine="true"
                     android:text="@string/forgot_password"
                     android:layout_gravity="center_vertical"
-                    android:textColor="#787878" />
+                    android:textColor="@drawable/text_color_forget_password_selector" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/forget"
+                    android:src="@drawable/btn_forgot_selector"
                     android:layout_gravity="center_vertical" />
             </LinearLayout>
         </LinearLayout>

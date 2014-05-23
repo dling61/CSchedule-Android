@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg" >
+    android:background="@color/bg_participant_activity_title" >
 
     <com.dling61.calendarschedule.views.TitleBarView
         android:id="@+id/titleBar"
@@ -20,7 +20,6 @@
             android:id="@+id/composeActivityItems"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/bg"
             android:cacheColorHint="@color/white"
             android:orientation="vertical"
             android:showDividers="middle" >
@@ -29,85 +28,134 @@
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
-                android:layout_marginTop="15dp" >
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule" >
 
                 <TextView
                     android:id="@+id/tv_new_activity_name"
                     style="@style/tvTitleStyle"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/margin_right"
                     android:singleLine="true"
-                    android:text="@string/activity_name" />
+                    android:text="@string/activity_name"
+                    android:visibility="gone" />
 
                 <EditText
                     android:id="@+id/et_new_activity_name"
-                    style="@style/edittextStyle"
+                    style="@style/edStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
                     android:layout_toRightOf="@id/tv_new_activity_name"
+                    android:gravity="center_vertical"
+                    android:hint="@string/activity_name"
                     android:singleLine="true" />
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/layout_new_activity_time_zone"
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
-                android:layout_marginTop="@dimen/margin_top" >
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule"
+                android:orientation="vertical" >
 
-                <TextView
-                    android:id="@+id/tv_new_activity_time_zone"
-                    style="@style/tvTitleStyle"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/time_zone" />
-
-                <EditText
-                    android:id="@+id/et_new_activity_time_zone"
-                    style="@style/edittextStyle"
+                <RelativeLayout
+                    android:id="@+id/layout_new_activity_time_zone"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_top"
-                    android:layout_toRightOf="@id/tv_new_activity_time_zone"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:singleLine="true" />
-            </RelativeLayout>
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right" >
 
-            <RelativeLayout
-                android:id="@+id/layout_alert"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
-                android:layout_marginTop="@dimen/margin_top" >
+                    <TextView
+                        android:id="@+id/tv_new_activity_time_zone"
+                        style="@style/tvTitleStyle"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/time_zone" />
 
-                <TextView
-                    android:id="@+id/tv_new_activity_alert"
-                    style="@style/tvTitleStyle"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/alert" />
+                    <RelativeLayout
+                        android:id="@+id/layout_timeZone"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/tv_new_activity_time_zone"
+                        android:clickable="true" >
 
-                <EditText
-                    android:id="@+id/et_new_activity_alert"
-                    style="@style/edittextStyle"
+                        <ImageView
+                            android:id="@+id/image_next"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/btn_forgot_selector" />
+
+                        <TextView
+                            android:id="@+id/et_new_activity_time_zone"
+                            style="@style/edStyle"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@id/image_next"
+                            android:focusable="false"
+                            android:gravity="right"
+                            android:hint="@string/time_zone"
+                            android:singleLine="true" />
+                    </RelativeLayout>
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:background="@color/bg_participant_activity_title" />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alert"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_top"
-                    android:layout_toRightOf="@id/tv_new_activity_alert"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:inputType="none"
-                    android:singleLine="true" />
-            </RelativeLayout>
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right" >
+
+                    <TextView
+                        android:id="@+id/tv_new_activity_alert"
+                        style="@style/tvTitleStyle"
+                        android:layout_height="fill_parent"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/alert" />
+
+                    <RelativeLayout
+                        android:id="@+id/layoutAlert"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/tv_new_activity_alert"
+                        android:clickable="true" >
+
+                        <ImageView
+                            android:id="@+id/image_next"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/btn_forgot_selector" />
+
+                        <TextView
+                            android:id="@+id/et_new_activity_alert"
+                            style="@style/edStyle"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@id/image_next"
+                            android:focusable="false"
+                            android:gravity="right"
+                            android:hint="@string/alert"
+                            android:inputType="none"
+                            android:singleLine="true" />
+                    </RelativeLayout>
+                </RelativeLayout>
+            </LinearLayout>
 
             <RelativeLayout
                 android:id="@+id/layout_repeat"
@@ -131,6 +179,7 @@
                     style="@style/edittextStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_marginTop="@dimen/margin_top"
                     android:layout_toRightOf="@id/tv_new_activity_repeat"
                     android:clickable="true"
@@ -141,9 +190,8 @@
                 android:id="@+id/layout_description"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
-                android:layout_marginTop="@dimen/margin_top" >
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule" >
 
                 <TextView
                     android:id="@+id/tv_new_activity_description"
@@ -151,35 +199,46 @@
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/description" />
+                    android:text="@string/description"
+                    android:visibility="gone" />
 
                 <EditText
                     android:id="@+id/et_new_activity_description"
-                    style="@style/edittextStyle"
+                    style="@style/edStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_top"
-                    android:layout_toRightOf="@id/tv_new_activity_description"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:ems="10"
                     android:gravity="top"
-                    android:maxLength="200"
+                    android:hint="@string/description"
+                    android:maxLength="2000"
                     android:maxLines="4"
-                    android:minLines="4" />
+                    android:minLines="4" >
+
+                    <requestFocus />
+                </EditText>
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top"
-                android:background="@color/bg_participant_activity_title" >
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@drawable/participant_unselected" >
 
                 <TextView
                     android:id="@+id/tv_participant"
                     style="@style/tvTitleStyle"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="@dimen/margin_top"
                     android:layout_marginLeft="@dimen/margin_left"
                     android:layout_marginRight="@dimen/margin_right"
-                    android:background="@color/bg_participant_activity_title"
+                    android:layout_marginTop="@dimen/margin_top"
                     android:text="@string/participant"
                     android:textColor="@color/me_unselected"
+                    android:textSize="@dimen/text_name"
                     android:textStyle="bold"
                     android:visibility="gone" />
             </RelativeLayout>
@@ -192,38 +251,51 @@
                 android:visibility="gone" >
             </LinearLayout>
 
-            <ListView
-                android:id="@+id/list_participant"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
-                android:background="@color/bg"
-                android:cacheColorHint="@color/bg"
-                android:divider="@color/gray"
-                android:dividerHeight="1dp"
-                android:scrollbars="@null"
-                android:visibility="gone" >
-            </ListView>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/bg_schedule"
+                android:orientation="vertical" >
 
-            <Button
-                android:id="@+id/btn_add_paticipant"
-                style="@style/buttonStyle"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
-                android:layout_marginTop="@dimen/margin_top"
-                android:text="@string/add_participant"
-                android:visibility="gone" />
+                <ListView
+                    android:id="@+id/list_participant"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:cacheColorHint="@color/bg"
+                    android:divider="@color/bg_participant_activity_title"
+                    android:dividerHeight="1dp"
+                    android:scrollbars="@null"
+                    android:visibility="gone" >
+                </ListView>
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/btn_remove_activity"
-                style="@style/buttonRemoveStyle"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="@dimen/margin_left"
-                android:layout_marginRight="@dimen/margin_right"
-                android:text="@string/remove_activity"
-                android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule"
+                android:orientation="vertical" >
+
+                <Button
+                    android:id="@+id/btn_add_paticipant"
+                    style="@style/buttonStyle"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:text="@string/add_participant"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btn_remove_activity"
+                    style="@style/buttonRemoveStyle"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:text="@string/remove_activity"
+                    android:visibility="gone" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

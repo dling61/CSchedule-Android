@@ -39,7 +39,7 @@
     <color name="specialReminder">#FF0000</color>
     <color name="commonReminder">#BDBAB5</color>
     <color name="gray">#808080</color>
-    <color name="bg">#ECECEC</color>
+    <color name="bg">#ffffff</color>
     <color name="color_text_title_main">#FFF</color>
     <color name="bg_login_title_bar">#4b97d5</color>
     <color name="color_textview">#0d8fde</color>
@@ -49,7 +49,7 @@
     <color name="text_activity_description">#777777</color>
     <color name="me_unselected">#4b97d5</color>
     <color name="me_selected">#007aff</color>
-     <color name="unselected_me">#007aff</color>
+    <color name="unselected_me">#007aff</color>
     <color name="today_unselected">#ffffff</color>
     <color name="today_border">#ededed</color>
     <color name="light_font">#FBFBFB</color>
@@ -68,9 +68,12 @@
     <color name="on_duty_text">#8c8c8c</color>
     <color name="contact_text">#4b97d5</color>
     <color name="bg_schedule">#ffffff</color>
-    <color name="text_today_schedule">#007aff</color>
+    <color name="text_today_schedule">#4b97d5</color>
     <color name="btn_schedule_unselected">#ffffff</color>
     <color name="title_bar_tv">#ffffff</color>
-      <color name="bg_loading">#AA000000</color>
+    <color name="bg_loading">#AA000000</color>
     <color name="bg_black">#77000000</color>
+    <color name="text_color_forget_pass_unselected">#787878</color>
+    <color name="text_color_forget_pass_selected">#ffffff</color>
+
 </resources>

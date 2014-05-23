@@ -56,22 +56,24 @@ public class WebservicesHelper {
 	// progress dialog
 	ProgressDialog progress = null;
 	DatabaseHelper dbHelper;
-LoadingPopupViewHolder loadingPopup;
-	// show loading
-		public void showLoading(Context mContext) {
-			if (loadingPopup == null) {
-				loadingPopup = new LoadingPopupViewHolder(mContext,
-					CategoryTabActivity.DIALOG_LOADING_THEME);
-			}
-			loadingPopup.setCancelable(false);
-			loadingPopup.show();
-		}
+	public static LoadingPopupViewHolder loadingPopup;
 
-		public void dimissDialog() {
-			if (loadingPopup != null && loadingPopup.isShowing()) {
-				loadingPopup.dismiss();
-			}
+	// show loading
+	public void showLoading(Context mContext) {
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(mContext,
+					CategoryTabActivity.DIALOG_LOADING_THEME);
 		}
+		loadingPopup.setCancelable(false);
+		loadingPopup.show();
+	}
+
+	public void dimissDialog() {
+		if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
+		}
+	}
+
 	/**
 	 * Constructor initial progress dialog
 	 * */
@@ -135,9 +137,11 @@ LoadingPopupViewHolder loadingPopup;
 									}
 									try {
 										if (response.get(CommConstant.OWNER_ID) != null) {
-											
-											((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-												      R.anim.animation_leave);
+
+											((Activity) mContext)
+													.overridePendingTransition(
+															R.anim.animation_enter,
+															R.anim.animation_leave);
 											((Activity) mContext).finish();
 											Intent intent = new Intent(
 													mContext,
@@ -168,6 +172,14 @@ LoadingPopupViewHolder loadingPopup;
 													+ "\n"
 													+ response.toString(),
 											Toast.LENGTH_LONG).show();
+									try {
+										// if (progress.isShowing()) {
+										// progress.dismiss();
+										// }
+										dimissDialog();
+									} catch (Exception ex) {
+										ex.printStackTrace();
+									}
 								}
 
 							}
@@ -176,16 +188,23 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								progress.dismiss();
-							}
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
 
+							}
 						});
 			} else {
 				Toast.makeText(mContext,
@@ -319,17 +338,20 @@ LoadingPopupViewHolder loadingPopup;
 									uploadRecentNewParticipantsToWeb();
 									uploadRecentNewSchedulesToWeb();
 
-									
-									
-									
-									((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-										      R.anim.animation_leave);
-									
+									try {
+										dimissDialog();
+									} catch (Exception ex) {
+										ex.printStackTrace();
+									}
+
+									((Activity) mContext)
+											.overridePendingTransition(
+													R.anim.animation_enter,
+													R.anim.animation_leave);
+
 									((Activity) mContext).finish();
 									Intent intent = new Intent(mContext,
 											CategoryTabActivity.class);
-									// Intent intent = new Intent(mContext,
-									// HomeActivity.class);
 									mContext.startActivity(intent);
 
 								} catch (JSONException e) {
@@ -343,7 +365,15 @@ LoadingPopupViewHolder loadingPopup;
 									String response) {
 								// TODO Auto-generated method stub
 								// super.onFailure(arg0, response);
-								progress.dismiss();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+
 								Toast.makeText(
 										mContext,
 										mContext.getResources().getString(
@@ -357,16 +387,23 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								progress.dismiss();
-							}
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
 
+							}
 						});
 			} else {
 				Toast.makeText(mContext,
@@ -668,6 +705,28 @@ LoadingPopupViewHolder loadingPopup;
 						// Response failed :(
 						Log.i("webservice", "Get Activities failed");
 					}
+
+//					@Override
+//					public void onStart() {
+//						// TODO Auto-generated method stub
+//						super.onStart();
+//						showLoading(mContext);
+//					}
+//
+//					@Override
+//					public void onFinish() {
+//						// TODO Auto-generated method stub
+//						super.onFinish();
+//						try {
+//							// if (progress.isShowing()) {
+//							// progress.dismiss();
+//							// }
+//							dimissDialog();
+//						} catch (Exception ex) {
+//							ex.printStackTrace();
+//						}
+//
+//					}
 				});
 			} else {
 				Toast.makeText(mContext,
@@ -840,17 +899,31 @@ LoadingPopupViewHolder loadingPopup;
 						// Response failed :(
 						Log.i("webservice", "Get Schedules failed");
 					}
-					@Override
-					public void onStart() {
-						// TODO Auto-generated method stub
-						super.onStart();
-						showLoading(mContext);
-					}
+
+					// @Override
+					// public void onStart() {
+					// // TODO Auto-generated method stub
+					// super.onStart();
+					// showLoading(mContext);
+					// }
+					//
 					@Override
 					public void onFinish() {
 						// TODO Auto-generated method stub
 						super.onFinish();
-						dimissDialog();
+						try {
+							CategoryTabActivity.flag_schedule = true;
+							if (CategoryTabActivity.flag_activity
+									&& CategoryTabActivity.flag_contact
+									&& CategoryTabActivity.flag_schedule
+									&& CategoryTabActivity.loadingPopup
+											.isShowing()) {
+								CategoryTabActivity.loadingPopup.dismiss();
+							}
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+
 					}
 				});
 			} else {
@@ -1027,6 +1100,28 @@ LoadingPopupViewHolder loadingPopup;
 						// Response failed :(
 						Log.i("webservice", "Get Schedules failed");
 					}
+
+//					@Override
+//					public void onStart() {
+//						// TODO Auto-generated method stub
+//						super.onStart();
+//						showLoading(mContext);
+//					}
+//
+//					@Override
+//					public void onFinish() {
+//						// TODO Auto-generated method stub
+//						super.onFinish();
+//						try {
+//							// if (progress.isShowing()) {
+//							// progress.dismiss();
+//							// }
+//							dimissDialog();
+//						} catch (Exception ex) {
+//							ex.printStackTrace();
+//						}
+//
+//					}
 				});
 			} else {
 				Toast.makeText(mContext,
@@ -1178,17 +1273,32 @@ LoadingPopupViewHolder loadingPopup;
 								// Response failed :(
 								Log.i("webservice", "Get Activities failed");
 							}
-							@Override
-							public void onStart() {
-								// TODO Auto-generated method stub
-								super.onStart();
-								showLoading(mContext);
-							}
+
+//							@Override
+//							public void onStart() {
+//								// TODO Auto-generated method stub
+//								super.onStart();
+//								showLoading(mContext);
+//							}
+
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								dimissDialog();
+								CategoryTabActivity.flag_contact = true;
+								try {
+									if (CategoryTabActivity.flag_activity
+											&& CategoryTabActivity.flag_contact
+											&& CategoryTabActivity.flag_schedule
+											&& CategoryTabActivity.loadingPopup
+													.isShowing()) {
+										CategoryTabActivity.loadingPopup
+												.dismiss();
+									}
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+
 							}
 						});
 			} else {
@@ -1312,14 +1422,22 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								progress.dismiss();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+
 							}
 						});
 			} else {
@@ -1420,11 +1538,7 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								try {
-									progress.show();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
+								showLoading(mContext);
 							}
 
 							@Override
@@ -1432,10 +1546,14 @@ LoadingPopupViewHolder loadingPopup;
 								// TODO Auto-generated method stub
 								super.onFinish();
 								try {
-									progress.dismiss();
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
+
 							}
 						});
 
@@ -1528,7 +1646,7 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
@@ -1536,9 +1654,10 @@ LoadingPopupViewHolder loadingPopup;
 								// TODO Auto-generated method stub
 								super.onFinish();
 								try {
-									if (progress.isShowing()) {
-										progress.dismiss();
-									}
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
@@ -1609,7 +1728,7 @@ LoadingPopupViewHolder loadingPopup;
 				public void onStart() {
 					// TODO Auto-generated method stub
 					super.onStart();
-					progress.show();
+					showLoading(mContext);
 				}
 
 				@Override
@@ -1617,12 +1736,14 @@ LoadingPopupViewHolder loadingPopup;
 					// TODO Auto-generated method stub
 					super.onFinish();
 					try {
-						if (progress.isShowing()) {
-							progress.dismiss();
-						}
+						// if (progress.isShowing()) {
+						// progress.dismiss();
+						// }
+						dimissDialog();
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
+
 				}
 
 				public void onFailure(Throwable e, String response) {
@@ -1699,16 +1820,22 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								if (progress.isShowing()) {
-									progress.dismiss();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
 								}
+
 							}
 						});
 			} else {
@@ -1882,6 +2009,28 @@ LoadingPopupViewHolder loadingPopup;
 					// Response failed :(
 					Log.i("webservice", "Get Activities failed");
 				}
+
+//				@Override
+//				public void onStart() {
+//					// TODO Auto-generated method stub
+//					super.onStart();
+//					showLoading(mContext);
+//				}
+//
+//				@Override
+//				public void onFinish() {
+//					// TODO Auto-generated method stub
+//					super.onFinish();
+//					try {
+//						// if (progress.isShowing()) {
+//						// progress.dismiss();
+//						// }
+//						dimissDialog();
+//					} catch (Exception ex) {
+//						ex.printStackTrace();
+//					}
+//
+//				}
 			});
 		} else {
 			Toast.makeText(mContext,
@@ -1977,16 +2126,22 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								if (progress.isShowing()) {
-									progress.dismiss();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
 								}
+
 							}
 						});
 			} else {
@@ -2048,16 +2203,22 @@ LoadingPopupViewHolder loadingPopup;
 				public void onStart() {
 					// TODO Auto-generated method stub
 					super.onStart();
-					progress.show();
+					showLoading(mContext);
 				}
 
 				@Override
 				public void onFinish() {
 					// TODO Auto-generated method stub
 					super.onFinish();
-					if (progress.isShowing()) {
-						progress.dismiss();
+					try {
+						// if (progress.isShowing()) {
+						// progress.dismiss();
+						// }
+						dimissDialog();
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
+
 				}
 			});
 		} else {
@@ -2095,6 +2256,28 @@ LoadingPopupViewHolder loadingPopup;
 
 								Log.i("failure response", response);
 								Log.i("fail", e.toString());
+
+							}
+
+							@Override
+							public void onStart() {
+								// TODO Auto-generated method stub
+								super.onStart();
+								showLoading(mContext);
+							}
+
+							@Override
+							public void onFinish() {
+								// TODO Auto-generated method stub
+								super.onFinish();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
 
 							}
 						});
@@ -2182,14 +2365,22 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								progress.dismiss();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+
 							}
 						});
 			} else {
@@ -2284,14 +2475,22 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								progress.dismiss();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+
 							}
 						});
 			} else {
@@ -2353,14 +2552,22 @@ LoadingPopupViewHolder loadingPopup;
 				public void onStart() {
 					// TODO Auto-generated method stub
 					super.onStart();
-					progress.show();
+					showLoading(mContext);
 				}
 
 				@Override
 				public void onFinish() {
 					// TODO Auto-generated method stub
 					super.onFinish();
-					progress.dismiss();
+					try {
+						// if (progress.isShowing()) {
+						// progress.dismiss();
+						// }
+						dimissDialog();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+
 				}
 			});
 		} else {
@@ -2448,14 +2655,22 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								progress.dismiss();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+
 							}
 						});
 			} else {
@@ -2533,16 +2748,22 @@ LoadingPopupViewHolder loadingPopup;
 				public void onStart() {
 					// TODO Auto-generated method stub
 					super.onStart();
-					progress.show();
+					showLoading(mContext);
 				}
 
 				@Override
 				public void onFinish() {
 					// TODO Auto-generated method stub
 					super.onFinish();
-					if (progress.isShowing()) {
-						progress.dismiss();
+					try {
+						// if (progress.isShowing()) {
+						// progress.dismiss();
+						// }
+						dimissDialog();
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
+
 				}
 
 				public void onFailure(Throwable e, String response) {
@@ -2650,16 +2871,22 @@ LoadingPopupViewHolder loadingPopup;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								progress.show();
+								showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								if (progress.isShowing()) {
-									progress.dismiss();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
 								}
+
 							}
 						});
 			} else {

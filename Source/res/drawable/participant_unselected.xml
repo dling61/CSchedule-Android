@@ -1,0 +1,9 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <stroke
+        android:width="@dimen/stroke_width_today"
+        android:color="@color/bg_participant_activity_title" />
+
+    <solid android:color="#cecccb" />
+
+</shape>

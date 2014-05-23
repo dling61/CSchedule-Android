@@ -13,7 +13,6 @@ import com.dling61.calendarschedule.net.JSONParser;
 import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.TitleBarView;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,8 +22,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -32,7 +29,7 @@ import android.widget.Toast;
  * @author Huyen Nguyen
  * @version 1.0
  * */
-public class ForgetPasswordActivity extends Activity implements OnClickListener {
+public class ForgetPasswordActivity extends BaseActivity implements OnClickListener {
 	Button btn_reset_password;
 	Context mContext;
 	EditText txt_email;
@@ -42,7 +39,7 @@ public class ForgetPasswordActivity extends Activity implements OnClickListener 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		setContentView(R.layout.forget_password);

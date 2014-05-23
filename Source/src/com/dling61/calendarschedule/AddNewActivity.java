@@ -3,7 +3,6 @@ package com.dling61.calendarschedule;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import com.dling61.calendarschedule.adapter.SharedMemberAdapter;
 import com.dling61.calendarschedule.adapter.TextViewBaseAdapter;
@@ -28,11 +27,9 @@ import com.dling61.calendarschedule.views.PopupDialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -45,7 +42,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
 @SuppressLint("NewApi")
-public class AddNewActivity extends Activity implements OnClickListener {
+public class AddNewActivity extends BaseActivity implements OnClickListener {
 	private MyActivity thisActivity;
 	private int composeType;
 	private DatabaseHelper dbHelper;
@@ -70,8 +67,9 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
-		// this.setContentView(R.layout.composeactivity);
+		
 		mContext = this;
 		view = new AddActivityView(mContext);
 		setContentView(view.layout);
@@ -123,8 +121,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	
-	
 	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
 			finish();
@@ -247,7 +243,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			}
 		});
 		dialog.btn_cancel.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -256,31 +252,36 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		});
 	}
 
+	// delete participant from activity dialog
 	public void deleteParticipantFromActivity(final Sharedmember participant) {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-		alertDialog.setTitle(mContext.getResources()
-				.getString(R.string.caution));
-		alertDialog.setMessage(mContext.getResources().getString(
-				R.string.delete_activity));
-		alertDialog.setPositiveButton(
-				mContext.getResources().getString(R.string.ok),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						removeParticipant(participant);
-					}
-				});
-		alertDialog.setNegativeButton(
-				mContext.getResources().getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						// Toast.makeText(mContext, "You clicked on NO",
-						// Toast.LENGTH_SHORT).show();
-						dialog.cancel();
-					}
-				});
-		alertDialog.show();
+		final ConfirmDialog dialog = new ConfirmDialog(mContext, mContext
+				.getResources().getString(
+						R.string.delete_participant_from_activity)
+				+ " "
+				+ participant.getName()
+				+ " from "
+				+ thisActivity.getActivity_name());
+		dialog.show();
+		dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+				removeParticipant(participant);
+			}
+		});
+
+		dialog.btnCancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+
 	}
 
+	// delete participant from activity
 	public void removeParticipant(Sharedmember participant) {
 		WebservicesHelper ws = new WebservicesHelper(mContext);
 		ws.deleteSharedmemberOfActivity(participant.getID(), activity_id);
@@ -354,8 +355,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	 * */
 	public void onClickListener() {
 		// view.btn_new_activity_next.setOnClickListener(this);
-		view.et_new_activity_time_zone.setOnClickListener(this);
-		view.et_new_activity_alert.setOnClickListener(this);
+		view.layoutTimeZone.setOnClickListener(this);
+		view.layoutAlert.setOnClickListener(this);
 		view.et_new_activity_repeat.setOnClickListener(this);
 		view.btn_add_paticipant.setOnClickListener(this);
 		view.btn_remove_activity.setOnClickListener(this);
@@ -378,19 +379,27 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	public void initViewValues() {
 		alert_array = getResources().getStringArray(R.array.alert_array);
 		timezone_array = getResources().getStringArray(R.array.timezone_array);
-		
-		TimeZone tz = TimeZone.getDefault(); 
-		String currentTimezoneName=tz.getDisplayName(false, TimeZone.SHORT);
-		String timezoneCurrent=currentTimezoneName.substring(3,6);
-//		int mGMTOffset = tz.getRawOffset();  
-//		long currentTimezoneId=TimeUnit.HOURS.convert(mGMTOffset,TimeUnit.MILLISECONDS);
-		Log.d("currentTimezoneId",currentTimezoneName+"");
-		String currentTimeZone=tz.getID()+"-("+currentTimezoneName+") ";
-		timezone_array[0]=currentTimeZone;//current device timezone
-		Log.d("timezone name",tz.getID()+"-("+currentTimezoneName+") ");
 		timezone_value_array = getResources().getStringArray(
 				R.array.timezone_value_array);
-		timezone_value_array[0]=timezoneCurrent;
+		try {
+			TimeZone tz = TimeZone.getDefault();
+			String currentTimezoneName = tz.getDisplayName(false,
+					TimeZone.SHORT);
+			String timezoneCurrent = currentTimezoneName.substring(3, 6);
+			// int mGMTOffset = tz.getRawOffset();
+			// long
+			// currentTimezoneId=TimeUnit.HOURS.convert(mGMTOffset,TimeUnit.MILLISECONDS);
+			Log.d("currentTimezoneId", currentTimezoneName + "");
+			String currentTimeZone = tz.getID() + "-(" + currentTimezoneName
+					+ ") ";
+			timezone_array[0] = currentTimeZone;// current device timezone
+			Log.d("timezone name", tz.getID() + "-(" + currentTimezoneName
+					+ ") ");
+			
+			timezone_value_array[0] = timezoneCurrent;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
 		repeat_array = getResources().getStringArray(R.array.repeat_array);
 
@@ -404,7 +413,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			int timezone = new SharedReference().getTimeZone(mContext);
 			// : 0;
 			Log.d("timeze", timezone + "");
-			if (timezone <= 0) {
+			if (timezone == -100) {
 				view.et_new_activity_time_zone.setText(timezone_array[0]);
 			} else {
 				view.et_new_activity_time_zone
@@ -414,6 +423,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.edit_activity));
 
+			view.et_new_activity_name.setSingleLine(false);
 			float timezone = thisActivity.getOtc_offset();
 			view.et_new_activity_time_zone.setText(getTimezone(timezone));
 			setParticipantOfActivity();
@@ -496,26 +506,25 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		if (v == view.titleBar.layout_next) {
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
 			createNewActivity();
-		} else if (v == view.et_new_activity_time_zone) {
+		} else if (v == view.layoutTimeZone) {
 			// if owner, can modify/delete else if is participant, only view
 			// if (shared_role == CommConstant.OWNER) {
 			SharedReference ref = new SharedReference();
 			time_zone = ref.getTimeZone(mContext);
-			if (time_zone ==-100&&type==DatabaseHelper.NEW) {
+			Log.d("time zone", time_zone + "");
+			if (time_zone == -100 && composeType == DatabaseHelper.NEW) {
 				popUp(timezone_array, TIMEZONE);
 			}
-			
 
 		} else if (v == view.et_new_activity_repeat) {
 			popUp(repeat_array, REPEAT);
-		} else if (v == view.et_new_activity_alert) {
+		} else if (v == view.layoutAlert) {
 			popUp(alert_array, ALERT);
 		} else if (v == view.btn_add_paticipant) {
 			if (composeType == DatabaseHelper.EXISTED) {
 				finish();
+
 				
-				overridePendingTransition(R.anim.animation_enter,
-					      R.anim.animation_leave);
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.TYPE,
 						CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
@@ -527,11 +536,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			dialogDeleteActivity();
 		} else if (v == view.titleBar.layout_back) {
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
+			overridePendingTransition(R.anim.push_left_in,
+				      R.anim.push_left_out);
 			((Activity) mContext).finish();
 		} else if (v == view.et_new_activity_description) {
 			// show an activity to edit description
-			overridePendingTransition(R.anim.animation_enter,
-				      R.anim.animation_leave);
+			
 			Intent intent = new Intent(mContext, EditDescriptionActivity.class);
 			intent.putExtra(CommConstant.ACTIVITY_DESCRIPTION,
 					thisActivity.getDesp());
@@ -599,13 +609,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	 * Delete activity
 	 * */
 	private void dialogDeleteActivity() {
-		
 
-		final ConfirmDialog dialog=new ConfirmDialog(mContext, mContext.getResources().getString(
-				R.string.delete_activity));
+		final ConfirmDialog dialog = new ConfirmDialog(mContext, mContext
+				.getResources().getString(R.string.delete_activity));
 		dialog.show();
 		dialog.btnOk.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				deleteActivity();
@@ -613,7 +622,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			}
 		});
 		dialog.btnCancel.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
@@ -688,9 +697,13 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		Log.d("repeat_type", repeat_type + "");
 		thisActivity.setRepeat(repeat_type);
 
-		int timezone = new SharedReference().getTimeZone(mContext);
-		thisActivity.setOtc_offset((int) (Float
-				.parseFloat(timezone_value_array[timezone]) * 3600));
+		try {
+			int timezone = new SharedReference().getTimeZone(mContext);
+			thisActivity.setOtc_offset((int) (Float
+					.parseFloat(timezone_value_array[timezone]) * 3600));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		return true;
 	}
 
@@ -748,13 +761,13 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 		switch (requestCode) {
 		case (11): {
+			overridePendingTransition( R.anim.slide_in_down, R.anim.slide_out_down );
 			Intent resultIntent = new Intent();
 			resultIntent.putExtra("id", thisActivity.getActivity_ID());
 			setResult(Activity.RESULT_OK, resultIntent);
 			finish();
 			break;
 		}
-
 		}
 	}
 

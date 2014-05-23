@@ -21,7 +21,7 @@ public class ScheduleView extends RelativeLayout {
 	Context context;
 //	public ListView list_schedule;
 	public ExpandableListView expand_list_schedule;
-	public RelativeLayout layout_add;
+	
 	public ImageButton btn_add_schedule;
 	public ImageButton btn_refresh;
 	public Button btn_today;
@@ -54,7 +54,7 @@ public class ScheduleView extends RelativeLayout {
 		View.inflate(context, R.layout.schedulepage, this);
 //		list_schedule=(ListView)findViewById(R.id.list_schedule);
 		expand_list_schedule=(ExpandableListView)findViewById(R.id.list_expandable_schedule);
-		layout_add=(RelativeLayout)findViewById(R.id.add_schedule);
+	
 		btn_add_schedule=(ImageButton)findViewById(R.id.btn_add_activity);
 		btn_refresh=(ImageButton)findViewById(R.id.btn_refresh);
 		btn_today=(Button)findViewById(R.id.btn_today);

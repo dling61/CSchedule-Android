@@ -89,6 +89,7 @@
     <string name="activity_name">Activity name</string>
     <string name="remove_activity">Remove Activity</string>
     <string name="time_zone">Time Zone</string>
+    <string name="time_zone_title">Time Zone ></string>
     <string name="alert">Alert</string>
     <string name="description">Description</string>
     <string name="repeat">Repeat</string>
@@ -177,5 +178,6 @@
     <string name="title_contact">Your contact</string>
     <string name="have_no_contact">You have not create contact yet</string>
     <string name="no_activity_for_create_schedule">You need to create an activity first before creating a schedule here</string>
+    <string name="delete_participant_from_activity">Are you sure you want to delete</string>
 
 </resources>

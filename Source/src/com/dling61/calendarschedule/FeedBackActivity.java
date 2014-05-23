@@ -1,9 +1,5 @@
 package com.dling61.calendarschedule;
 
-import java.util.ArrayList;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 import com.dling61.calendarschedule.net.BaseUrl;
@@ -12,7 +8,6 @@ import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.TitleBarView;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -22,10 +17,9 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class FeedBackActivity extends Activity implements OnClickListener {
+public class FeedBackActivity extends BaseActivity implements OnClickListener {
 
 	EditText edFeedback;
 //	LinearLayout layout_back;
@@ -34,6 +28,7 @@ public class FeedBackActivity extends Activity implements OnClickListener {
 TitleBarView titleBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.aboutpage);
 		mContext = this;

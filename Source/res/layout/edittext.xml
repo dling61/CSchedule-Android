@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_new_activity_time_zone"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/margin_left"
+    android:layout_marginRight="@dimen/margin_right" >
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/tvTitleStyle"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:text="@string/time_zone" />
+
+    <ImageView
+        android:id="@+id/image_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/title_next" />
+
+    <EditText
+        android:id="@+id/editText"
+        style="@style/edStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/image_next"
+        android:layout_toRightOf="@id/title"
+        android:clickable="true"
+        android:focusable="false"
+        android:gravity="right"
+        android:hint="@string/time_zone"
+        android:singleLine="true" />
+
+</RelativeLayout>

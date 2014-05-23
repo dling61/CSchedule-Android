@@ -16,12 +16,10 @@ import com.dling61.calendarschedule.views.LoadingPopupViewHolder;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +32,7 @@ import android.widget.Toast;
  * @author khoahuyen
  * @category Add new/modify/delete contact
  * */
-public class AddNewContactActivity extends Activity implements OnClickListener {
+public class AddNewContactActivity extends BaseActivity implements OnClickListener {
 	private Participant thisParticipant;
 	private int composeType;
 	AddParticipantView view;
@@ -45,7 +43,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		mContext = this;
 		view = new AddParticipantView(mContext);
 		this.setContentView(view.layout);

@@ -2,44 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg" >
+    android:background="@color/bg_schedule" >
 
-    <RelativeLayout
-        android:id="@+id/activity_topbar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+    <ImageButton
+        android:id="@+id/btn_add_activity"
+        style="@style/buttonStyle"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/me_border" >
-
-        <TextView
-            android:id="@+id/activity_toptitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Activity"
-            android:textColor="#FFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
-        <ImageButton
-            android:id="@+id/btn_add_activity"
-            style="@style/buttonStyle"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/button_add" />
-    </RelativeLayout>
+        android:background="@drawable/me_border"
+        android:src="@drawable/button_add" />
 
     <ListView
         android:id="@+id/activityListView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/activity_topbar"
+        android:layout_above="@id/btn_add_activity"
         android:layout_alignParentTop="true"
         android:cacheColorHint="#00000000"
-        android:divider="#dddddd"
+        android:divider="@color/bg_participant_activity_title"
         android:dividerHeight="1dp"
         android:visibility="gone" />
 
@@ -47,7 +26,7 @@
         android:id="@+id/layout_no_activity"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@id/activity_topbar"
+        android:layout_above="@id/btn_add_activity"
         android:layout_below="@id/activityListView"
         android:layout_centerInParent="true" >
 

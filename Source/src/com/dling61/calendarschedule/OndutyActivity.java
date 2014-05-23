@@ -26,7 +26,7 @@ import android.widget.Toast;
 /**
  * @author khoahuyen
  * */
-public class OndutyActivity extends Activity implements OnClickListener {
+public class OndutyActivity extends BaseActivity implements OnClickListener {
 
 	private DatabaseHelper dbHelper;
 	private List<Sharedmember> sharedmembers;

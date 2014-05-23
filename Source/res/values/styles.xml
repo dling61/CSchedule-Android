@@ -36,6 +36,7 @@
         <item name="android:paddingBottom">@dimen/margin_left</item>
         <item name="android:paddingLeft">3dp</item>
         <item name="android:paddingRight">3dp</item>
+      
     </style>
 
     <style name="dateStyle" parent="@android:style/TextAppearance.Medium">
@@ -85,9 +86,9 @@
     </style>
 
     <style name="tvContactName" parent="@android:style/TextAppearance.Medium">
-        <item name="android:layout_width">@dimen/width_tv_add_activity</item>
+        <item name="android:layout_width">@dimen/width_tv_add_contact</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_name</item>
+        <item name="android:textSize">@dimen/text_tv</item>
         <item name="android:textColor">@color/textview</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -108,5 +109,20 @@
         <item name="android:textSize">@dimen/title_tv</item>
         <item name="android:textStyle">bold</item>
     </style>
+    
+    <style name="edStyle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:textSize">@dimen/text_name</item>
+        <item name="android:textColorHint">@color/border_textview</item>
+        <item name="android:textColor">@color/edittext</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:paddingRight">3dp</item>
+      
+    </style>
+    
 
 </resources>

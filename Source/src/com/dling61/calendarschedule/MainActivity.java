@@ -8,13 +8,8 @@ import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.TitleBarView;
 
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,7 +19,7 @@ import android.widget.Button;
  * Class name: MainActivity Author: Huyen Nguyen Date: April 8th, 2014 This
  * class will show first when launch app
  * */
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 	Button btn_create_account;
 	Button btn_sign_in;
 	Context mContext;
@@ -33,6 +28,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	
 		setContentView(R.layout.activity_main);
 		mContext = this;
 		findViewById();
@@ -118,11 +114,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				SharedPreferences sp = getSharedPreferences(
-						"MyPreferences", 0);
-				Editor editor = sp.edit();
-				editor.clear();
-				editor.commit();
+//				SharedPreferences sp = getSharedPreferences(
+//						"MyPreferences", 0);
+//				Editor editor = sp.edit();
+//				editor.clear();
+//				editor.commit();
 				deleteDatabase(DatabaseHelper.DB_NAME);
 				System.exit(0);
 			}
