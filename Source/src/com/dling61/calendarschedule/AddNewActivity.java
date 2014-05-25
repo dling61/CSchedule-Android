@@ -123,7 +123,10 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 
 	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
+			
 			finish();
+			overridePendingTransition(R.anim.push_left_in,
+				      R.anim.push_left_out);
 		}
 	};
 
@@ -135,14 +138,11 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	protected void onPause() {
-		try {
-			unregisterReceiver(deleteActivityComplete);
-			unregisterReceiver(activityGetSharedMemberComplete);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+	
 		super.onPause();
 	};
+	
+
 
 	/**
 	 * get shared member of activity
@@ -291,6 +291,12 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
+		try {
+			unregisterReceiver(deleteActivityComplete);
+			unregisterReceiver(activityGetSharedMemberComplete);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	/**
@@ -522,9 +528,8 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 			popUp(alert_array, ALERT);
 		} else if (v == view.btn_add_paticipant) {
 			if (composeType == DatabaseHelper.EXISTED) {
-				finish();
-
 				
+				finish();				
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.TYPE,
 						CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
@@ -536,9 +541,9 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 			dialogDeleteActivity();
 		} else if (v == view.titleBar.layout_back) {
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
+			((Activity) mContext).finish();
 			overridePendingTransition(R.anim.push_left_in,
 				      R.anim.push_left_out);
-			((Activity) mContext).finish();
 		} else if (v == view.et_new_activity_description) {
 			// show an activity to edit description
 			

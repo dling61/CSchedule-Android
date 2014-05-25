@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_participant_activity_title" >
+
+    <com.dling61.calendarschedule.views.TitleBarView
+        android:id="@+id/titleBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </com.dling61.calendarschedule.views.TitleBarView>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleBar"
+        android:layout_centerHorizontal="true" >
+
+        <LinearLayout
+            android:id="@+id/composeScheduleItems"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:cacheColorHint="@color/white"
+            android:orientation="vertical"
+            android:showDividers="middle" >
+
+            <RelativeLayout
+                android:id="@+id/layout_new_activity_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule" >
+
+                <TextView
+                    android:id="@+id/tv_new_activity_name"
+                    style="@style/tvTitleStyle"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/activity_name"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/et_new_activity_name"
+                    style="@style/edStyle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_toRightOf="@id/tv_new_activity_name"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="@string/activity_name" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_start"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule" >
+
+                <TextView
+                    android:id="@+id/tv_start"
+                    style="@style/tvTitleStyle"
+                    android:layout_width="70dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:text="@string/start" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_toRightOf="@id/tv_start"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <EditText
+                            android:id="@+id/et_startDate"
+                            style="@style/edStyle"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="2dp"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:gravity="center_vertical"
+                            android:inputType="date"
+                            android:textColor="@drawable/text_color_date_time_selector" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:orientation="horizontal" >
+
+                        <EditText
+                            android:id="@+id/et_startTime"
+                            style="@style/edStyle"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:inputType="datetime"
+                            android:textColor="@drawable/text_color_date_time_selector" />
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_end"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule" >
+
+                <TextView
+                    android:id="@+id/tv_end"
+                    style="@style/tvTitleStyle"
+                    android:layout_width="70dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:text="@string/end" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_toRightOf="@id/tv_end"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
+
+                        <EditText
+                            android:id="@+id/et_endDate"
+                            style="@style/edStyle"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="2dp"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:gravity="center_vertical"
+                            android:inputType="date"
+                            android:textColor="@drawable/text_color_date_time_selector" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:orientation="horizontal" >
+
+                        <EditText
+                            android:id="@+id/et_endTime"
+                            style="@style/edStyle"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:inputType="datetime"
+                            android:textColor="@drawable/text_color_date_time_selector" />
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule"
+                android:visibility="gone" >
+
+                <TextView
+                    android:id="@+id/tv_on_duty"
+                    style="@style/tvTitleStyle"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:text="@string/on_duty" />
+
+                <EditText
+                    android:id="@+id/et_on_duty"
+                    style="@style/edStyle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_toRightOf="@id/tv_on_duty"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:inputType="none" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule" >
+
+                <TextView
+                    android:id="@+id/tv_new_activity_description"
+                    style="@style/tvTitleStyle"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/description"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/et_new_activity_description"
+                    style="@style/edStyle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_toRightOf="@id/tv_new_activity_description"
+                    android:gravity="top"
+                    android:hint="@string/description"
+                    android:maxLength="2000"
+                    android:maxLines="4"
+                    android:minLines="4" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_on_duty"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@drawable/participant_unselected" 
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_participant"
+                    style="@style/tvTitleStyle"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="@dimen/margin_top"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_marginTop="@dimen/margin_top"
+                    android:text="@string/on_duty"
+                    android:textColor="@color/me_unselected"
+                    android:textSize="@dimen/text_name"
+                    android:textStyle="bold"
+                     />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_list_on_duty"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/bg_schedule"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <ListView
+                    android:id="@+id/list_participant"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:cacheColorHint="@color/bg"
+                    android:divider="@color/bg_participant_activity_title"
+                    android:dividerHeight="1dp"
+                    android:scrollbars="@null" >
+                </ListView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule"
+                android:orientation="vertical" >
+
+                <Button
+                    android:id="@+id/btn_change_on_duty"
+                    style="@style/buttonStyle"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_marginTop="@dimen/margin_left"
+                     android:layout_marginBottom="@dimen/margin_left"
+                    android:text="Change On Duty"
+                    android:visibility="visible" />
+
+                <Button
+                    android:id="@+id/btn_remove_schedule"
+                    style="@style/buttonRemoveStyle"
+                    android:layout_marginBottom="@dimen/margin_left"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                   
+                    android:text="@string/remove_schedule"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

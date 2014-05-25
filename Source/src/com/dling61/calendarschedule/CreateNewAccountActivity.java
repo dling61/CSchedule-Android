@@ -85,6 +85,7 @@ TitleBarView titleBar;
 			// mDialog.dismiss();
 		} else if (v == titleBar.layout_back) {
 			finish();
+			
 			Intent intent=new Intent(mContext,MainActivity.class);
 			mContext.startActivity(intent);
 		}

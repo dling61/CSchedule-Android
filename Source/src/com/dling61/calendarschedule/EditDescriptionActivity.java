@@ -6,7 +6,6 @@ import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.TitleBarView;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.EditText;
 
 @SuppressLint("NewApi")
-public class EditDescriptionActivity extends Activity implements
+public class EditDescriptionActivity extends BaseActivity implements
 		OnClickListener {
 	String description = "";
 	Context mContext;
@@ -28,7 +27,7 @@ private boolean mActive = false;
 ExpandCollapseAnimation animation = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
+//		overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
 		super.onCreate(savedInstanceState);
 		// this.setContentView(R.layout.composeactivity);
 		mContext = this;
@@ -87,20 +86,26 @@ ExpandCollapseAnimation animation = null;
 		// TODO Auto-generated method stub
 		if (v == titleBar.layout_back) {		
 			Utils.hideKeyboard(EditDescriptionActivity.this, ed_description);
-			
-//			overridePendingTransition( R.anim.slide_in_down, R.anim.slide_out_down );
 			Intent i = getIntent(); // gets the intent that called this intent			
 			i.putExtra(CommConstant.ACTIVITY_DESCRIPTION, ed_description
 					.getText().toString().trim());
 			setResult(222, i);
 			finish();
+			overridePendingTransition(R.anim.push_left_in,
+				      R.anim.push_left_out);
 		}
 
 	}
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
-		super.onBackPressed();
-//		overridePendingTransition( R.anim.slide_in_down, R.anim.slide_out_down );
+//		super.onBackPressed();
+		Utils.hideKeyboard(EditDescriptionActivity.this, ed_description);	
+		Intent i = getIntent(); // gets the intent that called this intent	
+		i.putExtra(CommConstant.ACTIVITY_DESCRIPTION, ed_description
+				.getText().toString().trim());
+		setResult(222, i);
+		finish();
+		overridePendingTransition(R.anim.push_left_in,
+			      R.anim.push_left_out);
 	}
 }

@@ -120,12 +120,21 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			view.btn_today.setBackgroundResource(R.drawable.today_border);
 			view.btn_today.setTextColor(mContext.getResources().getColor(R.color.me_unselected));
 		} else if (v == view.btn_today) {
-			isToday = true;
+			isToday = !isToday;
+			if(isToday)
+			{
+				view.btn_today.setBackgroundResource(R.drawable.me_unselected);
+				view.btn_today.setTextColor(mContext.getResources().getColor(R.color.btn_schedule_unselected));
+			}
+			else
+			{
+				view.btn_today.setBackgroundResource(R.drawable.today_border);
+				view.btn_today.setTextColor(mContext.getResources().getColor(R.color.text_today_schedule));
+			}
 			processDataForAdapterListview();
 			// view.btn_all.setBackgroundResource(R.drawable.me_border);
 			// view.btn_me.setBackgroundResource(R.drawable.me_border);
-			view.btn_today.setBackgroundResource(R.drawable.me_unselected);
-			view.btn_today.setTextColor(mContext.getResources().getColor(R.color.btn_schedule_unselected));
+
 			
 		}
 	}
@@ -247,6 +256,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 							todayStr)) {
 						dates.add(date);
 					}
+					
+					//if not today or istoday&& datestring is today
 					if ((!isToday)|| (isToday && todayStrLess
 									.equalsIgnoreCase(dateString))) {
 						Calendar c = Calendar.getInstance();
@@ -283,9 +294,6 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 						String strDateTime = dateInWeekString + ";"
 								+ dateString;
 
-						// MyObject myObject=new MyObject();
-						// myObject.setDateTime(new Date(strDateTime));
-						// dateGroupList.add(myObject);
 						ArrayList<Schedule> listSchedule = listScheduleByDay
 								.get(strDateTime);
 						if (listSchedule == null) {
@@ -378,6 +386,11 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 					// scroll to nearest
 					view.expand_list_schedule.setSelectedGroup(group_scroll);
+				}
+				else
+				{
+					ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
+					view.expand_list_schedule.setAdapter(adapter);
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();

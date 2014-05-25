@@ -60,6 +60,8 @@ TitleBarView titleBar;
 			Utils.hideKeyboard(FeedBackActivity.this,edFeedback);
 			
 			finish();
+			overridePendingTransition(R.anim.push_left_in,
+				      R.anim.push_left_out);
 		} else if (v == titleBar.layout_save) {
 			String feedback = edFeedback.getText().toString().trim();
 			if (feedback != null && (!feedback.equals(""))) {

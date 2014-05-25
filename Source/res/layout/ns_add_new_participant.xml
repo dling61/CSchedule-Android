@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_participant_activity_title" >
+    android:background="@color/bg_schedule" >
 
-    <com.dling61.calendarschedule.views.TitleBarView
+     <com.dling61.calendarschedule.views.TitleBarView
         android:id="@+id/titleBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
@@ -20,31 +20,27 @@
             android:id="@+id/compose_participant_components"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_left"
             android:orientation="vertical" >
 
             <RelativeLayout
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top_block"
-                android:background="@color/bg_schedule" >
+                android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_email"
-                    style="@style/tvContactName"
+                   style="@style/tvContactName"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/title_email"
-                    android:visibility="gone" />
+                    android:text="@string/title_email" />
 
                 <EditText
                     android:id="@+id/compose_participant_email_et"
-                    style="@style/edStyle"
+                    style="@style/edittextStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
                     android:layout_toRightOf="@id/tv_email"
                     android:hint="@string/email"
                     android:inputType="textEmailAddress" />
@@ -54,25 +50,20 @@
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top_block"
-                android:background="@color/bg_schedule" >
+                android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_name"
-                    style="@style/tvContactName"
+                  style="@style/tvContactName"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/participant_name"
-                    android:visibility="gone" />
+                    android:text="@string/participant_name" />
 
                 <EditText
                     android:id="@+id/compose_participant_name_et"
-                    style="@style/edStyle"
+                    style="@style/edittextStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
                     android:layout_toRightOf="@id/tv_name"
                     android:hint="@string/name" />
             </RelativeLayout>
@@ -81,47 +72,34 @@
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top_block"
-                android:background="@color/bg_schedule" >
+                android:layout_marginTop="@dimen/margin_top" >
 
                 <TextView
                     android:id="@+id/tv_mobile"
                     style="@style/tvContactName"
+            
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/title_mobile"
-                    android:visibility="gone" />
+                    android:text="@string/title_mobile" />
 
                 <EditText
                     android:id="@+id/compose_participant_mobile_et"
-                    style="@style/edStyle"
+                    style="@style/edittextStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
                     android:layout_toRightOf="@id/tv_mobile"
                     android:hint="@string/title_mobile"
                     android:inputType="number" />
             </RelativeLayout>
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top_block"
-                android:background="@color/bg_schedule"
-                android:orientation="vertical" >
-
-                <Button
-                    android:id="@+id/btm_remove_contact"
-                    style="@style/buttonRemoveStyle"
-                    android:layout_marginBottom="@dimen/margin_top"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:layout_marginTop="@dimen/margin_top"
-                    android:text="@string/remove_contact"
-                    android:visibility="visible" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/btm_remove_contact"
+                style="@style/buttonRemoveStyle"
+                
+                android:layout_marginBottom="@dimen/margin_top"
+                android:layout_marginTop="20dp"
+                android:text="@string/remove_contact"
+                android:visibility="visible" />
         </LinearLayout>
     </ScrollView>
 

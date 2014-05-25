@@ -11,8 +11,6 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.dling61.calendarschedule.AddNewActivity;
 import com.dling61.calendarschedule.CategoryTabActivity;
 import com.dling61.calendarschedule.LoginActivity;
 import com.dling61.calendarschedule.R;
@@ -57,20 +55,28 @@ public class WebservicesHelper {
 	ProgressDialog progress = null;
 	DatabaseHelper dbHelper;
 	public static LoadingPopupViewHolder loadingPopup;
-
+	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
 	// show loading
 	public void showLoading(Context mContext) {
-		if (loadingPopup == null) {
-			loadingPopup = new LoadingPopupViewHolder(mContext,
-					CategoryTabActivity.DIALOG_LOADING_THEME);
+		try {
+//			if (loadingPopup == null) {
+//				loadingPopup = new LoadingPopupViewHolder(mContext,
+//						CategoryTabActivity.DIALOG_LOADING_THEME);
+//			}
+//			loadingPopup.setCancelable(false);
+			loadingPopup.show();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		loadingPopup.setCancelable(false);
-		loadingPopup.show();
 	}
 
 	public void dimissDialog() {
-		if (loadingPopup != null && loadingPopup.isShowing()) {
-			loadingPopup.dismiss();
+		try {
+			if (loadingPopup != null && loadingPopup.isShowing()) {
+				loadingPopup.dismiss();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -91,6 +97,12 @@ public class WebservicesHelper {
 					R.string.processing));
 		}
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
+		
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(context,
+					DIALOG_LOADING_THEME);
+		}
+		loadingPopup.setCancelable(false);
 	}
 
 	/**
@@ -138,11 +150,12 @@ public class WebservicesHelper {
 									try {
 										if (response.get(CommConstant.OWNER_ID) != null) {
 
-											((Activity) mContext)
-													.overridePendingTransition(
-															R.anim.animation_enter,
-															R.anim.animation_leave);
+									
 											((Activity) mContext).finish();
+											((Activity) mContext)
+											.overridePendingTransition(
+													R.anim.animation_enter,
+													R.anim.animation_leave);
 											Intent intent = new Intent(
 													mContext,
 													LoginActivity.class);
@@ -344,12 +357,13 @@ public class WebservicesHelper {
 										ex.printStackTrace();
 									}
 
-									((Activity) mContext)
-											.overridePendingTransition(
-													R.anim.animation_enter,
-													R.anim.animation_leave);
-
+						
 									((Activity) mContext).finish();
+									((Activity) mContext)
+									.overridePendingTransition(
+											R.anim.animation_enter,
+											R.anim.animation_leave);
+
 									Intent intent = new Intent(mContext,
 											CategoryTabActivity.class);
 									mContext.startActivity(intent);
@@ -706,27 +720,27 @@ public class WebservicesHelper {
 						Log.i("webservice", "Get Activities failed");
 					}
 
-//					@Override
-//					public void onStart() {
-//						// TODO Auto-generated method stub
-//						super.onStart();
-//						showLoading(mContext);
-//					}
-//
-//					@Override
-//					public void onFinish() {
-//						// TODO Auto-generated method stub
-//						super.onFinish();
-//						try {
-//							// if (progress.isShowing()) {
-//							// progress.dismiss();
-//							// }
-//							dimissDialog();
-//						} catch (Exception ex) {
-//							ex.printStackTrace();
-//						}
-//
-//					}
+					// @Override
+					// public void onStart() {
+					// // TODO Auto-generated method stub
+					// super.onStart();
+					// showLoading(mContext);
+					// }
+					//
+					// @Override
+					// public void onFinish() {
+					// // TODO Auto-generated method stub
+					// super.onFinish();
+					// try {
+					// // if (progress.isShowing()) {
+					// // progress.dismiss();
+					// // }
+					// dimissDialog();
+					// } catch (Exception ex) {
+					// ex.printStackTrace();
+					// }
+					//
+					// }
 				});
 			} else {
 				Toast.makeText(mContext,
@@ -1101,27 +1115,27 @@ public class WebservicesHelper {
 						Log.i("webservice", "Get Schedules failed");
 					}
 
-//					@Override
-//					public void onStart() {
-//						// TODO Auto-generated method stub
-//						super.onStart();
-//						showLoading(mContext);
-//					}
-//
-//					@Override
-//					public void onFinish() {
-//						// TODO Auto-generated method stub
-//						super.onFinish();
-//						try {
-//							// if (progress.isShowing()) {
-//							// progress.dismiss();
-//							// }
-//							dimissDialog();
-//						} catch (Exception ex) {
-//							ex.printStackTrace();
-//						}
-//
-//					}
+					// @Override
+					// public void onStart() {
+					// // TODO Auto-generated method stub
+					// super.onStart();
+					// showLoading(mContext);
+					// }
+					//
+					// @Override
+					// public void onFinish() {
+					// // TODO Auto-generated method stub
+					// super.onFinish();
+					// try {
+					// // if (progress.isShowing()) {
+					// // progress.dismiss();
+					// // }
+					// dimissDialog();
+					// } catch (Exception ex) {
+					// ex.printStackTrace();
+					// }
+					//
+					// }
 				});
 			} else {
 				Toast.makeText(mContext,
@@ -1274,12 +1288,12 @@ public class WebservicesHelper {
 								Log.i("webservice", "Get Activities failed");
 							}
 
-//							@Override
-//							public void onStart() {
-//								// TODO Auto-generated method stub
-//								super.onStart();
-//								showLoading(mContext);
-//							}
+							// @Override
+							// public void onStart() {
+							// // TODO Auto-generated method stub
+							// super.onStart();
+							// showLoading(mContext);
+							// }
 
 							@Override
 							public void onFinish() {
@@ -1358,33 +1372,7 @@ public class WebservicesHelper {
 										// "insert activity successfully",
 										// Toast.LENGTH_LONG).show();
 									}
-
-									// add owner of this activity is
-									// SharedMember
-									// with share role=owner
-									// ContentValues member = new
-									// ContentValues();
-									// member.put(SharedMemberTable.smid,
-									// dbHelper.getNextParticipantID());
-									//
-									// SharedReference ref = new
-									// SharedReference();
-									// member.put(SharedMemberTable.member_email,
-									// ref.getEmail(mContext));
-									// member.put(SharedMemberTable.member_name,
-									// ref.getUsername(mContext));
-									// member.put(SharedMemberTable.member_id,
-									// ref.getCurrentOwnerId(mContext));
-									// member.put(SharedMemberTable.role,
-									// CommConstant.OWNER);
-									// member.put(SharedMemberTable.service_id,
-									// activity.getActivity_ID());
-									// member.put(SharedMemberTable.is_Deleted,
-									// 0);
-									// member.put(SharedMemberTable.is_Synced,
-									// 0);
-									//
-									// dbHelper.insertSharedmember(member);
+									
 
 									SharedReference ref = new SharedReference();
 									ref.setLastestServiceLastModifiedTime(
@@ -1394,11 +1382,21 @@ public class WebservicesHelper {
 									// synchronize
 									// with server
 									getAllActivitys();
-
+//
+//									if (CategoryTabActivity.currentPage != CategoryTabActivity.TAB_ACTIVITY) {
+//										CategoryTabActivity
+//												.moveToTab(CategoryTabActivity.TAB_ACTIVITY);
+//									}
+									
 									Intent intent = new Intent(
 											CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
 									mContext.sendBroadcast(intent);
 									((Activity) mContext).finish();
+									((Activity) mContext)
+									.overridePendingTransition(
+											R.anim.animation_enter,
+											R.anim.animation_leave);
+
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1500,17 +1498,20 @@ public class WebservicesHelper {
 									Log.i("last_modified", last_modified);
 
 									// go to schedule
-									if (CategoryTabActivity.currentPage != CategoryTabActivity.TAB_SCHEDULE) {
-										CategoryTabActivity
-												.moveToPage(CategoryTabActivity.TAB_SCHEDULE);
-									}
+//									if (CategoryTabActivity.currentPage != CategoryTabActivity.TAB_SCHEDULE) {
+										CategoryTabActivity.currentPage=CategoryTabActivity.TAB_SCHEDULE;
+												
+//									}
 									// CategoryTabActivity.currentPage = 2;
 									// CategoryTabActivity.moveToPage(2);
 
 									Intent intent = new Intent(
 											CommConstant.UPDATE_SCHEDULE);
 									mContext.sendBroadcast(intent);
+									
 									((Activity) mContext).finish();
+									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
+										      R.anim.push_left_out);
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1620,9 +1621,11 @@ public class WebservicesHelper {
 									// CommConstant.UPDATE_SCHEDULE);
 									// mContext.sendBroadcast(intent);
 									// go to schedule
-									CategoryTabActivity.currentPage = 2;
+									CategoryTabActivity.currentPage =CategoryTabActivity.TAB_SCHEDULE;
 
 									((Activity) mContext).finish();
+									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
+										      R.anim.push_left_out);
 									Intent intent = new Intent(
 											CommConstant.UPDATE_SCHEDULE);
 									mContext.sendBroadcast(intent);
@@ -1714,6 +1717,7 @@ public class WebservicesHelper {
 							dbHelper.deleteRelatedOnduty(schedule_id);
 							dbHelper.deleteSchedule(schedule_id);
 							Log.i("delete schedule", "successfully");
+							
 							Intent intent = new Intent(
 									CommConstant.DELETE_SCHEDULE_COMPLETE);
 							mContext.sendBroadcast(intent);
@@ -2010,27 +2014,27 @@ public class WebservicesHelper {
 					Log.i("webservice", "Get Activities failed");
 				}
 
-//				@Override
-//				public void onStart() {
-//					// TODO Auto-generated method stub
-//					super.onStart();
-//					showLoading(mContext);
-//				}
-//
-//				@Override
-//				public void onFinish() {
-//					// TODO Auto-generated method stub
-//					super.onFinish();
-//					try {
-//						// if (progress.isShowing()) {
-//						// progress.dismiss();
-//						// }
-//						dimissDialog();
-//					} catch (Exception ex) {
-//						ex.printStackTrace();
-//					}
-//
-//				}
+				// @Override
+				// public void onStart() {
+				// // TODO Auto-generated method stub
+				// super.onStart();
+				// showLoading(mContext);
+				// }
+				//
+				// @Override
+				// public void onFinish() {
+				// // TODO Auto-generated method stub
+				// super.onFinish();
+				// try {
+				// // if (progress.isShowing()) {
+				// // progress.dismiss();
+				// // }
+				// dimissDialog();
+				// } catch (Exception ex) {
+				// ex.printStackTrace();
+				// }
+				//
+				// }
 			});
 		} else {
 			Toast.makeText(mContext,
@@ -2337,6 +2341,8 @@ public class WebservicesHelper {
 												Toast.LENGTH_LONG).show();
 									}
 									((Activity) mContext).finish();
+									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
+										      R.anim.push_left_out);
 									Intent intent = new Intent(
 											CommConstant.ADD_CONTACT_SUCCESS);
 									mContext.sendBroadcast(intent);
@@ -2447,6 +2453,8 @@ public class WebservicesHelper {
 											participant.getID(), contentValues);
 
 									((Activity) mContext).finish();
+									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
+										      R.anim.push_left_out);
 									Intent intent = new Intent(
 											CommConstant.ADD_CONTACT_SUCCESS);
 									mContext.sendBroadcast(intent);
@@ -2527,6 +2535,8 @@ public class WebservicesHelper {
 
 						}
 						((Activity) mContext).finish();
+						((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
+							      R.anim.push_left_out);
 						Intent intent = new Intent(
 								CommConstant.DELETE_CONTACT_COMPLETE);
 						mContext.sendBroadcast(intent);
@@ -2627,7 +2637,10 @@ public class WebservicesHelper {
 									SharedReference ref = new SharedReference();
 									ref.setLastestServiceLastModifiedTime(
 											mContext, last_modified);
+									
 									((Activity) mContext).finish();
+									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
+										      R.anim.push_left_out);
 									Intent intent = new Intent(
 											CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
 									mContext.sendBroadcast(intent);

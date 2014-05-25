@@ -53,7 +53,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * @category add new schedule
  * */
 // @SuppressLint("NewApi")
-public class CreateNewScheduleActivity extends BaseActivity implements
+public class CopyOfCreateNewScheduleActivity extends BaseActivity implements
 		OnDateSetListener, OnTimeSetListener, OnMenuItemClickListener,
 		OnClickListener {
 
@@ -80,7 +80,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 	int creator;
 
 	protected void onCreate(Bundle savedInstanceState) {
-
+		
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		view = new AddScheduleView(mContext);
@@ -173,54 +173,41 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
 			ArrayList<Sharedmember> list_participant = new ArrayList<Sharedmember>();
-
+			
 			if (pins != null && pins.size() > 0) {
 				for (int i = 0; i < pins.size(); i++) {
-					Sharedmember p = dbHelper.getSharedmember(pins.get(i),
-							activity_id);
-					if (p != null) {
+					Sharedmember p = dbHelper.getSharedmember(
+							pins.get(i), activity_id);
+					if (p != null) {						
 						p.isChecked = true;
 						list_participant.add(p);
 					}
 				}
 			}
-			
-			if(list_participant!=null&&list_participant.size()>0)
-			{
-				final SharedMemberAdapter adapter = new SharedMemberAdapter(
-						mContext, list_participant, false, false, true);
-				view.list_participant.setAdapter(adapter);
-				Utils.setListViewHeightBasedOnChildren(view.list_participant,
-						adapter);
-				view.list_participant.setVisibility(View.VISIBLE);
-				view.layout_list_on_duty.setVisibility(View.VISIBLE);
-				view.layout_on_duty.setVisibility(View.VISIBLE);
-				view.tv_participant.setVisibility(View.VISIBLE);
-				view.list_participant
-						.setOnItemClickListener(new OnItemClickListener() {
-							@Override
-							public void onItemClick(AdapterView<?> parent,
-									View view, final int position, long id) {
-								final Sharedmember participantSelected = adapter.sharedMembers
-										.get(position);
-								// participantInforDialog(participantSelected);
+			final SharedMemberAdapter adapter = new SharedMemberAdapter(
+					mContext, list_participant, false, false, true);
+			view.list_participant.setAdapter(adapter);
+			Utils.setListViewHeightBasedOnChildren(view.list_participant,
+					adapter);
+			view.list_participant.setVisibility(View.VISIBLE);
 
-							}
-						});
-			}
-			
-			else
-			{
-				view.list_participant.setVisibility(View.GONE);
-				view.layout_list_on_duty.setVisibility(View.GONE);
-				view.layout_on_duty.setVisibility(View.GONE);
-				view.tv_participant.setVisibility(View.GONE);
-			}
-			
+			view.tv_participant.setVisibility(View.VISIBLE);
+			view.list_participant
+					.setOnItemClickListener(new OnItemClickListener() {
+						@Override
+						public void onItemClick(AdapterView<?> parent,
+								View view, final int position, long id) {
+							final Sharedmember participantSelected = adapter.sharedMembers
+									.get(position);
+//							participantInforDialog(participantSelected);
+
+						}
+					});
 		}
 
 	}
 
+	
 	private void onClickListener() {
 		view.et_endDate.setOnClickListener(this);
 		view.et_startDate.setOnClickListener(this);
@@ -233,8 +220,6 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 		view.titleBar.layout_save.setOnClickListener(this);
 		view.et_new_activity_name.setOnClickListener(this);
 		view.et_new_activity_description.setOnClickListener(this);
-		// view.tv_participant.setOnClickListener(this);
-		view.btn_change_on_duty.setOnClickListener(this);
 	}
 
 	@Override
@@ -276,7 +261,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
 				overridePendingTransition(R.anim.animation_enter,
-						R.anim.animation_leave);
+				      R.anim.animation_leave);
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				intent.putExtra(CommConstant.TYPE,
@@ -303,8 +288,6 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			deleteSchedule();
 		} else if (v == view.titleBar.layout_back) {
 			((Activity) mContext).finish();
-			overridePendingTransition(R.anim.push_left_in,
-				      R.anim.push_left_out);
 		} else if (v == view.titleBar.layout_save) {
 			editSchedule();
 		} else if (v == view.et_new_activity_name) {
@@ -315,7 +298,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
 				overridePendingTransition(R.anim.animation_enter,
-						R.anim.animation_leave);
+				      R.anim.animation_leave);
 				// show an activity to edit description
 				Intent intent = new Intent(mContext,
 						EditDescriptionActivity.class);
@@ -326,33 +309,6 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 				Toast.makeText(this, "Please select an activity to schedule",
 						Toast.LENGTH_LONG).show();
 			}
-		}
-
-		else if (v == view.btn_change_on_duty) {
-			if (!view.et_new_activity_name.getText().toString().trim()
-					.equals("")) {
-				overridePendingTransition(R.anim.animation_enter,
-						R.anim.animation_leave);
-				Intent intent = new Intent(mContext, ParticipantActivity.class);
-				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
-				intent.putExtra(CommConstant.TYPE,
-						CommConstant.TYPE_PARTICIPANT);
-				intent.putExtra(CommConstant.SCHEDULE_ID,
-						thisSchedule != null ? thisSchedule.getSchedule_ID()
-								: -1);
-				// List<Integer> pins = new ArrayList<Integer>();
-				// if (composeType == DatabaseHelper.EXISTED) {
-				// pins = dbHelper.getParticipantsForSchedule(thisSchedule
-				// .getSchedule_ID());
-				// }
-				intent.putIntegerArrayListExtra("pins",
-						(ArrayList<Integer>) pins);
-				startActivityForResult(intent, REQUEST_CODE);
-			} else {
-				Toast.makeText(this, "Please select an activity to schedule",
-						Toast.LENGTH_LONG).show();
-			}
-
 		}
 	}
 
@@ -378,38 +334,36 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 				view.btn_remove_schedule.setVisibility(View.GONE);
 				view.titleBar.layout_next.setVisibility(View.VISIBLE);
 				view.titleBar.layout_save.setVisibility(View.GONE);
-				view.titleBar.tv_name.setText(mContext.getResources()
-						.getString(R.string.add_schedule));
+				view.titleBar.tv_name.setText(mContext.getResources().getString(
+						R.string.add_schedule));
 				schedule_id = thisSchedule.getSchedule_ID();
-
+				
 				DatabaseHelper dbHelper = DatabaseHelper
 						.getSharedDatabaseHelper(mContext);
 				final ArrayList<MyActivity> listActivity = dbHelper
 						.getActivitiesOwnerOrOrganizer(new SharedReference()
 								.getCurrentOwnerId(mContext) + "");
-
-				// have no activity before and show popup
-				if (listActivity == null || listActivity.size() == 0) {
-					final ConfirmDialog dialog = new ConfirmDialog(mContext,
-							mContext.getResources().getString(
-									R.string.no_activity_for_create_schedule));
+				
+				//have no activity before and show popup
+				if(listActivity==null||listActivity.size()==0)
+				{
+					final ConfirmDialog dialog=new ConfirmDialog(mContext, mContext.getResources().getString(R.string.no_activity_for_create_schedule));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
-
+						
 						@Override
 						public void onClick(View v) {
 							dialog.dismiss();
 							finish();
-							overridePendingTransition(R.anim.push_left_in,
-									R.anim.push_left_out);
-							CategoryTabActivity.currentPage = CategoryTabActivity.TAB_ACTIVITY;
-							// Intent intent=new Intent("goToActivity");
-							// sendBroadcast(intent);
-
+							overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+							CategoryTabActivity.currentPage=CategoryTabActivity.TAB_ACTIVITY;
+//							Intent intent=new Intent("goToActivity");
+//							sendBroadcast(intent);
+							
 						}
 					});
 					dialog.btnCancel.setOnClickListener(new OnClickListener() {
-
+						
 						@Override
 						public void onClick(View v) {
 							// TODO Auto-generated method stub
@@ -418,7 +372,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 						}
 					});
 				}
-
+				
 			} else if (composeType == DatabaseHelper.EXISTED) {
 				if (schedule_id > 0) {
 					thisSchedule = dbHelper.getScheduleSortedByID(schedule_id);
@@ -426,25 +380,31 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 				view.btn_remove_schedule.setVisibility(View.VISIBLE);
 				view.titleBar.layout_next.setVisibility(View.GONE);
 				view.titleBar.layout_save.setVisibility(View.VISIBLE);
-				view.titleBar.tv_name.setText(mContext.getResources()
-						.getString(R.string.edit_schedule));
+				view.titleBar.tv_name.setText(mContext.getResources().getString(
+						R.string.edit_schedule));
 				if (thisSchedule != null) {
 					pins = dbHelper.getParticipantsForSchedule(thisSchedule
 							.getSchedule_ID());
-
+					String members = "";
 					if (pins != null && pins.size() > 0) {
-						view.layout_on_duty.setVisibility(View.VISIBLE);
-					} else {
-						view.layout_on_duty.setVisibility(View.GONE);
+						for (int i = 0; i < pins.size(); i++) {
+							Sharedmember p = dbHelper.getSharedmember(
+									pins.get(i), activity_id);
+							if (p != null) {
+								if (i == 0)
+									members = members + p.getName();
+								else
+									members = members + ", " + p.getName();
+								p.isChecked = true;
+							}
+						}
 					}
 
-					//
-					// view.et_on_duty.setText(members);
-					// if(members.equals(""))
-					// {
-					// view.et_on_duty.setText("Choose Participant");
-					// }
-					setParticipantOfActivity(pins);
+					view.et_on_duty.setText(members);
+					if(members.equals(""))
+					{
+						view.et_on_duty.setText("Choose Participant");
+					}
 				}
 			}
 
@@ -484,8 +444,6 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 				// view.btn_remove_schedule.setVisibility(View.VISIBLE);
 				view.titleBar.layout_save.setEnabled(true);
 				view.titleBar.layout_next.setEnabled(true);
-				view.btn_change_on_duty.setEnabled(true);
-				view.btn_change_on_duty.setVisibility(View.VISIBLE);
 			} else {
 				// only view
 				view.et_endDate.setEnabled(false);
@@ -498,8 +456,6 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 				view.btn_remove_schedule.setVisibility(View.GONE);
 				view.titleBar.layout_save.setEnabled(false);
 				view.titleBar.layout_next.setEnabled(false);
-				view.btn_change_on_duty.setEnabled(false);
-				view.btn_change_on_duty.setVisibility(View.GONE);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -609,7 +565,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 							+ MyDate.transformUTCDateToLocalDate(
 									MyDate.STANDARD,
 									thisSchedule.getStarttime()).split(" ")[1]));
-
+		
 		} else {
 
 			this.view.et_endDate.setText(fulldate);
@@ -653,6 +609,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 							.transformUTCDateToLocalDate(MyDate.STANDARD,
 									thisSchedule.getStarttime()).split(" ")[0]
 							+ " " + hourstr + ":" + minutestr + ":" + "00"));
+			
 
 		} else {
 			this.view.et_endTime.setText(time);
@@ -679,7 +636,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			this.view.et_endDate.setText(this.view.et_startDate.getText());
 			this.view.et_endTime.setText(this.view.et_startTime.getText());
 
-		}
+		} 
 	}
 
 	@Override
@@ -746,7 +703,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			}
 			WebservicesHelper ws = new WebservicesHelper(mContext);
 			ws.addSchedule(thisSchedule, pins);
-			
+			finish();
 
 		}
 
@@ -783,9 +740,8 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			}
 
 			WebservicesHelper ws = new WebservicesHelper(mContext);
-			ws.updateSchedule(thisSchedule, pins);			
-		
-			
+			ws.updateSchedule(thisSchedule, pins);
+			finish();
 		}
 	}
 
@@ -798,8 +754,6 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 					dbHelper.deleteSchedule(schedule_id);
 					Log.i("delete schedule", "successfully");
 					finish();
-					overridePendingTransition(R.anim.push_left_in,
-						      R.anim.push_left_out);
 					Intent intent = new Intent(
 							CommConstant.DELETE_SCHEDULE_COMPLETE);
 					mContext.sendBroadcast(intent);
@@ -850,12 +804,12 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 	 * delete schedule update to database
 	 * */
 	public void deleteSchedule() {
-
-		final ConfirmDialog dialog = new ConfirmDialog(mContext, mContext
-				.getResources().getString(R.string.delete_schedule));
+		
+		final ConfirmDialog dialog=new ConfirmDialog(mContext, mContext.getResources().getString(
+				R.string.delete_schedule));
 		dialog.show();
 		dialog.btnOk.setOnClickListener(new OnClickListener() {
-
+			
 			@Override
 			public void onClick(View v) {
 				try {
@@ -875,24 +829,27 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 						dbHelper.updateSchedule(onduty_id, ocv);
 					}
 
-					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.deleteSchedule(thisSchedule, deleteScheduleHandler);
-
+					WebservicesHelper ws = new WebservicesHelper(
+							mContext);
+					ws.deleteSchedule(thisSchedule,
+							deleteScheduleHandler);
+					
 					dialog.dismiss();
-
+					
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
 		});
 		dialog.btnCancel.setOnClickListener(new OnClickListener() {
-
+			
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
 			}
 		});
 	}
+
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -901,22 +858,20 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			if (activity_id.equalsIgnoreCase(this.activity_id)) {
 				pins = data
 						.getIntegerArrayListExtra(CommConstant.ON_DUTY_ITEM_SELECTED);
-//				String members = "";
-//				if (pins != null && pins.size() > 0) {
-//					for (int i = 0; i < pins.size(); i++) {
-//						Sharedmember p = dbHelper.getSharedmember(pins.get(i),
-//								activity_id);
-//						if (p != null) {
-//							if (i == 0)
-//								members = members + p.getName();
-//							else
-//								members = members + "," + p.getName();
-//						}
-//					}
-//				}
-//				view.et_on_duty.setText(members);
-				
-				setParticipantOfActivity(pins);
+				String members = "";
+				if (pins != null && pins.size() > 0) {
+					for (int i = 0; i < pins.size(); i++) {
+						Sharedmember p = dbHelper.getSharedmember(pins.get(i),
+								activity_id);
+						if (p != null) {
+							if (i == 0)
+								members = members + p.getName();
+							else
+								members = members + "," + p.getName();
+						}
+					}
+				}
+				view.et_on_duty.setText(members);
 			}
 		} else if (resultCode == 222) {
 			String activity_decription = data

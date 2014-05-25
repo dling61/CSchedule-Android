@@ -4,5 +4,5 @@
            android:color="@color/me_selected" /> <!-- pressed -->
      <item android:state_focused="true"
            android:color="@color/me_selected" /> <!-- focused -->
-     <item android:color="@color/text_color_forget_pass_unselected" /> 
+     <item android:color="@color/edittext" /> 
      </selector>

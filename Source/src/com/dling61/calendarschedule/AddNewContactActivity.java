@@ -92,7 +92,10 @@ public class AddNewContactActivity extends BaseActivity implements OnClickListen
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_email);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_mobile);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
+			
 			((Activity) mContext).finish();
+			overridePendingTransition(R.anim.push_left_in,
+				      R.anim.push_left_out);
 		} else if (v == view.btn_remove_contact) {
 			if (selectedParticipantID > 0) {
 				removeParticipant();
