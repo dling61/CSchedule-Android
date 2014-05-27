@@ -20,6 +20,7 @@ import com.dling61.calendarschedule.models.Schedule;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
+import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.ScheduleView;
 
 import android.app.Activity;
@@ -85,12 +86,12 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_schedule) {
-			((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-				      R.anim.animation_leave);
+		
 			Intent intent = new Intent(mContext,
 					CreateNewScheduleActivity.class);
 			intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
 			mContext.startActivity(intent);
+			Utils.slideUpDown(mContext);
 		} else if (v == view.btn_all) {
 			type = ALL;
 			processDataForAdapterListview();

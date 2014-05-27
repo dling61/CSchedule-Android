@@ -125,8 +125,7 @@ public class ActivityAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-					      R.anim.animation_leave);
+				
 				Intent inforActivityIntent = new Intent(mContext,
 						AddNewActivity.class);
 				inforActivityIntent.putExtra(CommConstant.TYPE,
@@ -135,6 +134,8 @@ public class ActivityAdapter extends BaseAdapter {
 						activity.getActivity_ID());
 				inforActivityIntent.putExtra(CommConstant.ROLE,role);
 				mContext.startActivity(inforActivityIntent);
+				((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+					      R.anim.animation_leave);
 
 			}
 		});

@@ -8,6 +8,7 @@ import com.dling61.calendarschedule.adapter.ActivityAdapter;
 import com.dling61.calendarschedule.db.DatabaseHelper;
 import com.dling61.calendarschedule.models.MyActivity;
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.ActivityView;
 
 import android.app.Activity;
@@ -53,11 +54,11 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_activity) {
-			((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-				      R.anim.animation_leave);
+			
 			Intent intent = new Intent(mContext, AddNewActivity.class);
 			intent.putExtra("type", DatabaseHelper.NEW);
 			mContext.startActivity(intent);
+			Utils.slideUpDown(mContext);
 		}
 	}
 

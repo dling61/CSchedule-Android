@@ -12,71 +12,73 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:background="@drawable/btn_back_selector"
-        android:padding="@dimen/margin_left" >
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
 
         <ImageView
             android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/ic_back" />
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_remove" />
     </LinearLayout>
 
-    <LinearLayout
+     <LinearLayout
         android:id="@+id/layout_next"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:background="@drawable/btn_back_selector"
-        android:padding="@dimen/margin_left" >
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
 
         <ImageView
             android:id="@+id/btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/next" />
+            android:layout_gravity="center"
+       
+            android:src="@drawable/ic_action_next_item" />
     </LinearLayout>
 
-    <LinearLayout
+      <LinearLayout
         android:id="@+id/layout_save"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:background="@drawable/btn_back_selector"
-        android:padding="@dimen/margin_left"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:visibility="gone" >
-
         <ImageView
             android:id="@+id/btn_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/notification_done" />
+           android:layout_gravity="center"
+           
+            android:src="@drawable/ic_action_accept" />
     </LinearLayout>
 
-    <LinearLayout
+      <LinearLayout
         android:id="@+id/layout_edit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:background="@drawable/btn_back_selector"
-        android:padding="@dimen/margin_left"
-        android:visibility="gone" >
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" 
+         android:visibility="gone" >
 
         <ImageView
             android:id="@+id/btn_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/edit" />
+           android:layout_gravity="center"
+          
+            android:src="@drawable/ic_action_edit" />
     </LinearLayout>
 
     <TextView

@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.dling61.calendarschedule.R;
 import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.models.Sharedmember;
 
@@ -216,4 +217,20 @@ public class Utils {
 	    return status;
 
 	    }  
+	
+	public static void pushRightToLeft(Context mContext)
+	{
+		((Activity) mContext).overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+	}
+	
+	public static void postLeftToRight(Context mContext)
+	{
+		((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+			    R.anim.animation_leave);
+	}
+	
+	public static void slideUpDown(Context mContext)
+	{
+		((Activity) mContext).overridePendingTransition(R.anim.in_from_bottom, R.anim.stand_by);
+	}
 }

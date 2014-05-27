@@ -21,8 +21,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:cacheColorHint="@color/white"
-            android:orientation="vertical"
-            android:showDividers="middle" >
+            android:orientation="vertical" >
 
             <RelativeLayout
                 android:id="@+id/layout_new_activity_name"
@@ -41,15 +40,17 @@
 
                 <EditText
                     android:id="@+id/et_new_activity_name"
-                    style="@style/edStyle"
+                    style="@style/edStyleActivity"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginRight="13dp"
                     android:layout_toRightOf="@id/tv_new_activity_name"
                     android:clickable="true"
                     android:focusable="false"
-                    android:hint="@string/activity_name" />
+                    android:hint="@string/activity_name"
+                    android:paddingLeft="0dp" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -86,7 +87,7 @@
 
                         <EditText
                             android:id="@+id/et_startDate"
-                            style="@style/edStyle"
+                            style="@style/edStyleDate"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="2dp"
@@ -105,7 +106,7 @@
 
                         <EditText
                             android:id="@+id/et_startTime"
-                            style="@style/edStyle"
+                            style="@style/edStyleDate"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:clickable="true"
@@ -116,11 +117,23 @@
                 </LinearLayout>
             </RelativeLayout>
 
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/bg_schedule"
+                android:orientation="vertical" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:background="@color/bg_participant_activity_title" />
+            </LinearLayout>
+
             <RelativeLayout
                 android:id="@+id/layout_end"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top_block"
                 android:background="@color/bg_schedule" >
 
                 <TextView
@@ -151,7 +164,7 @@
 
                         <EditText
                             android:id="@+id/et_endDate"
-                            style="@style/edStyle"
+                            style="@style/edStyleDate"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="2dp"
@@ -170,7 +183,7 @@
 
                         <EditText
                             android:id="@+id/et_endTime"
-                            style="@style/edStyle"
+                            style="@style/edStyleDate"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:clickable="true"
@@ -231,15 +244,16 @@
                     style="@style/edStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:layout_marginTop="@dimen/margin_top"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginRight="13dp"
                     android:layout_toRightOf="@id/tv_new_activity_description"
                     android:gravity="top"
                     android:hint="@string/description"
                     android:maxLength="2000"
                     android:maxLines="4"
-                    android:minLines="4" />
+                    android:minLines="4"
+                    android:paddingLeft="0dp" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -247,8 +261,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_top_block"
-                android:background="@drawable/participant_unselected" 
-                android:visibility="gone">
+                android:background="@drawable/participant_unselected"
+                android:visibility="gone" >
 
                 <TextView
                     android:id="@+id/tv_participant"
@@ -261,8 +275,7 @@
                     android:text="@string/on_duty"
                     android:textColor="@color/me_unselected"
                     android:textSize="@dimen/text_name"
-                    android:textStyle="bold"
-                     />
+                    android:textStyle="bold" />
             </RelativeLayout>
 
             <LinearLayout
@@ -281,7 +294,8 @@
                     android:cacheColorHint="@color/bg"
                     android:divider="@color/bg_participant_activity_title"
                     android:dividerHeight="1dp"
-                    android:scrollbars="@null" >
+                    android:scrollbars="@null"
+                    android:visibility="gone" >
                 </ListView>
             </LinearLayout>
 
@@ -295,10 +309,10 @@
                 <Button
                     android:id="@+id/btn_change_on_duty"
                     style="@style/buttonStyle"
+                    android:layout_marginBottom="@dimen/margin_left"
                     android:layout_marginLeft="@dimen/margin_left"
                     android:layout_marginRight="@dimen/margin_right"
                     android:layout_marginTop="@dimen/margin_left"
-                     android:layout_marginBottom="@dimen/margin_left"
                     android:text="Change On Duty"
                     android:visibility="visible" />
 
@@ -308,7 +322,6 @@
                     android:layout_marginBottom="@dimen/margin_left"
                     android:layout_marginLeft="@dimen/margin_left"
                     android:layout_marginRight="@dimen/margin_right"
-                   
                     android:text="@string/remove_schedule"
                     android:visibility="visible" />
             </LinearLayout>

@@ -4,6 +4,7 @@
 package com.dling61.calendarschedule;
 
 import com.dling61.calendarschedule.db.DatabaseHelper;
+import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.TitleBarView;
 
@@ -78,8 +79,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 	 * */
 	private void signInPressed() {
 		finish();
-		overridePendingTransition(R.anim.animation_enter,
-			      R.anim.animation_leave);
+		Utils.pushRightToLeft(mContext);
 		Intent intent = new Intent(this, LoginActivity.class);
 		this.startActivity(intent);
 	}
@@ -90,8 +90,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 	 * */
 	private void createAccountPressed() {
 		finish();
-		overridePendingTransition(R.anim.animation_enter,
-			      R.anim.animation_leave);
+		Utils.pushRightToLeft(mContext);
 		Intent intent = new Intent(this, CreateNewAccountActivity.class);
 		this.startActivity(intent);
 	}

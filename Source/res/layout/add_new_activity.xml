@@ -10,20 +10,20 @@
         android:layout_height="wrap_content" >
     </com.dling61.calendarschedule.views.TitleBarView>
 
-    <ScrollView
+      <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/titleBar"
-        android:layout_centerHorizontal="true" >
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="vertical" >
 
         <LinearLayout
-            android:id="@+id/composeActivityItems"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:cacheColorHint="@color/white"
-            android:orientation="vertical"
-            android:showDividers="middle" >
-
+            android:id="@+id/bottom"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/titleBar"          
+            android:orientation="vertical" >
             <RelativeLayout
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
@@ -31,26 +31,15 @@
                 android:layout_marginTop="@dimen/margin_top_block"
                 android:background="@color/bg_schedule" >
 
-                <TextView
-                    android:id="@+id/tv_new_activity_name"
-                    style="@style/tvTitleStyle"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:singleLine="true"
-                    android:text="@string/activity_name"
-                    android:visibility="gone" />
-
                 <EditText
                     android:id="@+id/et_new_activity_name"
                     style="@style/edStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:layout_toRightOf="@id/tv_new_activity_name"
-                    android:gravity="center_vertical"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginRight="13dp"
                     android:hint="@string/activity_name"
+                      android:layout_centerVertical="true"
                     android:singleLine="true" />
             </RelativeLayout>
 
@@ -204,13 +193,14 @@
 
                 <EditText
                     android:id="@+id/et_new_activity_description"
-                    style="@style/edStyle"
+                    style="@style/edStyleActivity"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
                     android:ems="10"
                     android:gravity="top"
                     android:hint="@string/description"

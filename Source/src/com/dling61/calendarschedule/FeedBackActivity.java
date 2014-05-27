@@ -8,6 +8,7 @@ import com.dling61.calendarschedule.utils.SharedReference;
 import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.TitleBarView;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -52,6 +53,12 @@ TitleBarView titleBar;
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		Utils.hideKeyboard((Activity)mContext,edFeedback);
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -60,9 +67,10 @@ TitleBarView titleBar;
 			Utils.hideKeyboard(FeedBackActivity.this,edFeedback);
 			
 			finish();
-			overridePendingTransition(R.anim.push_left_in,
-				      R.anim.push_left_out);
+			Utils.postLeftToRight(mContext);
+		
 		} else if (v == titleBar.layout_save) {
+			Utils.hideKeyboard((Activity)mContext,edFeedback);
 			String feedback = edFeedback.getText().toString().trim();
 			if (feedback != null && (!feedback.equals(""))) {
 				
@@ -151,7 +159,9 @@ TitleBarView titleBar;
 			if (dialog != null && dialog.isShowing()) {
 				dialog.dismiss();
 			}
+			
 			finish();
+			Utils.postLeftToRight(mContext);
 		}
 	}
 

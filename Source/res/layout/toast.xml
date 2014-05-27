@@ -9,48 +9,29 @@
         android:id="@+id/tv_title"
         style="@style/confirmTitleStyle"
         android:layout_centerHorizontal="true"
-        android:layout_margin="@dimen/margin_left"
-        android:layout_marginTop="@dimen/margin_top"
+        android:layout_margin="10dp"
+        android:layout_marginTop="10dp"
         android:gravity="center_horizontal" />
 
-    <LinearLayout
+   <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_title"
         android:layout_centerHorizontal="true"
+     
         android:paddingBottom="10dp" >
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/btn_cancel"
-                style="@style/confirm_btn"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="2dp"
-                android:background="@drawable/me_border"
-                android:singleLine="true"
-                android:text="@string/cancel" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal" >
-
+     
             <Button
                 android:id="@+id/btn_ok"
                 style="@style/confirm_btn"
+                android:layout_width="100dp"
                 android:layout_marginLeft="2dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/me_border"
                 android:singleLine="true"
+                android:layout_centerHorizontal="true"
                 android:text="@string/ok" />
-        </LinearLayout>
-    </LinearLayout>
-
+    
+  </RelativeLayout>
 </RelativeLayout>

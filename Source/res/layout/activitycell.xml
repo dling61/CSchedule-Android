@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/margin_top"
-    android:orientation="vertical" >
+    android:padding="10dp"
+    android:orientation="vertical"
+      android:background="@drawable/text_color_selector" >
 
     <TextView
         android:id="@+id/service_name_tv"

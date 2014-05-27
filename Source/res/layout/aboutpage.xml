@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg" >
+    android:background="@color/bg_participant_activity_title" >
 
     <com.dling61.calendarschedule.views.TitleBarView
         android:id="@+id/titleBar"
@@ -20,11 +20,12 @@
             android:id="@+id/signin_inputs"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical" 
+            android:background="@color/bg_schedule">
 
             <EditText
                 android:id="@+id/ed_feedback"
-                style="@style/edittextStyle"
+                style="@style/edStyle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_left"

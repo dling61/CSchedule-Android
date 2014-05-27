@@ -82,13 +82,16 @@ public class ForgetPasswordActivity extends BaseActivity implements OnClickListe
 
 				return;
 			}
+			Utils.hideKeyboard(ForgetPasswordActivity.this, txt_email);
 			new ForgetPasswordTask(mContext,email).execute();
 			
 		} else if (v == titleBar.layout_back) {
-			Utils.hideKeyboard(ForgetPasswordActivity.this,txt_email);
 			
+			Utils.hideKeyboard(ForgetPasswordActivity.this,txt_email);
+		
 			finish();
-		}
+			Utils.postLeftToRight(mContext);
+			}
 	}
 
 	// edit information
@@ -171,6 +174,7 @@ public class ForgetPasswordActivity extends BaseActivity implements OnClickListe
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
+		Utils.hideKeyboard(ForgetPasswordActivity.this, txt_email);
 		Intent intent = new Intent(mContext, MainActivity.class);
 		mContext.startActivity(intent);
 		finish();

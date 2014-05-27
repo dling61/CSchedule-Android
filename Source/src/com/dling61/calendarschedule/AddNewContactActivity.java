@@ -32,7 +32,7 @@ import android.widget.Toast;
  * @author khoahuyen
  * @category Add new/modify/delete contact
  * */
-public class AddNewContactActivity extends BaseActivity implements OnClickListener {
+public class AddNewContactActivity extends Activity implements OnClickListener {
 	private Participant thisParticipant;
 	private int composeType;
 	AddParticipantView view;
@@ -94,8 +94,7 @@ public class AddNewContactActivity extends BaseActivity implements OnClickListen
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
 			
 			((Activity) mContext).finish();
-			overridePendingTransition(R.anim.push_left_in,
-				      R.anim.push_left_out);
+			Utils.postLeftToRight(mContext);
 		} else if (v == view.btn_remove_contact) {
 			if (selectedParticipantID > 0) {
 				removeParticipant();
@@ -170,6 +169,7 @@ public class AddNewContactActivity extends BaseActivity implements OnClickListen
 						dbHelper.deleteParticipant(thisParticipant.getID());
 					}
 					((Activity) mContext).finish();
+					Utils.postLeftToRight(mContext);
 					Intent intent = new Intent(
 							CommConstant.DELETE_CONTACT_COMPLETE);
 					mContext.sendBroadcast(intent);
@@ -358,6 +358,11 @@ public class AddNewContactActivity extends BaseActivity implements OnClickListen
 				view.et_name.setText(thisParticipant.getName());
 			}
 		}
-
+	}
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		Utils.postLeftToRight(mContext);
 	}
 }

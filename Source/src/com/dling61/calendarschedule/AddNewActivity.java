@@ -42,7 +42,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
 @SuppressLint("NewApi")
-public class AddNewActivity extends BaseActivity implements OnClickListener {
+public class AddNewActivity extends Activity implements OnClickListener {
 	private MyActivity thisActivity;
 	private int composeType;
 	private DatabaseHelper dbHelper;
@@ -67,9 +67,9 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
-		
+
 		mContext = this;
 		view = new AddActivityView(mContext);
 		setContentView(view.layout);
@@ -123,10 +123,10 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 
 	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
-			
+
 			finish();
-			overridePendingTransition(R.anim.push_left_in,
-				      R.anim.push_left_out);
+//			overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+			Utils.postLeftToRight(mContext);
 		}
 	};
 
@@ -138,11 +138,9 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	protected void onPause() {
-	
+
 		super.onPause();
 	};
-	
-
 
 	/**
 	 * get shared member of activity
@@ -401,7 +399,7 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 			timezone_array[0] = currentTimeZone;// current device timezone
 			Log.d("timezone name", tz.getID() + "-(" + currentTimezoneName
 					+ ") ");
-			
+
 			timezone_value_array[0] = timezoneCurrent;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -528,8 +526,8 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 			popUp(alert_array, ALERT);
 		} else if (v == view.btn_add_paticipant) {
 			if (composeType == DatabaseHelper.EXISTED) {
-				
-				finish();				
+
+				finish();
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.TYPE,
 						CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
@@ -541,16 +539,17 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 			dialogDeleteActivity();
 		} else if (v == view.titleBar.layout_back) {
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
+		
 			((Activity) mContext).finish();
-			overridePendingTransition(R.anim.push_left_in,
-				      R.anim.push_left_out);
+			Utils.postLeftToRight(mContext);
 		} else if (v == view.et_new_activity_description) {
 			// show an activity to edit description
-			
+
 			Intent intent = new Intent(mContext, EditDescriptionActivity.class);
 			intent.putExtra(CommConstant.ACTIVITY_DESCRIPTION,
 					thisActivity.getDesp());
 			startActivityForResult(intent, 0);
+			Utils.slideUpDown(mContext);
 
 		} else if (v == view.titleBar.layout_save) {
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
@@ -766,7 +765,7 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 		}
 		switch (requestCode) {
 		case (11): {
-			overridePendingTransition( R.anim.slide_in_down, R.anim.slide_out_down );
+			Utils.slideUpDown(mContext);
 			Intent resultIntent = new Intent();
 			resultIntent.putExtra("id", thisActivity.getActivity_ID());
 			setResult(Activity.RESULT_OK, resultIntent);
@@ -776,4 +775,10 @@ public class AddNewActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		Utils.postLeftToRight(mContext);
+	}
 }

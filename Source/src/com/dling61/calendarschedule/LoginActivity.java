@@ -110,17 +110,22 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			}
 			login(username, password);
 		} else if (v == titleBar.layout_back) {
-			
+			Utils.hideKeyboard((Activity)mContext,txt_email);
+			Utils.hideKeyboard((Activity)mContext, txt_password);
 			Intent intent = new Intent(mContext, MainActivity.class);
 			mContext.startActivity(intent);
 			finish();
+			Utils.postLeftToRight(mContext);
 		}
 		else if(v==layoutForgetPassword)
+			
 		{
-			overridePendingTransition(R.anim.animation_enter,
-				      R.anim.animation_leave);
+			Utils.hideKeyboard((Activity)mContext,txt_email);
+			Utils.hideKeyboard((Activity)mContext, txt_password);
+
 			Intent intent = new Intent(mContext, ForgetPasswordActivity.class);
 			mContext.startActivity(intent);
+			Utils.pushRightToLeft(mContext);
 //			finish();
 		}
 	}
@@ -147,15 +152,16 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		
+		Utils.hideKeyboard((Activity)mContext,txt_email);
+		Utils.hideKeyboard((Activity)mContext, txt_password);
 		if(WebservicesHelper.loadingPopup!=null&&WebservicesHelper.loadingPopup.isShowing())
 		{
 			WebservicesHelper.loadingPopup.dismiss();
 		}
-		overridePendingTransition(R.anim.push_left_in,
-			      R.anim.push_left_out);
+		Utils.postLeftToRight(mContext);
+		finish();
 		Intent intent = new Intent(mContext, MainActivity.class);
 		mContext.startActivity(intent);
-		finish();
+		
 	}
 }

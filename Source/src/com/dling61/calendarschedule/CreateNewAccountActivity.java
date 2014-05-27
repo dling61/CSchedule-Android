@@ -6,7 +6,6 @@ package com.dling61.calendarschedule;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.TitleBarView;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
 /**
  * @class LoginActivity
  * @author Huyen Nguyen
@@ -23,8 +24,8 @@ import android.widget.Toast;
  * @Date April 8th,2014 @ This class will show when click button create new
  *       account}
  * */
-public class CreateNewAccountActivity extends BaseActivity
-		implements OnClickListener {
+public class CreateNewAccountActivity extends BaseActivity implements
+		OnClickListener {
 	Context mContext;
 	EditText name_tv;
 	EditText email_tv;
@@ -32,10 +33,12 @@ public class CreateNewAccountActivity extends BaseActivity
 	EditText mobile_tv;
 	Button btn_create;
 	ProgressDialog mDialog;
-TitleBarView titleBar;
+	TitleBarView titleBar;
+	LinearLayout signin_inputs;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	
+
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
@@ -70,10 +73,12 @@ TitleBarView titleBar;
 		name_tv.setTypeface(Utils.getTypeFace(mContext));
 		email_tv.setTypeface(Utils.getTypeFace(mContext));
 		mobile_tv.setTypeface(Utils.getTypeFace(mContext));
-		titleBar=(TitleBarView)findViewById(R.id.titleBar);
-		
-		titleBar.tv_name.setText(getResources().getString(R.string.create_account));
+		titleBar = (TitleBarView) findViewById(R.id.titleBar);
+		signin_inputs = (LinearLayout) findViewById(R.id.signin_inputs);
+		titleBar.tv_name.setText(getResources().getString(
+				R.string.create_account));
 		titleBar.layout_next.setVisibility(View.GONE);
+
 	}
 
 	@Override
@@ -84,10 +89,15 @@ TitleBarView titleBar;
 			createNewAccount();
 			// mDialog.dismiss();
 		} else if (v == titleBar.layout_back) {
-			finish();
-			
-			Intent intent=new Intent(mContext,MainActivity.class);
+			Utils.hideKeyboard(CreateNewAccountActivity.this, name_tv);
+			Utils.hideKeyboard(CreateNewAccountActivity.this, email_tv);
+			Utils.hideKeyboard(CreateNewAccountActivity.this, passwd_tv);
+			Utils.hideKeyboard(CreateNewAccountActivity.this, mobile_tv);
+			Intent intent = new Intent(mContext, MainActivity.class);
 			mContext.startActivity(intent);
+			Utils.postLeftToRight(mContext);
+			finish();		
+		
 		}
 
 	}
@@ -104,13 +114,20 @@ TitleBarView titleBar;
 	 * create new account
 	 * */
 	private void createNewAccount() {
+
+		Utils.hideKeyboard(CreateNewAccountActivity.this, name_tv);
+		Utils.hideKeyboard(CreateNewAccountActivity.this, email_tv);
+		Utils.hideKeyboard(CreateNewAccountActivity.this, passwd_tv);
+		Utils.hideKeyboard(CreateNewAccountActivity.this, mobile_tv);
+
 		String username = name_tv.getText().toString().trim();
 		String email = email_tv.getText().toString().trim();
 		String password = passwd_tv.getText().toString().trim();
 
 		String mobile = mobile_tv.getText().toString().trim();
 		boolean isNameOK = !username.equals("");
-		boolean isEmailOK = (Utils.isEmailValid(email))&&(!username.equals(""));
+		boolean isEmailOK = (Utils.isEmailValid(email))
+				&& (!username.equals(""));
 		boolean isPasswordOK = password.length() >= 1;
 		boolean isMobileOK = Utils.isMobileValid(mobile);
 
@@ -130,7 +147,7 @@ TitleBarView titleBar;
 			try {
 
 				WebservicesHelper helper = new WebservicesHelper(mContext);
-				helper.createAccount(email,password,username,mobile);
+				helper.createAccount(email, password, username, mobile);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -142,13 +159,20 @@ TitleBarView titleBar;
 		}
 
 	}
+
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		Intent intent=new Intent(mContext,MainActivity.class);
+		Utils.hideKeyboard(CreateNewAccountActivity.this, name_tv);
+		Utils.hideKeyboard(CreateNewAccountActivity.this, email_tv);
+		Utils.hideKeyboard(CreateNewAccountActivity.this, passwd_tv);
+		Utils.hideKeyboard(CreateNewAccountActivity.this, mobile_tv);
+		Utils.postLeftToRight(mContext);
+		finish();		
+		Intent intent = new Intent(mContext, MainActivity.class);
 		mContext.startActivity(intent);
-		finish();
+
 	}
-	
+
 }

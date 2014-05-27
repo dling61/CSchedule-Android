@@ -22,6 +22,7 @@ import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.AddScheduleView;
 import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.PopupDialog;
+import com.dling61.calendarschedule.views.ToastDialog;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import android.annotation.SuppressLint;
@@ -53,7 +54,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * @category add new schedule
  * */
 // @SuppressLint("NewApi")
-public class CreateNewScheduleActivity extends BaseActivity implements
+public class CreateNewScheduleActivity extends Activity implements
 		OnDateSetListener, OnTimeSetListener, OnMenuItemClickListener,
 		OnClickListener {
 
@@ -275,8 +276,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 		} else if (v == view.et_on_duty) {
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
-				overridePendingTransition(R.anim.animation_enter,
-						R.anim.animation_leave);
+				Utils.postLeftToRight(mContext);
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				intent.putExtra(CommConstant.TYPE,
@@ -303,8 +303,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 			deleteSchedule();
 		} else if (v == view.titleBar.layout_back) {
 			((Activity) mContext).finish();
-			overridePendingTransition(R.anim.push_left_in,
-				      R.anim.push_left_out);
+			Utils.postLeftToRight(mContext);
 		} else if (v == view.titleBar.layout_save) {
 			editSchedule();
 		} else if (v == view.et_new_activity_name) {
@@ -314,14 +313,14 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 		} else if (v == view.et_new_activity_description) {
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
-				overridePendingTransition(R.anim.animation_enter,
-						R.anim.animation_leave);
+				
 				// show an activity to edit description
 				Intent intent = new Intent(mContext,
 						EditDescriptionActivity.class);
 				intent.putExtra(CommConstant.ACTIVITY_DESCRIPTION,
 						thisSchedule.getDesp());
 				startActivityForResult(intent, 0);
+				Utils.slideUpDown(mContext);
 			} else {
 				Toast.makeText(this, "Please select an activity to schedule",
 						Toast.LENGTH_LONG).show();
@@ -331,8 +330,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 		else if (v == view.btn_change_on_duty) {
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
-				overridePendingTransition(R.anim.animation_enter,
-						R.anim.animation_leave);
+				Utils.pushRightToLeft(mContext);
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				intent.putExtra(CommConstant.TYPE,
@@ -400,8 +398,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 						public void onClick(View v) {
 							dialog.dismiss();
 							finish();
-							overridePendingTransition(R.anim.push_left_in,
-									R.anim.push_left_out);
+							Utils.postLeftToRight(mContext);
 							CategoryTabActivity.currentPage = CategoryTabActivity.TAB_ACTIVITY;
 							// Intent intent=new Intent("goToActivity");
 							// sendBroadcast(intent);
@@ -697,8 +694,18 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 	 * */
 	private boolean checkAndSetData() {
 		if (myActivity == null) {
-			Toast.makeText(this, "Please select an activity to schedule",
-					Toast.LENGTH_LONG).show();
+			final ToastDialog dialog=new ToastDialog(mContext, "Please select an activity to schedule");
+			dialog.show();
+			
+			dialog.btnOk.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+				dialog.dismiss();
+				}
+			});
+//			Toast.makeText(this, "Please select an activity to schedule",
+//					Toast.LENGTH_LONG).show();
 			return false;
 		}
 		thisSchedule.setDesp(view.et_new_activity_description.getText()
@@ -798,8 +805,7 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 					dbHelper.deleteSchedule(schedule_id);
 					Log.i("delete schedule", "successfully");
 					finish();
-					overridePendingTransition(R.anim.push_left_in,
-						      R.anim.push_left_out);
+					Utils.postLeftToRight(mContext);
 					Intent intent = new Intent(
 							CommConstant.DELETE_SCHEDULE_COMPLETE);
 					mContext.sendBroadcast(intent);
@@ -927,5 +933,10 @@ public class CreateNewScheduleActivity extends BaseActivity implements
 									.toString());
 		}
 	}
-
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		Utils.postLeftToRight(mContext);
+	}
 }

@@ -11,6 +11,7 @@ import com.dling61.calendarschedule.models.MyActivity;
 import com.dling61.calendarschedule.models.Participant;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
+import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.ContactView;
 
 import android.app.Activity;
@@ -105,11 +106,12 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_participant) {
-			((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-				      R.anim.animation_leave);
+//			((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+//				      R.anim.animation_leave);
 			Intent intent = new Intent(mContext, AddNewContactActivity.class);
 			intent.putExtra("type", DatabaseHelper.NEW);
 			mContext.startActivity(intent);
+			Utils.slideUpDown(mContext);
 		}
 		/**
 		 * When clicking on “next”, call API to create shared members for this
@@ -177,6 +179,8 @@ public class ContactFragment extends Fragment implements OnClickListener {
 					inforActivityIntent.putExtra(CommConstant.CONTACT_ID,
 							participantSelected.getID());
 					mContext.startActivity(inforActivityIntent);
+					((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
+						      R.anim.animation_leave);
 
 				}
 			});

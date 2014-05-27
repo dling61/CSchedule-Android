@@ -150,12 +150,8 @@ public class WebservicesHelper {
 									try {
 										if (response.get(CommConstant.OWNER_ID) != null) {
 
-									
-											((Activity) mContext).finish();
-											((Activity) mContext)
-											.overridePendingTransition(
-													R.anim.animation_enter,
-													R.anim.animation_leave);
+											
+											((Activity) mContext).finish();									
 											Intent intent = new Intent(
 													mContext,
 													LoginActivity.class);
@@ -165,6 +161,7 @@ public class WebservicesHelper {
 													CommConstant.PASSWORD,
 													password);
 											mContext.startActivity(intent);
+											Utils.postLeftToRight(mContext);
 										}
 									} catch (JSONException e) {
 										// TODO Auto-generated catch block
@@ -359,10 +356,7 @@ public class WebservicesHelper {
 
 						
 									((Activity) mContext).finish();
-									((Activity) mContext)
-									.overridePendingTransition(
-											R.anim.animation_enter,
-											R.anim.animation_leave);
+									Utils.postLeftToRight(mContext);
 
 									Intent intent = new Intent(mContext,
 											CategoryTabActivity.class);
@@ -1392,11 +1386,7 @@ public class WebservicesHelper {
 											CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
 									mContext.sendBroadcast(intent);
 									((Activity) mContext).finish();
-									((Activity) mContext)
-									.overridePendingTransition(
-											R.anim.animation_enter,
-											R.anim.animation_leave);
-
+									Utils.postLeftToRight(mContext);
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1510,8 +1500,7 @@ public class WebservicesHelper {
 									mContext.sendBroadcast(intent);
 									
 									((Activity) mContext).finish();
-									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
-										      R.anim.push_left_out);
+									Utils.postLeftToRight(mContext);
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1624,8 +1613,7 @@ public class WebservicesHelper {
 									CategoryTabActivity.currentPage =CategoryTabActivity.TAB_SCHEDULE;
 
 									((Activity) mContext).finish();
-									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
-										      R.anim.push_left_out);
+									Utils.postLeftToRight(mContext);
 									Intent intent = new Intent(
 											CommConstant.UPDATE_SCHEDULE);
 									mContext.sendBroadcast(intent);
@@ -2341,8 +2329,7 @@ public class WebservicesHelper {
 												Toast.LENGTH_LONG).show();
 									}
 									((Activity) mContext).finish();
-									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
-										      R.anim.push_left_out);
+									Utils.postLeftToRight(mContext);
 									Intent intent = new Intent(
 											CommConstant.ADD_CONTACT_SUCCESS);
 									mContext.sendBroadcast(intent);
@@ -2453,8 +2440,7 @@ public class WebservicesHelper {
 											participant.getID(), contentValues);
 
 									((Activity) mContext).finish();
-									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
-										      R.anim.push_left_out);
+									Utils.postLeftToRight(mContext);
 									Intent intent = new Intent(
 											CommConstant.ADD_CONTACT_SUCCESS);
 									mContext.sendBroadcast(intent);
@@ -2535,8 +2521,7 @@ public class WebservicesHelper {
 
 						}
 						((Activity) mContext).finish();
-						((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
-							      R.anim.push_left_out);
+						Utils.postLeftToRight(mContext);
 						Intent intent = new Intent(
 								CommConstant.DELETE_CONTACT_COMPLETE);
 						mContext.sendBroadcast(intent);
@@ -2639,8 +2624,7 @@ public class WebservicesHelper {
 											mContext, last_modified);
 									
 									((Activity) mContext).finish();
-									((Activity) mContext).overridePendingTransition(R.anim.push_left_in,
-										      R.anim.push_left_out);
+									Utils.postLeftToRight(mContext);
 									Intent intent = new Intent(
 											CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
 									mContext.sendBroadcast(intent);

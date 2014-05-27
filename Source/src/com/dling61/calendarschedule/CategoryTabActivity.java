@@ -20,11 +20,14 @@ import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.MyDate;
 import com.dling61.calendarschedule.utils.SharedReference;
+import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.CustomViewPager;
 import com.dling61.calendarschedule.views.LoadingPopupViewHolder;
 import com.dling61.calendarschedule.views.MenuAppView;
 import com.loopj.android.http.JsonHttpResponseHandler;
+
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -340,6 +343,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	}
 
 	public static void moveToPage(int page) {
+	
 		mViewPager.setCurrentItem(page);
 	}
 

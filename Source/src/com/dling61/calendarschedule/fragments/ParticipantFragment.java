@@ -15,6 +15,7 @@ import com.dling61.calendarschedule.models.Sharedmember;
 import com.dling61.calendarschedule.net.WebservicesHelper;
 import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.SharedReference;
+import com.dling61.calendarschedule.utils.Utils;
 import com.dling61.calendarschedule.views.ConfirmDialog;
 import com.dling61.calendarschedule.views.ParticipantView;
 
@@ -325,15 +326,14 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 		if (v == view.titleBar.layout_next) {
 			// share schedule
 			if (type == CommConstant.TYPE_CONTACT) {
-				((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-					      R.anim.animation_leave);
+
 				((Activity) mContext).finish();
 				Intent intent = new Intent(mContext,
 						CreateNewScheduleActivity.class);
 				intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				mContext.startActivity(intent);
-
+				Utils.slideUpDown(mContext);
 			} else if (type == CommConstant.TYPE_PARTICIPANT) {
 				if (activity_id != null && (!activity_id.equals(""))) {
 					ArrayList<Integer> listParticipantOnDuty = new ArrayList<Integer>();
@@ -343,9 +343,6 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 						}
 					}
 
-					
-					((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-						      R.anim.animation_leave);
 					Intent i = getActivity().getIntent(); // gets the intent
 															// that called this
 															// intent
@@ -354,7 +351,8 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 							CommConstant.ON_DUTY_ITEM_SELECTED,
 							listParticipantOnDuty);
 					getActivity().setResult(333, i);
-					((Activity) mContext).finish();				
+					((Activity) mContext).finish();
+					Utils.postLeftToRight(mContext);
 				}
 			}
 		}

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg" >
+    android:background="@color/bg_participant_activity_title" >
 
     <com.dling61.calendarschedule.views.TitleBarView
         android:id="@+id/titleBar"
@@ -20,9 +20,7 @@
             android:id="@+id/composeActivityItems"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_left"
-            android:layout_marginRight="@dimen/margin_right"
-            android:layout_marginTop="@dimen/margin_top"
+            android:layout_margin="@dimen/margin_left"
             android:background="@color/bg"
             android:cacheColorHint="@color/white"
             android:orientation="vertical"
@@ -30,12 +28,12 @@
 
             <EditText
                 android:id="@+id/et_activity_description"
-                style="@style/edittextStyle"
-                
+                style="@style/edStyle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="top"
-                android:minLines="10" >
+                android:minLines="10" 
+                android:hint="@string/description">
             </EditText>
         </LinearLayout>
     </ScrollView>

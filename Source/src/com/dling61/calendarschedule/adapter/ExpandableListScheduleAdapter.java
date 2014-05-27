@@ -120,8 +120,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 
 				@Override
 				public void onClick(View v) {
-					((Activity) context).overridePendingTransition(R.anim.animation_enter,
-						      R.anim.animation_leave);
+					
 					Intent inforActivityIntent = new Intent(context,
 							CreateNewScheduleActivity.class);
 					inforActivityIntent.putExtra(CommConstant.TYPE,
@@ -133,6 +132,8 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					inforActivityIntent.putExtra(CommConstant.CREATOR,
 							schedule.getOwner_ID());
 					context.startActivity(inforActivityIntent);
+					((Activity) context).overridePendingTransition(R.anim.animation_enter,
+						      R.anim.animation_leave);
 				}
 			});
 		}
