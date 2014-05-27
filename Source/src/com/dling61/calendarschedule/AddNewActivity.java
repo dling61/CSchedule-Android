@@ -528,12 +528,14 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			if (composeType == DatabaseHelper.EXISTED) {
 
 				finish();
+				
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.TYPE,
 						CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				intent.putExtra(CommConstant.TYPE, CommConstant.TYPE_CONTACT);
 				mContext.startActivity(intent);
+				Utils.pushRightToLeft(mContext);
 			}
 		} else if (v == view.btn_remove_activity) {
 			dialogDeleteActivity();

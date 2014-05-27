@@ -276,7 +276,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		} else if (v == view.et_on_duty) {
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
-				Utils.postLeftToRight(mContext);
+				
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
 				intent.putExtra(CommConstant.TYPE,
@@ -292,6 +292,7 @@ public class CreateNewScheduleActivity extends Activity implements
 				intent.putIntegerArrayListExtra("pins",
 						(ArrayList<Integer>) pins);
 				startActivityForResult(intent, REQUEST_CODE);
+				Utils.pushRightToLeft(mContext);
 			} else {
 				Toast.makeText(this, "Please select an activity to schedule",
 						Toast.LENGTH_LONG).show();

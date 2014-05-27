@@ -132,8 +132,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					inforActivityIntent.putExtra(CommConstant.CREATOR,
 							schedule.getOwner_ID());
 					context.startActivity(inforActivityIntent);
-					((Activity) context).overridePendingTransition(R.anim.animation_enter,
-						      R.anim.animation_leave);
+					Utils.pushRightToLeft(context);
 				}
 			});
 		}

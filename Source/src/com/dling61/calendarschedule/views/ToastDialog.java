@@ -37,7 +37,6 @@ public class ToastDialog extends Dialog {
 		setContentView(R.layout.toast);
 		setCanceledOnTouchOutside(true);
 		btnOk = (Button) findViewById(R.id.btn_ok);
-		
 		tvTitle = (TextView) findViewById(R.id.tv_title);
 		tvTitle.setText(title);
 	}

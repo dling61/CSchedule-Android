@@ -179,8 +179,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 					inforActivityIntent.putExtra(CommConstant.CONTACT_ID,
 							participantSelected.getID());
 					mContext.startActivity(inforActivityIntent);
-					((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-						      R.anim.animation_leave);
+					Utils.pushRightToLeft(mContext);
 
 				}
 			});
