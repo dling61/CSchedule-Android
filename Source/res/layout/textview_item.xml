@@ -1,17 +1,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="@dimen/height_item_dialog" 
-     android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-         android:background="@drawable/text_color_selector">
+    android:layout_height="@dimen/height_item_dialog"
+    android:background="@drawable/text_color_selector"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp" >
 
-        <TextView
-                        android:id="@+id/title"
-                        style="@style/tvTitleStyle"
-                        android:layout_height="fill_parent"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
-                        android:text="@string/time_zone"
-                        android:textStyle="normal" />
+    <TextView
+        android:id="@+id/title"
+        style="@style/tvTitleStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:text="@string/time_zone"
+        android:textStyle="normal" />
 
 </RelativeLayout>

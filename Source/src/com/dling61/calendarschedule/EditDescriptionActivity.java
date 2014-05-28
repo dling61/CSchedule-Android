@@ -39,6 +39,7 @@ public class EditDescriptionActivity extends Activity implements
 		titleBar.tv_name
 				.setText(getResources().getString(R.string.description));
 		titleBar.layout_next.setVisibility(View.GONE);
+		titleBar.layout_save.setVisibility(View.VISIBLE);
 		description = getIntent().getStringExtra(
 				CommConstant.ACTIVITY_DESCRIPTION);
 		ed_description.setText(description);
@@ -75,6 +76,8 @@ public class EditDescriptionActivity extends Activity implements
 	 * */
 	public void onClickListener() {
 		titleBar.layout_back.setOnClickListener(this);
+		titleBar.layout_next.setOnClickListener(this);
+		titleBar.layout_save.setOnClickListener(this);
 	}
 
 	@Override
@@ -88,17 +91,38 @@ public class EditDescriptionActivity extends Activity implements
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == titleBar.layout_back) {
+//			Utils.hideKeyboard(EditDescriptionActivity.this, ed_description);
+//			Intent i = getIntent(); // gets the intent that called this intent
+//			i.putExtra(CommConstant.ACTIVITY_DESCRIPTION, ed_description
+//					.getText().toString().trim());
+//			setResult(222, i);
+
+			Utils.postLeftToRight(mContext);
+			finish();
+
+		}
+		else if(v==titleBar.layout_next)
+		{
 			Utils.hideKeyboard(EditDescriptionActivity.this, ed_description);
 			Intent i = getIntent(); // gets the intent that called this intent
 			i.putExtra(CommConstant.ACTIVITY_DESCRIPTION, ed_description
 					.getText().toString().trim());
 			setResult(222, i);
 
-			Utils.postLeftToRight(mContext);
+//			Utils.postLeftToRight(mContext);
 			finish();
-
 		}
+		else if(v==titleBar.layout_save)
+		{
+			Utils.hideKeyboard(EditDescriptionActivity.this, ed_description);
+			Intent i = getIntent(); // gets the intent that called this intent
+			i.putExtra(CommConstant.ACTIVITY_DESCRIPTION, ed_description
+					.getText().toString().trim());
+			setResult(222, i);
 
+//			Utils.postLeftToRight(mContext);
+			finish();
+		}
 	}
 
 	@Override
@@ -110,7 +134,7 @@ public class EditDescriptionActivity extends Activity implements
 				.toString().trim());
 		setResult(222, i);
 
-		Utils.postLeftToRight(mContext);
+//		Utils.postLeftToRight(mContext);
 		finish();
 
 	}

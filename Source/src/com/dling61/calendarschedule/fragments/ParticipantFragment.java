@@ -115,7 +115,8 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 
 				view.titleBar.tv_name.setText(mContext.getResources()
 						.getString(R.string.select_participant));
-
+				view.titleBar.layout_save.setVisibility(View.VISIBLE);
+				view.titleBar.layout_next.setVisibility(View.GONE);
 				arrSharemember = dbHelper
 						.getSharedMemberForActivity(activity_id);
 
@@ -319,6 +320,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 
 	private void onClickListener() {
 		view.titleBar.layout_next.setOnClickListener(this);
+		view.titleBar.layout_save.setOnClickListener(this);
 	}
 
 	@Override
@@ -335,25 +337,47 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 				mContext.startActivity(intent);
 				Utils.slideUpDown(mContext);
 			} else if (type == CommConstant.TYPE_PARTICIPANT) {
-				if (activity_id != null && (!activity_id.equals(""))) {
-					ArrayList<Integer> listParticipantOnDuty = new ArrayList<Integer>();
-					for (Sharedmember member : arrSharemember) {
-						if (member.isChecked) {
-							listParticipantOnDuty.add(member.getID());
-						}
+//				if (activity_id != null && (!activity_id.equals(""))) {
+//					ArrayList<Integer> listParticipantOnDuty = new ArrayList<Integer>();
+//					for (Sharedmember member : arrSharemember) {
+//						if (member.isChecked) {
+//							listParticipantOnDuty.add(member.getID());
+//						}
+//					}
+//
+//					Intent i = getActivity().getIntent(); // gets the intent
+//															// that called this
+//															// intent
+//					i.putExtra(CommConstant.ACTIVITY_ID, activity_id);
+//					i.putIntegerArrayListExtra(
+//							CommConstant.ON_DUTY_ITEM_SELECTED,
+//							listParticipantOnDuty);
+//					getActivity().setResult(333, i);
+//					((Activity) mContext).finish();
+//					Utils.postLeftToRight(mContext);
+//				}
+			}
+		}
+		else if(v==view.titleBar.layout_save)
+		{
+			if (activity_id != null && (!activity_id.equals(""))) {
+				ArrayList<Integer> listParticipantOnDuty = new ArrayList<Integer>();
+				for (Sharedmember member : arrSharemember) {
+					if (member.isChecked) {
+						listParticipantOnDuty.add(member.getID());
 					}
-
-					Intent i = getActivity().getIntent(); // gets the intent
-															// that called this
-															// intent
-					i.putExtra(CommConstant.ACTIVITY_ID, activity_id);
-					i.putIntegerArrayListExtra(
-							CommConstant.ON_DUTY_ITEM_SELECTED,
-							listParticipantOnDuty);
-					getActivity().setResult(333, i);
-					((Activity) mContext).finish();
-					Utils.postLeftToRight(mContext);
 				}
+
+				Intent i = getActivity().getIntent(); // gets the intent
+														// that called this
+														// intent
+				i.putExtra(CommConstant.ACTIVITY_ID, activity_id);
+				i.putIntegerArrayListExtra(
+						CommConstant.ON_DUTY_ITEM_SELECTED,
+						listParticipantOnDuty);
+				getActivity().setResult(333, i);
+				((Activity) mContext).finish();
+				Utils.postLeftToRight(mContext);
 			}
 		}
 	}

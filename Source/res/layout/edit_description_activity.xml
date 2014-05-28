@@ -14,13 +14,16 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/titleBar"
-        android:layout_centerHorizontal="true" >
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="vertical" >
 
         <LinearLayout
             android:id="@+id/composeActivityItems"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_left"
+       
+            android:layout_marginBottom="@dimen/margin_top_block"
             android:background="@color/bg"
             android:cacheColorHint="@color/white"
             android:orientation="vertical"
@@ -33,6 +36,9 @@
                 android:layout_height="wrap_content"
                 android:gravity="top"
                 android:minLines="10" 
+                android:layout_marginLeft="@dimen/margin_left"
+                android:layout_marginRight="@dimen/margin_right"
+                
                 android:hint="@string/description">
             </EditText>
         </LinearLayout>

@@ -57,7 +57,7 @@ TitleBarView titleBar;
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		Utils.hideKeyboard((Activity)mContext,edFeedback);
+//		Utils.hideKeyboard((Activity)mContext,edFeedback);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ TitleBarView titleBar;
 			Utils.hideKeyboard(FeedBackActivity.this,edFeedback);
 			
 			finish();
-			Utils.postLeftToRight(mContext);
+//			Utils.postLeftToRight(mContext);
 		
 		} else if (v == titleBar.layout_save) {
 			Utils.hideKeyboard((Activity)mContext,edFeedback);

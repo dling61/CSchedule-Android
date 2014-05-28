@@ -86,6 +86,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		Intent myIntent = getIntent();
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, 3);
 		view.et_new_activity_description.setFocusable(false);
+		view.titleBar.layout_save.setVisibility(View.VISIBLE);
+		view.titleBar.layout_next.setVisibility(View.GONE);
 		if (composeType == DatabaseHelper.NEW) {
 			Log.i("next service id", "is " + dbHelper.getNextActivityID());
 			thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
@@ -125,7 +127,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		public void onReceive(Context arg0, Intent arg1) {
 
 			finish();
-//			overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+			// overridePendingTransition(R.anim.push_left_in,
+			// R.anim.push_left_out);
 			Utils.postLeftToRight(mContext);
 		}
 	};
@@ -423,6 +426,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				view.et_new_activity_time_zone
 						.setText(timezone_array[timezone]);
 			}
+			
+			view.titleBar.layout_next.setVisibility(View.GONE);
+			view.titleBar.layout_save.setVisibility(View.VISIBLE);
+
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.edit_activity));
@@ -508,8 +515,11 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == view.titleBar.layout_next) {
+			if(composeType==DatabaseHelper.NEW)
+			{
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
 			createNewActivity();
+			}
 		} else if (v == view.layoutTimeZone) {
 			// if owner, can modify/delete else if is participant, only view
 			// if (shared_role == CommConstant.OWNER) {
@@ -528,7 +538,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			if (composeType == DatabaseHelper.EXISTED) {
 
 				finish();
-				
+
 				Intent intent = new Intent(mContext, ParticipantActivity.class);
 				intent.putExtra(CommConstant.TYPE,
 						CommConstant.ADD_PARTICIPANT_FOR_ACTIVITY);
@@ -541,9 +551,9 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			dialogDeleteActivity();
 		} else if (v == view.titleBar.layout_back) {
 			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
-		
+
 			((Activity) mContext).finish();
-			Utils.postLeftToRight(mContext);
+			// Utils.postLeftToRight(mContext);
 		} else if (v == view.et_new_activity_description) {
 			// show an activity to edit description
 
@@ -554,8 +564,15 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			Utils.slideUpDown(mContext);
 
 		} else if (v == view.titleBar.layout_save) {
-			Utils.hideKeyboard(AddNewActivity.this, view.et_new_activity_name);
-			editActivity();
+			if (composeType == DatabaseHelper.EXISTED) {
+				Utils.hideKeyboard(AddNewActivity.this,
+						view.et_new_activity_name);
+				editActivity();
+			} else if (composeType == DatabaseHelper.NEW) {
+				Utils.hideKeyboard(AddNewActivity.this,
+						view.et_new_activity_name);
+				createNewActivity();
+			}
 		}
 	}
 
@@ -781,6 +798,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		Utils.postLeftToRight(mContext);
+		// Utils.postLeftToRight(mContext);
 	}
 }

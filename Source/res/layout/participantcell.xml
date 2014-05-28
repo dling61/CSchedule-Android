@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/text_color_selector"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/margin_top"
-    android:paddingTop="@dimen/margin_top" >
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp" >
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -39,8 +39,7 @@
             android:layout_alignBottom="@id/participant_name_tv"
             android:layout_toLeftOf="@id/cb_check"
             android:layout_toRightOf="@id/participant_name_tv"
-            android:textSize="@dimen/text_tv"
-            android:layout_centerVertical="true"
+            android:textSize="@dimen/text_tv"          
             android:textStyle="bold" />
     </RelativeLayout>
 

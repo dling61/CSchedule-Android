@@ -134,8 +134,7 @@ public class ActivityAdapter extends BaseAdapter {
 						activity.getActivity_ID());
 				inforActivityIntent.putExtra(CommConstant.ROLE,role);
 				mContext.startActivity(inforActivityIntent);
-				((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-					      R.anim.animation_leave);
+				Utils.pushRightToLeft(mContext);
 
 			}
 		});

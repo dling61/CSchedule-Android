@@ -8,6 +8,10 @@ import com.dling61.calendarschedule.utils.CommConstant;
 import com.dling61.calendarschedule.utils.Utils;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,16 +107,18 @@ public class SharedMemberAdapter extends BaseAdapter {
 		}
 
 		String participant_name = participant.getName();
+		String role="";
 		if (isAttachRoleName) {
 			if (participant.getRole() != CommConstant.PARTICIPANT) {
-				viewHolder.tv_role.setText("(" + getRole(participant.getRole())
-						+ ")");
-				viewHolder.tv_role.setVisibility(View.VISIBLE);
+				role="("+getRole(participant.getRole())+")";
+//				viewHolder.tv_role.setText("(" + getRole(participant.getRole())
+//						+ ")");
+//				viewHolder.tv_role.setVisibility(View.VISIBLE);
 			} else {
 				viewHolder.tv_role.setVisibility(View.GONE);
 			}
 		}
-		viewHolder.name_tv.setText(participant_name);
+		viewHolder.name_tv.setText(getStringWithRole(participant_name, role));
 
 		if (isShowFull) {
 			viewHolder.email_tv.setText(participant.getEmail());
@@ -169,6 +175,21 @@ public class SharedMemberAdapter extends BaseAdapter {
 		TextView mobile_tv;
 		ImageView cb_check;
 		TextView tv_role;
+	}
+	
+	public SpannableString getStringWithRole(String str, String role)
+	{
+		
+        // this is the text we'll be operating on  
+        SpannableString title = new SpannableString(str+role);
+//        // make "key" (characters 0 to key.length()) White Bold
+        title.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), str.length() ,
+         str.length() + role.length(), 0);
+        title.setSpan(new RelativeSizeSpan(0.7f), str.length() ,
+                str.length() + role.length(), 0);
+ 
+         
+        return title;
 	}
 
 }

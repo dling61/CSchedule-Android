@@ -40,12 +40,12 @@
 
                 <EditText
                     android:id="@+id/et_new_activity_name"
-                    style="@style/edStyleActivity"
+                    style="@style/edStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="13dp"
-                    android:layout_marginRight="13dp"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_left"
                     android:layout_toRightOf="@id/tv_new_activity_name"
                     android:clickable="true"
                     android:focusable="false"
@@ -63,10 +63,10 @@
                 <TextView
                     android:id="@+id/tv_start"
                     style="@style/tvTitleStyle"
-                    android:layout_width="70dp"
+                    android:layout_width="50dp"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="13dp"
+                    android:layout_marginLeft="@dimen/margin_left"
                     android:layout_marginRight="@dimen/margin_right"
                     android:text="@string/start" />
 
@@ -78,16 +78,17 @@
                     android:layout_toRightOf="@id/tv_start"
                     android:orientation="horizontal" >
 
-                    <LinearLayout
+                  
+
+                    <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal" >
+                        android:gravity="center_vertical" >
 
                         <EditText
                             android:id="@+id/et_startDate"
-                            style="@style/edStyleDate"
+                            style="@style/edStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="2dp"
@@ -96,24 +97,26 @@
                             android:gravity="center_vertical"
                             android:inputType="date"
                             android:textColor="@drawable/text_color_date_time_selector" />
-                    </LinearLayout>
+                    </RelativeLayout>
 
-                    <LinearLayout
+               
+
+                    <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:orientation="horizontal" >
+                        android:gravity="center_vertical" >
 
                         <EditText
                             android:id="@+id/et_startTime"
-                            style="@style/edStyleDate"
+                            style="@style/edStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:clickable="true"
                             android:focusable="false"
                             android:inputType="datetime"
                             android:textColor="@drawable/text_color_date_time_selector" />
-                    </LinearLayout>
+                    </RelativeLayout>
                 </LinearLayout>
             </RelativeLayout>
 
@@ -139,10 +142,10 @@
                 <TextView
                     android:id="@+id/tv_end"
                     style="@style/tvTitleStyle"
-                    android:layout_width="70dp"
+                    android:layout_width="50dp"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="13dp"
+                    android:layout_marginLeft="@dimen/margin_left"
                     android:layout_marginRight="@dimen/margin_right"
                     android:text="@string/end" />
 
@@ -155,16 +158,15 @@
                     android:layout_toRightOf="@id/tv_end"
                     android:orientation="horizontal" >
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal" >
+                        android:gravity="center_vertical" >
 
                         <EditText
                             android:id="@+id/et_endDate"
-                            style="@style/edStyleDate"
+                            style="@style/edStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="2dp"
@@ -173,24 +175,24 @@
                             android:gravity="center_vertical"
                             android:inputType="date"
                             android:textColor="@drawable/text_color_date_time_selector" />
-                    </LinearLayout>
+                    </RelativeLayout>
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
-                        android:orientation="horizontal" >
+                        android:gravity="center_vertical" >
 
                         <EditText
                             android:id="@+id/et_endTime"
-                            style="@style/edStyleDate"
+                            style="@style/edStyle"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:clickable="true"
                             android:focusable="false"
                             android:inputType="datetime"
                             android:textColor="@drawable/text_color_date_time_selector" />
-                    </LinearLayout>
+                    </RelativeLayout>
                 </LinearLayout>
             </RelativeLayout>
 
@@ -299,32 +301,24 @@
                 </ListView>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="@dimen/margin_top_block"
-                android:background="@color/bg_schedule"
-                android:orientation="vertical" >
+            <Button
+                android:id="@+id/btn_change_on_duty"
+                style="@style/buttonStyle"
+                android:layout_marginBottom="@dimen/margin_left"
+                android:layout_marginLeft="@dimen/margin_left"
+                android:layout_marginRight="@dimen/margin_right"
+                android:layout_marginTop="@dimen/margin_left"
+                android:text="Change On Duty"
+                android:visibility="visible" />
 
-                <Button
-                    android:id="@+id/btn_change_on_duty"
-                    style="@style/buttonStyle"
-                    android:layout_marginBottom="@dimen/margin_left"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:layout_marginTop="@dimen/margin_left"
-                    android:text="Change On Duty"
-                    android:visibility="visible" />
-
-                <Button
-                    android:id="@+id/btn_remove_schedule"
-                    style="@style/buttonRemoveStyle"
-                    android:layout_marginBottom="@dimen/margin_left"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/remove_schedule"
-                    android:visibility="visible" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/btn_remove_schedule"
+                style="@style/buttonRemoveStyle"
+                android:layout_marginBottom="@dimen/margin_left"
+                android:layout_marginLeft="@dimen/margin_left"
+                android:layout_marginRight="@dimen/margin_right"
+                android:text="@string/remove_schedule"
+                android:visibility="visible" />
         </LinearLayout>
     </ScrollView>
 

@@ -94,7 +94,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
 			
 			((Activity) mContext).finish();
-			Utils.postLeftToRight(mContext);
+//			Utils.postLeftToRight(mContext);
 		} else if (v == view.btn_remove_contact) {
 			if (selectedParticipantID > 0) {
 				removeParticipant();
@@ -363,6 +363,6 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		Utils.postLeftToRight(mContext);
+//		Utils.postLeftToRight(mContext);
 	}
 }

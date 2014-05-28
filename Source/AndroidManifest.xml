@@ -35,8 +35,7 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar"
-            >
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,15 +46,13 @@
             android:name=".HomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar"
-            >
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name=".ForgetPasswordActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar"
-           >
+            android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name=".TabActivity"
@@ -68,29 +65,28 @@
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-             android:theme="@android:style/Theme.Black.NoTitleBar"
-            >
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
         <activity
             android:name=".CreateNewAccountActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar"
-         android:windowSoftInputMode="stateHidden|adjustResize"   >
+            android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
             android:name=".AddNewActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-        android:theme="@android:style/Theme.Black.NoTitleBar"
-         android:windowSoftInputMode="stateHidden|adjustResize"  >
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
             android:name=".AddNewContactActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar"
-         android:windowSoftInputMode="stateHidden|adjustResize"  >
+            android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
             android:name=".ContactActivity"
@@ -124,8 +120,8 @@
             android:name=".EditDescriptionActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
             android:name=".OndutyActivity"

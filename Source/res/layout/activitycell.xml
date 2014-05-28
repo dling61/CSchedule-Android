@@ -2,47 +2,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:background="@drawable/text_color_selector"
     android:orientation="vertical"
-      android:background="@drawable/text_color_selector" >
+    android:padding="10dp" >
 
     <TextView
         android:id="@+id/service_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:singleLine="true"
         android:textColor="@color/black"
         android:textSize="@dimen/text_name"
-        android:textStyle="bold"
-        android:singleLine="true" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/service_time_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:singleLine="true"
         android:textColor="@color/bg_login_title_bar"
         android:textSize="@dimen/text_description"
-        android:textStyle="bold"
-        android:singleLine="true" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/service_descrpition_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLength="100"
+        android:singleLine="true"
         android:textColor="@color/text_activity_description"
         android:textSize="@dimen/text_description"
-        android:textStyle="bold"
-        android:singleLine="true" 
-         android:maxLength="100"/>
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_participant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLength="100"
         android:singleLine="true"
         android:textColor="@color/bg_login_title_bar"
         android:textSize="@dimen/text_description"
-        android:textStyle="bold" 
-        android:maxLength="100"
-        />
+        android:textStyle="bold" />
 
 </LinearLayout>

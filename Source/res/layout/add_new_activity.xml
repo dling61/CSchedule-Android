@@ -10,7 +10,7 @@
         android:layout_height="wrap_content" >
     </com.dling61.calendarschedule.views.TitleBarView>
 
-      <ScrollView
+    <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/titleBar"
@@ -22,8 +22,9 @@
             android:id="@+id/bottom"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:layout_below="@id/titleBar"          
+            android:layout_below="@id/titleBar"
             android:orientation="vertical" >
+
             <RelativeLayout
                 android:id="@+id/layout_new_activity_name"
                 android:layout_width="fill_parent"
@@ -36,10 +37,10 @@
                     style="@style/edStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="13dp"
                     android:layout_marginRight="13dp"
                     android:hint="@string/activity_name"
-                      android:layout_centerVertical="true"
                     android:singleLine="true" />
             </RelativeLayout>
 
@@ -260,32 +261,24 @@
                 </ListView>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="@dimen/margin_top_block"
-                android:background="@color/bg_schedule"
-                android:orientation="vertical" >
+            <Button
+                android:id="@+id/btn_add_paticipant"
+                style="@style/buttonStyle"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="@dimen/margin_left"
+                android:layout_marginRight="@dimen/margin_right"
+                android:layout_marginTop="@dimen/margin_top"
+                android:text="@string/add_participant"
+                android:visibility="gone" />
 
-                <Button
-                    android:id="@+id/btn_add_paticipant"
-                    style="@style/buttonStyle"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:layout_marginTop="@dimen/margin_top"
-                    android:text="@string/add_participant"
-                    android:visibility="gone" />
-
-                <Button
-                    android:id="@+id/btn_remove_activity"
-                    style="@style/buttonRemoveStyle"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="@dimen/margin_left"
-                    android:layout_marginRight="@dimen/margin_right"
-                    android:text="@string/remove_activity"
-                    android:visibility="gone" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/btn_remove_activity"
+                style="@style/buttonRemoveStyle"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="@dimen/margin_left"
+                android:layout_marginRight="@dimen/margin_right"
+                android:text="@string/remove_activity"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 
