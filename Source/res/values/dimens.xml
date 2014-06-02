@@ -17,7 +17,7 @@
     <dimen name="width_tv_activity_name">80dp</dimen>
     <dimen name="height_item_dialog">40dp</dimen>
     <dimen name="width_tv_add_contact">60dp</dimen>
-    <dimen name="height_btn_schedule_page">35dp</dimen>
+    <dimen name="height_btn_schedule_page">30dp</dimen>
     <dimen name="width_btn_schedule_page">70dp</dimen>
     <dimen name="text_tv">14sp</dimen>
     <dimen name="height_title_bar">50dp</dimen>

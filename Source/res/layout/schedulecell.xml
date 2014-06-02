@@ -37,6 +37,7 @@
             android:text="âfsfdsjfkdskssgssssfsfsfsfdffdfdffđfdfdfdfdfdfdffggfgfgfgfgfgfgf"
             android:textColor="@color/black"
             android:textSize="@dimen/text_name"
+            android:layout_marginRight="5dp"
             android:textStyle="bold" />
     </RelativeLayout>
 

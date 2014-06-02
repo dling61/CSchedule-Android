@@ -5,33 +5,31 @@
     android:background="@drawable/login_border"
     android:orientation="horizontal" >
 
-    <TextView
+      <TextView
         android:id="@+id/tv_title"
         style="@style/confirmTitleStyle"
         android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_margin="@dimen/margin_left"
+        android:layout_marginTop="@dimen/margin_top"
         android:gravity="center_horizontal" />
 
-   <RelativeLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_title"
         android:layout_centerHorizontal="true"
-     
         android:paddingBottom="10dp" >
 
-     
-            <Button
-                android:id="@+id/btn_ok"
-                style="@style/confirm_btn"
-                android:layout_width="100dp"
-                android:layout_marginLeft="2dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/me_border"
-                android:singleLine="true"
-                android:layout_centerHorizontal="true"
-                android:text="@string/ok" />
-    
-  </RelativeLayout>
+        <Button
+            android:id="@+id/btn_ok"
+            style="@style/confirm_btn"
+            android:layout_width="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/me_border"
+            android:singleLine="true"
+            android:text="@string/ok" />
+    </RelativeLayout>
+
 </RelativeLayout>

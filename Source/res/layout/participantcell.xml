@@ -29,8 +29,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:textSize="@dimen/text_name"
-            android:text="Text" />
+            android:text="Text"
+            android:textSize="@dimen/text_name" />
+
         <TextView
             android:id="@+id/tv_role"
             style="@style/tvContactName"
@@ -39,7 +40,7 @@
             android:layout_alignBottom="@id/participant_name_tv"
             android:layout_toLeftOf="@id/cb_check"
             android:layout_toRightOf="@id/participant_name_tv"
-            android:textSize="@dimen/text_tv"          
+            android:textSize="@dimen/text_tv"
             android:textStyle="bold" />
     </RelativeLayout>
 

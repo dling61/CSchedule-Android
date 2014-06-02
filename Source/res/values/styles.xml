@@ -90,7 +90,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_tv</item>
         <item name="android:textColor">@color/textview</item>
-        <item name="android:textStyle">bold</item>
+        
     </style>
 
     <style name="confirm_btn" parent="@android:style/TextAppearance.Medium">

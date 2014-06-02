@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dling61.calendarschedule"
+    package="com.e2wstudy.cschedule"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -10,13 +10,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" >
     </uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
-    </uses-permission>
     <uses-permission android:name="android.permission.CALL_PHONE" >
     </uses-permission>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" >
@@ -32,7 +29,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="com.e2wstudy.cschedule.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
@@ -43,95 +40,95 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HomeActivity"
+            android:name="com.e2wstudy.cschedule.HomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
-            android:name=".ForgetPasswordActivity"
+            android:name="com.e2wstudy.cschedule.ForgetPasswordActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
-            android:name=".TabActivity"
+            android:name="com.e2wstudy.cschedule.TabActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.e2wstudy.cschedule.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
         <activity
-            android:name=".CreateNewAccountActivity"
+            android:name="com.e2wstudy.cschedule.CreateNewAccountActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
-            android:name=".AddNewActivity"
+            android:name="com.e2wstudy.cschedule.AddNewActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
-            android:name=".AddNewContactActivity"
+            android:name="com.e2wstudy.cschedule.AddNewContactActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
-            android:name=".ContactActivity"
+            android:name="com.e2wstudy.cschedule.ContactActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
-            android:name=".CreateNewScheduleActivity"
+            android:name="com.e2wstudy.cschedule.CreateNewScheduleActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+             android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
+        </activity>
+        <activity
+            android:name="com.e2wstudy.cschedule.ParticipantActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
-            android:name=".ParticipantActivity"
+            android:name="com.e2wstudy.cschedule.CategoryTabActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
-            android:name=".CategoryTabActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
-        </activity>
-        <activity
-            android:name=".EditDescriptionActivity"
+            android:name="com.e2wstudy.cschedule.EditDescriptionActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
-            android:name=".OndutyActivity"
+            android:name="com.e2wstudy.cschedule.OndutyActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
-            android:name=".FeedBackActivity"
+            android:name="com.e2wstudy.cschedule.FeedBackActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar"
@@ -140,7 +137,7 @@
         <activity android:name="com.devsmart.android.activity.FragmentShellActivity" />
 
         <receiver
-            android:name="com.dling61.calendarschedule.net.NetworkReceiver"
+            android:name="com.e2wstudy.cschedule.net.NetworkReceiver"
             android:label="NetworkConnection" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

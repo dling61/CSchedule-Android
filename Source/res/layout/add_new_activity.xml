@@ -4,11 +4,11 @@
     android:layout_height="fill_parent"
     android:background="@color/bg_participant_activity_title" >
 
-    <com.dling61.calendarschedule.views.TitleBarView
+    <com.e2wstudy.cschedule.views.TitleBarView
         android:id="@+id/titleBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-    </com.dling61.calendarschedule.views.TitleBarView>
+    </com.e2wstudy.cschedule.views.TitleBarView>
 
     <ScrollView
         android:layout_width="fill_parent"

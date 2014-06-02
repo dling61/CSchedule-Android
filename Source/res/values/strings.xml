@@ -12,14 +12,14 @@
     <string name="email">Email(*)</string>
     <string name="password">Password(*)</string>
     <string name="please_wait">Please wait...</string>
-    <string name="username_empty">The username cannot be empty</string>
-    <string name="email_invalid">The email address is invalid</string>
-    <string name="password_is_not_blank">Password is not blank</string>
+    <string name="username_empty">The username cannot be empty.</string>
+    <string name="email_invalid">The email address is invalid.</string>
+    <string name="password_is_not_blank">Password is not blank.</string>
     <string name="create_account">Create Account</string>
     <string name="mobile">Mobile(*)</string>
     <string name="processing">Processing</string>
-    <string name="create_acc_failure">Create account failure!</string>
-    <string name="login_fail">Login fail!</string>
+    <string name="create_acc_failure">Create account failure.</string>
+    <string name="login_fail">Login fail.</string>
     <string name="title_email">Email</string>
     <string name="title_mobile">Mobile</string>
     <string name="participant_infor">Participant Info</string>
@@ -93,12 +93,12 @@
     <string name="alert">Alert</string>
     <string name="description">Description</string>
     <string name="repeat">Repeat</string>
-    <string name="username_blank">Please enter your username</string>
-    <string name="password_blank">Please enter your password</string>
-    <string name="input_activity_name">Please enter activity name</string>
-    <string name="input_activity_description">Please enter activity description</string>
-    <string name="create_activity_error">Have an error occur when creating an activity. Please try again!</string>
-    <string name="edit_activity_error">Have an error occur when editing an activity. Please try again!</string>
+    <string name="username_blank">Please enter your username.</string>
+    <string name="password_blank">Please enter your password.</string>
+    <string name="input_activity_name">Please enter activity name.</string>
+    <string name="input_activity_description">Please enter activity description.</string>
+    <string name="create_activity_error">Have an error occur when creating an activity. Please try again.</string>
+    <string name="edit_activity_error">Have an error occur when editing an activity. Please try again.</string>
     <string name="add_participant">Add Participant</string>
     <string name="add_contact">New Contact</string>
     <string name="edit_participant">Contact Info</string>
@@ -118,15 +118,21 @@
     <string name="account">Account</string>
     <string name="activity_description">Activity Description</string>
     <string name="remove_contact">Remove Contact</string>
-    <string name="delete_contact">Are you sure you want to delete</string>
-    <string name="delete_contact_error">Have an error occur when deleting this contact</string>
-    <string name="create_schedule_error">Have an error occur when creating schedule an activity. Please try again!</string>
-    <string name="start_date_greater_end_date">End date must be less than or equal start date</string>
+    <string name="delete_contact">Are you sure you want to delete?</string>
+    <string name="delete_contact_error">Have an error occurred when deleting this contact.</string>
+    <string name="create_schedule_error">Have an error occurred when creating schedule an activity.</string>
+    <string name="start_date_greater_end_date">End date must be less than or equal start date.</string>
     <string name="delete_schedule">Are you sure you want to delete this activity and related schedules?</string>
-    <string name="delete_activity_error">Delete activity error</string>
-    <string name="delete_schedule_error">Delete schedule error</string>
-    <string name="update_participant_error">Edit participant information error</string>
-    <string name="add_participant_error">Add participant error</string>
+    <string name="delete_activity_error">Have an error occurred when deleting activity.</string>
+    <string name="delete_schedule_error">Have an error occurred when deleting schedule.</string>
+    <string name="send_feedback_error">Have an error occurred when sending your feedback. Please try again.</string>
+    <string name="update_participant_error">Have an error occurred when editting participant information.</string>
+    <string name="get_shared_member_error">Have an error occurred when getting shared members for this activity.</string>
+    <string name="post_shared_member_error">Have an error occurred when sharing members for this activity.</string>
+    <string name="add_participant_error">Have an error occurred when adding participant.</string>
+    <string name="delete_participant_error">Have an error occurred when deleting participant.</string>
+    <string name="reset_password_error">Have an error occurred when resetting your password.</string>
+    <string name="invalid_content_feedback">Invalid content in the feedback.</string>
 
     <string-array name="owner_infor_array">
         <item>Make Call To</item>
@@ -140,7 +146,7 @@
     </string-array>
 
     <string name="delete_participant">Delete partipant</string>
-    <string name="your_contact">You can not delete yourself</string>
+    <string name="your_contact">You can not delete yourself.</string>
     <string name="today">Today</string>
     <string name="me">Me</string>
     <string name="all">All</string>
@@ -154,7 +160,7 @@
     <string name="remove_schedule">Remove Schedule</string>
     <string name="about">About</string>
     <string name="sign_out">Sign out</string>
-    <string name="cannot_change_activity">You cannot modify this activity</string>
+    <string name="cannot_change_activity">You cannot modify this activity.</string>
     <string name="contact">Contact</string>
     <string name="select_participant">Select Participant</string>
     <string name="have_no_activity_first">When you have already created an activity or </string>
@@ -166,18 +172,29 @@
     <string name="have_no_schedule_third">someone else, you’ll see it here.</string>
     <string name="your_schedule">Your schedule</string>
     <string name="feedback">Feedback</string>
-    <string name="send_feedback_success">You sent feedback to us successfully</string>
+    <string name="send_feedback_success">You sent feedback to us successfully.</string>
     <string name="please_enter_feedback">Please enter your feedback</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="request_password_reset">Request Password Reset</string>
     <string name="enter_email">Enter your email address associated with the account</string>
     <string name="reset_password">Reset Password</string>
-    <string name="email_does_not_exist">Email doesn’t exist</string>
+    <string name="email_does_not_exist">Email doesn’t exist.</string>
     <string name="reset_password_succesfully">An email sent to your email. Please check.</string>
-    <string name="no_network">No network connection. Please try again.</string>
+    <string name="no_network">No internet connection. Please try again.</string>
     <string name="title_contact">Your contact</string>
-    <string name="have_no_contact">You have not create contact yet</string>
-    <string name="no_activity_for_create_schedule">You need to create an activity first before creating a schedule here</string>
-    <string name="delete_participant_from_activity">Are you sure you want to delete</string>
+    <string name="have_no_contact">You have not create contact yet.</string>
+    <string name="no_activity_for_create_schedule">You need to create an activity first before creating a schedule here.</string>
+    <string name="delete_participant_from_activity">Are you sure you want to delete?</string>
+    <string name="error_load_activity">Have an error occurred when loading activities from server.</string>
+    <string name="error_load_schedule">Have an error occurred when loading schedules from server.</string>
+    <string name="error_load_contact">Have an error occurred when loading contacts from server.</string>
+    <string name="edit_schedule_error">Have an error occurred when editing this schedule.</string>
+    <string name="select_activity_schedule">Please select an activity to schedule.</string>
+    <string name="activity_name_not_blank">The activity name should not be empty.</string>
+    <string name="sure_to_exit">Are you sure to exit?</string>
+    <string name="package_name">com.e2wstudy.cschedule</string>
+    <string name="title_timetout">Connection timeout. Please try again.</string>
+    <string name="message_timeout">Request is timeout. Please try again.</string>
+    <string name="title_lost_connection">Lost connection</string>
 
 </resources>
