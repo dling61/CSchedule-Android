@@ -207,9 +207,11 @@
                     android:hint="@string/description"
                     android:maxLength="2000"
                     android:maxLines="4"
-                    android:minLines="4" >
-
-                    <requestFocus />
+                    android:minLines="4"
+                    android:focusable="true" 
+                    android:clickable="true"
+                    android:focusableInTouchMode="true">
+                    
                 </EditText>
             </RelativeLayout>
 

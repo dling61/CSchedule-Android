@@ -256,7 +256,10 @@
                     android:maxLength="2000"
                     android:maxLines="4"
                     android:minLines="4"
-                    android:paddingLeft="0dp" />
+                    android:paddingLeft="0dp" 
+                      android:focusable="true" 
+                    android:clickable="true"
+                    android:focusableInTouchMode="true"/>
             </RelativeLayout>
 
             <RelativeLayout

@@ -87,7 +87,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		mContext = this;
 		view = new AddScheduleView(mContext);
 		this.setContentView(view.layout);
-
+		view.et_new_activity_description.requestFocus();
 		Intent myIntent = this.getIntent();
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, -1);
 		activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
@@ -310,11 +310,12 @@ public class CreateNewScheduleActivity extends Activity implements
 		view.et_new_activity_description.setOnTouchListener(new View.OnTouchListener() {
 
 	        @Override
-	        public boolean onTouch(final View v, final MotionEvent motionEvent) {
-	       
-	                v.getParent().requestDisallowInterceptTouchEvent(true);
+	        public boolean onTouch(final View v, final MotionEvent motionEvent) {	   
+	             v.getParent().requestDisallowInterceptTouchEvent(true);
 	                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
 	                    case MotionEvent.ACTION_UP:
+	                    	
+	         	           
 	                        v.getParent().requestDisallowInterceptTouchEvent(
 	                                false);
 	                        break;
@@ -450,6 +451,12 @@ public class CreateNewScheduleActivity extends Activity implements
 				popUp();
 			}
 		} else if (v == view.et_new_activity_description) {
+			SharedReference ref = new SharedReference();
+			int owner_id = ref.getCurrentOwnerId(mContext);
+			if (creator == owner_id)
+			{
+			Utils.openKeyboard(mContext,view.et_new_activity_description);
+			}
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
 
@@ -634,7 +641,9 @@ public class CreateNewScheduleActivity extends Activity implements
 				view.et_startTime.setEnabled(true);
 				view.et_on_duty.setEnabled(true);
 				view.et_new_activity_description.setEnabled(true);
-				view.et_new_activity_name.setEnabled(true);
+				view.et_new_activity_description.setFocusableInTouchMode(true);
+//				view.et_new_activity_name.setEnabled(true);
+//				view.et_new_activity_name.setEnabled(false);
 				// view.btn_remove_schedule.setVisibility(View.VISIBLE);
 				view.titleBar.layout_save.setEnabled(true);
 				view.titleBar.layout_next.setEnabled(true);

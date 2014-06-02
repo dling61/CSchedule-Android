@@ -32,7 +32,8 @@ public class AddActivityView extends RelativeLayout {
 	public TextView tv_participant;
 	public TitleBarView titleBar;
 	public RelativeLayout layoutAlert;
-public RelativeLayout layoutTimeZone;
+	public RelativeLayout layoutTimeZone;
+
 	public AddActivityView(Context context) {
 		super(context);
 		this.context = context;
@@ -63,9 +64,9 @@ public RelativeLayout layoutTimeZone;
 		btn_remove_activity = (Button) findViewById(R.id.btn_remove_activity);
 		list_participant = (ListView) findViewById(R.id.list_participant);
 		tv_participant = (TextView) findViewById(R.id.tv_participant);
-		
+
 		titleBar.layout_back.setVisibility(View.VISIBLE);
-		layoutAlert=(RelativeLayout)findViewById(R.id.layoutAlert);
-		layoutTimeZone=(RelativeLayout)findViewById(R.id.layout_timeZone);
+		layoutAlert = (RelativeLayout) findViewById(R.id.layoutAlert);
+		layoutTimeZone = (RelativeLayout) findViewById(R.id.layout_timeZone);
 	}
 }

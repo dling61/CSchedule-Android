@@ -476,6 +476,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				view.et_new_activity_alert.setEnabled(true);
 				view.et_new_activity_time_zone.setEnabled(true);
 				view.et_new_activity_description.setEnabled(true);
+				view.et_new_activity_description.setFocusableInTouchMode(true);
+				view.et_new_activity_description.requestFocus();
 				view.et_new_activity_name.setEnabled(true);
 				view.et_new_activity_repeat.setEnabled(true);
 				view.btn_add_paticipant.setVisibility(View.VISIBLE);
@@ -585,6 +587,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			// thisActivity.getDesp());
 			// startActivityForResult(intent, 0);
 			// Utils.slideUpDown(mContext);
+			if (shared_role== CommConstant.OWNER)
+			{
+				Utils.openKeyboard(mContext,view.et_new_activity_description);
+			}
 
 		} else if (v == view.titleBar.layout_save) {
 			if (composeType == DatabaseHelper.EXISTED) {

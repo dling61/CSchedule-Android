@@ -16,10 +16,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +31,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.e2wstudy.cschedule.R;
-import com.e2wstudy.cschedule.models.Participant;
 import com.e2wstudy.cschedule.models.Sharedmember;
 
 public class Utils {
@@ -201,9 +198,8 @@ public class Utils {
 			Log.e("KeyBoardUtil", e.toString(), e);
 		}
 	}
- 
-	
-	//ping google check have internet connection
+
+	// ping google check have internet connection
 	public static void isNetworkAvailable(final Handler handler) {
 
 		// ask fo message '0' (not connected) or '1' (connected) on 'handler'
@@ -298,5 +294,16 @@ public class Utils {
 					.parse("http://play.google.com/store/apps/details?id="
 							+ appName)));
 		}
+	}
+
+	/**
+	 * open keyboard
+	 * */
+	public static void openKeyboard(Context mContext, EditText ed) {
+		InputMethodManager inputMethodManager = (InputMethodManager) mContext
+				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		inputMethodManager.toggleSoftInputFromWindow(
+				ed.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED,
+				0);
 	}
 }
