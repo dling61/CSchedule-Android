@@ -32,7 +32,13 @@ public class SharedReference {
 		username = appSharedPrefs.getString(USERNAME, "");
 		return username;
 	}
-
+	public void setEmail(Context context, String email) {
+		SharedPreferences appSharedPrefs = context.getSharedPreferences(
+				MY_PREFERENCE, 0);
+		Editor prefsEditor = appSharedPrefs.edit();
+		prefsEditor.putString(CommConstant.EMAIL, email);
+		prefsEditor.commit();
+	}
 	/**
 	 * Get email logged in shared reference
 	 * */

@@ -128,9 +128,13 @@ public class AccountFragment extends Fragment implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
+				
+				String email=new SharedReference().getEmail(mContext);
 				DatabaseHelper dbHelper = DatabaseHelper
 						.getSharedDatabaseHelper(mContext);
 				dbHelper.evacuateDatabase();
+				new SharedReference().setUsername(mContext, email);
+				new SharedReference().setEmail(mContext, email);
 				((Activity) mContext).finish();
 				System.exit(0);
 			}
