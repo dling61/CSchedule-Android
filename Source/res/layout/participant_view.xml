@@ -3,21 +3,68 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
- 
- <com.e2wstudy.cschedule.views.TitleBarView
+    <com.e2wstudy.cschedule.views.TitleBarView
         android:id="@+id/titleBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-   </com.e2wstudy.cschedule.views.TitleBarView>
+    </com.e2wstudy.cschedule.views.TitleBarView>
+
+    <RelativeLayout
+        android:id="@+id/add_new_contact"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/height_title_bar"
+        android:layout_alignParentBottom="true"
+        android:background="@color/new_contact" >
+
+        <TextView
+            android:id="@+id/txtCannot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="@string/cannot_find_a_contact"
+            android:textColor="@color/text_new_contact"
+            android:textSize="@dimen/title_tv" />
+
+        <RelativeLayout
+            android:id="@+id/layout_add_new_contact"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/height_title_bar"
+            android:layout_toRightOf="@id/txtCannot"
+            android:background="@color/new_contact" >
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:text="@string/new_contact"
+                android:textColor="#fbfbfb"
+                android:textSize="@dimen/text_name" />
+
+            <ImageView
+                android:id="@+id/ic_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/txtTitle"
+                android:src="@drawable/button_add" />
+        </RelativeLayout>
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/list_contact"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@id/add_new_contact"
         android:layout_below="@id/titleBar"
+        android:layout_marginLeft="@dimen/margin_left"
+        android:layout_marginRight="@dimen/margin_right"
         android:cacheColorHint="#00000000"
         android:divider="#dddddd"
-        android:dividerHeight="1dp" 
-        android:layout_marginLeft="@dimen/margin_left"
-        android:layout_marginRight="@dimen/margin_right"/>
+        android:dividerHeight="1dp" />
 
 </RelativeLayout>

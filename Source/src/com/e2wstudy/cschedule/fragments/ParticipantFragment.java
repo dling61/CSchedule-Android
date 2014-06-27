@@ -3,11 +3,13 @@ package com.e2wstudy.cschedule.fragments;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.e2wstudy.cschedule.AddNewContactActivity;
 import com.e2wstudy.cschedule.CreateNewScheduleActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.adapter.ParticipantAdapter;
 import com.e2wstudy.cschedule.adapter.SharedMemberAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
+import com.e2wstudy.cschedule.models.Confirm;
 import com.e2wstudy.cschedule.models.MyActivity;
 import com.e2wstudy.cschedule.models.Participant;
 import com.e2wstudy.cschedule.models.SharedMemberTable;
@@ -57,8 +59,8 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	ArrayList<Sharedmember> activityParticipant;
 
 	ArrayList<Sharedmember> arrSharemember;
-	ArrayList<Integer> selectedParticipant;
-	 Participant participantSelected;
+	ArrayList<Confirm> selectedParticipant;
+	Participant participantSelected;
 
 	public void setActivity_id(String activity_id) {
 		this.activity_id = activity_id;
@@ -68,7 +70,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 		this.type = type;
 	}
 
-	public void setSelectedParticipant(ArrayList<Integer> selectedParticipant) {
+	public void setSelectedParticipant(ArrayList<Confirm> selectedParticipant) {
 		this.selectedParticipant = selectedParticipant;
 	}
 
@@ -85,6 +87,11 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 		IntentFilter filterRefreshUpdate = new IntentFilter();
 		filterRefreshUpdate
 				.addAction(CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
+
+		filterRefreshUpdate.addAction(CommConstant.DELETE_CONTACT_COMPLETE);
+		filterRefreshUpdate.addAction(CommConstant.PARTICIPANT_READY);
+		filterRefreshUpdate.addAction(CommConstant.ADD_CONTACT_SUCCESS);
+
 		getActivity().registerReceiver(activityDownloadComplete,
 				filterRefreshUpdate);
 	}
@@ -117,6 +124,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 					.getSharedDatabaseHelper(mContext);
 			if (type == CommConstant.TYPE_PARTICIPANT) {
 
+				view.add_new_contact.setVisibility(View.GONE);
 				view.titleBar.tv_name.setText(mContext.getResources()
 						.getString(R.string.select_participant));
 				view.titleBar.layout_save.setVisibility(View.VISIBLE);
@@ -131,8 +139,8 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 						int shareMemberSize = arrSharemember.size();
 						for (int i = 0; i < shareMemberSize; i++) {
 							Sharedmember s = arrSharemember.get(i);
-							for (Integer sp : selectedParticipant) {
-								if (s.getID() == sp) {
+							for (Confirm sp : selectedParticipant) {
+								if (s.getID() == sp.getMemberId()) {
 									// set this participant is selected
 									s.isChecked = true;
 									arrSharemember.set(i, s);
@@ -163,7 +171,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 
 				}
 			} else if (type == CommConstant.TYPE_CONTACT) {
-
+				view.add_new_contact.setVisibility(View.VISIBLE);
 				view.titleBar.tv_name.setText(mContext.getResources()
 						.getString(R.string.add_participant));
 
@@ -282,23 +290,24 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 													dbHelper.insertSharedmember(contentValues);
 													WebservicesHelper ws = new WebservicesHelper(
 															mContext);
-//
-//													// if role= owner &
-//													// participant selected is
-//													// user login, do nothing
-//													// int
-//													// role=myActivity.getRole();
-//
-//													ws.postSharedmemberToActivity(
-//															participantSelected
-//																	.getID(),
-//															CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
-//															activity_id);
-													
+													//
+													// // if role= owner &
+													// // participant selected
+													// is
+													// // user login, do nothing
+													// // int
+													// //
+													// role=myActivity.getRole();
+													//
+													// ws.postSharedmemberToActivity(
+													// participantSelected
+													// .getID(),
+													// CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
+													// activity_id);
+
 													Utils.isNetworkAvailable(postSharedMemberHandle);
 
 												}
-												
 
 											}
 										});
@@ -318,8 +327,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 
 		}
 	}
-	
-	
+
 	Handler postSharedMemberHandle = new Handler() {
 
 		@Override
@@ -337,8 +345,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 					}
 				});
 			} else { // code if connected
-				WebservicesHelper ws = new WebservicesHelper(
-						mContext);
+				WebservicesHelper ws = new WebservicesHelper(mContext);
 
 				// if role= owner &
 				// participant selected is
@@ -346,16 +353,12 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 				// int
 				// role=myActivity.getRole();
 
-				ws.postSharedmemberToActivity(
-						participantSelected
-								.getID(),
-						CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
-						activity_id);
+				ws.postSharedmemberToActivity(participantSelected.getID(),
+						CommConstant.ROLE_SHARE_MEMBER_ACTIVITY, activity_id);
 			}
 
 		}
 	};
-	
 
 	public static ParticipantFragment getInstance() {
 		return ParticipantFragment.getInstance();
@@ -364,6 +367,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	private void onClickListener() {
 		view.titleBar.layout_next.setOnClickListener(this);
 		view.titleBar.layout_save.setOnClickListener(this);
+		view.layout_add_new_contact.setOnClickListener(this);
 	}
 
 	@Override
@@ -380,34 +384,34 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 				mContext.startActivity(intent);
 				Utils.slideUpDown(mContext);
 			} else if (type == CommConstant.TYPE_PARTICIPANT) {
-//				if (activity_id != null && (!activity_id.equals(""))) {
-//					ArrayList<Integer> listParticipantOnDuty = new ArrayList<Integer>();
-//					for (Sharedmember member : arrSharemember) {
-//						if (member.isChecked) {
-//							listParticipantOnDuty.add(member.getID());
-//						}
-//					}
-//
-//					Intent i = getActivity().getIntent(); // gets the intent
-//															// that called this
-//															// intent
-//					i.putExtra(CommConstant.ACTIVITY_ID, activity_id);
-//					i.putIntegerArrayListExtra(
-//							CommConstant.ON_DUTY_ITEM_SELECTED,
-//							listParticipantOnDuty);
-//					getActivity().setResult(333, i);
-//					((Activity) mContext).finish();
-//					Utils.postLeftToRight(mContext);
-//				}
+				// if (activity_id != null && (!activity_id.equals(""))) {
+				// ArrayList<Integer> listParticipantOnDuty = new
+				// ArrayList<Integer>();
+				// for (Sharedmember member : arrSharemember) {
+				// if (member.isChecked) {
+				// listParticipantOnDuty.add(member.getID());
+				// }
+				// }
+				//
+				// Intent i = getActivity().getIntent(); // gets the intent
+				// // that called this
+				// // intent
+				// i.putExtra(CommConstant.ACTIVITY_ID, activity_id);
+				// i.putIntegerArrayListExtra(
+				// CommConstant.ON_DUTY_ITEM_SELECTED,
+				// listParticipantOnDuty);
+				// getActivity().setResult(333, i);
+				// ((Activity) mContext).finish();
+				// Utils.postLeftToRight(mContext);
+				// }
 			}
-		}
-		else if(v==view.titleBar.layout_save)
-		{
+		} else if (v == view.titleBar.layout_save) {
 			if (activity_id != null && (!activity_id.equals(""))) {
-				ArrayList<Integer> listParticipantOnDuty = new ArrayList<Integer>();
+				ArrayList<String> listParticipantOnDuty = new ArrayList<String>();
 				for (Sharedmember member : arrSharemember) {
 					if (member.isChecked) {
-						listParticipantOnDuty.add(member.getID());
+						listParticipantOnDuty.add(member.getID() + ";"
+								+ CommConstant.CONFIRM_UNKNOWN);
 					}
 				}
 
@@ -415,13 +419,17 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 														// that called this
 														// intent
 				i.putExtra(CommConstant.ACTIVITY_ID, activity_id);
-				i.putIntegerArrayListExtra(
-						CommConstant.ON_DUTY_ITEM_SELECTED,
+				i.putStringArrayListExtra(CommConstant.ON_DUTY_ITEM_SELECTED,
 						listParticipantOnDuty);
 				getActivity().setResult(333, i);
 				((Activity) mContext).finish();
 				Utils.postLeftToRight(mContext);
 			}
+		} else if (v == view.layout_add_new_contact) {
+			Intent intent = new Intent(mContext, AddNewContactActivity.class);
+			intent.putExtra("type", DatabaseHelper.NEW);
+			mContext.startActivity(intent);
+			Utils.slideUpDown(mContext);
 		}
 	}
 

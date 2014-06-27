@@ -21,6 +21,8 @@ public class ParticipantView extends RelativeLayout {
 	Context context;
 	public ListView list_contact;
 	public TitleBarView titleBar;
+	public RelativeLayout layout_add_new_contact;
+	public RelativeLayout add_new_contact;
 	public ParticipantView(Context context) {
 		super(context);
 		this.context = context;
@@ -44,5 +46,7 @@ public class ParticipantView extends RelativeLayout {
 		list_contact=(ListView)findViewById(R.id.list_contact);
 		titleBar=(TitleBarView)findViewById(R.id.titleBar);
 		titleBar.layout_back.setVisibility(View.GONE);
+		layout_add_new_contact=(RelativeLayout)findViewById(R.id.layout_add_new_contact);
+		add_new_contact=(RelativeLayout)findViewById(R.id.add_new_contact);
 	}
 }

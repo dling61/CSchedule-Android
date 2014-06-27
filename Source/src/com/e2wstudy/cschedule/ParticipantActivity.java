@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.e2wstudy.cschedule.fragments.ParticipantFragment;
+import com.e2wstudy.cschedule.models.Confirm;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.Utils;
 
@@ -27,9 +28,25 @@ public class ParticipantActivity extends FragmentActivity {
 		activity_id = getIntent().getStringExtra(CommConstant.ACTIVITY_ID);
 		ParticipantFragment participantFragment = new ParticipantFragment();
 		participantFragment.setActivity_id(activity_id);
-		ArrayList<Integer> selectedParticipant = getIntent()
-				.getIntegerArrayListExtra("pins");
-		participantFragment.setSelectedParticipant(selectedParticipant);
+		ArrayList<String> selectedParticipant = getIntent()
+				.getStringArrayListExtra("pins");
+		
+		ArrayList<Confirm> listPaticipants=new ArrayList<Confirm>();
+		if(selectedParticipant!=null)
+		{
+			int size=selectedParticipant.size();
+			for(int i=0;i<size;i++)
+			{
+				String str=selectedParticipant.get(i);
+				String[]strs=str.split(";");
+				if(strs!=null&&strs.length>=2)
+				{
+					listPaticipants.add(new Confirm(Integer.parseInt(strs[0]), Integer.parseInt(strs[1])));
+				}
+			}
+			participantFragment.setSelectedParticipant(listPaticipants);
+		}
+		
 		participantFragment.setType(getIntent().getIntExtra(CommConstant.TYPE,
 				CommConstant.TYPE_CONTACT));
 		getSupportFragmentManager().beginTransaction()
