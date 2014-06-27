@@ -2,8 +2,6 @@ package com.e2wstudy.cschedule;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
-
 import com.e2wstudy.cschedule.adapter.SharedMemberAdapter;
 import com.e2wstudy.cschedule.adapter.TextViewBaseAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -23,7 +21,6 @@ import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.AddActivityView;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.ParticipantInforDialog;
-import com.e2wstudy.cschedule.views.PopupDialog;
 import com.e2wstudy.cschedule.views.ToastDialog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -50,18 +47,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	private DatabaseHelper dbHelper;
 	Context mContext;
 	AddActivityView view;
-	String[] alert_array = null;
-	String[] timezone_array = null;
-	String[] timezone_value_array = null;
-	String[] repeat_array = null;
-
-	int time_zone = 0;// timezone position
-	int alert_type = 0;
-	int repeat_type = 0;
-	int type = -1;// type=repeat, alert, timezone
-	static final int REPEAT = 0;
-	static final int ALERT = 1;
-	static final int TIMEZONE = 2;
 	String activity_id = "";
 
 	// shared role for privacy
@@ -78,12 +63,17 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(mContext);
 
+//		thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
+//				new SharedReference().getCurrentOwnerId(mContext), 0, 0, "",
+//				MyDate.transformLocalDateTimeToUTCFormat(MyDate
+//						.getCurrentDateTime()),
+//				MyDate.transformLocalDateTimeToUTCFormat(MyDate
+//						.getCurrentDateTime()), "", 0, 0);
+		
+		
 		thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
-				new SharedReference().getCurrentOwnerId(mContext), 0, 0, "",
-				MyDate.transformLocalDateTimeToUTCFormat(MyDate
-						.getCurrentDateTime()),
-				MyDate.transformLocalDateTimeToUTCFormat(MyDate
-						.getCurrentDateTime()), "", 0, 0);
+				new SharedReference().getCurrentOwnerId(mContext), "",
+				 "", 0);
 
 		Intent myIntent = getIntent();
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, 3);
@@ -93,11 +83,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		if (composeType == DatabaseHelper.NEW) {
 			Log.i("next service id", "is " + dbHelper.getNextActivityID());
 			thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
-					new SharedReference().getCurrentOwnerId(mContext), 0, 0,
-					"", MyDate.transformLocalDateTimeToUTCFormat(MyDate
-							.getCurrentDateTime()),
-					MyDate.transformLocalDateTimeToUTCFormat(MyDate
-							.getCurrentDateTime()), "", 0, 0);
+					new SharedReference().getCurrentOwnerId(mContext),
+					"", "",CommConstant.OWNER);
 			view.titleBar.layout_save.setVisibility(View.GONE);
 			view.titleBar.layout_next.setVisibility(View.VISIBLE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
@@ -302,71 +289,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	/**
-	 * Return popup time zone
-	 * */
-	public void popUp(final String[] array, final int type) {
-		TextViewBaseAdapter adapter = new TextViewBaseAdapter(mContext, array);
-
-		String title = "";
-		switch (type) {
-		case TIMEZONE:
-			title = getResources().getString(R.string.time_zone);
-			break;
-		case ALERT:
-			title = getResources().getString(R.string.alert);
-			break;
-		case REPEAT:
-			title = getResources().getString(R.string.repeat);
-			break;
-		default:
-			break;
-		}
-
-		final PopupDialog dialog = new PopupDialog(mContext, title);
-		dialog.show();
-		dialog.list_item.setAdapter(adapter);
-		dialog.list_item.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int position, long arg3) {
-				switch (type) {
-				case TIMEZONE:
-					SharedReference ref = new SharedReference();
-					ref.setTimeZone(mContext, position);
-					time_zone = position;
-					view.et_new_activity_time_zone.setText(array[position]);
-					// thisActivity.setOtc_offset(Float
-					// .parseFloat(timezone_value_array[position]));
-					break;
-				case ALERT:
-					alert_type = position;
-					view.et_new_activity_alert.setText(array[position]);
-					// thisActivity.setAlert(position);
-					break;
-				case REPEAT:
-					repeat_type = position;
-					view.et_new_activity_repeat.setText(array[position]);
-					// thisActivity.setRepeat(position);
-					break;
-				default:
-					break;
-				}
-				dialog.dismiss();
-
-			}
-		});
-
-	}
+	
 
 	/**
 	 * On Click listener
 	 * */
-	public void onClickListener() {
-		// view.btn_new_activity_next.setOnClickListener(this);
-		view.layoutTimeZone.setOnClickListener(this);
-		view.layoutAlert.setOnClickListener(this);
-		view.et_new_activity_repeat.setOnClickListener(this);
+	public void onClickListener() {		
 		view.btn_add_paticipant.setOnClickListener(this);
 		view.btn_remove_activity.setOnClickListener(this);
 		view.titleBar.layout_next.setOnClickListener(this);
@@ -406,49 +334,9 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	 * Init values
 	 * */
 	public void initViewValues() {
-		alert_array = getResources().getStringArray(R.array.alert_array);
-		timezone_array = getResources().getStringArray(R.array.timezone_array);
-		timezone_value_array = getResources().getStringArray(
-				R.array.timezone_value_array);
-		try {
-			TimeZone tz = TimeZone.getDefault();
-			String currentTimezoneName = tz.getDisplayName(false,
-					TimeZone.SHORT);
-			String timezoneCurrent = currentTimezoneName.substring(3, 6);
-			// int mGMTOffset = tz.getRawOffset();
-			// long
-			// currentTimezoneId=TimeUnit.HOURS.convert(mGMTOffset,TimeUnit.MILLISECONDS);
-			Log.d("currentTimezoneId", currentTimezoneName + "");
-			String currentTimeZone = tz.getID() + "-(" + currentTimezoneName
-					+ ") ";
-			timezone_array[0] = currentTimeZone;// current device timezone
-			Log.d("timezone name", tz.getID() + "-(" + currentTimezoneName
-					+ ") ");
-
-			timezone_value_array[0] = timezoneCurrent;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		repeat_array = getResources().getStringArray(R.array.repeat_array);
-
 		if (composeType == DatabaseHelper.NEW) {
 			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.add_activity));
-			// timezone saved is position in array timezone
-			// SharedReference ref = new SharedReference();
-			// time_zone = ref.getTimeZone(mContext);
-			// set time zone if used to select
-			int timezone = new SharedReference().getTimeZone(mContext);
-			// : 0;
-			Log.d("timeze", timezone + "");
-			if (timezone == -100) {
-				view.et_new_activity_time_zone.setText(timezone_array[0]);
-			} else {
-				view.et_new_activity_time_zone
-						.setText(timezone_array[timezone]);
-			}
-
 			view.titleBar.layout_next.setVisibility(View.GONE);
 			view.titleBar.layout_save.setVisibility(View.VISIBLE);
 
@@ -456,30 +344,20 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.edit_activity));
 
-			view.et_new_activity_name.setSingleLine(false);
-			float timezone = thisActivity.getOtc_offset();
-			view.et_new_activity_time_zone.setText(getTimezone(timezone));
+			view.et_new_activity_name.setSingleLine(false);		
 			setParticipantOfActivity();
 
 			if (shared_role != CommConstant.OWNER) {
-
-				view.et_new_activity_alert.setEnabled(false);
-				view.et_new_activity_time_zone.setEnabled(false);
 				view.et_new_activity_description.setEnabled(false);
-				view.et_new_activity_name.setEnabled(false);
-				view.et_new_activity_repeat.setEnabled(false);
+				view.et_new_activity_name.setEnabled(false);			
 				view.btn_add_paticipant.setVisibility(View.GONE);
 				view.btn_remove_activity.setVisibility(View.GONE);
 				view.titleBar.layout_save.setEnabled(false);
 			} else {
-
-				view.et_new_activity_alert.setEnabled(true);
-				view.et_new_activity_time_zone.setEnabled(true);
 				view.et_new_activity_description.setEnabled(true);
 				view.et_new_activity_description.setFocusableInTouchMode(true);
 				view.et_new_activity_description.requestFocus();
-				view.et_new_activity_name.setEnabled(true);
-				view.et_new_activity_repeat.setEnabled(true);
+				view.et_new_activity_name.setEnabled(true);			
 				view.btn_add_paticipant.setVisibility(View.VISIBLE);
 				view.btn_remove_activity.setVisibility(View.VISIBLE);
 				view.titleBar.layout_save.setEnabled(true);
@@ -493,46 +371,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		view.et_new_activity_name.setText(activity_name);
 
 		String desp = thisActivity != null ? thisActivity.getDesp() : "";
-		view.et_new_activity_description.setText(desp);
-
-		alert_type = thisActivity != null ? thisActivity.getAlert() : 0;
-		view.et_new_activity_alert.setText(getAlert(alert_type, alert_array));
-
-		repeat_type = thisActivity != null ? thisActivity.getRepeat() : 0;
-		view.et_new_activity_repeat
-				.setText(getAlert(repeat_type, repeat_array));
-
-	}
-
-	/**
-	 * Return string timezone string
-	 * */
-	public String getTimezone(float timezone) {
-		try {
-			for (int i = 0; i < timezone_value_array.length; i++) {
-				String s = timezone_value_array[i];
-				if (s.equals(timezone + "")) {
-					return timezone_array[i];
-				}
-			}
-		} catch (ArrayIndexOutOfBoundsException ex) {
-			ex.printStackTrace();
-
-		}
-		return timezone_array[0];
-	}
-
-	/**
-	 * Return string alert
-	 * */
-	public String getAlert(int alt, String[] array) {
-		try {
-			return array[alt];
-		} catch (ArrayIndexOutOfBoundsException ex) {
-			ex.printStackTrace();
-
-		}
-		return "None";
+		view.et_new_activity_description.setText(desp);	
 	}
 
 	@Override
@@ -546,21 +385,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				Utils.isNetworkAvailable(createNewActivityHandle);
 //				createNewActivity();
 			}
-		} else if (v == view.layoutTimeZone) {
-			// if owner, can modify/delete else if is participant, only view
-			// if (shared_role == CommConstant.OWNER) {
-			SharedReference ref = new SharedReference();
-			time_zone = ref.getTimeZone(mContext);
-			Log.d("time zone", time_zone + "");
-			if (time_zone == -100 && composeType == DatabaseHelper.NEW) {
-				popUp(timezone_array, TIMEZONE);
-			}
-
-		} else if (v == view.et_new_activity_repeat) {
-			popUp(repeat_array, REPEAT);
-		} else if (v == view.layoutAlert) {
-			popUp(alert_array, ALERT);
-		} else if (v == view.btn_add_paticipant) {
+		}
+		else if (v == view.btn_add_paticipant) {
 			if (composeType == DatabaseHelper.EXISTED) {
 
 				finish();
@@ -580,13 +406,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			// Utils.postLeftToRight(mContext);
 		} else if (v == view.et_new_activity_description) {
 			// show an activity to edit description
-
-			// Intent intent = new Intent(mContext,
-			// EditDescriptionActivity.class);
-			// intent.putExtra(CommConstant.ACTIVITY_DESCRIPTION,
-			// thisActivity.getDesp());
-			// startActivityForResult(intent, 0);
-			// Utils.slideUpDown(mContext);
 			if (shared_role== CommConstant.OWNER)
 			{
 				Utils.openKeyboard(mContext,view.et_new_activity_description);
@@ -694,13 +513,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				ContentValues cv = new ContentValues();
 				cv.put(ActivityTable.service_Name,
 						thisActivity.getActivity_name());
-				cv.put(ActivityTable.alert, thisActivity.getAlert());
-				cv.put(ActivityTable.repeat, thisActivity.getRepeat());
-				cv.put(ActivityTable.start_time, thisActivity.getStarttime());
-				cv.put(ActivityTable.end_time, thisActivity.getEndtime());
+				
+//				cv.put(ActivityTable.start_time, thisActivity.getStarttime());
+//				cv.put(ActivityTable.end_time, thisActivity.getEndtime());
 				cv.put(ActivityTable.service_description,
 						thisActivity.getDesp());
-				cv.put(ActivityTable.otc_Offset, thisActivity.getOtc_offset());
+				
 				cv.put(ActivityTable.sharedrole, thisActivity.getRole());
 				cv.put(ActivityTable.is_Deleted, 0);
 				cv.put(ActivityTable.is_Synchronized, 0);
@@ -766,18 +584,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 		thisActivity.setActivity_name(activity_name);
 		thisActivity.setDesp(activity_description);
-		thisActivity.setAlert(alert_type);
-		Log.d("alert_type", alert_type + "");
-		Log.d("repeat_type", repeat_type + "");
-		thisActivity.setRepeat(repeat_type);
-
-		try {
-			int timezone = new SharedReference().getTimeZone(mContext);
-			thisActivity.setOtc_offset((int) (Float
-					.parseFloat(timezone_value_array[timezone]) * 3600));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 		return true;
 	}
 
@@ -795,20 +601,16 @@ public class AddNewActivity extends Activity implements OnClickListener {
 						thisActivity.getOwner_ID());
 				newActivity.put(ActivityTable.service_Name,
 						thisActivity.getActivity_name());
-				newActivity.put(ActivityTable.alert, thisActivity.getAlert());
-				newActivity.put(ActivityTable.repeat, thisActivity.getRepeat());
+				
 				newActivity.put(ActivityTable.sharedrole,
 						thisActivity.getRole());
-				newActivity.put(ActivityTable.start_time,
-						thisActivity.getStarttime());
-				newActivity.put(ActivityTable.end_time,
-						thisActivity.getEndtime());
+//				newActivity.put(ActivityTable.start_time,
+//						thisActivity.getStarttime());
+//				newActivity.put(ActivityTable.end_time,
+//						thisActivity.getEndtime());
 				newActivity.put(ActivityTable.service_description,
 						thisActivity.getDesp());
-				newActivity.put(ActivityTable.otc_Offset,
-						thisActivity.getOtc_offset());
-				Log.d("timezone add activity", thisActivity.getOtc_offset()
-						+ "");
+				
 				newActivity.put(ActivityTable.is_Deleted, 0);
 				newActivity.put(ActivityTable.is_Synchronized, 0);
 				newActivity.put(ActivityTable.last_ModifiedTime, "nouploaded");
