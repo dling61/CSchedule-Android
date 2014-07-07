@@ -14,6 +14,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -22,6 +24,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView.LayoutParams;
@@ -31,7 +34,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.e2wstudy.cschedule.R;
+import com.e2wstudy.cschedule.db.DatabaseHelper;
 import com.e2wstudy.cschedule.models.Sharedmember;
+import com.e2wstudy.cschedule.views.UpdateDialog;
 
 public class Utils {
 
@@ -305,5 +310,90 @@ public class Utils {
 		inputMethodManager.toggleSoftInputFromWindow(
 				ed.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED,
 				0);
+	}
+	
+	public static String getVersionName(Context mContext)
+	{
+		PackageInfo pInfo;
+		try {
+			pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+			return pInfo.versionName;
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	public static void checkCurrentVersion(final Context mContext)
+	{
+		String appversion=DatabaseHelper.getSharedDatabaseHelper(mContext).getCurrentVersion();
+		// check version
+		
+			String currentVersion = Utils
+					.getVersionName(mContext);
+			String vs=appversion.replace(".", ";");
+			String[] split =vs
+					.split(";");
+			currentVersion=currentVersion.replace(".", ";");
+			String[] splitCurrentVersion = currentVersion
+					.split(";");
+
+			
+			boolean flag = true;
+			if (splitCurrentVersion != null
+					&& split != null) {
+				if (split.length == splitCurrentVersion.length) {
+					
+					if (split.length == 3) {
+						if (Integer
+								.parseInt(split[0]) > Integer
+								.parseInt(splitCurrentVersion[0])) {
+							flag = false;
+						}
+						else
+						{
+							if(Integer.parseInt(split[1])>Integer.parseInt(splitCurrentVersion[1]))
+							{
+								flag=false;
+							}
+							else
+							{
+								if(Integer.parseInt(split[2])>Integer.parseInt(splitCurrentVersion[2]))
+								{
+									flag=false;
+								}
+							}
+						}
+					}
+				}
+
+			}
+			if(!flag)
+			{
+				
+				CommConstant.UPDATE=true;
+				final UpdateDialog dialog = new UpdateDialog(mContext
+						);
+				dialog.show();
+				
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();														
+						//go to google play
+						Utils.goToGooglePlay(mContext,mContext.getResources().getString(R.string.package_name));
+					}
+				});
+			}
+			else
+			{
+//				CommConstant.UPDATE=false;
+				CommConstant.UPDATE=true;
+			}
+		
 	}
 }

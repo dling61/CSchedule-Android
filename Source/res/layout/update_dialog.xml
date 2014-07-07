@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/login_border"
+    android:orientation="horizontal"
+    android:padding="@dimen/margin_top" >
+
+    <TextView
+        android:id="@+id/tv_new_activity_toptitle"
+        style="@style/confirmTitleStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:singleLine="true"
+        android:text="@string/app_name"
+        android:textSize="@dimen/text_name"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/confirmTitleStyle"
+        android:layout_below="@id/tv_new_activity_toptitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dimen_10"
+        android:gravity="center_horizontal"
+        android:text="@string/out_of_update" />
+
+    <Button
+        android:id="@+id/btn_ok"
+        style="@style/confirm_btn"
+        android:layout_width="100dp"
+        android:layout_below="@id/tv_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="@dimen/dimen_10"
+        android:background="@drawable/me_border"
+        android:singleLine="true"
+        android:text="@string/update" />
+
+</RelativeLayout>

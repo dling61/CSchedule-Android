@@ -7,15 +7,57 @@ public class Schedule {
 	private String starttime = "";
 	private String endtime = "";
 	private String desp = "";
+//	private String abbrtzname = "";// timezone
+	private int alert = 0;
+	public Schedule(int owner_ID, int schedule_ID, String service_ID,
+			String starttime, String endtime, String desp, int alert, int tzid) {
+		super();
+		this.owner_ID = owner_ID;
+		this.schedule_ID = schedule_ID;
+		this.service_ID = service_ID;
+		this.starttime = starttime;
+		this.endtime = endtime;
+		this.desp = desp;
+		this.alert = alert;
+		this.tzid = tzid;
+	}
 
-	public Schedule(int o_id, int sche_id, String serv_id, String start,
-			String end, String des) {
-		owner_ID = o_id;
-		schedule_ID = sche_id;
-		service_ID = serv_id;
-		starttime = start;
-		endtime = end;
-		desp = des;
+	private int tzid=0;
+//
+//	public Schedule(int o_id, int sche_id, String serv_id, String start,
+//			String end, String des, String timezone, int alert) {
+//		owner_ID = o_id;
+//		schedule_ID = sche_id;
+//		service_ID = serv_id;
+//		starttime = start;
+//		endtime = end;
+//		desp = des;
+//		this.abbrtzname = timezone;
+//		this.alert = alert;
+//	}
+//
+//	public String getAbbrtzname() {
+//		return abbrtzname;
+//	}
+//
+//	public void setAbbrtzname(String abbrtzname) {
+//		this.abbrtzname = abbrtzname;
+//	}
+
+	public int getTzid() {
+		return tzid;
+	}
+
+	public void setTzid(int tzid) {
+		this.tzid = tzid;
+	}
+
+	public int getAlert() {
+		return alert;
+	}
+
+	public void setAlert(int alert) {
+		this.alert = alert;
 	}
 
 	/**

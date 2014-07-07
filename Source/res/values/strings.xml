@@ -22,7 +22,7 @@
     <string name="login_fail">Login fail.</string>
     <string name="title_email">Email</string>
     <string name="title_mobile">Mobile</string>
-    <string name="participant_infor">Participant Info</string>
+    <string name="participant_infor">Contact Participant</string>
 
     <string-array name="menu_array">
         <item>Schedule</item>
@@ -142,7 +142,6 @@
     <string-array name="participant_infor_array">
         <item>Make Call To</item>
         <item>Send Message To</item>
-        <item>Cancel</item>
     </string-array>
 
     <string name="delete_participant">Delete partipant</string>
@@ -196,5 +195,38 @@
     <string name="title_timetout">Connection timeout. Please try again.</string>
     <string name="message_timeout">Request is timeout. Please try again.</string>
     <string name="title_lost_connection">Lost connection</string>
+
+    <string-array name="confirm_status">
+        <item>Unknown</item>
+        <item>Confimed</item>
+        <item>Denied</item>
+    </string-array>
+
+    <string name="confirm_unknown">0</string>
+    <string name="confirm_confirmed">1</string>
+    <string name="confirm_denied">2</string>
+    <string name="cannot_find_a_contact">cannot find a contact?</string>
+    <string name="new_contact">new contact</string>
+    <string name="confirm_error">Confirmation</string>
+
+    <string-array name="onduty_confirm_array">
+        <item>Deny it</item>
+    </string-array>
+    <string-array name="onduty_deny_array">
+        <item>Confirm it</item>
+    </string-array>
+    <string-array name="onduty_unknown_array">
+        <item>Confirm it</item>
+        <item>Deny it</item>
+    </string-array>
+
+    <string name="confirm">Confirm</string>
+    <string name="deny">Deny</string>
+    <string name="please_select_time_zone">Please select time zone</string>
+    <string name="out_of_update">App is out of update</string>
+    <string name="update">Update</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="schedule_without_participant">Are you sure you want to create a schedule without a participant on duty?</string>
+    <string name="edit_schedule_without_participant">Are you sure you want to edit a schedule without a participant on duty?</string>
 
 </resources>

@@ -24,5 +24,5 @@
     <dimen name="title_tv">20sp</dimen>
     <dimen name="margin_top_block">30dp</dimen>
     <dimen name="padding">13dp</dimen>
-
+<dimen name="dimen_10">5dp</dimen>
 </resources>

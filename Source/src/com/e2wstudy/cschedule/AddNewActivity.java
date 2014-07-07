@@ -15,7 +15,6 @@ import com.e2wstudy.cschedule.models.SharedMemberTable;
 import com.e2wstudy.cschedule.models.Sharedmember;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
-import com.e2wstudy.cschedule.utils.MyDate;
 import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.AddActivityView;
@@ -63,17 +62,15 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(mContext);
 
-//		thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
-//				new SharedReference().getCurrentOwnerId(mContext), 0, 0, "",
-//				MyDate.transformLocalDateTimeToUTCFormat(MyDate
-//						.getCurrentDateTime()),
-//				MyDate.transformLocalDateTimeToUTCFormat(MyDate
-//						.getCurrentDateTime()), "", 0, 0);
-		
-		
+		// thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
+		// new SharedReference().getCurrentOwnerId(mContext), 0, 0, "",
+		// MyDate.transformLocalDateTimeToUTCFormat(MyDate
+		// .getCurrentDateTime()),
+		// MyDate.transformLocalDateTimeToUTCFormat(MyDate
+		// .getCurrentDateTime()), "", 0, 0);
+
 		thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
-				new SharedReference().getCurrentOwnerId(mContext), "",
-				 "", 0);
+				new SharedReference().getCurrentOwnerId(mContext), "", "", 0);
 
 		Intent myIntent = getIntent();
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, 3);
@@ -83,8 +80,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		if (composeType == DatabaseHelper.NEW) {
 			Log.i("next service id", "is " + dbHelper.getNextActivityID());
 			thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
-					new SharedReference().getCurrentOwnerId(mContext),
-					"", "",CommConstant.OWNER);
+					new SharedReference().getCurrentOwnerId(mContext), "", "",
+					CommConstant.OWNER);
 			view.titleBar.layout_save.setVisibility(View.GONE);
 			view.titleBar.layout_next.setVisibility(View.VISIBLE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
@@ -176,7 +173,9 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		String[] array = getResources().getStringArray(
 				R.array.owner_infor_array);
 
-		if (shared_role != CommConstant.OWNER) {
+		if (shared_role != CommConstant.OWNER
+				|| (participant.getEmail().equals(new SharedReference()
+						.getEmail(mContext)))) {
 			array = getResources().getStringArray(
 					R.array.participant_infor_array);
 		}
@@ -195,7 +194,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				if (shared_role == CommConstant.OWNER) {
+
+				if (shared_role == CommConstant.OWNER
+						&& (!participant.getEmail().equals(
+								new SharedReference().getEmail(mContext)))) {
 					switch (position) {
 					case 0:
 						Utils.makeAPhoneCall(mContext, participant.getMobile());
@@ -222,9 +224,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					case 1:
 						Utils.sendAMessage(mContext, participant.getMobile());
 						break;
-					case 2:
 
-						break;
 					default:
 						break;
 					}
@@ -289,12 +289,10 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	
-
 	/**
 	 * On Click listener
 	 * */
-	public void onClickListener() {		
+	public void onClickListener() {
 		view.btn_add_paticipant.setOnClickListener(this);
 		view.btn_remove_activity.setOnClickListener(this);
 		view.titleBar.layout_next.setOnClickListener(this);
@@ -344,12 +342,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.edit_activity));
 
-			view.et_new_activity_name.setSingleLine(false);		
+			view.et_new_activity_name.setSingleLine(false);
 			setParticipantOfActivity();
 
 			if (shared_role != CommConstant.OWNER) {
 				view.et_new_activity_description.setEnabled(false);
-				view.et_new_activity_name.setEnabled(false);			
+				view.et_new_activity_name.setEnabled(false);
 				view.btn_add_paticipant.setVisibility(View.GONE);
 				view.btn_remove_activity.setVisibility(View.GONE);
 				view.titleBar.layout_save.setEnabled(false);
@@ -357,7 +355,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				view.et_new_activity_description.setEnabled(true);
 				view.et_new_activity_description.setFocusableInTouchMode(true);
 				view.et_new_activity_description.requestFocus();
-				view.et_new_activity_name.setEnabled(true);			
+				view.et_new_activity_name.setEnabled(true);
 				view.btn_add_paticipant.setVisibility(View.VISIBLE);
 				view.btn_remove_activity.setVisibility(View.VISIBLE);
 				view.titleBar.layout_save.setEnabled(true);
@@ -371,7 +369,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		view.et_new_activity_name.setText(activity_name);
 
 		String desp = thisActivity != null ? thisActivity.getDesp() : "";
-		view.et_new_activity_description.setText(desp);	
+		view.et_new_activity_description.setText(desp);
 	}
 
 	@Override
@@ -383,10 +381,9 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		if (v == view.titleBar.layout_next) {
 			if (composeType == DatabaseHelper.NEW) {
 				Utils.isNetworkAvailable(createNewActivityHandle);
-//				createNewActivity();
+				// createNewActivity();
 			}
-		}
-		else if (v == view.btn_add_paticipant) {
+		} else if (v == view.btn_add_paticipant) {
 			if (composeType == DatabaseHelper.EXISTED) {
 
 				finish();
@@ -406,9 +403,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			// Utils.postLeftToRight(mContext);
 		} else if (v == view.et_new_activity_description) {
 			// show an activity to edit description
-			if (shared_role== CommConstant.OWNER)
-			{
-				Utils.openKeyboard(mContext,view.et_new_activity_description);
+			if (shared_role == CommConstant.OWNER) {
+				Utils.openKeyboard(mContext, view.et_new_activity_description);
 			}
 
 		} else if (v == view.titleBar.layout_save) {
@@ -513,12 +509,13 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				ContentValues cv = new ContentValues();
 				cv.put(ActivityTable.service_Name,
 						thisActivity.getActivity_name());
-				
-//				cv.put(ActivityTable.start_time, thisActivity.getStarttime());
-//				cv.put(ActivityTable.end_time, thisActivity.getEndtime());
+
+				// cv.put(ActivityTable.start_time,
+				// thisActivity.getStarttime());
+				// cv.put(ActivityTable.end_time, thisActivity.getEndtime());
 				cv.put(ActivityTable.service_description,
 						thisActivity.getDesp());
-				
+
 				cv.put(ActivityTable.sharedrole, thisActivity.getRole());
 				cv.put(ActivityTable.is_Deleted, 0);
 				cv.put(ActivityTable.is_Synchronized, 0);
@@ -601,16 +598,16 @@ public class AddNewActivity extends Activity implements OnClickListener {
 						thisActivity.getOwner_ID());
 				newActivity.put(ActivityTable.service_Name,
 						thisActivity.getActivity_name());
-				
+
 				newActivity.put(ActivityTable.sharedrole,
 						thisActivity.getRole());
-//				newActivity.put(ActivityTable.start_time,
-//						thisActivity.getStarttime());
-//				newActivity.put(ActivityTable.end_time,
-//						thisActivity.getEndtime());
+				// newActivity.put(ActivityTable.start_time,
+				// thisActivity.getStarttime());
+				// newActivity.put(ActivityTable.end_time,
+				// thisActivity.getEndtime());
 				newActivity.put(ActivityTable.service_description,
 						thisActivity.getDesp());
-				
+
 				newActivity.put(ActivityTable.is_Deleted, 0);
 				newActivity.put(ActivityTable.is_Synchronized, 0);
 				newActivity.put(ActivityTable.last_ModifiedTime, "nouploaded");

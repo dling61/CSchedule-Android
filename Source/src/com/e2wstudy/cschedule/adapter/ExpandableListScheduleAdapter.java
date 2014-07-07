@@ -9,18 +9,21 @@ import com.devsmart.android.ui.HorizontalListView;
 import com.e2wstudy.cschedule.CreateNewScheduleActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
+import com.e2wstudy.cschedule.models.Confirm;
 import com.e2wstudy.cschedule.models.MyActivity;
 import com.e2wstudy.cschedule.models.Schedule;
 import com.e2wstudy.cschedule.models.Sharedmember;
+import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.MyDate;
+import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.DutyScheduleView;
 import com.e2wstudy.cschedule.views.ParticipantInforDialog;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -109,10 +112,10 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 			viewHolder.service_TV.setText(activity_name);
 			viewHolder.time_TV.setText(date.toLowerCase());
 			// viewHolder.participants_TV.setText(members);
-			List<Integer> memberids = dbHelper
+			List<Confirm> memberids = dbHelper
 					.getParticipantsForSchedule(schedule.getSchedule_ID());
 			if (memberids != null && memberids.size() > 0) {
-				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(
+				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(schedule,
 						memberids, activity.getActivity_ID());
 				viewHolder.listview.setAdapter(adapter);
 			}
@@ -120,7 +123,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 
 				@Override
 				public void onClick(View v) {
-					
+
 					Intent inforActivityIntent = new Intent(context,
 							CreateNewScheduleActivity.class);
 					inforActivityIntent.putExtra(CommConstant.TYPE,
@@ -232,13 +235,15 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 	}
 
 	private class OnDutyMemberAdapter extends BaseAdapter {
-		List<Integer> listParticipantId;
+		List<Confirm> listParticipantId;
 		String activity_id = "";
+		Schedule schedule;
 
-		public OnDutyMemberAdapter(List<Integer> listParticipantId,
-				String activity_id) {
+		public OnDutyMemberAdapter(Schedule schedule,
+				List<Confirm> listParticipantId, String activity_id) {
 			this.listParticipantId = listParticipantId;
 			this.activity_id = activity_id;
+			this.schedule = schedule;
 
 		}
 
@@ -271,21 +276,46 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 				holder = (DutyScheduleView) convertView.getTag();
 
 			}
-			int mem_id = listParticipantId.get(position);
-			final Sharedmember sm = dbHelper.getSharedmember(mem_id,
-					activity_id);
-			if (sm != null) {
-				holder.title.setText(sm.getName());
-				convertView.setOnClickListener(new OnClickListener() {
+			final Confirm member = listParticipantId.get(position);
+			if (member != null) {
+				final Sharedmember sm = dbHelper.getSharedmember(
+						member.getMemberId(), activity_id);
+				if (sm != null) {
+					holder.title.setText(sm.getName());
 
-					@Override
-					public void onClick(View v) {
-						participantInforDialog(sm);
+					switch (member.getConfirm()) {
+					case CommConstant.CONFIRM_UNKNOWN:
+						holder.layoutTitle
+								.setBackgroundResource(R.drawable.onduty_border);
+						holder.title.setTextColor(context.getResources()
+								.getColor(R.color.on_duty_text));
+						break;
+					case CommConstant.CONFIRM_CONFIRMED:
+						holder.layoutTitle
+								.setBackgroundResource(R.drawable.onduty_border_green);
+						holder.title.setTextColor(Color.WHITE);
+						break;
+					case CommConstant.CONFIRM_DENIED:
+						holder.layoutTitle
+								.setBackgroundResource(R.drawable.onduty_border_red);
+						holder.title.setTextColor(Color.WHITE);
+						break;
+					default:
+						holder.layoutTitle
+								.setBackgroundResource(R.drawable.onduty_border_gray);
+						holder.title.setTextColor(context.getResources()
+								.getColor(R.color.on_duty_text));
+						break;
 					}
-				});
-			}
-			else
-			{
+					convertView.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							participantInforDialog(sm, member, schedule);
+						}
+					});
+				}
+			} else {
 				holder.setVisibility(View.GONE);
 				convertView.setVisibility(View.GONE);
 			}
@@ -294,13 +324,44 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 
 	};
 
-	private void participantInforDialog(final Sharedmember participant) {
+	private void participantInforDialog(final Sharedmember participant,
+			final Confirm confirmStatus, final Schedule schedule) {
+		String[] array = context.getResources().getStringArray(
+				R.array.onduty_member_infor_array);
+		boolean isCurrentUser = false;
 		if (participant != null) {
-			String[] array = context.getResources().getStringArray(
-					R.array.onduty_member_infor_array);
-			int length = array.length;
-			for (int i = 0; i < length; i++) {
-				array[i] += " " + participant.getName();
+
+			// String currentParticipant = new SharedReference()
+			// .getCurrentParticipant(context);
+			int member_id = participant.getID();
+			String currentParticipant = new SharedReference().getEmail(context);
+			String email = participant.getEmail();
+
+			// if user login is not owner
+			if (currentParticipant.equals(email)) {
+				isCurrentUser = true;
+			}
+			// if (currentParticipant.equals(String.valueOf(member_id))) {
+			// isCurrentUser = true;
+			// }
+			if (isCurrentUser) {
+				if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
+					array = context.getResources().getStringArray(
+							R.array.onduty_unknown_array);
+				} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_DENIED) {
+					array = context.getResources().getStringArray(
+							R.array.onduty_deny_array);
+				} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_CONFIRMED) {
+					array = context.getResources().getStringArray(
+							R.array.onduty_confirm_array);
+				}
+			}
+
+			final int arraySize = array.length;
+			if (arraySize >= 3) {
+				for (int i = 0; i < arraySize; i++) {
+					array[i] += " " + participant.getName();
+				}
 			}
 			TextViewBaseAdapter adapter = new TextViewBaseAdapter(context,
 					array);
@@ -309,16 +370,51 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					context);
 			dialog.show();
 			dialog.list_item.setAdapter(adapter);
+
+			if (arraySize < 3) {
+				dialog.tvTitle.setText(context.getResources().getString(
+						R.string.confirmation));
+			} else {
+				dialog.tvTitle.setText(context.getResources().getString(
+						R.string.participant_infor));
+			}
 			dialog.list_item.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
 					switch (position) {
 					case 0:
-						Utils.makeAPhoneCall(context, participant.getMobile());
+						if (arraySize < 3) {
+							Confirm confirm = confirmStatus;
+							WebservicesHelper ws = new WebservicesHelper(
+									context);
+							if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
+								confirm.setConfirm(CommConstant.CONFIRM_CONFIRMED);
+								ws.updateConfirmStatus(schedule, confirm);
+							} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_DENIED) {
+								confirm.setConfirm(CommConstant.CONFIRM_CONFIRMED);
+								ws.updateConfirmStatus(schedule, confirm);
+							} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_CONFIRMED) {
+								confirm.setConfirm(CommConstant.CONFIRM_DENIED);
+								ws.updateConfirmStatus(schedule, confirm);
+							}
+						} else {
+							Utils.makeAPhoneCall(context,
+									participant.getMobile());
+						}
 						break;
 					case 1:
-						Utils.sendAMessage(context, participant.getMobile());
+						if (arraySize < 3) {
+							Confirm confirm = confirmStatus;
+							WebservicesHelper ws = new WebservicesHelper(
+									context);
+							if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
+								confirm.setConfirm(CommConstant.CONFIRM_DENIED);
+								ws.updateConfirmStatus(schedule, confirm);
+							}
+						} else {
+							Utils.sendAMessage(context, participant.getMobile());
+						}
 						break;
 					case 2:
 						Utils.sendAnEmail(context, participant.getEmail());

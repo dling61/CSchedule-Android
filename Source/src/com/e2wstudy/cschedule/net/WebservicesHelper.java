@@ -14,11 +14,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.e2wstudy.cschedule.BaseActivity;
 import com.e2wstudy.cschedule.CategoryTabActivity;
 import com.e2wstudy.cschedule.LoginActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
 import com.e2wstudy.cschedule.models.ActivityTable;
+import com.e2wstudy.cschedule.models.Confirm;
 import com.e2wstudy.cschedule.models.MyActivity;
 import com.e2wstudy.cschedule.models.OndutyTable;
 import com.e2wstudy.cschedule.models.Participant;
@@ -27,12 +29,15 @@ import com.e2wstudy.cschedule.models.Schedule;
 import com.e2wstudy.cschedule.models.ScheduleTable;
 import com.e2wstudy.cschedule.models.SharedMemberTable;
 import com.e2wstudy.cschedule.models.Sharedmember;
+import com.e2wstudy.cschedule.models.TimeZoneTable;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.MyDate;
 import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
+import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.e2wstudy.cschedule.views.UpdateDialog;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -47,6 +52,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
+
+import com.e2wstudy.cschedule.models.AppVersionTable;
+import com.google.android.gms.internal.di;
 
 /**
  * @class WebservicesHelper
@@ -115,9 +123,6 @@ public class WebservicesHelper {
 		loadingPopup.setCancelable(true);
 	}
 
-	
-	
-	
 	/**
 	 * Create account If success, go to login else show toast notify create
 	 * account failure
@@ -264,11 +269,10 @@ public class WebservicesHelper {
 
 	}
 
-	public void login(Handler h,final String email, final String password)
-	{
-		Utils.isNetworkAvailable(h);	
+	public void login(Handler h, final String email, final String password) {
+		Utils.isNetworkAvailable(h);
 	}
-	
+
 	/**
 	 * Login if success go to TabAcivity else show Toast notify login fail
 	 * */
@@ -285,178 +289,137 @@ public class WebservicesHelper {
 			StringEntity entity = new StringEntity(jsonParams.toString());
 			Log.d("login param", jsonParams.toString());
 
-//			if (Utils.isNetworkOnline(mContext)) {
-				client.post(null, signInUrl, entity, "application/json",
-						new JsonHttpResponseHandler() {
-							public void onSuccess(JSONObject response) {
-								Log.i("successful response",
+			// if (Utils.isNetworkOnline(mContext)) {
+			client.post(null, signInUrl, entity, "application/json",
+					new JsonHttpResponseHandler() {
+						public void onSuccess(JSONObject response) {
+							Log.i("successful response", response.toString());
+							try {
+								String username = response
+										.getString("username");
+								SharedReference sharedReference = new SharedReference();
+								sharedReference.setUsername(mContext, username);
+
+								sharedReference.setAccount(mContext,
 										response.toString());
-								try {
-									String username = response
-											.getString("username");
-									SharedReference sharedReference = new SharedReference();
-									sharedReference.setUsername(mContext,
-											username);
+								int ownerid = response.getInt("ownerid");
+								Log.i("SignIn ownerid ", ownerid + "");
+								int idCostant = ownerid * 10000;
 
-									sharedReference.setAccount(mContext,
-											response.toString());
-									int ownerid = response.getInt("ownerid");
-									Log.i("SignIn ownerid ", ownerid + "");
-									int idCostant = ownerid * 10000;
+								sharedReference.setCurrentParticipant(mContext,
+										idCostant + "");
 
-									// Check id
-									int nextserviceidOriginal = response
-											.getInt("serviceid");
-									Log.i("nextserviceidOriginal",
-											nextserviceidOriginal + "");
-									int nextmemberidOriginal = response
-											.getInt("memberid");
-									Log.i("nextmemberidOriginal",
-											nextmemberidOriginal + "");
-									int nextscheduleidOriginal = response
-											.getInt("scheduleid");
-									Log.i("nextscheduleidOriginal",
-											nextscheduleidOriginal + "");
-									int nextserviceid = -1;
-									// If it is the first time to establish an
-									// activity
-									if (nextserviceidOriginal == 0) {
-										nextserviceid = idCostant
-												+ nextserviceidOriginal + 1;
+								// Check id
+								int nextserviceidOriginal = response
+										.getInt("serviceid");
+								Log.i("nextserviceidOriginal",
+										nextserviceidOriginal + "");
+								int nextmemberidOriginal = response
+										.getInt("memberid");
+								Log.i("nextmemberidOriginal",
+										nextmemberidOriginal + "");
+								int nextscheduleidOriginal = response
+										.getInt("scheduleid");
+								Log.i("nextscheduleidOriginal",
+										nextscheduleidOriginal + "");
+								int nextserviceid = -1;
+								// If it is the first time to establish an
+								// activity
+								if (nextserviceidOriginal == 0) {
+									nextserviceid = idCostant
+											+ nextserviceidOriginal + 1;
 
-									}
-									// If activities has established
-									else {
-										nextserviceid = nextserviceidOriginal + 1;
-										Log.i("SignIn nextserviceid ",
-												nextserviceid + "");
-									}
-									int nextmemberid = -1;
-									// If it is the first time to establish a
-									// member
-									if (nextmemberidOriginal == 0) {
-										nextmemberid = idCostant
-												+ nextmemberidOriginal + 1;
-										Log.i("SignIn nextserviceid ",
-												nextmemberid + "");
-									}
-									// If members has established
-									else {
-										nextmemberid = nextmemberidOriginal + 1;
-										Log.i("SignIn nextserviceid ",
-												nextmemberid + "");
-									}
-									int nextscheduleid = -1;
-									// If it is the first time to establish a
-									// schedule
-									if (nextscheduleidOriginal == 0) {
-										nextscheduleid = idCostant
-												+ nextscheduleidOriginal + 1;
-										Log.i("SignIn nextscheduleid ",
-												nextscheduleid + "");
-									} else {
-										nextscheduleid = nextscheduleidOriginal + 1;
-										Log.i("SignIn nextscheduleid ",
-												nextscheduleid + "");
-									}
-
-									int nextSharedMemberId = -1;
-									// If it is the first time to establish a
-									// schedule
-									if (nextscheduleidOriginal == 0) {
-										nextscheduleid = idCostant
-												+ nextscheduleidOriginal + 1;
-										Log.i("SignIn nextscheduleid ",
-												nextscheduleid + "");
-									} else {
-										nextscheduleid = nextscheduleidOriginal + 1;
-										Log.i("SignIn nextscheduleid ",
-												nextscheduleid + "");
-									}
-
-									sharedReference.setInformationUserLogined(
-											mContext, username, email, ownerid,
-											nextserviceid, nextmemberid,
-											nextscheduleid);
-
-									uploadRecentEditedActivitiesToWeb();
-									uploadRecentEditedParticipantsToWeb();
-									uploadRecentNewActivitiesToWeb();
-									uploadRecentNewParticipantsToWeb();
-									uploadRecentNewSchedulesToWeb();
-
-									try {
-										dimissDialog();
-									} catch (Exception ex) {
-										ex.printStackTrace();
-									}
-
-									((Activity) mContext).finish();
-									Utils.postLeftToRight(mContext);
-
-									Intent intent = new Intent(mContext,
-											CategoryTabActivity.class);
-									mContext.startActivity(intent);
-
-								} catch (JSONException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
 								}
-							}
-
-							@Override
-							public void onFailure(Throwable error,
-									String content) {
-								try {
-
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
+								// If activities has established
+								else {
+									nextserviceid = nextserviceidOriginal + 1;
+									Log.i("SignIn nextserviceid ",
+											nextserviceid + "");
 								}
-
-								if (error.getCause() instanceof ConnectTimeoutException
-										|| error.getCause() instanceof UnknownHostException) {
-
-									final ToastDialog noNetwork = new ToastDialog(
-											mContext,
-											mContext.getResources().getString(
-													R.string.no_network));
-									noNetwork.show();
-									noNetwork.btnOk
-											.setOnClickListener(new OnClickListener() {
-
-												@Override
-												public void onClick(View v) {
-													noNetwork.dismiss();
-												}
-											});
-
+								int nextmemberid = -1;
+								// If it is the first time to establish a
+								// member
+								if (nextmemberidOriginal == 0) {
+									nextmemberid = idCostant
+											+ nextmemberidOriginal + 1;
+									Log.i("SignIn nextserviceid ", nextmemberid
+											+ "");
+								}
+								// If members has established
+								else {
+									nextmemberid = nextmemberidOriginal + 1;
+									Log.i("SignIn nextserviceid ", nextmemberid
+											+ "");
+								}
+								int nextscheduleid = -1;
+								// If it is the first time to establish a
+								// schedule
+								if (nextscheduleidOriginal == 0) {
+									nextscheduleid = idCostant
+											+ nextscheduleidOriginal + 1;
+									Log.i("SignIn nextscheduleid ",
+											nextscheduleid + "");
 								} else {
-									final ToastDialog dialog = new ToastDialog(
-											mContext,
-											mContext.getResources().getString(
-													R.string.login_fail));
-									dialog.show();
-									dialog.btnOk
-											.setOnClickListener(new OnClickListener() {
-
-												@Override
-												public void onClick(View v) {
-													dialog.dismiss();
-												}
-											});
+									nextscheduleid = nextscheduleidOriginal + 1;
+									Log.i("SignIn nextscheduleid ",
+											nextscheduleid + "");
 								}
-							}
 
-							@Override
-							public void onFailure(Throwable e) {
-								Log.e("login fail dd", "OnFailure!", e);
+								int nextSharedMemberId = -1;
+								// If it is the first time to establish a
+								// schedule
+								if (nextscheduleidOriginal == 0) {
+									nextscheduleid = idCostant
+											+ nextscheduleidOriginal + 1;
+									Log.i("SignIn nextscheduleid ",
+											nextscheduleid + "");
+								} else {
+									nextscheduleid = nextscheduleidOriginal + 1;
+									Log.i("SignIn nextscheduleid ",
+											nextscheduleid + "");
+								}
+
+								sharedReference.setInformationUserLogined(
+										mContext, username, email, ownerid,
+										nextserviceid, nextmemberid,
+										nextscheduleid);
+
+								uploadRecentEditedActivitiesToWeb();
+								uploadRecentEditedParticipantsToWeb();
+								uploadRecentNewActivitiesToWeb();
+								uploadRecentNewParticipantsToWeb();
+								uploadRecentNewSchedulesToWeb();
+
 								try {
-
 									dimissDialog();
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
+
+								((Activity) mContext).finish();
+								Utils.postLeftToRight(mContext);
+
+								Intent intent = new Intent(mContext,
+										CategoryTabActivity.class);
+								mContext.startActivity(intent);
+
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+						@Override
+						public void onFailure(Throwable error, String content) {
+							try {
+
+								dimissDialog();
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+
+							if (error.getCause() instanceof ConnectTimeoutException
+									|| error.getCause() instanceof UnknownHostException) {
 
 								final ToastDialog noNetwork = new ToastDialog(
 										mContext, mContext.getResources()
@@ -471,69 +434,108 @@ public class WebservicesHelper {
 											}
 										});
 
-							}
-
-							@Override
-							public void onFailure(Throwable e,
-									JSONArray errorResponse) {
-								Log.e("Login fail", "OnFailure!", e);
-								try {
-
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
-
-								final ToastDialog noNetwork = new ToastDialog(
-										mContext, errorResponse.toString());
-								noNetwork.show();
-								noNetwork.btnOk
+							} else {
+								final ToastDialog dialog = new ToastDialog(
+										mContext, mContext.getResources()
+												.getString(R.string.login_fail));
+								dialog.show();
+								dialog.btnOk
 										.setOnClickListener(new OnClickListener() {
 
 											@Override
 											public void onClick(View v) {
-												noNetwork.dismiss();
+												dialog.dismiss();
 											}
 										});
+							}
+						}
 
+						@Override
+						public void onFailure(Throwable e) {
+							Log.e("login fail dd", "OnFailure!", e);
+							try {
+
+								dimissDialog();
+							} catch (Exception ex) {
+								ex.printStackTrace();
 							}
 
-							@Override
-							public void onStart() {
-								// TODO Auto-generated method stub
-								super.onStart();
-								showLoading(mContext);
+							final ToastDialog noNetwork = new ToastDialog(
+									mContext, mContext.getResources()
+											.getString(R.string.no_network));
+							noNetwork.show();
+							noNetwork.btnOk
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											noNetwork.dismiss();
+										}
+									});
+
+						}
+
+						@Override
+						public void onFailure(Throwable e,
+								JSONArray errorResponse) {
+							Log.e("Login fail", "OnFailure!", e);
+							try {
+
+								dimissDialog();
+							} catch (Exception ex) {
+								ex.printStackTrace();
 							}
 
-							@Override
-							public void onFinish() {
-								// TODO Auto-generated method stub
-								super.onFinish();
-								try {
-									// if (progress.isShowing()) {
-									// progress.dismiss();
-									// }
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
+							final ToastDialog noNetwork = new ToastDialog(
+									mContext, errorResponse.toString());
+							noNetwork.show();
+							noNetwork.btnOk
+									.setOnClickListener(new OnClickListener() {
 
+										@Override
+										public void onClick(View v) {
+											noNetwork.dismiss();
+										}
+									});
+
+						}
+
+						@Override
+						public void onStart() {
+							// TODO Auto-generated method stub
+							super.onStart();
+							showLoading(mContext);
+						}
+
+						@Override
+						public void onFinish() {
+							// TODO Auto-generated method stub
+							super.onFinish();
+							try {
+								// if (progress.isShowing()) {
+								// progress.dismiss();
+								// }
+								dimissDialog();
+							} catch (Exception ex) {
+								ex.printStackTrace();
 							}
-						});
-//			}
-//		else {
-//
-//				final ToastDialog dialog = new ToastDialog(mContext, mContext
-//						.getResources().getString(R.string.no_network));
-//				dialog.show();
-//				dialog.btnOk.setOnClickListener(new OnClickListener() {
-//
-//					@Override
-//					public void onClick(View v) {
-//						dialog.dismiss();
-//					}
-//				});
-//			}
+
+						}
+					});
+			// }
+			// else {
+			//
+			// final ToastDialog dialog = new ToastDialog(mContext, mContext
+			// .getResources().getString(R.string.no_network));
+			// dialog.show();
+			// dialog.btnOk.setOnClickListener(new OnClickListener() {
+			//
+			// @Override
+			// public void onClick(View v) {
+			// dialog.dismiss();
+			// }
+			// });
+			// }
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -649,25 +651,20 @@ public class WebservicesHelper {
 								newActivity.put(ActivityTable.sharedrole, role);
 								Log.i("getActivitiesFromWeb sharedrole ", role
 										+ "");
-								int alert = service.getInt("alert");
-								newActivity.put(ActivityTable.alert, alert);
-								Log.i("getActivitiesFromWeb alert ", alert + "");
-								int repeat = service.getInt("repeat");
-								newActivity.put(ActivityTable.repeat, repeat);
-								Log.i("getActivitiesFromWeb repeat ", repeat
-										+ "");
-								String starttime = service
-										.getString("startdatetime");
-								newActivity.put(ActivityTable.start_time,
-										starttime);
-								Log.i("getActivitiesFromWeb start_time ",
-										starttime + "");
-								String endtime = service
-										.getString("enddatetime");
-								newActivity
-										.put(ActivityTable.end_time, endtime);
-								Log.i("getActivitiesFromWeb end_time ", endtime
-										+ "");
+
+								// String starttime = service
+								// .getString("startdatetime");
+								// newActivity.put(ActivityTable.start_time,
+								// starttime);
+								// Log.i("getActivitiesFromWeb start_time ",
+								// starttime + "");
+								// String endtime = service
+								// .getString("enddatetime");
+								// newActivity
+								// .put(ActivityTable.end_time, endtime);
+								// Log.i("getActivitiesFromWeb end_time ",
+								// endtime
+								// + "");
 								String description = service.getString("desp");
 								newActivity.put(
 										ActivityTable.service_description,
@@ -675,10 +672,7 @@ public class WebservicesHelper {
 
 								Log.i("getActivitiesFromWeb service_description ",
 										description + "");
-								// int otc = new
-								// SharedReference().getTimeZone(mContext);
-								String otc = service.getString("utcoff");
-								newActivity.put(ActivityTable.otc_Offset, otc);
+
 								int is_deleted = 0;
 								newActivity.put(ActivityTable.is_Deleted,
 										is_deleted);
@@ -980,7 +974,7 @@ public class WebservicesHelper {
 		params.put("ownerid", String.valueOf(currentOwnerID));
 		params.put("lastupdatetime",
 				ref.getLastestScheduleLastModifiedTime(mContext));
-
+		Log.d("schedule param", params.toString());
 		try {
 
 			if (Utils.isNetworkOnline(mContext)) {
@@ -1013,38 +1007,42 @@ public class WebservicesHelper {
 									.getJSONArray("schedules");
 							int scheudule_count = schedules.length();
 							for (int i = 0; i < scheudule_count; i++) {
-								JSONObject Schedule = schedules
+								JSONObject schedule = schedules
 										.getJSONObject(i);
 								ContentValues cv = new ContentValues();
 								cv.put(ScheduleTable.own_ID,
-										Schedule.getInt("creatorid"));
+										schedule.getInt("creatorid"));
 
 								cv.put(ScheduleTable.last_Modified,
-										Schedule.getString("lastmodified"));
+										schedule.getString("lastmodified"));
 								cv.put(ScheduleTable.start_Time,
-										Schedule.getString("startdatetime"));
+										schedule.getString("startdatetime"));
 								cv.put(ScheduleTable.schedule_Description,
-										Schedule.getString("desp"));
+										schedule.getString("desp"));
 								cv.put(ScheduleTable.end_Time,
-										Schedule.getString("enddatetime"));
+										schedule.getString("enddatetime"));
 								cv.put(ScheduleTable.service_ID,
-										Schedule.getInt("serviceid"));
+										schedule.getInt("serviceid"));
 								cv.put(ScheduleTable.is_Deleted, 0);
 								cv.put(ScheduleTable.is_Synchronized, 1);
 								cv.put(ActivityTable.user_login,
 										new SharedReference()
 												.getCurrentOwnerId(mContext));
+								cv.put(ScheduleTable.timeZone,
+										schedule.getString("tzid"));
+								cv.put(ScheduleTable.alert,
+										schedule.getString("alert"));
 
-								int scheduleID = Schedule.getInt("scheduleid");
+								int scheduleID = schedule.getInt("scheduleid");
 								// Log.i("Webservice","schedule " + scheduleID +
 								// " has members " +
 								// Schedule.getString("members"));
 								if (dbHelper.isScheduleExisted(scheduleID) == false) {
 									cv.put(ScheduleTable.schedule_ID,
-											Schedule.getInt("scheduleid"));
+											schedule.getInt("scheduleid"));
 									Log.i("scheduleid",
 											"= "
-													+ Schedule
+													+ schedule
 															.getInt("scheduleid"));
 									if (dbHelper.insertSchedule(cv)) {
 										// Log.i("database", "insert schedule "
@@ -1053,7 +1051,7 @@ public class WebservicesHelper {
 									}
 								} else {
 									if (dbHelper.updateSchedule(scheduleID, cv))
-										;
+
 									{
 										// Log.i("database", "update schedule "
 										// +
@@ -1075,41 +1073,42 @@ public class WebservicesHelper {
 
 								Log.i("getschedule", "done");
 
-								String[] members = Schedule
-										.getString("members").split(",");
-								// Log.i("Sync", "schedule " + scheduleID +
-								// " has " +
-								// members.length + " members");
-								for (int j = 0; j < members.length; j++) {
-									if (!members[j].equalsIgnoreCase("")) {
-										int memberid = Integer
-												.valueOf(members[j]);
+								JSONArray members = schedule
+										.getJSONArray("members");
+								if (members != null) {
+									int size = members.length();
+									for (int j = 0; j < size; j++) {
+										JSONObject obj = members
+												.getJSONObject(j);
+
+										int memberId = obj.getInt("memberid");
+										int confirmId = obj.getInt("confirm");
 										ContentValues newOnduty = new ContentValues();
 										newOnduty.put(OndutyTable.service_ID,
-												Schedule.getInt("serviceid"));
+												schedule.getInt("serviceid"));
 										newOnduty.put(
 												OndutyTable.participant_ID,
-												memberid);
+												memberId);
+										newOnduty.put(OndutyTable.confirm,
+												confirmId);
 										newOnduty.put(OndutyTable.schedule_ID,
-												Schedule.getInt("scheduleid"));
+												schedule.getInt("scheduleid"));
 										newOnduty
 												.put(OndutyTable.last_Modified,
-														Schedule.getString("lastmodified"));
+														schedule.getString("lastmodified"));
 										newOnduty
 												.put(OndutyTable.is_Deleted, 0);
 										newOnduty.put(
 												OndutyTable.is_Synchronized, 1);
 
 										if (dbHelper.insertOnduty(newOnduty)) {
-											// Log.i("database",
-											// "insert member " +
-											// memberid + " to schedule " +
-											// scheduleID
-											// +" successfully");
+
 										}
+
 									}
+									Log.i("getmembers", "done");
 								}
-								Log.i("getmembers", "done");
+
 							}
 
 							// update time lastest update for schedule
@@ -1354,20 +1353,441 @@ public class WebservicesHelper {
 	}
 
 	/**
-	 * Add new activity
+	 * Get server setting from server
+	 * */
+	public void getServerSetting() {
+		String serverSetting = BaseUrl.BASEURL + "serversetting" + "?"
+				+ BaseUrl.URL_POST_FIX;
+		Log.i("url server setting is=", serverSetting);
+		final SharedReference ref = new SharedReference();
+		int currentOwnerID = ref.getCurrentOwnerId(mContext);
+		RequestParams params = new RequestParams();
+		params.put("ownerid", String.valueOf(currentOwnerID));
+		params.put("lastupdatetime",
+				ref.getLastestParticipantLastModifiedTime(mContext));
+		try {
+			if (Utils.isNetworkOnline(mContext)) {
+
+				client.get(serverSetting, params,
+						new JsonHttpResponseHandler() {
+							public void onSuccess(JSONObject response) {
+								Log.i("timezone list", response.toString());
+								try {
+									JSONArray timeZoneList = response
+											.getJSONArray("timezones");
+									int timeZoneListSize = timeZoneList
+											.length();
+									for (int i = 0; i < timeZoneListSize; i++) {
+										JSONObject timeZone = timeZoneList
+												.getJSONObject(i);
+										int id = timeZone.getInt("id");
+
+										String timeZoneName = timeZone
+												.getString("tzname");
+										String displayname = timeZone
+												.getString("displayname");
+										String displayorder = timeZone
+												.getString("displayorder");
+										String abbrtzname = timeZone
+												.getString("abbrtzname");
+										String tzname = timeZone
+												.getString("tzname");
+										ContentValues cv = new ContentValues();
+
+										cv.put(TimeZoneTable.abbrtzname,
+												abbrtzname);
+										cv.put(TimeZoneTable.displayname,
+												displayname);
+
+										cv.put(TimeZoneTable.displayorder,
+												displayorder);
+										cv.put(TimeZoneTable.tzname, tzname);
+
+										if (dbHelper.isTimeZoneExisted(id) == false) {
+											cv.put(TimeZoneTable.id, id);
+											if (dbHelper.insertTimeZone(cv))
+												Log.i("database",
+														"insert timezone "
+																+ timeZoneName
+																+ " successfully!");
+										} else {
+											if (dbHelper.updateTimeZone(id, cv))
+												Log.i("database",
+														"update timezone "
+																+ timeZoneName
+																+ " successfully!");
+										}
+									}
+
+									/**
+									 * Alerts
+									 * */
+									JSONArray alertList = response
+											.getJSONArray("alerts");
+									int alertSize = alertList.length();
+									for (int i = 0; i < alertSize; i++) {
+										JSONObject timeZone = alertList
+												.getJSONObject(i);
+										int id = timeZone.getInt("id");
+
+										String alert = timeZone
+												.getString("aname");
+
+										ContentValues cv = new ContentValues();
+										cv.put(com.e2wstudy.cschedule.models.AlertTable.aname,
+												alert);
+										if (dbHelper.isAlertExisted(id) == false) {
+											cv.put(com.e2wstudy.cschedule.models.AlertTable.id,
+													id);
+											if (dbHelper.insertAlert(cv))
+												Log.i("database",
+														"insert timezone "
+																+ alert
+																+ " successfully!");
+										} else {
+											if (dbHelper.updateAlert(id, cv))
+												Log.i("database",
+														"update timezone "
+																+ alert
+																+ " successfully!");
+										}
+									}
+
+									/**
+									 * app version
+									 * */
+									JSONArray appVersions = response
+											.getJSONArray("appversions");
+									int appVersionSize = appVersions.length();
+									for (int i = 0; i < appVersionSize; i++) {
+										JSONObject version = appVersions
+												.getJSONObject(i);
+										int id = version.getInt("id");
+										String appversion = version
+												.getString("appversion");
+										int enforce = version.getInt("enforce");
+										String os = version.getString("os");
+										String osversion = version
+												.getString("osversion");
+										ContentValues cv = new ContentValues();
+										cv.put(AppVersionTable.appversion,
+												appversion);
+										cv.put(AppVersionTable.os, os);
+										cv.put(AppVersionTable.osversion,
+												osversion);
+										cv.put(AppVersionTable.enforce, enforce);
+										
+										if (dbHelper.isVersionExisted(id) == false) {
+											cv.put(AppVersionTable.id, id);
+											if (dbHelper.insertAppVersion(cv))
+												Log.i("database",
+														"insert appversion "
+																+ osversion
+																+ " successfully!");
+										} else {
+											if (dbHelper.updateAppVersion(id,
+													cv))
+												Log.i("database",
+														"update appversion "
+																+ osversion
+																+ " successfully!");
+										}
+									}
+
+									CommConstant.DOWNLOAD_SETTING = true;
+
+									do
+									{
+									Utils.checkCurrentVersion(mContext);
+									}while(!CommConstant.UPDATE);
+									
+									Intent intent = new Intent(
+											CommConstant.SERVER_SETTING_SUCCESSFULLY);
+									mContext.sendBroadcast(intent);
+
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+
+							public void onFailure(Throwable e, String response) {
+								// Response failed :(
+								Log.i("webservice", "Get timezone failed");
+
+							}
+
+							@Override
+							public void onStart() {
+								// TODO Auto-generated method stub
+								super.onStart();
+								showLoading(mContext);
+							}
+
+							@Override
+							public void onFinish() {
+								// TODO Auto-generated method stub
+								super.onFinish();
+								try {
+									// if (progress.isShowing()) {
+									// progress.dismiss();
+									// }
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+
+							}
+						});
+			} else {
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
+						.getResources().getString(R.string.no_network));
+				dialog.show();
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// /**
+	// * Get timezone from server
+	// * */
+	// public void getTimezoneSetting() {
+	// String timeZoneUrl = BaseUrl.BASEURL + "serversetting/timezones" + "?"
+	// + BaseUrl.URL_POST_FIX;
+	// Log.i("url is :", timeZoneUrl);
+	// final SharedReference ref = new SharedReference();
+	// int currentOwnerID = ref.getCurrentOwnerId(mContext);
+	// RequestParams params = new RequestParams();
+	// params.put("ownerid", String.valueOf(currentOwnerID));
+	// params.put("lastupdatetime",
+	// ref.getLastestParticipantLastModifiedTime(mContext));
+	// try {
+	// if (Utils.isNetworkOnline(mContext)) {
+	//
+	// client.get(timeZoneUrl, params, new JsonHttpResponseHandler() {
+	// public void onSuccess(JSONObject response) {
+	// Log.i("timezone list", response.toString());
+	// try {
+	// JSONArray timeZoneList = response
+	// .getJSONArray("timezones");
+	// int timeZoneListSize = timeZoneList.length();
+	// for (int i = 0; i < timeZoneListSize; i++) {
+	// JSONObject timeZone = timeZoneList
+	// .getJSONObject(i);
+	// int id = timeZone.getInt("id");
+	//
+	// String timeZoneName = timeZone
+	// .getString("tzname");
+	// String displayname = timeZone
+	// .getString("displayname");
+	// String displayorder = timeZone
+	// .getString("displayorder");
+	// String abbrtzname = timeZone
+	// .getString("abbrtzname");
+	// String tzname = timeZone.getString("tzname");
+	// ContentValues cv = new ContentValues();
+	//
+	// cv.put(TimeZoneTable.abbrtzname, abbrtzname);
+	// cv.put(TimeZoneTable.displayname, displayname);
+	//
+	// cv.put(TimeZoneTable.displayorder, displayorder);
+	// cv.put(TimeZoneTable.tzname, tzname);
+	//
+	// if (dbHelper.isTimeZoneExisted(id) == false) {
+	// cv.put(TimeZoneTable.id, id);
+	// if (dbHelper.insertTimeZone(cv))
+	// Log.i("database", "insert timezone "
+	// + timeZoneName
+	// + " successfully!");
+	// } else {
+	// if (dbHelper.updateTimeZone(id, cv))
+	// Log.i("database", "update timezone "
+	// + timeZoneName
+	// + " successfully!");
+	// }
+	// }
+	//
+	// Intent intent = new Intent(
+	// CommConstant.TIMEZONE_DOWNLOAD_SUCCESSFULLY);
+	// mContext.sendBroadcast(intent);
+	//
+	// } catch (JSONException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	//
+	// public void onFailure(Throwable e, String response) {
+	// // Response failed :(
+	// Log.i("webservice", "Get timezone failed");
+	//
+	// }
+	//
+	// @Override
+	// public void onStart() {
+	// // TODO Auto-generated method stub
+	// super.onStart();
+	// showLoading(mContext);
+	// }
+	//
+	// @Override
+	// public void onFinish() {
+	// // TODO Auto-generated method stub
+	// super.onFinish();
+	// try {
+	// // if (progress.isShowing()) {
+	// // progress.dismiss();
+	// // }
+	// dimissDialog();
+	// } catch (Exception ex) {
+	// ex.printStackTrace();
+	// }
+	//
+	// }
+	// });
+	// } else {
+	// final ToastDialog dialog = new ToastDialog(mContext, mContext
+	// .getResources().getString(R.string.no_network));
+	// dialog.show();
+	// dialog.btnOk.setOnClickListener(new OnClickListener() {
+	//
+	// @Override
+	// public void onClick(View v) {
+	// dialog.dismiss();
+	// }
+	// });
+	// }
+	// } catch (Exception ex) {
+	// ex.printStackTrace();
+	// }
+	// }
+	//
+	// /**
+	// * Get alert from server
+	// * */
+	// public void getAlertSetting() {
+	// String alertUrl = BaseUrl.BASEURL + "serversetting/alerts" + "?"
+	// + BaseUrl.URL_POST_FIX;
+	// Log.i("url is :", alertUrl);
+	// final SharedReference ref = new SharedReference();
+	// int currentOwnerID = ref.getCurrentOwnerId(mContext);
+	// RequestParams params = new RequestParams();
+	// params.put("ownerid", String.valueOf(currentOwnerID));
+	// params.put("lastupdatetime",
+	// ref.getLastestParticipantLastModifiedTime(mContext));
+	// try {
+	// if (Utils.isNetworkOnline(mContext)) {
+	//
+	// client.get(alertUrl, params, new JsonHttpResponseHandler() {
+	// public void onSuccess(JSONObject response) {
+	// Log.i("timezone list", response.toString());
+	// try {
+	// JSONArray timeZoneList = response
+	// .getJSONArray("alerts");
+	// int timeZoneListSize = timeZoneList.length();
+	// for (int i = 0; i < timeZoneListSize; i++) {
+	// JSONObject timeZone = timeZoneList
+	// .getJSONObject(i);
+	// int id = timeZone.getInt("id");
+	//
+	// String alert = timeZone.getString("aname");
+	//
+	// ContentValues cv = new ContentValues();
+	// cv.put(com.e2wstudy.cschedule.models.AlertTable.aname,
+	// alert);
+	// if (dbHelper.isAlertExisted(id) == false) {
+	// cv.put(com.e2wstudy.cschedule.models.AlertTable.id,
+	// id);
+	// if (dbHelper.insertAlert(cv))
+	// Log.i("database", "insert timezone "
+	// + alert + " successfully!");
+	// } else {
+	// if (dbHelper.updateAlert(id, cv))
+	// Log.i("database", "update timezone "
+	// + alert + " successfully!");
+	// }
+	// }
+	//
+	// Intent intent = new Intent(
+	// CommConstant.ALERT_DOWNLOAD_SUCCESSFULLY);
+	// mContext.sendBroadcast(intent);
+	//
+	// } catch (JSONException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	//
+	// public void onFailure(Throwable e, String response) {
+	// // Response failed :(
+	// Log.i("webservice", "Get timezone failed");
+	//
+	// }
+	//
+	// @Override
+	// public void onStart() {
+	// // TODO Auto-generated method stub
+	// super.onStart();
+	// showLoading(mContext);
+	// }
+	//
+	// @Override
+	// public void onFinish() {
+	// // TODO Auto-generated method stub
+	// super.onFinish();
+	// try {
+	// // if (progress.isShowing()) {
+	// // progress.dismiss();
+	// // }
+	// dimissDialog();
+	// } catch (Exception ex) {
+	// ex.printStackTrace();
+	// }
+	//
+	// }
+	// });
+	// } else {
+	// final ToastDialog dialog = new ToastDialog(mContext, mContext
+	// .getResources().getString(R.string.no_network));
+	// dialog.show();
+	// dialog.btnOk.setOnClickListener(new OnClickListener() {
+	//
+	// @Override
+	// public void onClick(View v) {
+	// dialog.dismiss();
+	// }
+	// });
+	// }
+	// } catch (Exception ex) {
+	// ex.printStackTrace();
+	// }
+	// }
+
+	/**
+	 * Add new activity A request body { “ownerid”: 123434, “services”: {
+	 * “serviceid”: “2222222”, “servicename”: “Food Service”, “desp”: “This is a
+	 * cleaning service”, } }
 	 * */
 	public void addActivity(final MyActivity activity) {
 		String ActivityUrl = BaseUrl.BASEURL + "services" + "?"
 				+ BaseUrl.URL_POST_FIX;
 		try {
 			JSONObject activityParams = new JSONObject();
-			activityParams.put("alert", activity.getAlert());
-			activityParams.put("repeat", activity.getRepeat());
+			// activityParams.put("alert", activity.getAlert());
+			// activityParams.put("repeat", activity.getRepeat());
 			activityParams.put("servicename", activity.getActivity_name());
 			activityParams.put("serviceid", activity.getActivity_ID());
 			activityParams.put("desp", activity.getDesp());
-			activityParams.put("startdatetime", activity.getStarttime());
-			activityParams.put("enddatetime", activity.getEndtime());
+			// activityParams.put("startdatetime", activity.getStarttime());
+			// activityParams.put("enddatetime", activity.getEndtime());
 
 			JSONObject params = new JSONObject();
 			params.put("ownerid", activity.getOwner_ID());
@@ -1490,7 +1910,7 @@ public class WebservicesHelper {
 		}
 	}
 
-	public void addSchedule(Schedule schedule, List<Integer> pins) {
+	public void addSchedule(Schedule schedule, List<Confirm> pins) {
 		// String ScheduleUrl = BASEURL + "schedules";
 		String ScheduleUrl = BaseUrl.BASEURL + "schedules" + "?"
 				+ BaseUrl.URL_POST_FIX;
@@ -1502,14 +1922,18 @@ public class WebservicesHelper {
 			scheduleParams.put("desp", schedule.getDesp());
 			scheduleParams.put("startdatetime", schedule.getStarttime());
 			scheduleParams.put("enddatetime", schedule.getEndtime());
-			scheduleParams.put("utcoffset", 0);
+			scheduleParams.put("tzid", schedule.getTzid());
+			scheduleParams.put("alert", schedule.getAlert());
 			JSONObject params = new JSONObject();
 			params.put("ownerid", schedule.getOwner_ID());
 			params.put("serviceid", schedule.getService_ID());
 			JSONArray jpins = new JSONArray();
 			if (pins != null && pins.size() > 0) {
-				for (Integer pin : pins) {
-					jpins.put(pin);
+				for (Confirm pin : pins) {
+					JSONObject obj = new JSONObject();
+					obj.put("memberid", pin.getMemberId());
+					obj.put("confirm", pin.getConfirm());
+					jpins.put(obj);
 				}
 			}
 			if (jpins != null && jpins.length() > 0) {
@@ -1625,7 +2049,7 @@ public class WebservicesHelper {
 		}
 	}
 
-	public void updateSchedule(Schedule schedule, List<Integer> pins) {
+	public void updateSchedule(Schedule schedule, List<Confirm> pins) {
 		// String ScheduleUrl = BASEURL + "schedules/" +
 		// schedule.getScheduleID();
 		String ScheduleUrl = BaseUrl.BASEURL + "schedules/"
@@ -1636,12 +2060,16 @@ public class WebservicesHelper {
 			scheduleParams.put("desp", schedule.getDesp());
 			scheduleParams.put("startdatetime", schedule.getStarttime());
 			scheduleParams.put("enddatetime", schedule.getEndtime());
-			scheduleParams.put("utcoffset",
-					new SharedReference().getTimeZone(mContext));
+
+			scheduleParams.put("tzid", schedule.getTzid());
+			scheduleParams.put("alert", schedule.getAlert());
 			JSONArray jpins = new JSONArray();
 			if (pins != null && pins.size() > 0) {
-				for (Integer pin : pins) {
-					jpins.put(pin);
+				for (Confirm pin : pins) {
+					JSONObject obj = new JSONObject();
+					obj.put("memberid", pin.getMemberId());
+					obj.put("confirm", pin.getConfirm());
+					jpins.put(obj);
 				}
 			}
 			if (jpins != null && jpins.length() > 0) {
@@ -1730,6 +2158,126 @@ public class WebservicesHelper {
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
+
+							}
+						});
+			} else {
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
+						.getResources().getString(R.string.no_network));
+				dialog.show();
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+			}
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void updateConfirmStatus(final Schedule schedule, final Confirm pin) {
+		// String ScheduleUrl = BASEURL + "schedules/" +
+		// schedule.getScheduleID();
+		String updateConfirmStatus = BaseUrl.BASEURL + "schedules/"
+				+ schedule.getSchedule_ID() + "/onduty/" + pin.getMemberId()
+				+ "?" + BaseUrl.URL_POST_FIX;
+		Log.d("update confirm status url", updateConfirmStatus);
+		final int id = schedule.getSchedule_ID();
+		try {
+
+			JSONObject params = new JSONObject();
+			params.put("ownerid",
+					new SharedReference().getCurrentOwnerId(mContext));
+			params.put("confirm", pin.getConfirm());
+
+			// client.addHeader("Content-type", "application/json");
+			Log.i("updateConfirmStatus param", params.toString());
+			StringEntity entity = new StringEntity(params.toString());
+			if (Utils.isNetworkOnline(mContext)) {
+				client.put(null, updateConfirmStatus, entity,
+						"application/json", new JsonHttpResponseHandler() {
+							public void onSuccess(JSONObject response) {
+								Log.i("updateConfirmStatus success",
+										response.toString());
+								try {
+									ContentValues cv = new ContentValues();
+									String last_modified = response
+											.getString("lastmodified");
+									cv.put(OndutyTable.last_Modified,
+											last_modified);
+									cv.put(OndutyTable.is_Synchronized, 1);
+									cv.put(OndutyTable.confirm,
+											pin.getConfirm());
+									cv.put(OndutyTable.schedule_ID,
+											schedule.getSchedule_ID());
+									dbHelper.updateOnduty(
+											schedule.getSchedule_ID(),
+											pin.getMemberId(), cv);
+									// go to schedule
+									// CategoryTabActivity.currentPage =
+									// CategoryTabActivity.TAB_SCHEDULE;
+
+									// Utils.postLeftToRight(mContext);
+									Intent intent = new Intent(
+											CommConstant.CHANGE_CONFIRM_STATUS_SUCCESSFULLY);
+
+									mContext.sendBroadcast(intent);
+
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+
+							}
+
+							public void onFailure(Throwable e, String response) {
+								// Response failed :(
+
+								Log.i("failure response", response);
+								Log.i("fail", e.toString());
+
+								final ToastDialog dialog = new ToastDialog(
+										mContext, mContext.getResources()
+												.getString(
+														R.string.confirm_error)
+												+ " " + response.toString());
+								dialog.show();
+								dialog.btnOk
+										.setOnClickListener(new OnClickListener() {
+
+											@Override
+											public void onClick(View v) {
+												dialog.dismiss();
+											}
+										});
+							}
+
+							@Override
+							public void onStart() {
+								// TODO Auto-generated method stub
+								super.onStart();
+								// showLoading(mContext);
+							}
+
+							@Override
+							public void onFinish() {
+								// TODO Auto-generated method stub
+								super.onFinish();
+								// try {
+								// // if (progress.isShowing()) {
+								// // progress.dismiss();
+								// // }
+								// dimissDialog();
+								// } catch (Exception ex) {
+								// ex.printStackTrace();
+								// }
 
 							}
 						});
@@ -2025,7 +2573,7 @@ public class WebservicesHelper {
 		List<Schedule> unsyncedSchedules = dbHelper.getUnsyncedNewSchedules();
 		for (int i = 0; i < unsyncedSchedules.size(); i++) {
 			Schedule s = unsyncedSchedules.get(i);
-			List<Integer> members = dbHelper.getParticipantsForSchedule(s
+			List<Confirm> members = dbHelper.getParticipantsForSchedule(s
 					.getSchedule_ID());
 			this.addSchedule(s, members);
 		}
@@ -2036,7 +2584,7 @@ public class WebservicesHelper {
 				.getUnsyncedEditedSchedules();
 		for (int i = 0; i < unsyncedSchedules.size(); i++) {
 			Schedule s = unsyncedSchedules.get(i);
-			List<Integer> members = dbHelper.getParticipantsForSchedule(s
+			List<Confirm> members = dbHelper.getParticipantsForSchedule(s
 					.getSchedule_ID());
 			this.updateSchedule(s, members);
 		}
@@ -2249,7 +2797,7 @@ public class WebservicesHelper {
 							}
 
 							public void onFailure(Throwable e, String response) {
-//								dimissDialog();
+								// dimissDialog();
 								final ToastDialog dialog = new ToastDialog(
 										mContext,
 										mContext.getResources()
@@ -2271,21 +2819,21 @@ public class WebservicesHelper {
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-//								showLoading(mContext);
+								// showLoading(mContext);
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-//								try {
-//									// if (progress.isShowing()) {
-//									// progress.dismiss();
-//									// }
-//									dimissDialog();
-//								} catch (Exception ex) {
-//									ex.printStackTrace();
-//								}
+								// try {
+								// // if (progress.isShowing()) {
+								// // progress.dismiss();
+								// // }
+								// dimissDialog();
+								// } catch (Exception ex) {
+								// ex.printStackTrace();
+								// }
 
 							}
 						});
@@ -2807,12 +3355,11 @@ public class WebservicesHelper {
 		final String id = activity.getActivity_ID();
 		try {
 			JSONObject activityParams = new JSONObject();
-			activityParams.put("alert", activity.getAlert());
-			activityParams.put("repeat", activity.getRepeat());
+
 			activityParams.put("servicename", activity.getActivity_name());
 			activityParams.put("desp", activity.getDesp());
-			activityParams.put("startdatetime", activity.getStarttime());
-			activityParams.put("enddatetime", activity.getEndtime());
+			// activityParams.put("startdatetime", activity.getStarttime());
+			// activityParams.put("enddatetime", activity.getEndtime());
 
 			JSONObject params = new JSONObject();
 			params.put("ownerid", activity.getOwner_ID());

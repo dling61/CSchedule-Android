@@ -6,16 +6,20 @@ package com.e2wstudy.cschedule.fragments;
 import com.e2wstudy.cschedule.FeedBackActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
+import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.AccountView;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,7 +37,7 @@ public class AccountFragment extends Fragment implements OnClickListener {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mContext = getActivity();
-		initData();
+		
 		onClickListener();
 	}
 
@@ -77,7 +81,8 @@ public class AccountFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		Log.d("on resume","account");
+		initData();
 	}
 
 	@Override
@@ -103,10 +108,39 @@ public class AccountFragment extends Fragment implements OnClickListener {
 		DatabaseHelper dbHelper = DatabaseHelper
 				.getSharedDatabaseHelper(mContext);
 		view.number_activities_tv.setText(String.valueOf(dbHelper
-				.getNumberSchedule()));
+				.getNumberActivity()));
 		view.number_schedules_tv.setText(String.valueOf(dbHelper
-				.getNumberActivity(email)));
+				.getNumberSchedule()));
 		dbHelper.close();
+	}
+	
+	BroadcastReceiver scheduleReadyComplete = new BroadcastReceiver() {
+		public void onReceive(Context arg0, Intent arg1) {
+			Log.d("add schedule", "receiver");
+			initData();
+		}
+
+	};
+
+	
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+		IntentFilter filterRefreshUpdate = new IntentFilter();
+		filterRefreshUpdate.addAction(CommConstant.DELETE_SCHEDULE_COMPLETE);
+		filterRefreshUpdate.addAction(CommConstant.SCHEDULE_READY);
+		filterRefreshUpdate.addAction(CommConstant.UPDATE_SCHEDULE);
+		filterRefreshUpdate.addAction(CommConstant.CHANGE_CONFIRM_STATUS_SUCCESSFULLY);
+		getActivity().registerReceiver(scheduleReadyComplete,
+				filterRefreshUpdate);
+	}
+
+	@Override
+	public void onDetach() {
+		// TODO Auto-generated method stub
+		super.onDetach();
+		getActivity().unregisterReceiver(scheduleReadyComplete);
 	}
 
 	/**

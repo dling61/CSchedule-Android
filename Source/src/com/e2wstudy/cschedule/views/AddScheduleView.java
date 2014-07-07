@@ -38,6 +38,13 @@ public class AddScheduleView extends RelativeLayout {
 	public RelativeLayout layout_on_duty;
 	public LinearLayout layout_list_on_duty;
 
+	public TextView et_new_activity_time_zone;
+	public TextView et_new_activity_alert;
+	public RelativeLayout layoutAlert;
+	public RelativeLayout layoutTimeZone;
+	
+	public Button btnConfirm;
+	public Button btnDeny;
 	public AddScheduleView(Context context) {
 		super(context);
 		this.context = context;
@@ -73,5 +80,11 @@ public class AddScheduleView extends RelativeLayout {
 		btn_change_on_duty = (Button) findViewById(R.id.btn_change_on_duty);
 		layout_on_duty = (RelativeLayout) findViewById(R.id.layout_on_duty);
 		layout_list_on_duty = (LinearLayout) findViewById(R.id.layout_list_on_duty);
+		et_new_activity_time_zone = (TextView) findViewById(R.id.et_new_activity_time_zone);
+		et_new_activity_alert = (TextView) findViewById(R.id.et_new_activity_alert);
+		layoutAlert = (RelativeLayout) findViewById(R.id.layoutAlert);
+		layoutTimeZone = (RelativeLayout) findViewById(R.id.layout_timeZone);
+		btnConfirm = (Button) findViewById(R.id.btn_confirm);
+		btnDeny = (Button) findViewById(R.id.btn_deny);
 	}
 }

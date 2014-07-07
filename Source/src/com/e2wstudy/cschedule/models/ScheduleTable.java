@@ -12,4 +12,6 @@ public class ScheduleTable {
 	public static final String is_Synchronized = "issynchronized";	
 	public static final String ScheduleTableName = "Schedule";
 	public static final String user_login="user_login";
+	public static final String alert="alert";
+	public static final String timeZone="timezone";
 }

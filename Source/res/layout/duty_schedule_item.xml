@@ -1,15 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-     android:layout_marginRight="@dimen/margin_right" 
-     android:paddingRight="5dp"
-   >
+    android:layout_marginRight="@dimen/margin_right"
+    android:paddingRight="5dp" >
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/onduty_border" 
-       >
+        android:background="@drawable/onduty_border_gray"
+        android:id="@+id/layoutTitle" >
 
         <TextView
             android:id="@+id/title"
@@ -17,8 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textColor="@color/on_duty_text"
-            android:textSize="@dimen/text_size" 
-            />
+            android:textSize="@dimen/text_size" />
     </RelativeLayout>
 
 </RelativeLayout>

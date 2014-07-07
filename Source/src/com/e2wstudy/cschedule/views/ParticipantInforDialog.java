@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * @author Huyen
@@ -21,7 +22,7 @@ public class ParticipantInforDialog extends Dialog {
 	public Dialog d;
 	public ListView list_item;
 	public Button btn_cancel;
-
+	public TextView tvTitle;
 	public ParticipantInforDialog(Context mContext) {
 		super(mContext);
 		this.mContext = mContext;
@@ -36,7 +37,7 @@ public class ParticipantInforDialog extends Dialog {
 		setCanceledOnTouchOutside(true);
 		list_item = (ListView) findViewById(R.id.list_item);
 		btn_cancel=(Button)findViewById(R.id.btn_cancel);
-
+tvTitle=(TextView)findViewById(R.id.tvTitle);
 	}
 
 }

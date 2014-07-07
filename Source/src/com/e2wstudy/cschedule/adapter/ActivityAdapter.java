@@ -3,7 +3,6 @@ package com.e2wstudy.cschedule.adapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import com.e2wstudy.cschedule.AddNewActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -11,11 +10,8 @@ import com.e2wstudy.cschedule.models.MyActivity;
 import com.e2wstudy.cschedule.models.Sharedmember;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.Utils;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -118,7 +114,7 @@ public class ActivityAdapter extends BaseAdapter {
 		viewHolder.tv_participant.setText(listParticipantName.get(activity
 				.getActivity_ID()));
 
-		Log.d("timezone "+activity.getActivity_name(),activity.getOtc_offset()+"");
+	
 		final int role=activity.getRole();
 		convertView.setOnClickListener(new OnClickListener() {
 

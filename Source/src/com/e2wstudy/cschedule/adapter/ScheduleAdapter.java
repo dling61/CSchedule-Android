@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
+import com.e2wstudy.cschedule.models.Confirm;
 import com.e2wstudy.cschedule.models.MyActivity;
 import com.e2wstudy.cschedule.models.Schedule;
 import com.e2wstudy.cschedule.models.Sharedmember;
@@ -111,11 +112,11 @@ public class ScheduleAdapter extends BaseAdapter {
 			String activity_name = activity!=null?activity.getActivity_name():"";
 			String date = MyDate.getTimeWithAPMFromUTCTime(schedule.getStarttime()) + " to " + 
 					MyDate.getTimeWithAPMFromUTCTime(schedule.getEndtime());
-			List<Integer> memberids = dbHelper.getParticipantsForSchedule(schedule.getSchedule_ID());
+			List<Confirm> memberids = dbHelper.getParticipantsForSchedule(schedule.getSchedule_ID());
 			String members = "";
 			for (int i = 0; i < memberids.size(); i++)
 			{
-				Sharedmember sm = dbHelper.getSharedmember(memberids.get(i), schedule.getService_ID());
+				Sharedmember sm = dbHelper.getSharedmember(memberids.get(i).getMemberId(), schedule.getService_ID());
 				if (sm != null)
 				{
 					if (i == 0)

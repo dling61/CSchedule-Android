@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textColor="@color/black"
-        android:textSize="@dimen/text_name"
+        android:textSize="@dimen/title_tv"
         android:textStyle="bold" />
 
     <TextView

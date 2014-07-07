@@ -19,6 +19,7 @@ import android.widget.TextView;
 public class DutyScheduleView extends RelativeLayout {
 	Context context;
 	public TextView title;
+	public RelativeLayout layoutTitle;
 
 	// private LayoutInflater mInflater;
 	// RelativeLayout row;
@@ -51,7 +52,7 @@ public class DutyScheduleView extends RelativeLayout {
 	public void findViewById(final Context context) {
 		View.inflate(context, R.layout.duty_schedule_item, this);
 		title = (TextView) findViewById(R.id.title);
-
+		layoutTitle = (RelativeLayout) findViewById(R.id.layoutTitle);
 		// mInflater = (LayoutInflater) context
 		// .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		// row = (RelativeLayout) mInflater.inflate(R.layout.duty_schedule_item,

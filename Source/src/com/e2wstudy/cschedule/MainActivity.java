@@ -4,6 +4,7 @@
 package com.e2wstudy.cschedule;
 
 import com.e2wstudy.cschedule.db.DatabaseHelper;
+import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.TitleBarView;
@@ -32,6 +33,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 	
 		setContentView(R.layout.activity_main);
 		mContext = this;
+		
+//		serverSetting();
+		
+		WebservicesHelper ws=new WebservicesHelper(mContext);
+		ws.getServerSetting();
+		
 		findViewById();
 		onClickListener();
 	}
@@ -55,11 +62,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 		btn_create_account.setOnClickListener(this);
 		btn_sign_in.setOnClickListener(this);
 	}
+	
+	
+//	/**
+//	 * load server setting
+//	 * */
+//	private void serverSetting()
+//	{
+//		WebservicesHelper ws = new WebservicesHelper(mContext);
+//		ws.getServerSetting();
+//	}
 
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == btn_sign_in) {
+			
 			signInPressed();
 		} else if (v == btn_create_account) {
 			createAccountPressed();
@@ -80,6 +98,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 	private void signInPressed() {
 		finish();
 		Utils.pushRightToLeft(mContext);
+
+		
 		Intent intent = new Intent(this, LoginActivity.class);
 		this.startActivity(intent);
 	}
@@ -117,5 +137,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 				System.exit(0);
 			}
 		});
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		Utils.checkCurrentVersion(MainActivity.this);
 	}
 }

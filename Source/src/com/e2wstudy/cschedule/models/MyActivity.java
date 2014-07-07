@@ -8,28 +8,28 @@ public class MyActivity {
 
 	private String activity_ID = "";
 	private int owner_ID = -1;
-	private int alert = -1;
-	private int repeat = -1;
+//	private int alert = -1;
+//	private int repeat = -1;
 	private String activity_name = "";
-	private String starttime = "";
-	private String endtime = "";
+//	private String starttime = "";
+//	private String endtime = "";
 	private String desp = "";
-	private float otc_offset = -1;
+//	private float otc_offset = -1;
 	private int role = -1;
 
-	public MyActivity(String id, int ownid, int alrt, int rep, String name,
-			String start, String end, String des, int otc, int r) {
-		activity_ID = id;
-		owner_ID = ownid;
-		alert = alrt;
-		repeat = rep;
-		activity_name = name;
-		starttime = start;
-		endtime = end;
-		desp = des;
-		otc_offset = otc;
-		role = r;
-	}
+//	public MyActivity(String id, int ownid, int alrt, int rep, String name,
+//			String start, String end, String des, int otc, int r) {
+//		activity_ID = id;
+//		owner_ID = ownid;
+//		alert = alrt;
+//		repeat = rep;
+//		activity_name = name;
+//		starttime = start;
+//		endtime = end;
+//		desp = des;
+//		otc_offset = otc;
+//		role = r;
+//	}
 
 	public String getActivity_ID() {
 		return activity_ID;
@@ -54,35 +54,35 @@ public class MyActivity {
 		this.owner_ID = owner_ID;
 	}
 
-	/**
-	 * @return the alert
-	 */
-	public int getAlert() {
-		return alert;
-	}
-
-	/**
-	 * @param alert
-	 *            the alert to set
-	 */
-	public void setAlert(int alert) {
-		this.alert = alert;
-	}
-
-	/**
-	 * @return the repeat
-	 */
-	public int getRepeat() {
-		return repeat;
-	}
-
-	/**
-	 * @param repeat
-	 *            the repeat to set
-	 */
-	public void setRepeat(int repeat) {
-		this.repeat = repeat;
-	}
+//	/**
+//	 * @return the alert
+//	 */
+//	public int getAlert() {
+//		return alert;
+//	}
+//
+//	/**
+//	 * @param alert
+//	 *            the alert to set
+//	 */
+//	public void setAlert(int alert) {
+//		this.alert = alert;
+//	}
+//
+//	/**
+//	 * @return the repeat
+//	 */
+//	public int getRepeat() {
+//		return repeat;
+//	}
+//
+//	/**
+//	 * @param repeat
+//	 *            the repeat to set
+//	 */
+//	public void setRepeat(int repeat) {
+//		this.repeat = repeat;
+//	}
 
 	/**
 	 * @return the activity_name
@@ -99,35 +99,35 @@ public class MyActivity {
 		this.activity_name = activity_name;
 	}
 
-	/**
-	 * @return the starttime
-	 */
-	public String getStarttime() {
-		return starttime;
-	}
-
-	/**
-	 * @param starttime
-	 *            the starttime to set
-	 */
-	public void setStarttime(String starttime) {
-		this.starttime = starttime;
-	}
-
-	/**
-	 * @return the endtime
-	 */
-	public String getEndtime() {
-		return endtime;
-	}
-
-	/**
-	 * @param endtime
-	 *            the endtime to set
-	 */
-	public void setEndtime(String endtime) {
-		this.endtime = endtime;
-	}
+//	/**
+//	 * @return the starttime
+//	 */
+//	public String getStarttime() {
+//		return starttime;
+//	}
+//
+//	/**
+//	 * @param starttime
+//	 *            the starttime to set
+//	 */
+//	public void setStarttime(String starttime) {
+//		this.starttime = starttime;
+//	}
+//
+//	/**
+//	 * @return the endtime
+//	 */
+//	public String getEndtime() {
+//		return endtime;
+//	}
+//
+//	/**
+//	 * @param endtime
+//	 *            the endtime to set
+//	 */
+//	public void setEndtime(String endtime) {
+//		this.endtime = endtime;
+//	}
 
 	/**
 	 * @return the desp
@@ -146,19 +146,41 @@ public class MyActivity {
 
 	
 
-	public float getOtc_offset() {
-		return otc_offset;
-	}
+//	public float getOtc_offset() {
+//		return otc_offset;
+//	}
+//
+//	public void setOtc_offset(float otc_offset) {
+//		this.otc_offset = otc_offset;
+//	}
 
-	public void setOtc_offset(float otc_offset) {
-		this.otc_offset = otc_offset;
-	}
+//	public MyActivity(String activity_ID, int owner_ID, String activity_name,
+//			String starttime, String endtime, String desp, int role) {
+//		super();
+//		this.activity_ID = activity_ID;
+//		this.owner_ID = owner_ID;
+//		this.activity_name = activity_name;
+//		this.starttime = starttime;
+//		this.endtime = endtime;
+//		this.desp = desp;
+//		this.role = role;
+//	}
 
 	/**
 	 * @return the role
 	 */
 	public int getRole() {
 		return role;
+	}
+
+	public MyActivity(String activity_ID, int owner_ID, String activity_name,
+			String desp, int role) {
+		super();
+		this.activity_ID = activity_ID;
+		this.owner_ID = owner_ID;
+		this.activity_name = activity_name;
+		this.desp = desp;
+		this.role = role;
 	}
 
 	/**

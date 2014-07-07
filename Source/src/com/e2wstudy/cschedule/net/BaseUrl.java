@@ -9,11 +9,11 @@ package com.e2wstudy.cschedule.net;
  * This class define common variables for download JSON web-services
  * */
 public class BaseUrl {
-	public static final String BASEURL = "http://apitest2.servicescheduler.net/";
-	//public static final String BASEURL = "http://api.servicescheduler.net/";
+//	public static final String BASEURL = "http://apitest2.servicescheduler.net/";
+	public static final String BASEURL = "http://apitest1.servicescheduler.net/";
 	public static final String DEVICE = "ANDROID";
 	public static final String SCODE = "28e336ac6c9423d946ba02d19c6a2633";
-	public static final String VERSION = "1.2.1";
+	public static final String VERSION = "1.2.2";
 	public static final String URL_POST_FIX = "d=" + DEVICE + "&" + "sc="
 			+ SCODE + "&" + "v=" + VERSION;
 }

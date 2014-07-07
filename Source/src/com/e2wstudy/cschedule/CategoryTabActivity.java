@@ -83,7 +83,6 @@ public class CategoryTabActivity extends FragmentActivity implements
 				DIALOG_LOADING_THEME);
 		loadingPopup.setCancelable(false);
 
-		
 		mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
 		// horizontalView = (HorizontalScrollView)
 		// findViewById(R.id.horizontalView);
@@ -106,18 +105,19 @@ public class CategoryTabActivity extends FragmentActivity implements
 			ex.printStackTrace();
 		}
 	}
-//
-//	@Override
-//	protected void onPause() {
-//		try {
-//			unregisterReceiver(goToActivity);
-//
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
-//		super.onPause();
-//	};
-	
+
+	//
+	// @Override
+	// protected void onPause() {
+	// try {
+	// unregisterReceiver(goToActivity);
+	//
+	// } catch (Exception ex) {
+	// ex.printStackTrace();
+	// }
+	// super.onPause();
+	// };
+
 	protected void onDestroy() {
 		try {
 			unregisterReceiver(goToActivity);
@@ -184,26 +184,22 @@ public class CategoryTabActivity extends FragmentActivity implements
 					int role = service.getInt("sharedrole");
 					newActivity.put(ActivityTable.sharedrole, role);
 					Log.i("getActivitiesFromWeb sharedrole ", role + "");
-					int alert = service.getInt("alert");
-					newActivity.put(ActivityTable.alert, alert);
-					Log.i("getActivitiesFromWeb alert ", alert + "");
-					int repeat = service.getInt("repeat");
-					newActivity.put(ActivityTable.repeat, repeat);
-					Log.i("getActivitiesFromWeb repeat ", repeat + "");
-					String starttime = service.getString("startdatetime");
-					newActivity.put(ActivityTable.start_time, starttime);
-					Log.i("getActivitiesFromWeb start_time ", starttime + "");
-					String endtime = service.getString("enddatetime");
-					newActivity.put(ActivityTable.end_time, endtime);
-					Log.i("getActivitiesFromWeb end_time ", endtime + "");
+
+					// String starttime = service.getString("startdatetime");
+					// newActivity.put(ActivityTable.start_time, starttime);
+					// Log.i("getActivitiesFromWeb start_time ", starttime +
+					// "");
+					// String endtime = service.getString("enddatetime");
+					// newActivity.put(ActivityTable.end_time, endtime);
+					// Log.i("getActivitiesFromWeb end_time ", endtime + "");
 					String description = service.getString("desp");
 					newActivity.put(ActivityTable.service_description,
 							description);
 					Log.i("getActivitiesFromWeb service_description ",
 							description + "");
 					// int otc = new SharedReference().getTimeZone(mContext);
-					String otc = service.getString("utcoff");
-					newActivity.put(ActivityTable.otc_Offset, otc);
+					// String otc = service.getString("utcoff");
+
 					int is_deleted = 0;
 					newActivity.put(ActivityTable.is_Deleted, is_deleted);
 					int is_synchronized = 1;
@@ -257,10 +253,11 @@ public class CategoryTabActivity extends FragmentActivity implements
 		}
 
 		public void onFailure(Throwable e, String response) {
-			final ToastDialog dialog=new ToastDialog(mContext, mContext.getResources().getString(R.string.error_load_activity));
+			final ToastDialog dialog = new ToastDialog(mContext, mContext
+					.getResources().getString(R.string.error_load_activity));
 			dialog.show();
 			dialog.btnOk.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					dialog.dismiss();
@@ -288,7 +285,9 @@ public class CategoryTabActivity extends FragmentActivity implements
 		ws.getAllActivitys(activityDownloadCompleteHandler);
 		ws.getParticipantsFromWeb();
 		ws.getAllSchedule();
-
+//		if (!CommConstant.DOWNLOAD_SETTING) {
+			
+//		}
 	}
 
 	// show loading
@@ -347,7 +346,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	}
 
 	public static void moveToPage(int page) {
-	
+
 		mViewPager.setCurrentItem(page);
 	}
 
@@ -413,10 +412,12 @@ public class CategoryTabActivity extends FragmentActivity implements
 	 */
 	@Override
 	public void onBackPressed() {
-		final ConfirmDialog dialog=new ConfirmDialog(CategoryTabActivity.this,mContext.getResources().getString(R.string.sure_to_exit));
+		final ConfirmDialog dialog = new ConfirmDialog(
+				CategoryTabActivity.this, mContext.getResources().getString(
+						R.string.sure_to_exit));
 		dialog.show();
 		dialog.btnCancel.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -424,7 +425,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 			}
 		});
 		dialog.btnOk.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();

@@ -75,5 +75,8 @@
     <color name="bg_black">#77000000</color>
     <color name="text_color_forget_pass_unselected">#787878</color>
     <color name="text_color_forget_pass_selected">#ffffff</color>
+    <color name="green">#1bef20</color>
+    <color name="new_contact">#aaaaaa</color>
+    <color name="text_new_contact">#090909</color>
 
 </resources>

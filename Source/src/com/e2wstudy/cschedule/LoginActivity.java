@@ -52,7 +52,10 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			password = intent.getStringExtra(CommConstant.PASSWORD);
 		}
 		findViewById();
+		
 		onClickListener();
+		
+		
 	}
 
 	/**
@@ -92,6 +95,10 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == signin_btn) {
+			
+//			WebservicesHelper ws=new WebservicesHelper(mContext);
+//			ws.getServerSetting();
+			
 			String username = txt_email.getText().toString().trim();
 			String password = txt_password.getText().toString().trim();
 			if (username.equals("")) {
@@ -124,6 +131,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 				return;
 			}
+			
+			
 			login(username, password);
 		} else if (v == titleBar.layout_back) {
 			Utils.hideKeyboard((Activity) mContext, txt_email);

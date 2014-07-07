@@ -1,6 +1,7 @@
 package com.e2wstudy.cschedule.net;
 
 import com.e2wstudy.cschedule.R;
+import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.views.ToastDialog;
 
 import android.content.BroadcastReceiver;
@@ -53,6 +54,13 @@ public class NetworkReceiver extends BroadcastReceiver {
 					dialog.dismiss();
 				}
 			});
+		}
+		else
+		{
+			if (!CommConstant.DOWNLOAD_SETTING) {
+				WebservicesHelper ws=new WebservicesHelper(context);
+				ws.getServerSetting();
+			}
 		}
 		
 	}

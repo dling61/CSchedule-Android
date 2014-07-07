@@ -168,6 +168,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		filterRefreshUpdate.addAction(CommConstant.DELETE_SCHEDULE_COMPLETE);
 		filterRefreshUpdate.addAction(CommConstant.SCHEDULE_READY);
 		filterRefreshUpdate.addAction(CommConstant.UPDATE_SCHEDULE);
+		filterRefreshUpdate.addAction(CommConstant.CHANGE_CONFIRM_STATUS_SUCCESSFULLY);
 		getActivity().registerReceiver(scheduleReadyComplete,
 				filterRefreshUpdate);
 	}
@@ -268,25 +269,25 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 						int dateInWeek = c.get(Calendar.DAY_OF_WEEK);
 						switch (dateInWeek) {
 						case Calendar.MONDAY:
-							dateInWeekString = "Mon";
+							dateInWeekString = "Monday";
 							break;
 						case Calendar.TUESDAY:
-							dateInWeekString = "Tue";
+							dateInWeekString = "Tuesday";
 							break;
 						case Calendar.WEDNESDAY:
-							dateInWeekString = "Wed";
+							dateInWeekString = "Wednesday";
 							break;
 						case Calendar.THURSDAY:
-							dateInWeekString = "Thu";
+							dateInWeekString = "Thursday";
 							break;
 						case Calendar.FRIDAY:
-							dateInWeekString = "Fri";
+							dateInWeekString = "Friday";
 							break;
 						case Calendar.SATURDAY:
-							dateInWeekString = "Sat";
+							dateInWeekString = "Saturday";
 							break;
 						case Calendar.SUNDAY:
-							dateInWeekString = "Sun";
+							dateInWeekString = "Sunday";
 							break;
 						default:
 							break;
