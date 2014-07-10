@@ -20,6 +20,7 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Handler;
+import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -311,89 +312,105 @@ public class Utils {
 				ed.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED,
 				0);
 	}
-	
-	public static String getVersionName(Context mContext)
-	{
+
+	public static String getVersionName(Context mContext) {
 		PackageInfo pInfo;
 		try {
-			pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+			pInfo = mContext.getPackageManager().getPackageInfo(
+					mContext.getPackageName(), 0);
 			return pInfo.versionName;
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "";
 	}
-	
-	public static void checkCurrentVersion(final Context mContext)
-	{
-		String appversion=DatabaseHelper.getSharedDatabaseHelper(mContext).getCurrentVersion();
-		// check version
-		
-			String currentVersion = Utils
-					.getVersionName(mContext);
-			String vs=appversion.replace(".", ";");
-			String[] split =vs
-					.split(";");
-			currentVersion=currentVersion.replace(".", ";");
-			String[] splitCurrentVersion = currentVersion
-					.split(";");
 
-			
-			boolean flag = true;
-			if (splitCurrentVersion != null
-					&& split != null) {
-				if (split.length == splitCurrentVersion.length) {
-					
-					if (split.length == 3) {
-						if (Integer
-								.parseInt(split[0]) > Integer
-								.parseInt(splitCurrentVersion[0])) {
+	public static void checkCurrentVersion(final Context mContext) {
+		String appversion = DatabaseHelper.getSharedDatabaseHelper(mContext)
+				.getCurrentVersion();
+		// check version
+
+		String currentVersion = Utils.getVersionName(mContext);
+		String vs = appversion.replace(".", ";");
+		String[] split = vs.split(";");
+		currentVersion = currentVersion.replace(".", ";");
+		String[] splitCurrentVersion = currentVersion.split(";");
+
+		boolean flag = true;
+		if (splitCurrentVersion != null && split != null) {
+			if (split.length == splitCurrentVersion.length) {
+
+				if (split.length == 3) {
+					if (Integer.parseInt(split[0]) > Integer
+							.parseInt(splitCurrentVersion[0])) {
+						flag = false;
+					} else {
+						if (Integer.parseInt(split[1]) > Integer
+								.parseInt(splitCurrentVersion[1])) {
 							flag = false;
-						}
-						else
-						{
-							if(Integer.parseInt(split[1])>Integer.parseInt(splitCurrentVersion[1]))
-							{
-								flag=false;
-							}
-							else
-							{
-								if(Integer.parseInt(split[2])>Integer.parseInt(splitCurrentVersion[2]))
-								{
-									flag=false;
-								}
+						} else {
+							if (Integer.parseInt(split[2]) > Integer
+									.parseInt(splitCurrentVersion[2])) {
+								flag = false;
 							}
 						}
 					}
 				}
+			}
 
-			}
-			if(!flag)
-			{
-				
-				CommConstant.UPDATE=true;
-				final UpdateDialog dialog = new UpdateDialog(mContext
-						);
-				dialog.show();
-				
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
+		}
+		if (!flag) {
 
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();														
-						//go to google play
-						Utils.goToGooglePlay(mContext,mContext.getResources().getString(R.string.package_name));
-					}
-				});
-			}
-			else
-			{
-//				CommConstant.UPDATE=false;
-				CommConstant.UPDATE=true;
-			}
-		
+			CommConstant.UPDATE = true;
+			final UpdateDialog dialog = new UpdateDialog(mContext);
+			dialog.show();
+
+			dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+					// go to google play
+					Utils.goToGooglePlay(mContext, mContext.getResources()
+							.getString(R.string.package_name));
+				}
+			});
+		} else {
+			// CommConstant.UPDATE=false;
+			CommConstant.UPDATE = true;
+		}
+
 	}
+
+	/**
+	 * @return Application's version code from the {@code PackageManager}.
+	 */
+	public static int getAppVersion(Context context) {
+		try {
+			PackageInfo packageInfo = context.getPackageManager()
+					.getPackageInfo(context.getPackageName(), 0);
+			return packageInfo.versionCode;
+		} catch (NameNotFoundException e) {
+			// should never happen
+			throw new RuntimeException("Could not get package name: " + e);
+		}
+	}
+
+	/**
+	 * Get device id
+	 * */
+	public static String getDeviceId(Context mContext) {
+		try {
+			String androidId = Secure.getString(mContext.getContentResolver(),
+					Secure.ANDROID_ID);
+			return androidId;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+
 }

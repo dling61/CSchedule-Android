@@ -47,6 +47,8 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -54,7 +56,10 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.e2wstudy.cschedule.models.AppVersionTable;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.internal.di;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 /**
  * @class WebservicesHelper
@@ -71,6 +76,14 @@ public class WebservicesHelper {
 	DatabaseHelper dbHelper;
 	public static LoadingPopupViewHolder loadingPopup;
 	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
+
+	String gcmId;
+	GoogleCloudMessaging gcm;
+	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+	public static final String EXTRA_MESSAGE = "message";
+	public static final String PROPERTY_REG_ID = "registration_id";
+	private static final String PROPERTY_APP_VERSION = "appVersion";
+	String TAG = "WebservicesHelper";
 
 	// show loading
 	public void showLoading(Context mContext) {
@@ -273,6 +286,138 @@ public class WebservicesHelper {
 		Utils.isNetworkAvailable(h);
 	}
 
+	// edit information
+	class RegisterGcm extends AsyncTask<String, Void, String> {
+
+		// ProgressDialog dialog;
+		Context mContext;
+
+		String userId;
+		String deviceId;
+		String registrationId;
+
+		// show loading
+		public void showLoading(Context mContext) {
+			try {
+				// if (loadingPopup == null) {
+				// loadingPopup = new LoadingPopupViewHolder(mContext,
+				// CategoryTabActivity.DIALOG_LOADING_THEME);
+				// }
+				// loadingPopup.setCancelable(false);
+
+				loadingPopup.show();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		public void dimissDialog() {
+			try {
+				// if (loadingPopup != null && loadingPopup.isShowing()) {
+				loadingPopup.dismiss();
+				loadingPopup.cancel();
+				// }
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		public RegisterGcm(Context mContext, final String userId,
+				final String deviceId, String registrationId) {
+			this.mContext = mContext;
+			this.userId = userId;
+			this.deviceId = deviceId;
+			this.registrationId = registrationId;
+			if (loadingPopup == null) {
+				loadingPopup = new LoadingPopupViewHolder(mContext,
+						DIALOG_LOADING_THEME);
+			}
+			loadingPopup.setCancelable(true);
+
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			// dialog.show();
+			showLoading(mContext);
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			// if register successfully, it's logged in automatically on server
+			try {
+				String setToken = BaseUrl.BASEURL + "creator?action=settoken"
+						+ "&" + BaseUrl.URL_POST_FIX;
+				Log.i("sign in url is", setToken);
+
+				JSONObject jsonParams = new JSONObject();
+				jsonParams.put("userid", userId);
+				jsonParams.put("udid", deviceId);
+				jsonParams.put("token", registrationId);
+				client.addHeader("Content-type", "application/json");
+
+				Log.d("set gcm param", jsonParams.toString());
+				return JSONParser.getJsonFromURLPostNameValuePair(setToken,
+						jsonParams.toString());
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+
+			}
+			return "";
+
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(String result) {
+			try {
+				if (result != null) {
+					if (result.contains("200")) {
+						// Intent intent = new Intent(mContext,
+						// CategoryTabActivity.class);
+						// mContext.startActivity(intent);
+
+					} else if (result.contains("201")) {
+						final ToastDialog dialog = new ToastDialog(mContext,
+								"The token can’t be inserted");
+						dialog.show();
+
+						dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								dialog.dismiss();
+							}
+						});
+					} else if (result.equals("202")) {
+						final ToastDialog dialog = new ToastDialog(mContext,
+								"The token can’t be updated");
+						dialog.show();
+						dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								dialog.dismiss();
+							}
+						});
+
+					}
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+
+			}
+			dimissDialog();
+		}
+	}
+
 	/**
 	 * Login if success go to TabAcivity else show Toast notify login fail
 	 * */
@@ -295,6 +440,7 @@ public class WebservicesHelper {
 						public void onSuccess(JSONObject response) {
 							Log.i("successful response", response.toString());
 							try {
+
 								String username = response
 										.getString("username");
 								SharedReference sharedReference = new SharedReference();
@@ -383,6 +529,13 @@ public class WebservicesHelper {
 										mContext, username, email, ownerid,
 										nextserviceid, nextmemberid,
 										nextscheduleid);
+								
+								new RegisterGcm(mContext, String
+										.valueOf(ownerid), Utils
+										.getDeviceId(mContext),
+										new SharedReference()
+												.getRegistrationId(mContext))
+										.execute();
 
 								uploadRecentEditedActivitiesToWeb();
 								uploadRecentEditedParticipantsToWeb();
@@ -1476,7 +1629,7 @@ public class WebservicesHelper {
 										cv.put(AppVersionTable.osversion,
 												osversion);
 										cv.put(AppVersionTable.enforce, enforce);
-										
+
 										if (dbHelper.isVersionExisted(id) == false) {
 											cv.put(AppVersionTable.id, id);
 											if (dbHelper.insertAppVersion(cv))
@@ -1496,11 +1649,10 @@ public class WebservicesHelper {
 
 									CommConstant.DOWNLOAD_SETTING = true;
 
-									do
-									{
-									Utils.checkCurrentVersion(mContext);
-									}while(!CommConstant.UPDATE);
-									
+									do {
+										Utils.checkCurrentVersion(mContext);
+									} while (!CommConstant.UPDATE);
+
 									Intent intent = new Intent(
 											CommConstant.SERVER_SETTING_SUCCESSFULLY);
 									mContext.sendBroadcast(intent);

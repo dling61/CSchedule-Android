@@ -3,6 +3,9 @@
  * */
 package com.e2wstudy.cschedule;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.json.JSONException;
 
 import com.e2wstudy.cschedule.net.WebservicesHelper;
@@ -11,13 +14,20 @@ import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.TitleBarView;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+//import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -40,6 +50,22 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	LinearLayout layoutForgetPassword;
 	TitleBarView titleBar;
 
+	/**
+	 * Substitute you own sender ID here. This is the project number you got
+	 * from the API Console, as described in "Getting Started."
+	 */
+//	String SENDER_ID = "Your-Sender-ID";
+
+	/**
+	 * Tag used on log messages.
+	 */
+	static final String TAG = "LoginActivity";
+	GoogleCloudMessaging gcm;
+	AtomicInteger msgId = new AtomicInteger();
+	SharedPreferences prefs;
+	Context context;
+	String regid;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -52,10 +78,92 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			password = intent.getStringExtra(CommConstant.PASSWORD);
 		}
 		findViewById();
-		
+
 		onClickListener();
-		
-		
+
+//		// Check device for Play Services APK.
+//		if (checkPlayServices()) {
+////			 If this check succeeds, proceed with normal processing.
+////			 Otherwise, prompt user to get valid Play Services APK.
+//			gcm = GoogleCloudMessaging.getInstance(this);
+//			regid = new SharedReference().getRegistrationId(context);
+//
+//			if (regid.equals("")) {
+//				new RegisterGCMTask().execute();
+//			}
+//		}
+
+	}
+
+	/**
+	 * Registers the application with GCM servers asynchronously.
+	 * <p>
+	 * Stores the registration ID and app versionCode in the application's
+	 * shared preferences.
+	 */
+	/**
+	 * Registers the application with GCM servers asynchronously.
+	 * <p>
+	 * Stores the registration ID and app versionCode in the application's
+	 * shared preferences.
+	 */
+
+	class RegisterGCMTask extends AsyncTask<Void, Void, String> {
+		@Override
+		protected String doInBackground(Void... params) {
+			String msg = "";
+			try {
+				if (gcm == null) {
+					gcm = GoogleCloudMessaging.getInstance(context);
+				}
+				regid = gcm.register(CommConstant.SENDER_ID);
+				msg = "Device registered, registration ID=" + regid;
+
+				// You should send the registration ID to your server over HTTP,
+				// so it can use GCM/HTTP or CCS to send messages to your app.
+				// The request to your server should be authenticated if your
+				// app
+				// is using accounts.
+				
+				
+//				sendRegistrationIdToBackend();
+
+				// For this demo: we don't need to send it because the device
+				// will send upstream messages to a server that echo back the
+				// message using the 'from' address in the message.
+
+				// Persist the regID - no need to register again.
+				// storeRegistrationId(context, regid);
+				new SharedReference().storeRegistrationId(mContext, regid);
+			} catch (IOException ex) {
+				msg = "Error :" + ex.getMessage();
+				// If there is an error, don't just keep trying to register.
+				// Require the user to click a button again, or perform
+				// exponential back-off.
+			}
+			return msg;
+		}
+
+		@Override
+		protected void onPostExecute(String msg) {
+			finish();
+		}
+	}
+
+	/**
+	 * Sends the registration ID to your server over HTTP, so it can use
+	 * GCM/HTTP or CCS to send messages to your app. Not needed for this demo
+	 * since the device sends upstream messages to a server that echoes back the
+	 * message using the 'from' address in the message.
+	 */
+	private void sendRegistrationIdToBackend() {
+		// Your implementation here.
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
 	}
 
 	/**
@@ -83,6 +191,28 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	}
 
 	/**
+	 * Check the device to make sure it has the Google Play Services APK. If it
+	 * doesn't, display a dialog that allows users to download the APK from the
+	 * Google Play Store or enable it in the device's system settings.
+	 */
+	private boolean checkPlayServices() {
+		Log.d("google service code",GooglePlayServicesUtil.GOOGLE_PLAY_SERVICES_VERSION_CODE+"");
+		int resultCode = GooglePlayServicesUtil
+				.isGooglePlayServicesAvailable(getApplicationContext());
+		if (resultCode != ConnectionResult.SUCCESS) {
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+						CommConstant.PLAY_SERVICES_RESOLUTION_REQUEST).show();
+			} else {
+				Log.i("GCM Information", "This device is not supported.");
+//				finish();
+			}
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * On Click listener
 	 * */
 	private void onClickListener() {
@@ -95,10 +225,10 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == signin_btn) {
-			
-//			WebservicesHelper ws=new WebservicesHelper(mContext);
-//			ws.getServerSetting();
-			
+
+			// WebservicesHelper ws=new WebservicesHelper(mContext);
+			// ws.getServerSetting();
+
 			String username = txt_email.getText().toString().trim();
 			String password = txt_password.getText().toString().trim();
 			if (username.equals("")) {
@@ -131,8 +261,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 				return;
 			}
-			
-			
+
 			login(username, password);
 		} else if (v == titleBar.layout_back) {
 			Utils.hideKeyboard((Activity) mContext, txt_email);
@@ -154,14 +283,13 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
-	
 	Handler loginHandler = new Handler() {
 
-	    @Override
-	    public void handleMessage(Message msg) {
+		@Override
+		public void handleMessage(Message msg) {
 
-	        if (msg.what != 1) { // code if not connected
-	        	final ToastDialog dialog = new ToastDialog(mContext, mContext
+			if (msg.what != 1) { // code if not connected
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
 						.getResources().getString(R.string.no_network));
 				dialog.show();
 				dialog.btnOk.setOnClickListener(new OnClickListener() {
@@ -171,18 +299,20 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 						dialog.dismiss();
 					}
 				});
-	        } else { // code if connected
-	        	WebservicesHelper helper = new WebservicesHelper(mContext);
-	        	try {
-					helper.login(txt_email.getText().toString(), txt_password.getText().toString());
+			} else { // code if connected
+				WebservicesHelper helper = new WebservicesHelper(mContext);
+				try {
+					helper.login(txt_email.getText().toString(), txt_password
+							.getText().toString());
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-	        }
+			}
 
-	    }
+		}
 	};
+
 	/**
 	 * Login
 	 * */

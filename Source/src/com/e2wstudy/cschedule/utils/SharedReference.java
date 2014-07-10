@@ -3,6 +3,7 @@ package com.e2wstudy.cschedule.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.util.Log;
 
 public class SharedReference {
 	final String USERNAME = "username";
@@ -10,6 +11,7 @@ public class SharedReference {
 	final String USER_ACCOUNT = "user_account";
 	public static final String MY_PREFERENCE = "MyPreferences";
 	final String TIMEZONE = "time_zone";
+	String TAG = "SharedReference";
 
 	/**
 	 * Set username to shared reference
@@ -32,6 +34,7 @@ public class SharedReference {
 		username = appSharedPrefs.getString(USERNAME, "");
 		return username;
 	}
+
 	public void setEmail(Context context, String email) {
 		SharedPreferences appSharedPrefs = context.getSharedPreferences(
 				MY_PREFERENCE, 0);
@@ -39,6 +42,7 @@ public class SharedReference {
 		prefsEditor.putString(CommConstant.EMAIL, email);
 		prefsEditor.commit();
 	}
+
 	/**
 	 * Get email logged in shared reference
 	 * */
@@ -195,35 +199,35 @@ public class SharedReference {
 	}
 
 	/**
-	 * getTimeZone 
+	 * getTimeZone
 	 * */
 	public String getTimeZone(Context context) {
-		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, -100);
-		String timeZone = sp.getString(TIMEZONE,"");
+		SharedPreferences sp = context
+				.getSharedPreferences(MY_PREFERENCE, -100);
+		String timeZone = sp.getString(TIMEZONE, "");
 		return timeZone;
 	}
-	
-	
-//	/**
-//	 * setTimeZone
-//	 * */
-//	public void setTimeZone(Context context, int timeZone) {
-//		SharedPreferences appSharedPrefs = context.getSharedPreferences(
-//				MY_PREFERENCE, 0);
-//		Editor prefsEditor = appSharedPrefs.edit();
-//		prefsEditor.putInt(TIMEZONE, timeZone);
-//		prefsEditor.commit();
-//	}
-//
-//	/**
-//	 * getTimeZone 
-//	 * */
-//	public int getTimeZone(Context context) {
-//		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, -100);
-//		int timeZone = sp.getInt(TIMEZONE,-100);
-//		return timeZone;
-//	}
-	
+
+	// /**
+	// * setTimeZone
+	// * */
+	// public void setTimeZone(Context context, int timeZone) {
+	// SharedPreferences appSharedPrefs = context.getSharedPreferences(
+	// MY_PREFERENCE, 0);
+	// Editor prefsEditor = appSharedPrefs.edit();
+	// prefsEditor.putInt(TIMEZONE, timeZone);
+	// prefsEditor.commit();
+	// }
+	//
+	// /**
+	// * getTimeZone
+	// * */
+	// public int getTimeZone(Context context) {
+	// SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, -100);
+	// int timeZone = sp.getInt(TIMEZONE,-100);
+	// return timeZone;
+	// }
+
 	/**
 	 * setCurrentParticipant
 	 * */
@@ -236,35 +240,54 @@ public class SharedReference {
 	}
 
 	/**
-	 * getCurrentParticipant 
+	 * getCurrentParticipant
 	 * */
 	public String getCurrentParticipant(Context context) {
-		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, -100);
-		String participant = sp.getString(CommConstant.OWNER_PARTICIPANT,"");
+		SharedPreferences sp = context
+				.getSharedPreferences(MY_PREFERENCE, -100);
+		String participant = sp.getString(CommConstant.OWNER_PARTICIPANT, "");
 		return participant;
 	}
-	
-	
-	
-	
-//	/**
-//	 * setTimeZone
-//	 * */
-//	public void setTimeZone(Context context, int timeZone) {
-//		SharedPreferences appSharedPrefs = context.getSharedPreferences(
-//				MY_PREFERENCE, 0);
-//		Editor prefsEditor = appSharedPrefs.edit();
-//		prefsEditor.putInt(TIMEZONE, timeZone);
-//		prefsEditor.commit();
-//	}
-//
-//	/**
-//	 * getTimeZone position in timezone array value
-//	 * */
-//	public int getTimeZone(Context context) {
-//		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, -100);
-//		int timeZone = sp.getInt(TIMEZONE,-100);
-//		return timeZone;
-//	}
+
+	// /**
+	// * setTimeZone
+	// * */
+	// public void setTimeZone(Context context, int timeZone) {
+	// SharedPreferences appSharedPrefs = context.getSharedPreferences(
+	// MY_PREFERENCE, 0);
+	// Editor prefsEditor = appSharedPrefs.edit();
+	// prefsEditor.putInt(TIMEZONE, timeZone);
+	// prefsEditor.commit();
+	// }
+	//
+	// /**
+	// * getTimeZone position in timezone array value
+	// * */
+	// public int getTimeZone(Context context) {
+	// SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, -100);
+	// int timeZone = sp.getInt(TIMEZONE,-100);
+	// return timeZone;
+	// }
+
+	public void storeRegistrationId(Context context, String regId) {
+		SharedPreferences prefs = context.getSharedPreferences(
+				MY_PREFERENCE, 0);
+		int appVersion = Utils.getAppVersion(context);
+		Log.i(TAG, "Saving regId on app version " + appVersion);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(CommConstant.PROPERTY_REG_ID, regId);
+		editor.putInt(CommConstant.PROPERTY_APP_VERSION, appVersion);
+		editor.commit();
+	}
+
+	/**
+	 * getCurrentParticipant
+	 * */
+	public String getRegistrationId(Context context) {
+		SharedPreferences sp = context
+				.getSharedPreferences(MY_PREFERENCE, -100);
+		String gcmId = sp.getString(CommConstant.PROPERTY_REG_ID, "");
+		return gcmId;
+	}
 
 }

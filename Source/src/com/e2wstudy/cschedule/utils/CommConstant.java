@@ -73,4 +73,8 @@ public class CommConstant {
 	public static final String SENDER_ID="829165602170";
 	
 	public static boolean UPDATE=false;
+	public static final String EXTRA_MESSAGE = "message";
+	public static final String PROPERTY_REG_ID = "registration_id";
+	public static final String PROPERTY_APP_VERSION = "appVersion";
+	public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 }
