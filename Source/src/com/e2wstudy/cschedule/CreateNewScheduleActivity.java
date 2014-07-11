@@ -3,6 +3,7 @@ package com.e2wstudy.cschedule;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -1441,7 +1442,13 @@ public class CreateNewScheduleActivity extends Activity implements
 	}
 
 	JsonHttpResponseHandler deleteScheduleHandler = new JsonHttpResponseHandler() {
-		public void onSuccess(JSONObject response) {
+//		public void onSuccess(JSONObject response) {
+		
+		@Override
+		public void onSuccess(int statusCode,
+				Header[] headers, JSONObject response) {
+			// TODO Auto-generated method stub
+			super.onSuccess(statusCode, headers, response);
 			try {
 				if (response.getString("lastmodified") != null) {
 
@@ -1481,9 +1488,26 @@ public class CreateNewScheduleActivity extends Activity implements
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+			
 		}
+		
+		
 
-		public void onFailure(Throwable e, String response) {
+		@Override
+		public void onFailure(int statusCode,
+				Header[] headers, String response,
+				Throwable throwable) {
+			// TODO Auto-generated method stub
+			super.onFailure(statusCode, headers,
+					response, throwable);
+			try {
+				if (progress.isShowing()) {
+					progress.dismiss();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
 			final ToastDialog dialog = new ToastDialog(mContext, mContext
 					.getResources().getString(R.string.delete_schedule_error)
 					+ "\n" + response.toString());

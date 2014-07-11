@@ -169,6 +169,12 @@ public class AccountFragment extends Fragment implements OnClickListener {
 				dbHelper.evacuateDatabase();
 				new SharedReference().setUsername(mContext, email);
 				new SharedReference().setEmail(mContext, email);
+				new SharedReference().setLastestParticipantLastModifiedTime(mContext, "");
+				new SharedReference().setLastestScheduleLastModifiedTime(mContext, "");
+				new SharedReference().setLastestServiceLastModifiedTime(mContext, "");
+				new SharedReference().setTimeZone(mContext, "");
+				new SharedReference().setOwnerId(mContext, "");
+				new SharedReference().setAccount(mContext, "");
 				((Activity) mContext).finish();
 				System.exit(0);
 			}

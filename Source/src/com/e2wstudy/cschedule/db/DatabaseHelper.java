@@ -573,28 +573,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Get number of schedule
 	 * */
 	public int getNumberSchedule() {
-		String query = "select count(*) from "
-				+ ScheduleTable.ScheduleTableName + ", "
-				+ OndutyTable.OntudyTableName + ","
-				+ SharedMemberTable.SharedMemberTableName + " WHERE "
-				+ ScheduleTable.ScheduleTableName + "."
+//		String query = "select count(*) from "
+//				+ ScheduleTable.ScheduleTableName + ", "
+//				+ OndutyTable.OntudyTableName + ","
+//				+ SharedMemberTable.SharedMemberTableName + " WHERE "
+//				+ ScheduleTable.ScheduleTableName + "."
+//				+ ScheduleTable.is_Deleted + "=0 and "
+//				+ ScheduleTable.user_login + "='"
+//				+ new SharedReference().getCurrentOwnerId(context) + "' and "
+//				+ OndutyTable.OntudyTableName + "." + OndutyTable.schedule_ID
+//				+ " = " + ScheduleTable.ScheduleTableName + "."
+//				+ ScheduleTable.schedule_ID + " and "
+//				+ OndutyTable.participant_ID + "="
+//				+ SharedMemberTable.member_id + " and "
+//				+ SharedMemberTable.member_email + "='"
+//				+ new SharedReference().getEmail(context) + "'";
+		String query="SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 				+ ScheduleTable.is_Deleted + "=0 and "
 				+ ScheduleTable.user_login + "='"
-				+ new SharedReference().getCurrentOwnerId(context) + "' and "
-				+ OndutyTable.OntudyTableName + "." + OndutyTable.schedule_ID
-				+ " = " + ScheduleTable.ScheduleTableName + "."
-				+ ScheduleTable.schedule_ID + " and "
-				+ OndutyTable.participant_ID + "="
-				+ SharedMemberTable.member_id + " and "
-				+ SharedMemberTable.member_email + "='"
-				+ new SharedReference().getEmail(context) + "'";
+				+ new SharedReference().getCurrentOwnerId(context)
+				+ "'";
 		Log.d("query schedule", query);
 		Cursor mCount = this.getWritableDatabase().rawQuery(query, null);
 		if(mCount!=null)
 		{
+//			if(mCount.moveToFirst())
 			if(mCount.moveToFirst())
 			{
-				int count = mCount.getInt(0);
+				int count=mCount.getCount();
+//				int count = mCount.getInt(0);
 				return count;
 			}
 		}

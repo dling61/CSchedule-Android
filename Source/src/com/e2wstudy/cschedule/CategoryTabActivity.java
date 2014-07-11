@@ -3,6 +3,7 @@ package com.e2wstudy.cschedule;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,7 +138,11 @@ public class CategoryTabActivity extends FragmentActivity implements
 	};
 
 	JsonHttpResponseHandler activityDownloadCompleteHandler = new JsonHttpResponseHandler() {
-		public void onSuccess(JSONObject response) {
+		@Override
+		public void onSuccess(int statusCode,
+				Header[] headers, JSONObject response) {
+			// TODO Auto-generated method stub
+			super.onSuccess(statusCode, headers, response);
 			final SharedReference ref = new SharedReference();
 			final DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
@@ -252,7 +257,20 @@ public class CategoryTabActivity extends FragmentActivity implements
 			}
 		}
 
-		public void onFailure(Throwable e, String response) {
+//		public void onFailure(Throwable e, String response) {
+		@Override
+		public void onFailure(int statusCode,
+				Header[] headers, String response,
+				Throwable throwable) {
+			// TODO Auto-generated method stub
+			super.onFailure(statusCode, headers,
+					response, throwable);
+//			dimissDialog();
+			CategoryTabActivity.flag_activity = true;
+			if (flag_activity && flag_contact && flag_schedule
+					&& loadingPopup.isShowing()) {
+				dimissDialog();
+			}
 			final ToastDialog dialog = new ToastDialog(mContext, mContext
 					.getResources().getString(R.string.error_load_activity));
 			dialog.show();

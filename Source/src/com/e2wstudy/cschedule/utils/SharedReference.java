@@ -118,9 +118,7 @@ public class SharedReference {
 	public String getLastestServiceLastModifiedTime(Context mContext) {
 		SharedPreferences sp = mContext.getSharedPreferences(MY_PREFERENCE, 0);
 		String lastActivityModified = sp.getString(
-				CommConstant.LAST_ACTIVITY_MODIFY, MyDate
-						.transformLocalDateTimeToUTCFormat(MyDate
-								.getCurrentDateTime()));
+				CommConstant.LAST_ACTIVITY_MODIFY, CommConstant.DEFAULT_DATE);
 		return lastActivityModified;
 
 	}
@@ -130,9 +128,7 @@ public class SharedReference {
 		String lastParticipantModified = sp.getString(
 		// Data is cleaned after exit
 		// Current date should be written
-				CommConstant.LAST_PARTICIPANT_MODIFY, MyDate
-						.transformLocalDateTimeToUTCFormat(MyDate
-								.getCurrentDateTime()));
+				CommConstant.LAST_PARTICIPANT_MODIFY,CommConstant.DEFAULT_DATE);
 		return lastParticipantModified;
 	}
 
@@ -142,9 +138,7 @@ public class SharedReference {
 		String lastScheduleModified = "";
 		try {
 			lastScheduleModified = sp.getString(
-					CommConstant.LAST_SCHEDULE_MODIFIED, MyDate
-							.transformLocalDateTimeToUTCFormat(MyDate
-									.getCurrentDateTime()));
+					CommConstant.LAST_SCHEDULE_MODIFIED,CommConstant.DEFAULT_DATE);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
