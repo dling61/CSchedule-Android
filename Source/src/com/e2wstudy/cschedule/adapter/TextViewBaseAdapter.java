@@ -1,7 +1,8 @@
 package com.e2wstudy.cschedule.adapter;
 
+import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.views.TextItemView;
-
+import com.google.android.gms.internal.ho;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +16,16 @@ import android.widget.BaseAdapter;
 public class TextViewBaseAdapter extends BaseAdapter {
 	private Context activity;
 	private String[] data;
+
 	public TextViewBaseAdapter(Context ctx, String[] data) {
 		this.activity = ctx;
-		this.data = data;	
+		this.data = data;
 	}
 
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		TextItemView holder;
 		//
-		if (convertView==null) {
+		if (convertView == null) {
 			holder = new TextItemView(activity);
 			convertView = holder;
 			convertView.setTag(holder);
@@ -32,6 +34,13 @@ public class TextViewBaseAdapter extends BaseAdapter {
 			// and the ImageView.
 			holder = (TextItemView) convertView.getTag();
 
+		}
+		if (data[position].startsWith("Remove")) {
+			holder.title.setTextColor(activity.getResources().getColor(
+					R.color.red_remove));
+		} else {
+			holder.title.setTextColor(activity.getResources().getColor(
+					R.color.textview));
 		}
 		holder.title.setText(data[position]);
 

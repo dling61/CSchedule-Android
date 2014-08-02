@@ -21,6 +21,8 @@ import com.e2wstudy.cschedule.views.AddActivityView;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.ParticipantInforDialog;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.google.android.gms.internal.di;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -191,6 +193,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		final ParticipantInforDialog dialog = new ParticipantInforDialog(
 				mContext);
 		dialog.show();
+		dialog.topBar.setVisibility(View.GONE);
 		dialog.list_item.setAdapter(adapter);
 		dialog.list_item.setOnItemClickListener(new OnItemClickListener() {
 			@Override

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -23,6 +24,7 @@ public class ParticipantInforDialog extends Dialog {
 	public ListView list_item;
 	public Button btn_cancel;
 	public TextView tvTitle;
+	public RelativeLayout topBar;
 	public ParticipantInforDialog(Context mContext) {
 		super(mContext);
 		this.mContext = mContext;
@@ -37,7 +39,8 @@ public class ParticipantInforDialog extends Dialog {
 		setCanceledOnTouchOutside(true);
 		list_item = (ListView) findViewById(R.id.list_item);
 		btn_cancel=(Button)findViewById(R.id.btn_cancel);
-tvTitle=(TextView)findViewById(R.id.tvTitle);
+		tvTitle=(TextView)findViewById(R.id.tvTitle);
+		topBar=(RelativeLayout)findViewById(R.id.compose_activity_topbar);
 	}
 
 }
