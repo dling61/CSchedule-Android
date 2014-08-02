@@ -52,7 +52,8 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.e2wstudy.cschedule.models.AppVersionTable;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+//import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 /**
  * @class WebservicesHelper
@@ -71,21 +72,23 @@ public class WebservicesHelper {
 	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
 
 	String gcmId;
-	GoogleCloudMessaging gcm;
+	// GoogleCloudMessaging gcm;
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	public static final String EXTRA_MESSAGE = "message";
 	public static final String PROPERTY_REG_ID = "registration_id";
 	private static final String PROPERTY_APP_VERSION = "appVersion";
 	String TAG = "WebservicesHelper";
 
+	String userAgentString = "Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/<Chrome Rev> Mobile Safari/<WebKit Rev>";
+
 	// show loading
 	public void showLoading(Context mContext) {
 		try {
-			// if (loadingPopup == null) {
-			// loadingPopup = new LoadingPopupViewHolder(mContext,
-			// CategoryTabActivity.DIALOG_LOADING_THEME);
-			// }
-			// loadingPopup.setCancelable(false);
+			if (loadingPopup == null) {
+				loadingPopup = new LoadingPopupViewHolder(mContext,
+						CategoryTabActivity.DIALOG_LOADING_THEME);
+			}
+			loadingPopup.setCancelable(true);
 
 			loadingPopup.show();
 		} catch (Exception ex) {
@@ -113,8 +116,8 @@ public class WebservicesHelper {
 		// client.setTimeout(100);
 		// PersistentCookieStore myCookieStore = new
 		// PersistentCookieStore(mContext);
-		 client.setTimeout(10000);
-//		client.setMaxRetriesAndTimeout(3, 5000);
+		client.setTimeout(10000);
+		// client.setMaxRetriesAndTimeout(3, 5000);
 
 		// client.setCookieStore(myCookieStore);
 
@@ -150,8 +153,10 @@ public class WebservicesHelper {
 			jsonParams.put(CommConstant.PASSWORD, password);
 			jsonParams.put(CommConstant.USERNAME, username);
 			jsonParams.put(CommConstant.MOBILE, mobile);
-
 			client.addHeader("Content-type", "application/json");
+			client.addHeader(
+					"User-Agent",
+					userAgentString);
 			StringEntity entity = new StringEntity(jsonParams.toString());
 			if (Utils.isNetworkOnline(mContext)) {
 				client.post(null, signUpUrl, entity, "application/json",
@@ -212,66 +217,72 @@ public class WebservicesHelper {
 								}
 							}
 
-//							public void onSuccess(JSONObject response) {
-//								Log.i("successful response",
-//										response.toString());
-//
-//								if (response != null) {
-//									Log.d("go there", "success not null");
-//									// TODO Auto-generated method stub
-//									try {
-//										if (!response.get("error message")
-//												.toString().startsWith("200")) {
-//											final ToastDialog dialog = new ToastDialog(
-//													mContext, response.get(
-//															"error message")
-//															.toString());
-//											dialog.show();
-//											dialog.btnOk
-//													.setOnClickListener(new OnClickListener() {
-//
-//														@Override
-//														public void onClick(
-//																View v) {
-//															dialog.dismiss();
-//														}
-//													});
-//										}
-//									} catch (JSONException e) {
-//										// TODO Auto-generated catch block
-//										e.printStackTrace();
-//									}
-//									try {
-//										if (response.get(CommConstant.OWNER_ID) != null) {
-//
-//											((Activity) mContext).finish();
-//											Intent intent = new Intent(
-//													mContext,
-//													LoginActivity.class);
-//											intent.putExtra(CommConstant.EMAIL,
-//													email);
-//											intent.putExtra(
-//													CommConstant.PASSWORD,
-//													password);
-//											mContext.startActivity(intent);
-//											Utils.postLeftToRight(mContext);
-//										}
-//									} catch (JSONException e) {
-//										// TODO Auto-generated catch block
-//										e.printStackTrace();
-//									}
-//								}
-//							}
+							// public void onSuccess(JSONObject response) {
+							// Log.i("successful response",
+							// response.toString());
+							//
+							// if (response != null) {
+							// Log.d("go there", "success not null");
+							// // TODO Auto-generated method stub
+							// try {
+							// if (!response.get("error message")
+							// .toString().startsWith("200")) {
+							// final ToastDialog dialog = new ToastDialog(
+							// mContext, response.get(
+							// "error message")
+							// .toString());
+							// dialog.show();
+							// dialog.btnOk
+							// .setOnClickListener(new OnClickListener() {
+							//
+							// @Override
+							// public void onClick(
+							// View v) {
+							// dialog.dismiss();
+							// }
+							// });
+							// }
+							// } catch (JSONException e) {
+							// // TODO Auto-generated catch block
+							// e.printStackTrace();
+							// }
+							// try {
+							// if (response.get(CommConstant.OWNER_ID) != null)
+							// {
+							//
+							// ((Activity) mContext).finish();
+							// Intent intent = new Intent(
+							// mContext,
+							// LoginActivity.class);
+							// intent.putExtra(CommConstant.EMAIL,
+							// email);
+							// intent.putExtra(
+							// CommConstant.PASSWORD,
+							// password);
+							// mContext.startActivity(intent);
+							// Utils.postLeftToRight(mContext);
+							// }
+							// } catch (JSONException e) {
+							// // TODO Auto-generated catch block
+							// e.printStackTrace();
+							// }
+							// }
+							// }
 
-//							public void onFailure(Throwable e, String response) {
+							// public void onFailure(Throwable e, String
+							// response) {
 							@Override
 							public void onFailure(int statusCode,
 									Header[] headers, String response,
 									Throwable throwable) {
 								// TODO Auto-generated method stub
-								super.onFailure(statusCode, headers,
-										response, throwable);
-								dimissDialog();
+								super.onFailure(statusCode, headers, response,
+										throwable);
+								try {
+									dimissDialog();
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
 								if (response != null) {
 									final ToastDialog dialog = new ToastDialog(
 											mContext,
@@ -415,7 +426,7 @@ public class WebservicesHelper {
 				jsonParams.put("userid", userId);
 				jsonParams.put("udid", deviceId);
 				jsonParams.put("token", registrationId);
-				client.addHeader("Content-type", "application/json");
+//				client.addHeader("Content-type", "application/json");
 
 				Log.d("set gcm param", jsonParams.toString());
 				return JSONParser.getJsonFromURLPostNameValuePair(setToken,
@@ -489,7 +500,10 @@ public class WebservicesHelper {
 			JSONObject jsonParams = new JSONObject();
 			jsonParams.put(CommConstant.PASSWORD, password);
 			jsonParams.put(CommConstant.EMAIL, email);
-			client.addHeader("Content-type", "application/json");
+//			client.addHeader("Content-type", "application/json");
+			client.addHeader(
+					"User-Agent",
+					userAgentString);
 			StringEntity entity = new StringEntity(jsonParams.toString());
 			Log.d("login param", jsonParams.toString());
 
@@ -797,12 +811,18 @@ public class WebservicesHelper {
 							// TODO Auto-generated method stub
 							super.onFailure(statusCode, headers,
 									responseString, throwable);
+
+							Log.d("login", "failure " + responseString);
+
 							try {
-								
+
 								dimissDialog();
+							} catch (Exception ex) {
+								ex.printStackTrace();
+							}
+							try {
 								final ToastDialog noNetwork = new ToastDialog(
-										mContext, mContext.getResources()
-												.getString(R.string.no_network));
+										mContext, "Invalid email or password");
 								noNetwork.show();
 								noNetwork.btnOk
 										.setOnClickListener(new OnClickListener() {
@@ -1101,151 +1121,155 @@ public class WebservicesHelper {
 						}
 					}
 
-//					public void onSuccess(JSONObject response) {
-//						final SharedReference ref = new SharedReference();
-//						final DatabaseHelper dbHelper = DatabaseHelper
-//								.getSharedDatabaseHelper(mContext);
-//
-//						Log.i("get all activity", response.toString());
-//						try {
-//							// deleted services and schedule relationship with
-//							// this
-//							// service
-//							JSONArray deleted_services = response
-//									.getJSONArray("deletedservices");
-//							int deleted_services_count = deleted_services
-//									.length();
-//							if (deleted_services_count > 0) {
-//								for (int i = 0; i < deleted_services_count; i++) {
-//									String id = deleted_services.getString(i);
-//									List<Schedule> sbelongtoa = dbHelper
-//											.getSchedulesBelongtoActivity(id);
-//									for (int j = 0; j < sbelongtoa.size(); j++) {
-//										Schedule schedule = sbelongtoa.get(j);
-//										dbHelper.deleteRelatedOnduty(schedule
-//												.getSchedule_ID());
-//										dbHelper.deleteSchedule(schedule
-//												.getSchedule_ID());
-//									}
-//									dbHelper.deleteActivity(id);
-//								}
-//							}
-//
-//							// services
-//							JSONArray services = response
-//									.getJSONArray("services");
-//							int service_count = services.length();
-//
-//							WebservicesHelper ws = new WebservicesHelper(
-//									mContext);
-//							for (int i = 0; i < service_count; i++) {
-//								JSONObject service = services.getJSONObject(i);
-//								ContentValues newActivity = new ContentValues();
-//								int ownid = service.getInt("creatorid");
-//								newActivity.put(ActivityTable.own_ID, ownid);
-//								Log.i("getActivitiesFromWeb own_ID ", ownid
-//										+ "");
-//								String activityid = service
-//										.getString("serviceid");
-//
-//								String serviceName = service
-//										.getString("servicename");
-//								newActivity.put(ActivityTable.service_Name,
-//										serviceName);
-//								Log.i("getActivitiesFromWeb service_Name ",
-//										serviceName + "");
-//								int role = service.getInt("sharedrole");
-//								newActivity.put(ActivityTable.sharedrole, role);
-//								Log.i("getActivitiesFromWeb sharedrole ", role
-//										+ "");
-//
-//								// String starttime = service
-//								// .getString("startdatetime");
-//								// newActivity.put(ActivityTable.start_time,
-//								// starttime);
-//								// Log.i("getActivitiesFromWeb start_time ",
-//								// starttime + "");
-//								// String endtime = service
-//								// .getString("enddatetime");
-//								// newActivity
-//								// .put(ActivityTable.end_time, endtime);
-//								// Log.i("getActivitiesFromWeb end_time ",
-//								// endtime
-//								// + "");
-//								String description = service.getString("desp");
-//								newActivity.put(
-//										ActivityTable.service_description,
-//										description);
-//
-//								Log.i("getActivitiesFromWeb service_description ",
-//										description + "");
-//
-//								int is_deleted = 0;
-//								newActivity.put(ActivityTable.is_Deleted,
-//										is_deleted);
-//								int is_synchronized = 1;
-//								newActivity.put(ActivityTable.is_Synchronized,
-//										is_synchronized);
-//								newActivity.put(ActivityTable.user_login,
-//										new SharedReference()
-//												.getCurrentOwnerId(mContext));
-//								String last_modified = service
-//										.getString("lastmodified");
-//								newActivity.put(
-//										ActivityTable.last_ModifiedTime,
-//										last_modified);
-//								Log.i("getActivitiesFromWeb lastmodified ",
-//										last_modified + "");
-//
-//								if (dbHelper.isActivityExisted(activityid) == false) {
-//									newActivity.put(ActivityTable.service_ID,
-//											activityid);
-//									Log.i("getActivitiesFromWeb service_ID ",
-//											activityid + "");
-//									if (dbHelper.insertActivity(newActivity))
-//										Log.i("database", "insert service "
-//												+ serviceName
-//												+ " successfully!");
-//								} else {
-//									if (dbHelper.updateActivity(activityid,
-//											newActivity))
-//										Log.i("database", "update service "
-//												+ serviceName
-//												+ " successfully!");
-//								}
-//
-//								ws.getSharedmembersForActivity(activityid);
-//								// TODO: will delete if service get all schedule
-//								// implemented
-//								ws.getSchedulesForActivity(activityid);
-//
-//							}
-//							// SEND broadcast to activity
-//							Intent intent = new Intent(
-//									CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
-//							mContext.sendBroadcast(intent);
-//							ref.setLastestServiceLastModifiedTime(
-//									mContext,
-//									MyDate.transformLocalDateTimeToUTCFormat(MyDate
-//											.getCurrentDateTime()));
-//
-//						} catch (JSONException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						} catch (Exception e) {
-//							e.printStackTrace();
-//						}
-//					}
+					// public void onSuccess(JSONObject response) {
+					// final SharedReference ref = new SharedReference();
+					// final DatabaseHelper dbHelper = DatabaseHelper
+					// .getSharedDatabaseHelper(mContext);
+					//
+					// Log.i("get all activity", response.toString());
+					// try {
+					// // deleted services and schedule relationship with
+					// // this
+					// // service
+					// JSONArray deleted_services = response
+					// .getJSONArray("deletedservices");
+					// int deleted_services_count = deleted_services
+					// .length();
+					// if (deleted_services_count > 0) {
+					// for (int i = 0; i < deleted_services_count; i++) {
+					// String id = deleted_services.getString(i);
+					// List<Schedule> sbelongtoa = dbHelper
+					// .getSchedulesBelongtoActivity(id);
+					// for (int j = 0; j < sbelongtoa.size(); j++) {
+					// Schedule schedule = sbelongtoa.get(j);
+					// dbHelper.deleteRelatedOnduty(schedule
+					// .getSchedule_ID());
+					// dbHelper.deleteSchedule(schedule
+					// .getSchedule_ID());
+					// }
+					// dbHelper.deleteActivity(id);
+					// }
+					// }
+					//
+					// // services
+					// JSONArray services = response
+					// .getJSONArray("services");
+					// int service_count = services.length();
+					//
+					// WebservicesHelper ws = new WebservicesHelper(
+					// mContext);
+					// for (int i = 0; i < service_count; i++) {
+					// JSONObject service = services.getJSONObject(i);
+					// ContentValues newActivity = new ContentValues();
+					// int ownid = service.getInt("creatorid");
+					// newActivity.put(ActivityTable.own_ID, ownid);
+					// Log.i("getActivitiesFromWeb own_ID ", ownid
+					// + "");
+					// String activityid = service
+					// .getString("serviceid");
+					//
+					// String serviceName = service
+					// .getString("servicename");
+					// newActivity.put(ActivityTable.service_Name,
+					// serviceName);
+					// Log.i("getActivitiesFromWeb service_Name ",
+					// serviceName + "");
+					// int role = service.getInt("sharedrole");
+					// newActivity.put(ActivityTable.sharedrole, role);
+					// Log.i("getActivitiesFromWeb sharedrole ", role
+					// + "");
+					//
+					// // String starttime = service
+					// // .getString("startdatetime");
+					// // newActivity.put(ActivityTable.start_time,
+					// // starttime);
+					// // Log.i("getActivitiesFromWeb start_time ",
+					// // starttime + "");
+					// // String endtime = service
+					// // .getString("enddatetime");
+					// // newActivity
+					// // .put(ActivityTable.end_time, endtime);
+					// // Log.i("getActivitiesFromWeb end_time ",
+					// // endtime
+					// // + "");
+					// String description = service.getString("desp");
+					// newActivity.put(
+					// ActivityTable.service_description,
+					// description);
+					//
+					// Log.i("getActivitiesFromWeb service_description ",
+					// description + "");
+					//
+					// int is_deleted = 0;
+					// newActivity.put(ActivityTable.is_Deleted,
+					// is_deleted);
+					// int is_synchronized = 1;
+					// newActivity.put(ActivityTable.is_Synchronized,
+					// is_synchronized);
+					// newActivity.put(ActivityTable.user_login,
+					// new SharedReference()
+					// .getCurrentOwnerId(mContext));
+					// String last_modified = service
+					// .getString("lastmodified");
+					// newActivity.put(
+					// ActivityTable.last_ModifiedTime,
+					// last_modified);
+					// Log.i("getActivitiesFromWeb lastmodified ",
+					// last_modified + "");
+					//
+					// if (dbHelper.isActivityExisted(activityid) == false) {
+					// newActivity.put(ActivityTable.service_ID,
+					// activityid);
+					// Log.i("getActivitiesFromWeb service_ID ",
+					// activityid + "");
+					// if (dbHelper.insertActivity(newActivity))
+					// Log.i("database", "insert service "
+					// + serviceName
+					// + " successfully!");
+					// } else {
+					// if (dbHelper.updateActivity(activityid,
+					// newActivity))
+					// Log.i("database", "update service "
+					// + serviceName
+					// + " successfully!");
+					// }
+					//
+					// ws.getSharedmembersForActivity(activityid);
+					// // TODO: will delete if service get all schedule
+					// // implemented
+					// ws.getSchedulesForActivity(activityid);
+					//
+					// }
+					// // SEND broadcast to activity
+					// Intent intent = new Intent(
+					// CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
+					// mContext.sendBroadcast(intent);
+					// ref.setLastestServiceLastModifiedTime(
+					// mContext,
+					// MyDate.transformLocalDateTimeToUTCFormat(MyDate
+					// .getCurrentDateTime()));
+					//
+					// } catch (JSONException e) {
+					// // TODO Auto-generated catch block
+					// e.printStackTrace();
+					// } catch (Exception e) {
+					// e.printStackTrace();
+					// }
+					// }
 
-//					public void onFailure(Throwable e, String response) {
+					// public void onFailure(Throwable e, String response) {
 					@Override
-					public void onFailure(int statusCode,
-							Header[] headers, String response,
-							Throwable throwable) {
+					public void onFailure(int statusCode, Header[] headers,
+							String response, Throwable throwable) {
 						// TODO Auto-generated method stub
-						super.onFailure(statusCode, headers,
-								response, throwable);
-						dimissDialog();
+						super.onFailure(statusCode, headers, response,
+								throwable);
+						// dimissDialog();
+						try {
+							dimissDialog();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 						final ToastDialog dialog = new ToastDialog(mContext,
 								mContext.getResources().getString(
 										R.string.error_load_activity));
@@ -1412,10 +1436,10 @@ public class WebservicesHelper {
 							}
 
 							// update time lastest update for schedule
-//							ref.setLastestScheduleLastModifiedTime(
-//									mContext,
-//									MyDate.transformLocalDateTimeToUTCFormat(MyDate
-//											.getCurrentDateTime()));
+							// ref.setLastestScheduleLastModifiedTime(
+							// mContext,
+							// MyDate.transformLocalDateTimeToUTCFormat(MyDate
+							// .getCurrentDateTime()));
 
 							Intent intent = new Intent(
 									CommConstant.SCHEDULE_READY);
@@ -1555,16 +1579,19 @@ public class WebservicesHelper {
 						}
 					}
 
-//					public void onFailure(Throwable e, String response) {
-					
+					// public void onFailure(Throwable e, String response) {
+
 					@Override
-					public void onFailure(int statusCode,
-							Header[] headers, String response,
-							Throwable throwable) {
+					public void onFailure(int statusCode, Header[] headers,
+							String response, Throwable throwable) {
 						// TODO Auto-generated method stub
-						super.onFailure(statusCode, headers,
-								response, throwable);
-						dimissDialog();
+						super.onFailure(statusCode, headers, response,
+								throwable);
+						try {
+							dimissDialog();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 						// Response failed :(
 						// Toast.makeText(mContext,mContext.getResources().getString(R.string.error_load_schedule),
 						// Toast.LENGTH_LONG).show();
@@ -1773,10 +1800,10 @@ public class WebservicesHelper {
 							}
 
 							// update time lastest update for schedule
-//							ref.setLastestScheduleLastModifiedTime(
-//									mContext,
-//									MyDate.transformLocalDateTimeToUTCFormat(MyDate
-//											.getCurrentDateTime()));
+							// ref.setLastestScheduleLastModifiedTime(
+							// mContext,
+							// MyDate.transformLocalDateTimeToUTCFormat(MyDate
+							// .getCurrentDateTime()));
 							ref.setLastestScheduleLastModifiedTime(
 									mContext,
 									MyDate.transformLocalDateTimeToUTCFormat(MyDate
@@ -1938,14 +1965,13 @@ public class WebservicesHelper {
 						}
 					}
 
-//					public void onFailure(Throwable e, String response) {
+					// public void onFailure(Throwable e, String response) {
 					@Override
-					public void onFailure(int statusCode,
-							Header[] headers, String response,
-							Throwable throwable) {
+					public void onFailure(int statusCode, Header[] headers,
+							String response, Throwable throwable) {
 						// TODO Auto-generated method stub
-						super.onFailure(statusCode, headers,
-								response, throwable);
+						super.onFailure(statusCode, headers, response,
+								throwable);
 						dimissDialog();
 						// Response failed :(
 						// Toast.makeText(mContext,mContext.getResources().getString(R.string.error_load_schedule),
@@ -2224,15 +2250,16 @@ public class WebservicesHelper {
 								}
 							}
 
-//							public void onFailure(Throwable e, String response) {
-							
+							// public void onFailure(Throwable e, String
+							// response) {
+
 							@Override
 							public void onFailure(int statusCode,
 									Header[] headers, String response,
 									Throwable throwable) {
 								// TODO Auto-generated method stub
-								super.onFailure(statusCode, headers,
-										response, throwable);
+								super.onFailure(statusCode, headers, response,
+										throwable);
 								dimissDialog();
 								// Response failed :(
 								Log.i("webservice", "Get Activities failed");
@@ -2903,7 +2930,10 @@ public class WebservicesHelper {
 			params.put("ownerid", activity.getOwner_ID());
 			params.put("services", activityParams);
 			Log.d("add activity", params.toString());
-			client.addHeader("Content-type", "application/json");
+//			client.addHeader("Content-type", "application/json");
+			client.addHeader(
+					"User-Agent",
+					userAgentString);
 			Log.i("add activity", params.toString());
 			StringEntity entity = new StringEntity(params.toString());
 
@@ -2911,7 +2941,6 @@ public class WebservicesHelper {
 				client.post(null, ActivityUrl, entity, "application/json",
 						new JsonHttpResponseHandler() {
 
-					
 							@Override
 							public void onSuccess(int statusCode,
 									Header[] headers, JSONObject response) {
@@ -3012,15 +3041,16 @@ public class WebservicesHelper {
 
 							}
 
-//							public void onFailure(Throwable e, String response) {
-								// Response failed :(
+							// public void onFailure(Throwable e, String
+							// response) {
+							// Response failed :(
 							@Override
 							public void onFailure(int statusCode,
 									Header[] headers, String response,
 									Throwable throwable) {
 								// TODO Auto-generated method stub
-								super.onFailure(statusCode, headers,
-										response, throwable);
+								super.onFailure(statusCode, headers, response,
+										throwable);
 								dimissDialog();
 								final ToastDialog dialog = new ToastDialog(
 										mContext,
@@ -3085,7 +3115,7 @@ public class WebservicesHelper {
 		// String ScheduleUrl = BASEURL + "schedules";
 		String ScheduleUrl = BaseUrl.BASEURL + "schedules" + "?"
 				+ BaseUrl.URL_POST_FIX;
-		;
+		Log.d("create new scheduleUrl",ScheduleUrl);
 		final int id = schedule.getSchedule_ID();
 		try {
 			JSONObject scheduleParams = new JSONObject();
@@ -3114,6 +3144,12 @@ public class WebservicesHelper {
 			// client.addHeader("Content-type", "application/json");
 			Log.i("add schedule", params.toString());
 			StringEntity entity = new StringEntity(params.toString());
+
+			// client.addHeader("Content-type", "application/json");
+			client.addHeader(
+					"User-Agent",
+					userAgentString);
+
 			if (Utils.isNetworkOnline(mContext)) {
 				client.post(null, ScheduleUrl, entity, "application/json",
 						new JsonHttpResponseHandler() {
@@ -3194,18 +3230,19 @@ public class WebservicesHelper {
 
 							}
 
-//							public void onFailure(Throwable e, String response) {
-								// Response failed :(	@Override
-								public void onFailure(int statusCode,
-										Header[] headers, String response,
-										Throwable throwable) {
-									// TODO Auto-generated method stub
-									super.onFailure(statusCode, headers,
-											response, throwable);
-									dimissDialog();
+							// public void onFailure(Throwable e, String
+							// response) {
+							// Response failed :( @Override
+							public void onFailure(int statusCode,
+									Header[] headers, String response,
+									Throwable throwable) {
+								// TODO Auto-generated method stub
+								super.onFailure(statusCode, headers, response,
+										throwable);
+								dimissDialog();
 
 								Log.i("failure response", response);
-//								Log.i("fail", e.toString());
+								// Log.i("fail", e.toString());
 
 								final ToastDialog dialog = new ToastDialog(
 										mContext,
@@ -3369,18 +3406,19 @@ public class WebservicesHelper {
 
 							}
 
-//							public void onFailure(Throwable e, String response) {
+							// public void onFailure(Throwable e, String
+							// response) {
 							@Override
 							public void onFailure(int statusCode,
 									Header[] headers, String response,
 									Throwable throwable) {
 								// TODO Auto-generated method stub
-								super.onFailure(statusCode, headers,
-										response, throwable);
+								super.onFailure(statusCode, headers, response,
+										throwable);
 								// Response failed :(
 
 								Log.i("failure response", response);
-//								Log.i("fail", e.toString());
+								// Log.i("fail", e.toString());
 
 								final ToastDialog dialog = new ToastDialog(
 										mContext,
@@ -3541,15 +3579,15 @@ public class WebservicesHelper {
 								// TODO Auto-generated method stub
 								super.onFailure(statusCode, headers,
 										responseString, throwable);
-dimissDialog();
+								dimissDialog();
 								Log.i("failure response", responseString);
-							
 
 								final ToastDialog dialog = new ToastDialog(
 										mContext, mContext.getResources()
 												.getString(
 														R.string.confirm_error)
-												+ " " + responseString.toString());
+												+ " "
+												+ responseString.toString());
 								dialog.show();
 								dialog.btnOk
 										.setOnClickListener(new OnClickListener() {
@@ -3704,13 +3742,12 @@ dimissDialog();
 				}
 
 				@Override
-				public void onFailure(int statusCode,
-						Header[] headers, String responseString,
-						Throwable throwable) {
+				public void onFailure(int statusCode, Header[] headers,
+						String responseString, Throwable throwable) {
 					// TODO Auto-generated method stub
-					super.onFailure(statusCode, headers,
-							responseString, throwable);
-					
+					super.onFailure(statusCode, headers, responseString,
+							throwable);
+
 					dimissDialog();
 					final ToastDialog dialog = new ToastDialog(mContext,
 							mContext.getResources().getString(
@@ -3753,7 +3790,12 @@ dimissDialog();
 			sharedmemberParams.put("ownerid",
 					new SharedReference().getCurrentOwnerId(mContext));
 			sharedmemberParams.put("feedback", feedBackStr);
-			client.addHeader("Content-type", "application/json");
+
+//			client.addHeader("Content-type", "application/json");
+			client.addHeader(
+					"User-Agent",
+					userAgentString);
+
 			StringEntity entity = new StringEntity(
 					sharedmemberParams.toString());
 			Log.d("body feedback", sharedmemberParams.toString());
@@ -4124,12 +4166,11 @@ dimissDialog();
 				}
 
 				@Override
-				public void onFailure(int statusCode,
-						Header[] headers, String responseString,
-						Throwable throwable) {
+				public void onFailure(int statusCode, Header[] headers,
+						String responseString, Throwable throwable) {
 					// TODO Auto-generated method stub
-					super.onFailure(statusCode, headers,
-							responseString, throwable);
+					super.onFailure(statusCode, headers, responseString,
+							throwable);
 					final ToastDialog dialog = new ToastDialog(mContext,
 							mContext.getResources().getString(
 									R.string.get_shared_member_error));
@@ -4196,7 +4237,11 @@ dimissDialog();
 
 			Log.d("post shared member", sharedmemberParams.toString());
 
-			client.addHeader("Content-type", "application/json");
+//			client.addHeader("Content-type", "application/json");
+			client.addHeader(
+					"User-Agent",
+					userAgentString);
+
 			// Log.i("add participant", sharedmemberParams.toString());
 			StringEntity entity = new StringEntity(
 					sharedmemberParams.toString());
@@ -4213,16 +4258,7 @@ dimissDialog();
 								Log.i("successful sharedmember",
 										response.toString());
 								int code = 0;
-								try {
-									code = response.getInt("code");
-									if (code != 200) {
-										Toast.makeText(mContext,
-												response.getString("message"),
-												Toast.LENGTH_LONG).show();
-									}
-								} catch (JSONException e) {
-									e.printStackTrace();
-								}
+								
 								try {
 									String lastmodify = "";
 
@@ -4255,6 +4291,16 @@ dimissDialog();
 								} catch (JSONException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
+								}
+								try {
+									code = response.getInt("code");
+									if (code != 200) {
+										Toast.makeText(mContext,
+												response.getString("message"),
+												Toast.LENGTH_LONG).show();
+									}
+								} catch (JSONException e) {
+									e.printStackTrace();
 								}
 							}
 
@@ -4315,7 +4361,7 @@ dimissDialog();
 								// TODO Auto-generated method stub
 								super.onFailure(statusCode, headers,
 										responseString, throwable);
-								 dimissDialog();
+								dimissDialog();
 								final ToastDialog dialog = new ToastDialog(
 										mContext,
 										mContext.getResources()
@@ -4430,12 +4476,11 @@ dimissDialog();
 				}
 
 				@Override
-				public void onFailure(int statusCode,
-						Header[] headers, String responseString,
-						Throwable throwable) {
+				public void onFailure(int statusCode, Header[] headers,
+						String responseString, Throwable throwable) {
 					// TODO Auto-generated method stub
-					super.onFailure(statusCode, headers,
-							responseString, throwable);
+					super.onFailure(statusCode, headers, responseString,
+							throwable);
 					dimissDialog();
 					final ToastDialog dialog = new ToastDialog(mContext,
 							mContext.getResources().getString(
@@ -4578,6 +4623,11 @@ dimissDialog();
 			// client.addHeader("Content-type", "application/json");
 			Log.i("add participant", params.toString());
 			StringEntity entity = new StringEntity(params.toString());
+
+//			client.addHeader("Content-type", "application/json");
+			client.addHeader(
+					"User-Agent",
+					userAgentString);
 			if (Utils.isNetworkOnline(mContext)) {
 				client.post(null, ParticipantUrl, entity, "application/json",
 						new JsonHttpResponseHandler() {
@@ -4656,6 +4706,7 @@ dimissDialog();
 									Header[] headers, String responseString,
 									Throwable throwable) {
 								// TODO Auto-generated method stub
+								Log.d("add participant failure",responseString);
 								super.onFailure(statusCode, headers,
 										responseString, throwable);
 								final ToastDialog dialog = new ToastDialog(
@@ -4734,7 +4785,7 @@ dimissDialog();
 			params.put("ownerid", participant.getOwnerID());
 			params.put("members", participantParams);
 
-			client.addHeader("Content-type", "application/json");
+//			client.addHeader("Content-type", "application/json");
 			Log.i("update participant", params.toString());
 			StringEntity entity = new StringEntity(params.toString());
 			if (Utils.isNetworkOnline(mContext)) {
@@ -4940,12 +4991,11 @@ dimissDialog();
 				}
 
 				@Override
-				public void onFailure(int statusCode,
-						Header[] headers, String responseString,
-						Throwable throwable) {
+				public void onFailure(int statusCode, Header[] headers,
+						String responseString, Throwable throwable) {
 					// TODO Auto-generated method stub
-					super.onFailure(statusCode, headers,
-							responseString, throwable);
+					super.onFailure(statusCode, headers, responseString,
+							throwable);
 					final ToastDialog dialog = new ToastDialog(mContext,
 							mContext.getResources().getString(
 									R.string.delete_contact_error));
@@ -4995,29 +5045,29 @@ dimissDialog();
 		}
 	}
 
-//	/**
-//	 * Delete contact
-//	 * */
-//	public void deleteContact(final int contact_id,
-//			JsonHttpResponseHandler handler) {
-//		String urlDeleteContact = BaseUrl.BASEURL + "members/" + contact_id
-//				+ "?" + BaseUrl.URL_POST_FIX;
-//		Log.d("delete contact", urlDeleteContact);
-//		if (Utils.isNetworkOnline(mContext)) {
-//			client.delete(urlDeleteContact, handler);
-//		} else {
-//			final ToastDialog dialog = new ToastDialog(mContext, mContext
-//					.getResources().getString(R.string.no_network));
-//			dialog.show();
-//			dialog.btnOk.setOnClickListener(new OnClickListener() {
-//
-//				@Override
-//				public void onClick(View v) {
-//					dialog.dismiss();
-//				}
-//			});
-//		}
-//	}
+	// /**
+	// * Delete contact
+	// * */
+	// public void deleteContact(final int contact_id,
+	// JsonHttpResponseHandler handler) {
+	// String urlDeleteContact = BaseUrl.BASEURL + "members/" + contact_id
+	// + "?" + BaseUrl.URL_POST_FIX;
+	// Log.d("delete contact", urlDeleteContact);
+	// if (Utils.isNetworkOnline(mContext)) {
+	// client.delete(urlDeleteContact, handler);
+	// } else {
+	// final ToastDialog dialog = new ToastDialog(mContext, mContext
+	// .getResources().getString(R.string.no_network));
+	// dialog.show();
+	// dialog.btnOk.setOnClickListener(new OnClickListener() {
+	//
+	// @Override
+	// public void onClick(View v) {
+	// dialog.dismiss();
+	// }
+	// });
+	// }
+	// }
 
 	public void updateActivity(MyActivity activity) {
 		String ActivityUrl = BaseUrl.BASEURL + "services/"
@@ -5035,7 +5085,9 @@ dimissDialog();
 			params.put("ownerid", activity.getOwner_ID());
 			params.put("services", activityParams);
 
-			client.addHeader("Content-type", "application/json");
+//			client.addHeader("Content-type", "application/json");
+		
+
 			Log.i("update activity", params.toString());
 			StringEntity entity = new StringEntity(params.toString());
 			if (Utils.isNetworkOnline(mContext)) {
@@ -5298,12 +5350,11 @@ dimissDialog();
 				}
 
 				@Override
-				public void onFailure(int statusCode,
-						Header[] headers, String responseString,
-						Throwable throwable) {
+				public void onFailure(int statusCode, Header[] headers,
+						String responseString, Throwable throwable) {
 					// TODO Auto-generated method stub
-					super.onFailure(statusCode, headers,
-							responseString, throwable);
+					super.onFailure(statusCode, headers, responseString,
+							throwable);
 					final ToastDialog dialog = new ToastDialog(mContext,
 							mContext.getResources().getString(
 									R.string.delete_activity_error));
@@ -5349,6 +5400,10 @@ dimissDialog();
 			Log.d("post shared member", sharedmemberParams.toString());
 
 			client.addHeader("Content-type", "application/json");
+			client.addHeader(
+					"User-Agent",
+					userAgentString);
+
 			// Log.i("add participant", sharedmemberParams.toString());
 			StringEntity entity = new StringEntity(
 					sharedmemberParams.toString());
