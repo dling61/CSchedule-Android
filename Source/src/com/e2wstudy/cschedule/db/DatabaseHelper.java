@@ -36,7 +36,7 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "cschedule";
-	public static final int DB_VERSION =7;
+	public static final int DB_VERSION = 7;
 	public static DatabaseHelper sharedDatabaseHelper;
 	public static final int NEW = 0;
 	public static final int EXISTED = 1;
@@ -190,15 +190,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ActivityTable.user_login + "="
 						+ new SharedReference().getCurrentOwnerId(context),
 				null);
-		if(mCount!=null)
-		{
-			if(mCount.moveToFirst())
-			{
+		if (mCount != null) {
+			if (mCount.moveToFirst()) {
 				int count = mCount.getInt(0);
 				return count;
 			}
 		}
-	
+
 		mCount.close();
 		return 0;
 	}
@@ -573,39 +571,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Get number of schedule
 	 * */
 	public int getNumberSchedule() {
-//		String query = "select count(*) from "
-//				+ ScheduleTable.ScheduleTableName + ", "
-//				+ OndutyTable.OntudyTableName + ","
-//				+ SharedMemberTable.SharedMemberTableName + " WHERE "
-//				+ ScheduleTable.ScheduleTableName + "."
-//				+ ScheduleTable.is_Deleted + "=0 and "
-//				+ ScheduleTable.user_login + "='"
-//				+ new SharedReference().getCurrentOwnerId(context) + "' and "
-//				+ OndutyTable.OntudyTableName + "." + OndutyTable.schedule_ID
-//				+ " = " + ScheduleTable.ScheduleTableName + "."
-//				+ ScheduleTable.schedule_ID + " and "
-//				+ OndutyTable.participant_ID + "="
-//				+ SharedMemberTable.member_id + " and "
-//				+ SharedMemberTable.member_email + "='"
-//				+ new SharedReference().getEmail(context) + "'";
-		String query="SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
-				+ ScheduleTable.is_Deleted + "=0 and "
+		// String query = "select count(*) from "
+		// + ScheduleTable.ScheduleTableName + ", "
+		// + OndutyTable.OntudyTableName + ","
+		// + SharedMemberTable.SharedMemberTableName + " WHERE "
+		// + ScheduleTable.ScheduleTableName + "."
+		// + ScheduleTable.is_Deleted + "=0 and "
+		// + ScheduleTable.user_login + "='"
+		// + new SharedReference().getCurrentOwnerId(context) + "' and "
+		// + OndutyTable.OntudyTableName + "." + OndutyTable.schedule_ID
+		// + " = " + ScheduleTable.ScheduleTableName + "."
+		// + ScheduleTable.schedule_ID + " and "
+		// + OndutyTable.participant_ID + "="
+		// + SharedMemberTable.member_id + " and "
+		// + SharedMemberTable.member_email + "='"
+		// + new SharedReference().getEmail(context) + "'";
+		String query = "SELECT * FROM " + ScheduleTable.ScheduleTableName
+				+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
 				+ ScheduleTable.user_login + "='"
-				+ new SharedReference().getCurrentOwnerId(context)
-				+ "'";
+				+ new SharedReference().getCurrentOwnerId(context) + "'";
 		Log.d("query schedule", query);
 		Cursor mCount = this.getWritableDatabase().rawQuery(query, null);
-		if(mCount!=null)
-		{
-//			if(mCount.moveToFirst())
-			if(mCount.moveToFirst())
-			{
-				int count=mCount.getCount();
-//				int count = mCount.getInt(0);
+		if (mCount != null) {
+			// if(mCount.moveToFirst())
+			if (mCount.moveToFirst()) {
+				int count = mCount.getCount();
+				// int count = mCount.getInt(0);
 				return count;
 			}
 		}
-	
+
 		mCount.close();
 		return 0;
 	}
@@ -819,7 +814,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			return newParticipant;
 		}
 	}
-	
 
 	public Sharedmember getSharedmember(int member_id, String activity_id) {
 		Cursor c = this.getWritableDatabase().rawQuery(
@@ -1002,7 +996,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ParticipantTable.participant_Mobile));
 			Participant newParticipant = new Participant(id, name, email,
 					mobile, ownid);
-			participants.add(newParticipant);
+			
+			//don't show login user in contact page
+			if (!email.equals(new SharedReference().getEmail(context))) {
+				participants.add(newParticipant);
+			}
 		}
 		return participants;
 	}
@@ -1192,13 +1190,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				"SELECT " + AppVersionTable.appversion + " from "
 						+ AppVersionTable.appVersionTable + " where "
 						+ AppVersionTable.os + " = 'ANDROID'", null);
-		while (c.moveToNext())
-		{
+		while (c.moveToNext()) {
 			return c.getString(c.getColumnIndex(AppVersionTable.appversion));
 		}
 		return "0.0.0";
 	}
-	
+
 	public boolean isScheduleExisted(int scheduleID) {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + ScheduleTable.schedule_ID + " from "
@@ -1494,19 +1491,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				SharedMemberTable.SharedMemberTableName, null, null);
 		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
 				null);
-		this.getWritableDatabase().delete(ActivityTable.ActivityTableName, null,
-				null);
-		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName, null,
-				null);
-		
-		this.getWritableDatabase().delete(TimeZoneTable.TimeZoneTableName, null,
-				null);
-		
-		this.getWritableDatabase().delete( AlertTable.alertTableName , null,
-				null);
+		this.getWritableDatabase().delete(ActivityTable.ActivityTableName,
+				null, null);
+		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
+				null, null);
 
-		this.getWritableDatabase().delete( AppVersionTable.appVersionTable , null,
-				null);
+		this.getWritableDatabase().delete(TimeZoneTable.TimeZoneTableName,
+				null, null);
+
+		this.getWritableDatabase()
+				.delete(AlertTable.alertTableName, null, null);
+
+		this.getWritableDatabase().delete(AppVersionTable.appVersionTable,
+				null, null);
 		SharedPreferences settings = context.getSharedPreferences(
 				SharedReference.MY_PREFERENCE, Context.MODE_PRIVATE);
 		settings.edit().clear().commit();
