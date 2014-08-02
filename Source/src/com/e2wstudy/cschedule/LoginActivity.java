@@ -54,7 +54,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * Substitute you own sender ID here. This is the project number you got
 	 * from the API Console, as described in "Getting Started."
 	 */
-//	String SENDER_ID = "Your-Sender-ID";
+	// String SENDER_ID = "Your-Sender-ID";
 
 	/**
 	 * Tag used on log messages.
@@ -81,17 +81,17 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 		onClickListener();
 
-//		// Check device for Play Services APK.
-//		if (checkPlayServices()) {
-////			 If this check succeeds, proceed with normal processing.
-////			 Otherwise, prompt user to get valid Play Services APK.
-//			gcm = GoogleCloudMessaging.getInstance(this);
-//			regid = new SharedReference().getRegistrationId(context);
-//
-//			if (regid.equals("")) {
-//				new RegisterGCMTask().execute();
-//			}
-//		}
+		// Check device for Play Services APK.
+		if (checkPlayServices()) {
+			// If this check succeeds, proceed with normal processing.
+			// Otherwise, prompt user to get valid Play Services APK.
+			gcm = GoogleCloudMessaging.getInstance(this);
+			regid = new SharedReference().getRegistrationId(context);
+
+			if (regid.equals("")) {
+				new RegisterGCMTask().execute();
+			}
+		}
 
 	}
 
@@ -124,9 +124,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				// The request to your server should be authenticated if your
 				// app
 				// is using accounts.
-				
-				
-//				sendRegistrationIdToBackend();
+
+				// sendRegistrationIdToBackend();
 
 				// For this demo: we don't need to send it because the device
 				// will send upstream messages to a server that echo back the
@@ -196,7 +195,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * Google Play Store or enable it in the device's system settings.
 	 */
 	private boolean checkPlayServices() {
-		Log.d("google service code",GooglePlayServicesUtil.GOOGLE_PLAY_SERVICES_VERSION_CODE+"");
+		Log.d("google service code",
+				GooglePlayServicesUtil.GOOGLE_PLAY_SERVICES_VERSION_CODE + "");
 		int resultCode = GooglePlayServicesUtil
 				.isGooglePlayServicesAvailable(getApplicationContext());
 		if (resultCode != ConnectionResult.SUCCESS) {
@@ -205,7 +205,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 						CommConstant.PLAY_SERVICES_RESOLUTION_REQUEST).show();
 			} else {
 				Log.i("GCM Information", "This device is not supported.");
-//				finish();
+				// finish();
 			}
 			return false;
 		}
@@ -319,7 +319,28 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	public void login(String email, String password) {
 		Utils.hideKeyboard((Activity) mContext, txt_email);
 		Utils.hideKeyboard((Activity) mContext, txt_password);
-		Utils.isNetworkAvailable(loginHandler);
+		if (Utils.isNetworkOnline(mContext)) {
+			// code if connected
+			WebservicesHelper helper = new WebservicesHelper(mContext);
+			try {
+				helper.login(txt_email.getText().toString(), txt_password
+						.getText().toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			final ToastDialog dialog = new ToastDialog(mContext, mContext
+					.getResources().getString(R.string.no_network));
+			dialog.show();
+			dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+				}
+			});
+		}
 	}
 
 	@Override

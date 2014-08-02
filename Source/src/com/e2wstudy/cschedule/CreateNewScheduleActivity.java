@@ -385,31 +385,64 @@ public class CreateNewScheduleActivity extends Activity implements
 			if (list_participant != null && list_participant.size() > 0) {
 				final SharedMemberAdapter adapter = new SharedMemberAdapter(
 						mContext, list_participant, false, false, true);
-				view.list_participant.setAdapter(adapter);
-				Utils.setListViewHeightBasedOnChildren(view.list_participant,
-						adapter);
-				view.list_participant.setVisibility(View.VISIBLE);
-				view.layout_list_on_duty.setVisibility(View.VISIBLE);
-				view.layout_on_duty.setVisibility(View.VISIBLE);
-				view.tv_participant.setVisibility(View.VISIBLE);
-				view.list_participant
-						.setOnItemClickListener(new OnItemClickListener() {
-							@Override
-							public void onItemClick(AdapterView<?> parent,
-									View view, final int position, long id) {
-								final Sharedmember participantSelected = adapter.sharedMembers
-										.get(position);
-								// participantInforDialog(participantSelected);
 
-							}
-						});
+				String participant = "";
+				int size = list_participant.size();
+				if (size > 3) {
+					size = 3;
+				}
+				for (int i = 0; i < size; i++) {
+					participant += list_participant.get(i).getName() + ", ";
+				}
+				try {
+					if (list_participant.size()<=3) {
+						if (participant.endsWith(", ")) {
+							participant = participant.substring(0,
+									participant.length() - 2);
+						}
+					}
+				} catch (Exception exx) {
+					exx.printStackTrace();
+				}
+				if (list_participant.size() > 3) {
+					participant += ", ...";
+				}
+				
+				view.tvOnduty.setText(participant);
+				
+//				view.list_participant.setAdapter(adapter);
+//				Utils.setListViewHeightBasedOnChildren(view.list_participant,
+//						adapter);
+//				view.list_participant.setVisibility(View.VISIBLE);
+
+				view.layout_onduty.setVisibility(View.VISIBLE);
+
+				// view.layout_list_on_duty.setVisibility(View.VISIBLE);
+				// view.layout_on_duty.setVisibility(View.VISIBLE);
+
+				// view.tv_participant.setVisibility(View.VISIBLE);
+				// view.list_participant
+				// .setOnItemClickListener(new OnItemClickListener() {
+				// @Override
+				// public void onItemClick(AdapterView<?> parent,
+				// View view, final int position, long id) {
+				// final Sharedmember participantSelected =
+				// adapter.sharedMembers
+				// .get(position);
+				// // participantInforDialog(participantSelected);
+				//
+				// }
+				// });
 			}
 
 			else {
-				view.list_participant.setVisibility(View.GONE);
-				view.layout_list_on_duty.setVisibility(View.GONE);
-				view.layout_on_duty.setVisibility(View.GONE);
-				view.tv_participant.setVisibility(View.GONE);
+				// view.list_participant.setVisibility(View.GONE);
+				// view.layout_list_on_duty.setVisibility(View.GONE);
+				// view.layout_on_duty.setVisibility(View.GONE);
+
+				view.layout_onduty.setVisibility(View.GONE);
+
+				// view.tv_participant.setVisibility(View.GONE);
 			}
 
 		}
@@ -431,7 +464,10 @@ public class CreateNewScheduleActivity extends Activity implements
 		// view.tv_participant.setOnClickListener(this);
 		view.layoutAlert.setOnClickListener(this);
 		view.layoutTimeZone.setOnClickListener(this);
-		view.btn_change_on_duty.setOnClickListener(this);
+
+		view.layout_onduty.setOnClickListener(this);
+
+		// view.btn_change_on_duty.setOnClickListener(this);
 		view.et_new_activity_description
 				.setOnTouchListener(new View.OnTouchListener() {
 
@@ -605,20 +641,83 @@ public class CreateNewScheduleActivity extends Activity implements
 
 		} else if (v == view.titleBar.layout_next) {
 			// createNewSchedule();
-			Utils.isNetworkAvailable(createNewScheduleHandle);
+			// Utils.isNetworkAvailable(createNewScheduleHandle);
+
+			if (Utils.isNetworkOnline(mContext)) {
+				// code if connected
+				createNewSchedule();
+			} else {
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
+						.getResources().getString(R.string.no_network));
+				dialog.show();
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+			}
 		} else if (v == view.btn_remove_schedule) {
-			// deleteSchedule();
-			Utils.isNetworkAvailable(deleteScheduleHandle);
+
+			// Utils.isNetworkAvailable(deleteScheduleHandle);
+			if (Utils.isNetworkOnline(mContext)) {
+				// code if connected
+				deleteSchedule();
+			} else {
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
+						.getResources().getString(R.string.no_network));
+				dialog.show();
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+			}
 		} else if (v == view.titleBar.layout_back) {
 			((Activity) mContext).finish();
 			// Utils.postLeftToRight(mContext);
 		} else if (v == view.titleBar.layout_save) {
 			if (composeType == DatabaseHelper.EXISTED) {
 				// editSchedule();
-				Utils.isNetworkAvailable(editScheduleHandle);
+				// Utils.isNetworkAvailable(editScheduleHandle);
+				if (Utils.isNetworkOnline(mContext)) {
+					// code if connected
+					editSchedule();
+				} else {
+					final ToastDialog dialog = new ToastDialog(mContext,
+							mContext.getResources().getString(
+									R.string.no_network));
+					dialog.show();
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+						}
+					});
+				}
 			} else if (composeType == DatabaseHelper.NEW) {
 				// createNewSchedule();
-				Utils.isNetworkAvailable(createNewScheduleHandle);
+				// Utils.isNetworkAvailable(createNewScheduleHandle);
+				if (Utils.isNetworkOnline(mContext)) {
+					// code if connected
+					createNewSchedule();
+				} else {
+					final ToastDialog dialog = new ToastDialog(mContext,
+							mContext.getResources().getString(
+									R.string.no_network));
+					dialog.show();
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+						}
+					});
+				}
 			}
 		} else if (v == view.et_new_activity_name) {
 			if (composeType == DatabaseHelper.NEW) {
@@ -656,7 +755,8 @@ public class CreateNewScheduleActivity extends Activity implements
 			}
 		}
 
-		else if (v == view.btn_change_on_duty) {
+		else if (v == view.layout_onduty) {
+			// else if (v == view.btn_change_on_duty) {
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
 				Utils.pushRightToLeft(mContext);
@@ -915,9 +1015,11 @@ public class CreateNewScheduleActivity extends Activity implements
 									.getSchedule_ID());
 
 					if (listPins != null && listPins.size() > 0) {
-						view.layout_on_duty.setVisibility(View.VISIBLE);
+						// view.layout_on_duty.setVisibility(View.VISIBLE);
+						view.layout_onduty.setVisibility(View.VISIBLE);
 					} else {
-						view.layout_on_duty.setVisibility(View.GONE);
+						// view.layout_on_duty.setVisibility(View.GONE);
+						view.layout_onduty.setVisibility(View.GONE);
 					}
 					setParticipantOfActivity(listPins);
 				}
@@ -983,8 +1085,10 @@ public class CreateNewScheduleActivity extends Activity implements
 				// view.btn_remove_schedule.setVisibility(View.VISIBLE);
 				view.titleBar.layout_save.setEnabled(true);
 				view.titleBar.layout_next.setEnabled(true);
-				view.btn_change_on_duty.setEnabled(true);
-				view.btn_change_on_duty.setVisibility(View.VISIBLE);
+				view.layout_onduty.setEnabled(true);
+				// view.btn_change_on_duty.setEnabled(true);
+				// view.btn_change_on_duty.setVisibility(View.VISIBLE);
+				view.layout_onduty.setVisibility(View.VISIBLE);
 			} else {
 				// only view
 				view.et_endDate.setEnabled(false);
@@ -997,8 +1101,11 @@ public class CreateNewScheduleActivity extends Activity implements
 				view.btn_remove_schedule.setVisibility(View.GONE);
 				view.titleBar.layout_save.setEnabled(false);
 				view.titleBar.layout_next.setEnabled(false);
-				view.btn_change_on_duty.setEnabled(false);
-				view.btn_change_on_duty.setVisibility(View.GONE);
+				// view.btn_change_on_duty.setEnabled(false);
+				// view.btn_change_on_duty.setVisibility(View.GONE);
+
+				view.layout_onduty.setEnabled(false);
+				view.layout_onduty.setVisibility(View.GONE);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -1265,6 +1372,7 @@ public class CreateNewScheduleActivity extends Activity implements
 							ContentValues onduty = new ContentValues();
 							onduty.put(OndutyTable.schedule_ID,
 									thisSchedule.getSchedule_ID());
+				
 							onduty.put(OndutyTable.service_ID,
 									thisSchedule.getService_ID());
 							onduty.put(OndutyTable.participant_ID,
@@ -1301,7 +1409,7 @@ public class CreateNewScheduleActivity extends Activity implements
 			title = mContext.getResources().getString(
 					R.string.edit_schedule_without_participant);
 		}
-		final ConfirmDialog dialog = new ConfirmDialog(mContext,title);
+		final ConfirmDialog dialog = new ConfirmDialog(mContext, title);
 		dialog.show();
 		dialog.btnOk.setOnClickListener(new OnClickListener() {
 
@@ -1326,7 +1434,7 @@ public class CreateNewScheduleActivity extends Activity implements
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dialog.dismiss();
-				finish();
+//				finish();
 			}
 		});
 	}
@@ -1442,11 +1550,11 @@ public class CreateNewScheduleActivity extends Activity implements
 	}
 
 	JsonHttpResponseHandler deleteScheduleHandler = new JsonHttpResponseHandler() {
-//		public void onSuccess(JSONObject response) {
-		
+		// public void onSuccess(JSONObject response) {
+
 		@Override
-		public void onSuccess(int statusCode,
-				Header[] headers, JSONObject response) {
+		public void onSuccess(int statusCode, Header[] headers,
+				JSONObject response) {
 			// TODO Auto-generated method stub
 			super.onSuccess(statusCode, headers, response);
 			try {
@@ -1488,18 +1596,14 @@ public class CreateNewScheduleActivity extends Activity implements
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			
+
 		}
-		
-		
 
 		@Override
-		public void onFailure(int statusCode,
-				Header[] headers, String response,
-				Throwable throwable) {
+		public void onFailure(int statusCode, Header[] headers,
+				String response, Throwable throwable) {
 			// TODO Auto-generated method stub
-			super.onFailure(statusCode, headers,
-					response, throwable);
+			super.onFailure(statusCode, headers, response, throwable);
 			try {
 				if (progress.isShowing()) {
 					progress.dismiss();
@@ -1507,7 +1611,7 @@ public class CreateNewScheduleActivity extends Activity implements
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			
+
 			final ToastDialog dialog = new ToastDialog(mContext, mContext
 					.getResources().getString(R.string.delete_schedule_error)
 					+ "\n" + response.toString());

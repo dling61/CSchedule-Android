@@ -447,7 +447,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				deleteDatabase(DatabaseHelper.DB_NAME);
+//				deleteDatabase(DatabaseHelper.DB_NAME);
 				System.exit(0);
 			}
 		});

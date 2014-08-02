@@ -91,7 +91,22 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_mobile);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
 //			addContact();
-			Utils.isNetworkAvailable(createNewContactHandle);
+//			Utils.isNetworkAvailable(createNewContactHandle);
+			if (Utils.isNetworkOnline(mContext)) {
+				// code if connected
+				addContact();
+			} else {
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
+						.getResources().getString(R.string.no_network));
+				dialog.show();
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+			}
 		} else if (v == view.titleBar.layout_back) {
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_email);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_mobile);
@@ -102,7 +117,23 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		} else if (v == view.btn_remove_contact) {
 			if (selectedParticipantID > 0) {
 //				removeParticipant();
-				Utils.isNetworkAvailable(deleteContactHandle);
+//				Utils.isNetworkAvailable(deleteContactHandle);
+				
+				if (Utils.isNetworkOnline(mContext)) {
+					// code if connected
+					removeParticipant();
+				} else {
+					final ToastDialog dialog = new ToastDialog(mContext, mContext
+							.getResources().getString(R.string.no_network));
+					dialog.show();
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+						}
+					});
+				}
 			}
 		} else if (v == view.titleBar.layout_edit) {
 			setEdittextEditable(view.et_email, true);

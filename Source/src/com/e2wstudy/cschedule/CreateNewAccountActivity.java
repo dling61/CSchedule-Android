@@ -87,7 +87,22 @@ public class CreateNewAccountActivity extends BaseActivity implements
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == btn_create) {
-			Utils.isNetworkAvailable(createNewAccountHandle);
+//			Utils.isNetworkAvailable(createNewAccountHandle);
+			if (Utils.isNetworkOnline(mContext)) {
+				// code if connected
+				createNewAccount();
+			} else {
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
+						.getResources().getString(R.string.no_network));
+				dialog.show();
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+			}
 		} else if (v == titleBar.layout_back) {
 			Utils.hideKeyboard(CreateNewAccountActivity.this, name_tv);
 			Utils.hideKeyboard(CreateNewAccountActivity.this, email_tv);

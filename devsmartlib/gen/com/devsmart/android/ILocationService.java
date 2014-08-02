@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: E:\\Antking\\library\\devsmartlib\\src\\com\\devsmart\\android\\ILocationService.aidl
+ * Original file: E:\\Antking\\CSchedule_GitHub\\devsmartlib\\src\\com\\devsmart\\android\\ILocationService.aidl
  */
 package com.devsmart.android;
 public interface ILocationService extends android.os.IInterface

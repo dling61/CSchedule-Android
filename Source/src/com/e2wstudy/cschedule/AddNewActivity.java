@@ -47,6 +47,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	Context mContext;
 	AddActivityView view;
 	String activity_id = "";
+	
+
 
 	// shared role for privacy
 	int shared_role = CommConstant.OWNER;
@@ -380,8 +382,25 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		if (v == view.titleBar.layout_next) {
 			if (composeType == DatabaseHelper.NEW) {
-				Utils.isNetworkAvailable(createNewActivityHandle);
+//				Utils.isNetworkAvailable(createNewActivityHandle);
 				// createNewActivity();
+				
+				if (Utils.isNetworkOnline(mContext)) {
+					// code if connected
+					createNewActivity();
+				} else {
+					final ToastDialog dialog = new ToastDialog(mContext, mContext
+							.getResources().getString(R.string.no_network));
+					dialog.show();
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+						}
+					});
+				}
+				
 			}
 		} else if (v == view.btn_add_paticipant) {
 			if (composeType == DatabaseHelper.EXISTED) {
@@ -409,11 +428,42 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 		} else if (v == view.titleBar.layout_save) {
 			if (composeType == DatabaseHelper.EXISTED) {
-				Utils.isNetworkAvailable(editActivityHandle);
+//				Utils.isNetworkAvailable(editActivityHandle);
 				// editActivity();
+				
+				if (Utils.isNetworkOnline(mContext)) {
+					// code if connected
+					editActivity();
+				} else {
+					final ToastDialog dialog = new ToastDialog(mContext, mContext
+							.getResources().getString(R.string.no_network));
+					dialog.show();
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+						}
+					});
+				}
 			} else if (composeType == DatabaseHelper.NEW) {
-				Utils.isNetworkAvailable(createNewActivityHandle);
+//				Utils.isNetworkAvailable(createNewActivityHandle);
 				// createNewActivity();
+				if (Utils.isNetworkOnline(mContext)) {
+					// code if connected
+					createNewActivity();
+				} else {
+					final ToastDialog dialog = new ToastDialog(mContext, mContext
+							.getResources().getString(R.string.no_network));
+					dialog.show();
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+						}
+					});
+				}
 			}
 		}
 	}
@@ -487,7 +537,24 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				// deleteActivity();
-				Utils.isNetworkAvailable(deleteActivityHandle);
+//				Utils.isNetworkAvailable(deleteActivityHandle);
+				
+				if (Utils.isNetworkOnline(mContext)) {
+					// code if connected
+					deleteActivity();
+				} else {
+					final ToastDialog dialog = new ToastDialog(mContext, mContext
+							.getResources().getString(R.string.no_network));
+					dialog.show();
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+						}
+					});
+				}
+				
 				dialog.dismiss();
 			}
 		});

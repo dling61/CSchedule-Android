@@ -288,8 +288,8 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 																	participantSelected
 																			.getEmail());
 													dbHelper.insertSharedmember(contentValues);
-													WebservicesHelper ws = new WebservicesHelper(
-															mContext);
+//													WebservicesHelper ws = new WebservicesHelper(
+//															mContext);
 													//
 													// // if role= owner &
 													// // participant selected
@@ -305,8 +305,31 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 													// CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
 													// activity_id);
 
-													Utils.isNetworkAvailable(postSharedMemberHandle);
+//													Utils.isNetworkAvailable(postSharedMemberHandle);
+													if (Utils.isNetworkOnline(mContext)) {
+														// code if connected
+														WebservicesHelper ws = new WebservicesHelper(mContext);
 
+														// if role= owner &
+														// participant selected is
+														// user login, do nothing
+														// int
+														// role=myActivity.getRole();
+
+														ws.postSharedmemberToActivity(participantSelected.getID(),
+																CommConstant.ROLE_SHARE_MEMBER_ACTIVITY, activity_id);
+													} else {
+														final ToastDialog dialog = new ToastDialog(mContext, mContext
+																.getResources().getString(R.string.no_network));
+														dialog.show();
+														dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+															@Override
+															public void onClick(View v) {
+																dialog.dismiss();
+															}
+														});
+													}
 												}
 
 											}

@@ -53,8 +53,8 @@
                     android:focusable="false"
                     android:hint="@string/activity_name"
                     android:paddingLeft="0dp"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/title_tv" />
+                    android:textSize="@dimen/title_tv"
+                    android:textStyle="bold" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -276,7 +276,7 @@
                         android:clickable="true" >
 
                         <ImageView
-                            android:id="@+id/image_next"
+                            android:id="@+id/imageNext"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
@@ -289,7 +289,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_toLeftOf="@id/image_next"
+                            android:layout_toLeftOf="@id/imageNext"
                             android:focusable="false"
                             android:gravity="right"
                             android:hint="@string/alert"
@@ -329,8 +329,7 @@
                     android:inputType="none" />
             </RelativeLayout>
 
-            
-             <RelativeLayout
+            <RelativeLayout
                 android:id="@+id/layout_on_duty"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -372,9 +371,53 @@
                     android:visibility="gone" >
                 </ListView>
             </LinearLayout>
-            
-            
-            
+
+            <RelativeLayout
+                android:id="@+id/layout_onduty"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_block"
+                android:background="@color/bg_schedule"
+                android:clickable="true" >
+
+                <TextView
+                    android:id="@+id/tv_onduty"
+                    style="@style/tvTitleStyle"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/margin_left"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:text="@string/on_duty" />
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/margin_right"
+                    android:layout_toRightOf="@id/tv_onduty"
+                android:clickable="false"    >
+
+                    <ImageView
+                        android:id="@+id/img_next"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/btn_forgot_selector" />
+
+                    <TextView
+                        android:id="@+id/tvOnduty"
+                        style="@style/edStyle"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@id/img_next"
+                        android:focusable="false"
+                        android:gravity="right"
+                        android:singleLine="true" />
+                </RelativeLayout>
+            </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/layout_description"
                 android:layout_width="fill_parent"
@@ -410,7 +453,6 @@
                     android:paddingLeft="0dp" />
             </RelativeLayout>
 
-           
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -424,7 +466,9 @@
                     android:layout_marginLeft="@dimen/margin_left"
                     android:layout_marginRight="@dimen/margin_right"
                     android:text="Change Participant"
-                    android:visibility="visible" />
+                    android:visibility="gone"
+                    
+                     />
 
                 <Button
                     android:id="@+id/btn_confirm"

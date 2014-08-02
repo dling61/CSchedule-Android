@@ -205,7 +205,7 @@ public class Utils {
 		}
 	}
 
-	// ping google check have internet connection
+	/*// ping google check have internet connection
 	public static void isNetworkAvailable(final Handler handler) {
 
 		// ask fo message '0' (not connected) or '1' (connected) on 'handler'
@@ -263,7 +263,7 @@ public class Utils {
 		}.start();
 
 	}
-
+*/
 	public static boolean isNetworkOnline(Context mContext) {
 
 		ConnectivityManager cm = (ConnectivityManager) mContext

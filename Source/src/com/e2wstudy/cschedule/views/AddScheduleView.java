@@ -32,11 +32,11 @@ public class AddScheduleView extends RelativeLayout {
 	public EditText et_endTime;
 	public Button btn_remove_schedule;
 	public TitleBarView titleBar;
-	public ListView list_participant;
-	public TextView tv_participant;
-	public Button btn_change_on_duty;
-	public RelativeLayout layout_on_duty;
-	public LinearLayout layout_list_on_duty;
+//	public ListView list_participant;
+//	public TextView tv_participant;
+//	public Button btn_change_on_duty;
+//	public RelativeLayout layout_on_duty;
+//	public LinearLayout layout_list_on_duty;
 
 	public TextView et_new_activity_time_zone;
 	public TextView et_new_activity_alert;
@@ -45,6 +45,10 @@ public class AddScheduleView extends RelativeLayout {
 	
 	public Button btnConfirm;
 	public Button btnDeny;
+	
+	public RelativeLayout layout_onduty;
+	public TextView tvOnduty;
+	
 	public AddScheduleView(Context context) {
 		super(context);
 		this.context = context;
@@ -75,16 +79,18 @@ public class AddScheduleView extends RelativeLayout {
 		et_new_activity_description = (EditText) findViewById(R.id.et_new_activity_description);
 		btn_remove_schedule = (Button) findViewById(R.id.btn_remove_schedule);
 		titleBar = (TitleBarView) findViewById(R.id.titleBar);
-		list_participant = (ListView) findViewById(R.id.list_participant);
-		tv_participant = (TextView) findViewById(R.id.tv_participant);
-		btn_change_on_duty = (Button) findViewById(R.id.btn_change_on_duty);
-		layout_on_duty = (RelativeLayout) findViewById(R.id.layout_on_duty);
-		layout_list_on_duty = (LinearLayout) findViewById(R.id.layout_list_on_duty);
+//		list_participant = (ListView) findViewById(R.id.list_participant);
+//		tv_participant = (TextView) findViewById(R.id.tv_participant);
+//		btn_change_on_duty = (Button) findViewById(R.id.btn_change_on_duty);
+//		layout_on_duty = (RelativeLayout) findViewById(R.id.layout_on_duty);
+//		layout_list_on_duty = (LinearLayout) findViewById(R.id.layout_list_on_duty);
 		et_new_activity_time_zone = (TextView) findViewById(R.id.et_new_activity_time_zone);
 		et_new_activity_alert = (TextView) findViewById(R.id.et_new_activity_alert);
 		layoutAlert = (RelativeLayout) findViewById(R.id.layoutAlert);
 		layoutTimeZone = (RelativeLayout) findViewById(R.id.layout_timeZone);
 		btnConfirm = (Button) findViewById(R.id.btn_confirm);
 		btnDeny = (Button) findViewById(R.id.btn_deny);
+		layout_onduty=(RelativeLayout)findViewById(R.id.layout_onduty);
+		tvOnduty=(TextView)findViewById(R.id.tvOnduty);
 	}
 }

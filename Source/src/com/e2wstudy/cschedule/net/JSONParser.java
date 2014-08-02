@@ -42,6 +42,7 @@ public class JSONParser {
 	static InputStream is = null;
 	static JSONObject jObj = null;
 	static String json = "";
+	static String userAgentString = "Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/<Chrome Rev> Mobile Safari/<WebKit Rev>";
 
 	// constructor
 	public JSONParser() {
@@ -86,6 +87,7 @@ public class JSONParser {
 
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-type", "application/json");
+		post.addHeader("User-Agent",userAgentString);
 		String content = null;
 		try {
 			UrlEncodedFormEntity e = new UrlEncodedFormEntity(params, "UTF-8");
@@ -125,6 +127,7 @@ public class JSONParser {
 
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-type", "application/json");
+		post.addHeader("User-Agent",userAgentString);
 		String content = null;
 		try {
 			StringEntity entity = new StringEntity(params.toString());
