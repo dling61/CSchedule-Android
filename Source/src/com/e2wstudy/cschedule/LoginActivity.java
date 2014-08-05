@@ -63,7 +63,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	GoogleCloudMessaging gcm;
 	AtomicInteger msgId = new AtomicInteger();
 	SharedPreferences prefs;
-	Context context;
+	
 	String regid;
 
 	@Override
@@ -86,11 +86,11 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			// If this check succeeds, proceed with normal processing.
 			// Otherwise, prompt user to get valid Play Services APK.
 			gcm = GoogleCloudMessaging.getInstance(this);
-			regid = new SharedReference().getRegistrationId(context);
+			regid = new SharedReference().getRegistrationId(mContext);
 
-			if (regid.equals("")) {
+//			if (regid.equals("")) {
 				new RegisterGCMTask().execute();
-			}
+//			}
 		}
 
 	}
@@ -114,7 +114,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			String msg = "";
 			try {
 				if (gcm == null) {
-					gcm = GoogleCloudMessaging.getInstance(context);
+					gcm = GoogleCloudMessaging.getInstance(mContext);
 				}
 				regid = gcm.register(CommConstant.SENDER_ID);
 				msg = "Device registered, registration ID=" + regid;
@@ -145,7 +145,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 		@Override
 		protected void onPostExecute(String msg) {
-			finish();
+//			finish();
 		}
 	}
 
