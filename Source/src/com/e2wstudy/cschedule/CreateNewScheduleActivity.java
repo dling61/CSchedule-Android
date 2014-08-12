@@ -286,12 +286,14 @@ public class CreateNewScheduleActivity extends Activity implements
 				view.et_new_activity_alert.setText(listAlert.get(0).getAname());
 				if (isShowPopupTimeZone) {
 					popUp(listTimezone);
+					isShowPopupTimeZone = false;
 				}
 			}
 			if (listTimezone != null && listTimezone.size() > 0) {
 				view.et_new_activity_alert.setText(listAlert.get(0).getAname());
 				if (isShowPopupAlert) {
 					popUpAlert(listAlert);
+					isShowPopupAlert = false;
 				}
 			}
 		}
@@ -395,7 +397,7 @@ public class CreateNewScheduleActivity extends Activity implements
 					participant += list_participant.get(i).getName() + ", ";
 				}
 				try {
-					if (list_participant.size()<=3) {
+					if (list_participant.size() <= 3) {
 						if (participant.endsWith(", ")) {
 							participant = participant.substring(0,
 									participant.length() - 2);
@@ -407,13 +409,13 @@ public class CreateNewScheduleActivity extends Activity implements
 				if (list_participant.size() > 3) {
 					participant += ", ...";
 				}
-				
+
 				view.tvOnduty.setText(participant);
-				
-//				view.list_participant.setAdapter(adapter);
-//				Utils.setListViewHeightBasedOnChildren(view.list_participant,
-//						adapter);
-//				view.list_participant.setVisibility(View.VISIBLE);
+
+				// view.list_participant.setAdapter(adapter);
+				// Utils.setListViewHeightBasedOnChildren(view.list_participant,
+				// adapter);
+				// view.list_participant.setVisibility(View.VISIBLE);
 
 				view.layout_onduty.setVisibility(View.VISIBLE);
 
@@ -800,12 +802,17 @@ public class CreateNewScheduleActivity extends Activity implements
 		} else if (v == view.layoutTimeZone) {
 			// if owner, can modify/delete else if is participant, only view
 			// if (shared_role == CommConstant.OWNER) {
+			// SharedReference ref = new SharedReference();
+			// String time_zone = ref.getTimeZone(mContext);
+			// Log.d("time zone", time_zone + "");
+			// if (time_zone != null && (!time_zone.contains(";"))
+			// && composeType == DatabaseHelper.NEW) {
 			SharedReference ref = new SharedReference();
-			String time_zone = ref.getTimeZone(mContext);
-			Log.d("time zone", time_zone + "");
-			if (time_zone != null && (!time_zone.contains(";"))
-					&& composeType == DatabaseHelper.NEW) {
+			int owner_id = ref.getCurrentOwnerId(mContext);
 
+			// can create/modify/delete
+
+			if ((composeType == DatabaseHelper.NEW) || (creator == owner_id)) {
 				if (listTimezone != null && listTimezone.size() > 0) {
 					popUp(listTimezone);
 				} else {
@@ -819,9 +826,16 @@ public class CreateNewScheduleActivity extends Activity implements
 					}
 				}
 			}
+			// }
 
 		} else if (v == view.layoutAlert) {
-			if (myActivity.getRole() == CommConstant.OWNER) {
+			// && composeType == DatabaseHelper.NEW) {
+						SharedReference ref = new SharedReference();
+						int owner_id = ref.getCurrentOwnerId(mContext);
+
+						// can create/modify/delete
+
+			if ((composeType == DatabaseHelper.NEW) || (creator == owner_id)) {
 				if (listAlert != null && listAlert.size() > 0) {
 					popUpAlert(listAlert);
 				} else {
@@ -1033,8 +1047,15 @@ public class CreateNewScheduleActivity extends Activity implements
 			TimeZoneModel timeZoneModel = DatabaseHelper
 					.getSharedDatabaseHelper(mContext).getTimeZone(timeZone);
 			if (timeZoneModel != null) {
-				view.et_new_activity_time_zone.setText(timeZoneModel
-						.getDisplayname());
+				String displayName = timeZoneModel.getDisplayname();
+				try {
+					int index = displayName.indexOf(")");
+					displayName = displayName.substring(index + 1,
+							displayName.length());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				view.et_new_activity_time_zone.setText(displayName);
 			}
 
 			/**
@@ -1372,7 +1393,7 @@ public class CreateNewScheduleActivity extends Activity implements
 							ContentValues onduty = new ContentValues();
 							onduty.put(OndutyTable.schedule_ID,
 									thisSchedule.getSchedule_ID());
-				
+
 							onduty.put(OndutyTable.service_ID,
 									thisSchedule.getService_ID());
 							onduty.put(OndutyTable.participant_ID,
@@ -1434,7 +1455,7 @@ public class CreateNewScheduleActivity extends Activity implements
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dialog.dismiss();
-//				finish();
+				// finish();
 			}
 		});
 	}
@@ -1452,14 +1473,39 @@ public class CreateNewScheduleActivity extends Activity implements
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
+
 				SharedReference ref = new SharedReference();
 				ref.setTimeZone(mContext, array.get(position).getId() + ";"
 						+ array.get(position).getDisplayname());
-				view.et_new_activity_time_zone.setText(array.get(position)
-						.getDisplayname());
+				String displayName = array.get(position).getDisplayname();
+				try {
+					int index = displayName.indexOf(")");
+					displayName = displayName.substring(index + 1,
+							displayName.length());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				view.et_new_activity_time_zone.setText(displayName);
 
+				int timeZoneId = thisSchedule.getTzid();
+				TimeZoneModel lastTimeZone = DatabaseHelper
+						.getSharedDatabaseHelper(mContext).getTimeZone(
+								timeZoneId);
+				TimeZoneModel currentTimeZone = array.get(position);
 				thisSchedule.setTzid(array.get(position).getId());
 				dialog.dismiss();
+
+				// change starttime and endtime
+				String startTime = thisSchedule.getStarttime();
+				String weekDay = MyDate.getWeekday(currentTimeZone.getTzname(),
+						lastTimeZone.getTzname(), startTime);
+				String date = MyDate.convertFromLocalTimeToLocalTime(
+						MyDate.SIMPLE, lastTimeZone.getTzname(),
+						currentTimeZone.getTzname(), startTime);
+				// view.et_startDate.setText(weekDay+", "+date);
+				// view.et_startTime.setText(MyDate.getTimeFromLocalToLocalTime(startTime,
+				// lastTimeZone.getTzname(), currentTimeZone.getTzname()));
+
 			}
 		});
 

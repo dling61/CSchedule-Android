@@ -303,6 +303,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 		ws.getAllActivitys(activityDownloadCompleteHandler);
 		ws.getParticipantsFromWeb();
 		ws.getAllSchedule();
+		ws.getServerSetting();
 //		if (!CommConstant.DOWNLOAD_SETTING) {
 			
 //		}

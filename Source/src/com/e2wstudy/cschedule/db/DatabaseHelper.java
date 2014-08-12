@@ -211,8 +211,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		while (c.moveToNext()) {
 			int id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
 			String tzname = c.getString(c.getColumnIndex(TimeZoneTable.tzname));
+Log.d("timezone name",tzname);
 			String displayname = c.getString(c
 					.getColumnIndex(TimeZoneTable.displayname));
+			Log.d("display name",displayname);
+//			int index1 = displayname.indexOf(")");
+//			try {
+//				displayname = displayname.substring(index1 + 1,
+//						displayname.length());
+//			} catch (Exception ex) {
+//				ex.printStackTrace();
+//			}
 			String displayorder = c.getString(c
 					.getColumnIndex(TimeZoneTable.displayorder));
 			String abbrtzname = c.getString(c
@@ -996,8 +1005,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ParticipantTable.participant_Mobile));
 			Participant newParticipant = new Participant(id, name, email,
 					mobile, ownid);
-			
-			//don't show login user in contact page
+
+			// don't show login user in contact page
 			if (!email.equals(new SharedReference().getEmail(context))) {
 				participants.add(newParticipant);
 			}

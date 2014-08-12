@@ -77,6 +77,14 @@
         <item name="android:textStyle">bold</item>
     </style>
     
+    <style name="tvTitleStyleTimezone" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">@dimen/width_tv_timezone</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/textview</item>
+        <item name="android:textSize">@dimen/text_tv</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
      <style name="tvContactStyle" parent="@android:style/TextAppearance.Medium">
         <item name="android:layout_width">@dimen/width_tv_add_contact</item>
         <item name="android:layout_height">wrap_content</item>
@@ -127,6 +135,21 @@
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingBottom">5dp</item>
         <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+      <item name="android:gravity">center_vertical</item>
+    
+    </style>
+    
+        <style name="edStyleTimeZone" parent="@android:style/TextAppearance.Medium">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:textSize">@dimen/text_name</item>
+        <item name="android:textColorHint">@color/border_textview</item>
+        <item name="android:textColor">@color/edittext</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+       
         <item name="android:paddingRight">5dp</item>
       <item name="android:gravity">center_vertical</item>
     

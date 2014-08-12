@@ -248,4 +248,194 @@ public class MyDate {
         return false;
 	}
 
+	/**
+	 * convert a datetime to a timezone
+	 * */
+	public static String getDateTime(String dateTime,String changeTimeZone)
+	{
+		SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		sourceFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Date parsed;
+		try {
+			 // => Date is in current time zone now
+			parsed = sourceFormat.parse(dateTime);
+			TimeZone tz = TimeZone.getTimeZone(changeTimeZone);
+			SimpleDateFormat destFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			destFormat.setTimeZone(tz);
+
+			return destFormat.format(parsed);
+		} catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
+	
+	public static String transformToCustomUtc (String timeZone,int format,String UTCTime)
+	{
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+        Date value = null;
+        try {
+            value = formatter.parse(UTCTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        SimpleDateFormat dateFormatter = null;
+        switch (format)
+        {
+        	case STANDARD:
+        		 dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        		 break;
+        	case SIMPLE:
+        		 dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        		 break;
+        }
+       
+        dateFormatter.setTimeZone(TimeZone.getDefault());
+        String dt = dateFormatter.format(value);
+        return dt;
+        
+	}
+	
+	
+	
+	public static String getWeekday(String timeZone,String lastTimeZone,String time)
+	{
+		String utcTime=convertLocalTimeToUTCTime(time, lastTimeZone);
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        formatter.setTimeZone(TimeZone.getTimeZone(lastTimeZone));
+        Date value = null;
+        try {
+            value = formatter.parse(utcTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("EE");
+        dateFormatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+        String dt = dateFormatter.format(value);
+//        Log.i("weekday", dt);
+        String dtEn = null;
+        if ( dt.equalsIgnoreCase("星期一") || dt.equalsIgnoreCase("Mon"))
+        {
+        	dtEn = "Mon";
+        }
+        else if (dt.equalsIgnoreCase("星期二") || dt.equalsIgnoreCase("Tue"))
+        {
+        	dtEn = "Tue";
+        }
+        else if (dt.equalsIgnoreCase("星期三") || dt.equalsIgnoreCase("Wed"))
+        {
+        	dtEn = "Wed";
+        }
+        else if (dt.equalsIgnoreCase("星期四") || dt.equalsIgnoreCase("Thu"))
+        {
+        	dtEn = "Thu";
+        }
+        else if (dt.equalsIgnoreCase("星期五") || dt.equalsIgnoreCase("Fri"))
+        {
+        	dtEn = "Fri";
+        }
+        else if (dt.equalsIgnoreCase("星期六") || dt.equalsIgnoreCase("Sat"))
+        {
+        	dtEn = "Sat";
+        }
+        else if (dt.equalsIgnoreCase("星期日") || dt.equalsIgnoreCase("Sun"))
+        {
+        	dtEn = "Sun";
+        }
+//        Log.i("weekday", dtEn);
+        return dtEn;
+	}
+	
+	//get time from local time to another local time
+	public static String getTimeFromLocalToLocalTime(String lastTime,String lastTimeZone,String currentTimeZone)
+	{
+		String utcTime=convertLocalTimeToUTCTime(lastTime, lastTimeZone);
+		String datetime=convertUTCDateToLocalDate(currentTimeZone, STANDARD, utcTime);
+		
+		String[] parts = datetime.split(" ");
+		String time = parts[1];
+		String[] timecomponents = time.split(":");
+		String hour = timecomponents[0];
+		String minite = timecomponents[1];
+		int hourint = Integer.valueOf(hour);
+		if (hourint > 12)
+		{
+			return (hourint - 12) + ":" + minite + " PM";
+		}
+		else
+		{
+			return hour + ":" + minite + " AM";
+		}
+	}
+	
+	public static final String DATE_TIME_FORMAT_STANDARD="yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_TIME_FORMAT_SIMPLE="yyyy-MM-dd";
+	public static final String TIME_ZONE_UTC="UTC";
+	
+	//convert local time to UTC time
+	public static String convertLocalTimeToUTCTime(String localTime, String timeZone)
+	{
+		SimpleDateFormat formatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+        Date value = null;
+        try {
+            value = formatter.parse(localTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
+        dateFormatter.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC));
+        String utct = dateFormatter.format(value);
+        return utct;
+	}
+	
+	//convert UTC time to local time
+	public static String convertUTCDateToLocalDate (String timeZone,int format,String UTCTime)
+	{
+		SimpleDateFormat formatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
+        formatter.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC));
+        Date value = null;
+        try {
+            value = formatter.parse(UTCTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        SimpleDateFormat dateFormatter = null;
+        switch (format)
+        {
+        	case STANDARD:
+        		 dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
+        		 break;
+        	case SIMPLE:
+        		 dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_SIMPLE);
+        		 break;
+        }
+       
+        dateFormatter.setTimeZone(TimeZone.getDefault());
+        String dt = dateFormatter.format(value);
+        return dt;        
+	}
+	
+	public static String convertFromLocalTimeToLocalTime(int format,String lastTimeZone,String currentTimeZone,String lastDateTime)
+	{
+		String currentDateTime="";
+		String localToUtcTime=convertLocalTimeToUTCTime(lastDateTime, lastTimeZone);
+		currentDateTime=convertUTCDateToLocalDate(currentTimeZone, format, localToUtcTime);
+		return currentDateTime;
+	}
 }

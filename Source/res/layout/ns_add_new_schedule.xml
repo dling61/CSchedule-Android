@@ -212,11 +212,13 @@
 
                     <TextView
                         android:id="@+id/tv_new_activity_time_zone"
-                        style="@style/tvTitleStyle"
+                        style="@style/tvTitleStyleTimezone"
                         android:layout_height="fill_parent"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/time_zone" />
+                        android:text="@string/time_zone" 
+                        android:layout_marginRight="2dp"
+                        />
 
                     <RelativeLayout
                         android:id="@+id/layout_timeZone"
@@ -235,7 +237,7 @@
 
                         <TextView
                             android:id="@+id/et_new_activity_time_zone"
-                            style="@style/edStyle"
+                            style="@style/edStyleTimeZone"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
@@ -243,7 +245,8 @@
                             android:focusable="false"
                             android:gravity="right"
                             android:hint="@string/time_zone"
-                            android:singleLine="true" />
+                            android:singleLine="true" 
+                            android:layout_marginLeft="2dp"/>
                     </RelativeLayout>
                 </RelativeLayout>
 
@@ -285,7 +288,7 @@
 
                         <TextView
                             android:id="@+id/et_new_activity_alert"
-                            style="@style/edStyle"
+                            style="@style/edStyleTimeZone"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
@@ -294,7 +297,8 @@
                             android:gravity="right"
                             android:hint="@string/alert"
                             android:inputType="none"
-                            android:singleLine="true" />
+                            android:singleLine="true" 
+                            android:layout_marginLeft="2dp"/>
                     </RelativeLayout>
                 </RelativeLayout>
             </LinearLayout>

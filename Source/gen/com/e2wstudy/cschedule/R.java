@@ -304,28 +304,29 @@ containing a value of this type.
          */
         public static final int activity_horizontal_margin=0x7f090000;
         public static final int activity_vertical_margin=0x7f090001;
-        public static final int dimen_10=0x7f090017;
-        public static final int height_btn_schedule_page=0x7f090010;
-        public static final int height_item_dialog=0x7f09000e;
-        public static final int height_item_list=0x7f090009;
-        public static final int height_title_bar=0x7f090013;
-        public static final int margin_left=0x7f090003;
-        public static final int margin_right=0x7f090004;
-        public static final int margin_top=0x7f090005;
-        public static final int margin_top_block=0x7f090015;
-        public static final int padding=0x7f090016;
-        public static final int stroke_width=0x7f090007;
-        public static final int stroke_width_today=0x7f09000c;
-        public static final int text_description=0x7f09000b;
-        public static final int text_name=0x7f09000a;
-        public static final int text_size=0x7f090006;
-        public static final int text_tv=0x7f090012;
-        public static final int title_tv=0x7f090014;
-        public static final int width_btn_schedule_page=0x7f090011;
-        public static final int width_item_tab=0x7f090008;
-        public static final int width_tv_activity_name=0x7f09000d;
+        public static final int dimen_10=0x7f090018;
+        public static final int height_btn_schedule_page=0x7f090011;
+        public static final int height_item_dialog=0x7f09000f;
+        public static final int height_item_list=0x7f09000a;
+        public static final int height_title_bar=0x7f090014;
+        public static final int margin_left=0x7f090004;
+        public static final int margin_right=0x7f090005;
+        public static final int margin_top=0x7f090006;
+        public static final int margin_top_block=0x7f090016;
+        public static final int padding=0x7f090017;
+        public static final int stroke_width=0x7f090008;
+        public static final int stroke_width_today=0x7f09000d;
+        public static final int text_description=0x7f09000c;
+        public static final int text_name=0x7f09000b;
+        public static final int text_size=0x7f090007;
+        public static final int text_tv=0x7f090013;
+        public static final int title_tv=0x7f090015;
+        public static final int width_btn_schedule_page=0x7f090012;
+        public static final int width_item_tab=0x7f090009;
+        public static final int width_tv_activity_name=0x7f09000e;
         public static final int width_tv_add_activity=0x7f090002;
-        public static final int width_tv_add_contact=0x7f09000f;
+        public static final int width_tv_add_contact=0x7f090010;
+        public static final int width_tv_timezone=0x7f090003;
     }
     public static final class drawable {
         public static final int about=0x7f020000;
@@ -967,17 +968,19 @@ containing a value of this type.
         public static final int buttonRemoveStyle=0x7f0b0006;
         public static final int buttonStyle=0x7f0b0005;
         public static final int confirmTitleStyle=0x7f0b0002;
-        public static final int confirm_btn=0x7f0b000a;
+        public static final int confirm_btn=0x7f0b000b;
         public static final int dateStyle=0x7f0b0004;
-        public static final int edStyle=0x7f0b000d;
-        public static final int edStyleActivity=0x7f0b000f;
-        public static final int edStyleDate=0x7f0b000e;
+        public static final int edStyle=0x7f0b000e;
+        public static final int edStyleActivity=0x7f0b0011;
+        public static final int edStyleDate=0x7f0b0010;
+        public static final int edStyleTimeZone=0x7f0b000f;
         public static final int edittextStyle=0x7f0b0003;
-        public static final int title_bar_tv=0x7f0b000c;
-        public static final int toast=0x7f0b000b;
-        public static final int tvContactName=0x7f0b0009;
-        public static final int tvContactStyle=0x7f0b0008;
+        public static final int title_bar_tv=0x7f0b000d;
+        public static final int toast=0x7f0b000c;
+        public static final int tvContactName=0x7f0b000a;
+        public static final int tvContactStyle=0x7f0b0009;
         public static final int tvTitleStyle=0x7f0b0007;
+        public static final int tvTitleStyleTimezone=0x7f0b0008;
     }
     public static final class styleable {
         /** Attributes that can be used with a AdsAttrs.
