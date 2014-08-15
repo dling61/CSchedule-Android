@@ -1,7 +1,10 @@
 package com.e2wstudy.cschedule;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -43,6 +46,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ParseException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -830,10 +834,10 @@ public class CreateNewScheduleActivity extends Activity implements
 
 		} else if (v == view.layoutAlert) {
 			// && composeType == DatabaseHelper.NEW) {
-						SharedReference ref = new SharedReference();
-						int owner_id = ref.getCurrentOwnerId(mContext);
+			SharedReference ref = new SharedReference();
+			int owner_id = ref.getCurrentOwnerId(mContext);
 
-						// can create/modify/delete
+			// can create/modify/delete
 
 			if ((composeType == DatabaseHelper.NEW) || (creator == owner_id)) {
 				if (listAlert != null && listAlert.size() > 0) {
@@ -853,22 +857,6 @@ public class CreateNewScheduleActivity extends Activity implements
 
 	public void initViewValues() {
 		try {
-			// try {
-			// TimeZone tz = TimeZone.getDefault();
-			// String currentTimezoneName = tz.getDisplayName(false,
-			// TimeZone.SHORT);
-			// String timezoneCurrent = currentTimezoneName.substring(3, 6);
-			// Log.d("currentTimezoneId", currentTimezoneName + "");
-			// String currentTimeZone = tz.getID() + "-(" + currentTimezoneName
-			// + ") ";
-			// timezone_array[0] = currentTimeZone;// current device timezone
-			// Log.d("timezone name", tz.getID() + "-(" + currentTimezoneName
-			// + ") ");
-			//
-			// timezone_value_array[0] = timezoneCurrent;
-			// } catch (Exception ex) {
-			// ex.printStackTrace();
-			// }
 
 			listPins = new ArrayList<Confirm>();
 			// if (pins != null) {
@@ -892,24 +880,29 @@ public class CreateNewScheduleActivity extends Activity implements
 			if (composeType == DatabaseHelper.NEW) {
 				Log.i("next service id", "is " + dbHelper.getNextActivityID());
 
-				String timeZone = new SharedReference().getTimeZone(mContext);
+				// String timeZone = new
+				// SharedReference().getTimeZone(mContext);
 				int tz = 0;
-				if (timeZone != null && timeZone.contains(";")) {
-					String[] timeZoneList = timeZone.split(";");
-					if (timeZoneList != null && timeZoneList.length >= 2) {
-						tz = Integer.parseInt(timeZoneList[0]);
-					}
+				// if (timeZone != null && timeZone.contains(";")) {
+				// String[] timeZoneList = timeZone.split(";");
+				// if (timeZoneList != null && timeZoneList.length >= 2) {
+				// tz = Integer.parseInt(timeZoneList[0]);
+				// }
+				// }
+				String tzName = "UTC";
+				if (listTimezone != null && listTimezone.size() > 0) {
+					tz = listTimezone.get(0).getId();
+					tzName = listTimezone.get(0).getTzname();
 				}
-
 				thisSchedule = new Schedule(
 						new SharedReference().getCurrentOwnerId(mContext),
 						dbHelper.getNextScheduleID(), activity_id == null ? "0"
 								: activity_id,
-						MyDate.transformLocalDateTimeToUTCFormat(MyDate
-								.getCurrentDateTime()),
-						MyDate.transformLocalDateTimeToUTCFormat(MyDate
-								.getCurrentDateTime()), "",
-						CommConstant.ALERT_DEFAULT, tz);
+						MyDate.transformLocalDateTimeToUTCFormat(tzName,
+								MyDate.getCurrentDateTime(tzName)),
+						MyDate.transformLocalDateTimeToUTCFormat(tzName,
+								MyDate.getCurrentDateTime(tzName)), "",
+						CommConstant.ALERT_DEFAULT, tz, tzName);
 				view.btn_remove_schedule.setVisibility(View.GONE);
 				view.titleBar.layout_next.setVisibility(View.GONE);
 				view.titleBar.layout_save.setVisibility(View.VISIBLE);
@@ -956,44 +949,25 @@ public class CreateNewScheduleActivity extends Activity implements
 				/**
 				 * timezone
 				 * */
-				String timezone = new SharedReference().getTimeZone(mContext);
-				if (timezone.contains(";")) {
-					String[] timeZones = timezone.split(";");
-					if (timeZones != null) {
-						if (timeZones.length == 2) {
-							view.et_new_activity_time_zone
-									.setText(timeZones[1]);
-							try {
-								thisSchedule.setTzid(Integer
-										.parseInt(timeZones[0]));
-								// view.layoutTimeZone.setClickable(false);
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						}
+
+				if (listTimezone != null && listTimezone.size() > 0) {
+					view.et_new_activity_time_zone.setText(listTimezone.get(0)
+							.getDisplayname());
+					view.layoutTimeZone.setClickable(true);
+					try {
+						thisSchedule.setTzid(listTimezone.get(0).getId());
+						// view.layoutTimeZone.setClickable(false);
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
 				} else {
+					// download from server, after download success set
+					// first item to textview timezone
 
-					if (listTimezone != null && listTimezone.size() > 0) {
-						view.et_new_activity_time_zone.setText(listTimezone
-								.get(0).getDisplayname());
-						view.layoutTimeZone.setClickable(true);
-						try {
-							thisSchedule.setTzid(listTimezone.get(0).getId());
-							// view.layoutTimeZone.setClickable(false);
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					} else {
-						// download from server, after download success set
-						// first item to textview timezone
-
-						if (!CommConstant.DOWNLOAD_SETTING) {
-							WebservicesHelper ws = new WebservicesHelper(
-									mContext);
-							// ws.getTimezoneSetting();
-							ws.getServerSetting();
-						}
+					if (!CommConstant.DOWNLOAD_SETTING) {
+						WebservicesHelper ws = new WebservicesHelper(mContext);
+						// ws.getTimezoneSetting();
+						ws.getServerSetting();
 					}
 				}
 
@@ -1044,14 +1018,15 @@ public class CreateNewScheduleActivity extends Activity implements
 			 * timezone
 			 * */
 			int timeZone = thisSchedule.getTzid();
-			TimeZoneModel timeZoneModel = DatabaseHelper
+			TimeZoneModel currentTimeZone = DatabaseHelper
 					.getSharedDatabaseHelper(mContext).getTimeZone(timeZone);
-			if (timeZoneModel != null) {
-				String displayName = timeZoneModel.getDisplayname();
+			if (currentTimeZone != null) {
+				String displayName = currentTimeZone.getDisplayname();
 				try {
 					int index = displayName.indexOf(")");
 					displayName = displayName.substring(index + 1,
 							displayName.length());
+					thisSchedule.setTzName(currentTimeZone.getTzname());
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -1073,18 +1048,36 @@ public class CreateNewScheduleActivity extends Activity implements
 
 			String startdate = thisSchedule != null ? thisSchedule
 					.getStarttime() : "";
-			String startfulldate = MyDate.getWeekdayFromUTCTime(startdate)
-					+ ", " + MyDate.transformUTCTimeToCustomStyle(startdate);
-			String starttime = MyDate.getTimeWithAPMFromUTCTime(startdate);
-			view.et_startDate.setText(startfulldate);
-			view.et_startTime.setText(starttime);
+			// String startfulldate = MyDate.getWeekdayFromUTCTime(startdate)
+			// + ", " + MyDate.transformUTCTimeToCustomStyle(startdate);
+			// String starttime = MyDate.getTimeWithAPMFromUTCTime(startdate);
+			// view.et_startDate.setText(startfulldate);
+			// view.et_startTime.setText(starttime);
+			//
+			// String enddate = thisSchedule.getEndtime();
+			// String endfulldate = MyDate.getWeekdayFromUTCTime(enddate) + ", "
+			// + MyDate.transformUTCTimeToCustomStyle(enddate);
+			// String endtime = MyDate.getTimeWithAPMFromUTCTime(enddate);
+			// view.et_endDate.setText(endfulldate);
+			// view.et_endTime.setText(endtime);
 
-			String enddate = thisSchedule.getEndtime();
-			String endfulldate = MyDate.getWeekdayFromUTCTime(enddate) + ", "
-					+ MyDate.transformUTCTimeToCustomStyle(enddate);
-			String endtime = MyDate.getTimeWithAPMFromUTCTime(enddate);
-			view.et_endDate.setText(endfulldate);
-			view.et_endTime.setText(endtime);
+			// change starttime and endtime follow current timezone
+			String startTime = thisSchedule.getStarttime();
+			Log.d("start time init", startTime);
+			String startDate = MyDate.getWeekdayUTCFromLocal(
+					currentTimeZone.getTzname(), startTime);
+			Log.d("start time timezone=", currentTimeZone.getTzname() + "/"
+					+ startDate);
+			view.et_startDate.setText(startDate);
+			view.et_startTime.setText(MyDate.getTimeFromUTCToLocalTime(
+					startTime, currentTimeZone.getTzname()));
+
+			String endTime = thisSchedule.getEndtime();
+			String endDate = MyDate.getWeekdayUTCFromLocal(
+					currentTimeZone.getTzname(), endTime);
+			view.et_endDate.setText(endDate);
+			view.et_endTime.setText(MyDate.getTimeFromUTCToLocalTime(endTime,
+					currentTimeZone.getTzname()));
 
 			view.et_new_activity_description
 					.setText(thisSchedule != null ? thisSchedule.getDesp() : "");
@@ -1134,8 +1127,9 @@ public class CreateNewScheduleActivity extends Activity implements
 	}
 
 	public void setStartDate() {
-		String[] startdatetime = MyDate.transformUTCDateToLocalDate(
-				MyDate.STANDARD, thisSchedule.getStarttime()).split(" ");
+		String[] startdatetime = MyDate.convertUTCDateToCustomTimezone(
+				thisSchedule.getTzName(), MyDate.STANDARD,
+				thisSchedule.getStarttime()).split(" ");
 		String[] datecomponents = startdatetime[0].split("-");
 		int year = Integer.valueOf(datecomponents[0]);
 		int month = Integer.valueOf(datecomponents[1]) - 1;
@@ -1149,8 +1143,9 @@ public class CreateNewScheduleActivity extends Activity implements
 	}
 
 	public void setEndDate() {
-		String[] enddatetime = MyDate.transformUTCDateToLocalDate(
-				MyDate.STANDARD, thisSchedule.getEndtime()).split(" ");
+		String[] enddatetime = MyDate.convertUTCDateToCustomTimezone(
+				thisSchedule.getTzName(), MyDate.STANDARD,
+				thisSchedule.getEndtime()).split(" ");
 		String[] datecomponents = enddatetime[0].split("-");
 		int year = Integer.valueOf(datecomponents[0]);
 		int month = Integer.valueOf(datecomponents[1]) - 1;
@@ -1164,11 +1159,13 @@ public class CreateNewScheduleActivity extends Activity implements
 	}
 
 	public void setStartTime() {
-		String[] startdatetime = MyDate.transformUTCDateToLocalDate(
-				MyDate.STANDARD, thisSchedule.getStarttime()).split(" ");
-		String[] timecomponents = startdatetime[1].split(":");
-		int hour = Integer.valueOf(timecomponents[0]);
-		int minute = Integer.valueOf(timecomponents[1]);
+		Log.d(" set start time utc", thisSchedule.getStarttime());
+		String[] startdatetime = MyDate.getTimeFromUTCToTimeZone(
+				thisSchedule.getStarttime(), thisSchedule.getTzName()).split(
+				":");
+
+		int hour = Integer.valueOf(startdatetime[0]);
+		int minute = Integer.valueOf(startdatetime[1]);
 		TimePickerDialog dialog = new TimePickerDialog(this, this, hour,
 				minute, true);
 		dialog.setTitle("Set Start Time");
@@ -1177,11 +1174,10 @@ public class CreateNewScheduleActivity extends Activity implements
 	}
 
 	public void setEndTime() {
-		String[] enddatetime = MyDate.transformUTCDateToLocalDate(
-				MyDate.STANDARD, thisSchedule.getEndtime()).split(" ");
-		String[] timecomponents = enddatetime[1].split(":");
-		int hour = Integer.valueOf(timecomponents[0]);
-		int minute = Integer.valueOf(timecomponents[1]);
+		String[] enddatetime = MyDate.getTimeFromUTCToTimeZone(
+				thisSchedule.getEndtime(), thisSchedule.getTzName()).split(":");
+		int hour = Integer.valueOf(enddatetime[0]);
+		int minute = Integer.valueOf(enddatetime[1]);
 		TimePickerDialog dialog = new TimePickerDialog(this, this, hour,
 				minute, true);
 		dialog.setTitle("Set End Time");
@@ -1215,41 +1211,45 @@ public class CreateNewScheduleActivity extends Activity implements
 		hourMinute = hourMinute.replace("AM", "").replace("PM", "");
 		hourMinute = hourMinute.trim() + ":00";
 		Log.d("hourMinute", hourMinute);
-		String weekday = MyDate.getWeekdayFromUTCTime(MyDate
-				.transformLocalDateTimeToUTCFormat(year + "-" + monthstr + "-"
-						+ daystr + " "
-						+ (hourMinute.equals("") ? "00:00:00" : hourMinute)));
-		String customDate = MyDate.transformUTCTimeToCustomStyle(MyDate
-				.transformLocalDateTimeToUTCFormat(year + "-" + monthstr + "-"
-						+ daystr + " "
-						+ (hourMinute.equals("") ? "00:00:00" : hourMinute)));
-		String fulldate = weekday + ", " + customDate;
+		String weekday = MyDate.getWeekdayTimeZone(year + "-" + monthstr + "-"
+				+ daystr + " "
+				+ (hourMinute.equals("") ? "00:00:00" : hourMinute));
+
+		String fulldate = weekday;
 		if (StartOrEnd == START) {
 			this.view.et_startDate.setText(fulldate);
 			thisSchedule
-					.setStarttime(MyDate.transformLocalDateTimeToUTCFormat(year
-							+ "-"
-							+ monthstr
-							+ "-"
-							+ daystr
-							+ " "
-							+ MyDate.transformUTCDateToLocalDate(
-									MyDate.STANDARD,
-									thisSchedule.getStarttime()).split(" ")[1]));
+					.setStarttime(MyDate.transformLocalDateTimeToUTCFormat(
+							thisSchedule.getTzName(),
+							year
+									+ "-"
+									+ monthstr
+									+ "-"
+									+ daystr
+									+ " "
+									+ MyDate.convertUTCDateToCustomTimezone(
+											thisSchedule.getTzName(),
+											MyDate.STANDARD,
+											thisSchedule.getStarttime()).split(
+											" ")[1]));
 
 		} else {
 
 			this.view.et_endDate.setText(fulldate);
 			thisSchedule
-					.setEndtime(MyDate.transformLocalDateTimeToUTCFormat(year
-							+ "-"
-							+ monthstr
-							+ "-"
-							+ daystr
-							+ " "
-							+ MyDate.transformUTCDateToLocalDate(
-									MyDate.STANDARD,
-									thisSchedule.getStarttime()).split(" ")[1]));
+					.setEndtime(MyDate.transformLocalDateTimeToUTCFormat(
+							thisSchedule.getTzName(),
+							year
+									+ "-"
+									+ monthstr
+									+ "-"
+									+ daystr
+									+ " "
+									+ MyDate.convertUTCDateToCustomTimezone(
+											thisSchedule.getTzName(),
+											MyDate.STANDARD,
+											thisSchedule.getStarttime()).split(
+											" ")[1]));
 		}
 		if (MyDate.IsFirstDateLaterThanSecondDate(
 				this.thisSchedule.getStarttime(),
@@ -1270,30 +1270,37 @@ public class CreateNewScheduleActivity extends Activity implements
 		String minutestr = String.valueOf(minute);
 		if (minute < 10)
 			minutestr = "0" + minutestr;
-		String time = MyDate.getTimeWithAPMFromUTCTime(MyDate
-				.transformLocalDateTimeToUTCFormat("0000-00-00 " + hourstr
-						+ ":" + minutestr + ":" + "00"));
+		String time = MyDate.getTimeFromTimeZone("0000-00-00 " + hourstr + ":"
+				+ minutestr + ":" + "00");
+
 		if (StartOrEnd == START) {
 			this.view.et_startTime.setText(time);
-			thisSchedule.setStarttime(MyDate
-					.transformLocalDateTimeToUTCFormat(MyDate
-							.transformUTCDateToLocalDate(MyDate.STANDARD,
-									thisSchedule.getStarttime()).split(" ")[0]
-							+ " " + hourstr + ":" + minutestr + ":" + "00"));
+			String startDate = view.et_startDate.getText().toString().trim();
+			startDate = MyDate.getDateFromUTCToTimeZone(startDate,
+					thisSchedule.getTzName());
+			String startTime = startDate + " " + hourstr + ":" + minutestr
+					+ ":" + "00";
+			thisSchedule.setStarttime(MyDate.getTimeFromTimeZoneToUTC(
+					startTime, thisSchedule.getTzName()));
+			Log.d("start time set utc", thisSchedule.getStarttime());
 
 		} else {
+
 			this.view.et_endTime.setText(time);
-			thisSchedule.setEndtime(MyDate
-					.transformLocalDateTimeToUTCFormat(MyDate
-							.transformUTCDateToLocalDate(MyDate.STANDARD,
-									thisSchedule.getEndtime()).split(" ")[0]
-							+ " " + hourstr + ":" + minutestr + ":" + "00"));
+			String endDate = view.et_startDate.getText().toString().trim();
+			endDate = MyDate.getDateFromUTCToTimeZone(endDate,
+					thisSchedule.getTzName());
+			String endTime = endDate + " " + hourstr + ":" + minutestr + ":"
+					+ "00";
+			thisSchedule.setEndtime(MyDate.getTimeFromTimeZoneToUTC(endTime,
+					thisSchedule.getTzName()));
+
 			if (MyDate.IsFirstDateLaterThanSecondDate(
 					this.thisSchedule.getStarttime(),
 					this.thisSchedule.getEndtime())) {
-				this.thisSchedule.setEndtime(this.thisSchedule.getEndtime());
+				this.thisSchedule.setEndtime(this.thisSchedule.getStarttime());
 				this.view.et_endDate.setText(this.view.et_startDate.getText());
-				this.view.et_startTime.setText(this.view.et_endTime.getText());
+				this.view.et_endTime.setText(this.view.et_startTime.getText());
 
 			} else {
 
@@ -1302,7 +1309,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		if (MyDate.IsFirstDateLaterThanSecondDate(
 				this.thisSchedule.getStarttime(),
 				this.thisSchedule.getEndtime())) {
-			this.thisSchedule.setEndtime(this.thisSchedule.getEndtime());
+			this.thisSchedule.setEndtime(this.thisSchedule.getStarttime());
 			this.view.et_endDate.setText(this.view.et_startDate.getText());
 			this.view.et_endTime.setText(this.view.et_startTime.getText());
 
@@ -1477,7 +1484,7 @@ public class CreateNewScheduleActivity extends Activity implements
 				SharedReference ref = new SharedReference();
 				ref.setTimeZone(mContext, array.get(position).getId() + ";"
 						+ array.get(position).getDisplayname());
-				String displayName = array.get(position).getDisplayname();
+				String displayName = array.get(position).getTzname();
 				try {
 					int index = displayName.indexOf(")");
 					displayName = displayName.substring(index + 1,
@@ -1493,18 +1500,23 @@ public class CreateNewScheduleActivity extends Activity implements
 								timeZoneId);
 				TimeZoneModel currentTimeZone = array.get(position);
 				thisSchedule.setTzid(array.get(position).getId());
+				thisSchedule.setTzName(array.get(position).getTzname());
 				dialog.dismiss();
 
-				// change starttime and endtime
+				// change starttime and endtime follow current timezone
 				String startTime = thisSchedule.getStarttime();
-				String weekDay = MyDate.getWeekday(currentTimeZone.getTzname(),
-						lastTimeZone.getTzname(), startTime);
-				String date = MyDate.convertFromLocalTimeToLocalTime(
-						MyDate.SIMPLE, lastTimeZone.getTzname(),
+				String startDate = MyDate.getWeekdayUTCFromLocal(
 						currentTimeZone.getTzname(), startTime);
-				// view.et_startDate.setText(weekDay+", "+date);
-				// view.et_startTime.setText(MyDate.getTimeFromLocalToLocalTime(startTime,
-				// lastTimeZone.getTzname(), currentTimeZone.getTzname()));
+				view.et_startDate.setText(startDate);
+				view.et_startTime.setText(MyDate.getTimeFromUTCToLocalTime(
+						startTime, currentTimeZone.getTzname()));
+
+				String endTime = thisSchedule.getEndtime();
+				String endDate = MyDate.getWeekdayUTCFromLocal(
+						currentTimeZone.getTzname(), endTime);
+				view.et_endDate.setText(endDate);
+				view.et_endTime.setText(MyDate.getTimeFromUTCToLocalTime(
+						endTime, currentTimeZone.getTzname()));
 
 			}
 		});

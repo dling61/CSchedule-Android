@@ -10,6 +10,19 @@ public class Schedule {
 //	private String abbrtzname = "";// timezone
 	private int alert = 0;
 	public Schedule(int owner_ID, int schedule_ID, String service_ID,
+			String starttime, String endtime, String desp, int alert, int tzid,String tzName) {
+		super();
+		this.owner_ID = owner_ID;
+		this.schedule_ID = schedule_ID;
+		this.service_ID = service_ID;
+		this.starttime = starttime;
+		this.endtime = endtime;
+		this.desp = desp;
+		this.alert = alert;
+		this.tzid = tzid;
+		this.tzName=tzName;
+	}
+	public Schedule(int owner_ID, int schedule_ID, String service_ID,
 			String starttime, String endtime, String desp, int alert, int tzid) {
 		super();
 		this.owner_ID = owner_ID;
@@ -20,9 +33,10 @@ public class Schedule {
 		this.desp = desp;
 		this.alert = alert;
 		this.tzid = tzid;
+	
 	}
-
 	private int tzid=0;
+	private String tzName="UTC";
 //
 //	public Schedule(int o_id, int sche_id, String serv_id, String start,
 //			String end, String des, String timezone, int alert) {
@@ -141,5 +155,13 @@ public class Schedule {
 	 */
 	public void setDesp(String desp) {
 		this.desp = desp;
+	}
+
+	public String getTzName() {
+		return tzName;
+	}
+
+	public void setTzName(String tzName) {
+		this.tzName = tzName;
 	}
 }

@@ -241,7 +241,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 						CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
 				mContext.sendBroadcast(intent);
 				ref.setLastestServiceLastModifiedTime(mContext, MyDate
-						.transformLocalDateTimeToUTCFormat(MyDate
+						.transformPhoneDateTimeToUTCFormat(MyDate
 								.getCurrentDateTime()));
 				isActivityDownloadDone = true;
 				if (dbHelper.getNumberActivity() > 0) {

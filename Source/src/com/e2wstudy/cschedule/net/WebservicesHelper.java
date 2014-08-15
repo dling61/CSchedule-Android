@@ -1110,7 +1110,7 @@ public class WebservicesHelper {
 							mContext.sendBroadcast(intent);
 							ref.setLastestServiceLastModifiedTime(
 									mContext,
-									MyDate.transformLocalDateTimeToUTCFormat(MyDate
+									MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 											.getCurrentDateTime()));
 
 						} catch (JSONException e) {
@@ -1246,7 +1246,7 @@ public class WebservicesHelper {
 					// mContext.sendBroadcast(intent);
 					// ref.setLastestServiceLastModifiedTime(
 					// mContext,
-					// MyDate.transformLocalDateTimeToUTCFormat(MyDate
+					// MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 					// .getCurrentDateTime()));
 					//
 					// } catch (JSONException e) {
@@ -1438,7 +1438,7 @@ public class WebservicesHelper {
 							// update time lastest update for schedule
 							// ref.setLastestScheduleLastModifiedTime(
 							// mContext,
-							// MyDate.transformLocalDateTimeToUTCFormat(MyDate
+							// MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 							// .getCurrentDateTime()));
 
 							Intent intent = new Intent(
@@ -1567,7 +1567,7 @@ public class WebservicesHelper {
 							// update time lastest update for schedule
 							ref.setLastestScheduleLastModifiedTime(
 									mContext,
-									MyDate.transformLocalDateTimeToUTCFormat(MyDate
+									MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 											.getCurrentDateTime()));
 
 							Intent intent = new Intent(
@@ -1802,11 +1802,11 @@ public class WebservicesHelper {
 							// update time lastest update for schedule
 							// ref.setLastestScheduleLastModifiedTime(
 							// mContext,
-							// MyDate.transformLocalDateTimeToUTCFormat(MyDate
+							// MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 							// .getCurrentDateTime()));
 							ref.setLastestScheduleLastModifiedTime(
 									mContext,
-									MyDate.transformLocalDateTimeToUTCFormat(MyDate
+									MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 											.getCurrentDateTime()));
 
 							Intent intent = new Intent(
@@ -1953,7 +1953,7 @@ public class WebservicesHelper {
 							// update time lastest update for schedule
 							ref.setLastestScheduleLastModifiedTime(
 									mContext,
-									MyDate.transformLocalDateTimeToUTCFormat(MyDate
+									MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 											.getCurrentDateTime()));
 
 							Intent intent = new Intent(
@@ -2126,7 +2126,7 @@ public class WebservicesHelper {
 
 									ref.setLastestParticipantLastModifiedTime(
 											mContext,
-											MyDate.transformLocalDateTimeToUTCFormat(MyDate
+											MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 													.getCurrentDateTime()));
 
 									Intent intent = new Intent(
@@ -2237,7 +2237,7 @@ public class WebservicesHelper {
 
 									ref.setLastestParticipantLastModifiedTime(
 											mContext,
-											MyDate.transformLocalDateTimeToUTCFormat(MyDate
+											MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 													.getCurrentDateTime()));
 
 									Intent intent = new Intent(
@@ -4085,7 +4085,7 @@ public class WebservicesHelper {
 
 						SharedReference ref = new SharedReference();
 						ref.setLastestParticipantLastModifiedTime(mContext,
-								MyDate.transformLocalDateTimeToUTCFormat(MyDate
+								MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 										.getCurrentDateTime()));
 
 						Intent intent = new Intent();
@@ -4152,7 +4152,7 @@ public class WebservicesHelper {
 
 						SharedReference ref = new SharedReference();
 						ref.setLastestParticipantLastModifiedTime(mContext,
-								MyDate.transformLocalDateTimeToUTCFormat(MyDate
+								MyDate.transformPhoneDateTimeToUTCFormat(MyDate
 										.getCurrentDateTime()));
 
 						Intent intent = new Intent();

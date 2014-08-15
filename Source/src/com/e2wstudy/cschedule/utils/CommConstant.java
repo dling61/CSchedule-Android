@@ -70,7 +70,7 @@ public class CommConstant {
 	public static boolean DOWNLOAD_SETTING=false;
 	public static final String CHANGE_CONFIRM_STATUS_SUCCESSFULLY="change.confirm.status.successfully";
 	public static final String CONFIRM_STATUS="confirm.status";
-	public static final String SENDER_ID="829165602170";
+	public static final String SENDER_ID="765836326761";
 	
 	public static boolean UPDATE=false;
 	public static final String EXTRA_MESSAGE = "message";

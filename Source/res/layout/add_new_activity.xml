@@ -41,7 +41,9 @@
                     android:layout_marginLeft="13dp"
                     android:layout_marginRight="13dp"
                     android:hint="@string/activity_name"
-                    android:singleLine="true" />
+                    android:singleLine="true" 
+                    android:textSize="@dimen/title_tv"
+                    android:textStyle="bold" />
             </RelativeLayout>
 
            

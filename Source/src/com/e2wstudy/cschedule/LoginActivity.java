@@ -117,6 +117,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					gcm = GoogleCloudMessaging.getInstance(mContext);
 				}
 				regid = gcm.register(CommConstant.SENDER_ID);
+				Log.d("registration id",regid);
 				msg = "Device registered, registration ID=" + regid;
 
 				// You should send the registration ID to your server over HTTP,

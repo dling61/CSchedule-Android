@@ -34,7 +34,7 @@ public class TextBaseAdapter extends BaseAdapter {
 			holder = (TextItemView) convertView.getTag();
 
 		}
-		holder.title.setText(data.get(position).getDisplayname());
+		holder.title.setText(data.get(position).getTzname());
 
 		return holder;
 	}
