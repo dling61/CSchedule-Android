@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/login_border"
     android:orientation="horizontal"
@@ -21,6 +21,7 @@
     <TextView
         android:id="@+id/tv_title"
         style="@style/confirmTitleStyle"
+        android:layout_width="fill_parent"
         android:layout_below="@id/tv_new_activity_toptitle"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/dimen_10"
@@ -30,7 +31,7 @@
     <Button
         android:id="@+id/btn_ok"
         style="@style/confirm_btn"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_below="@id/tv_title"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="2dp"

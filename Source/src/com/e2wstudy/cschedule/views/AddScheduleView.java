@@ -43,8 +43,8 @@ public class AddScheduleView extends RelativeLayout {
 	public RelativeLayout layoutAlert;
 	public RelativeLayout layoutTimeZone;
 	
-//	public Button btnConfirm;
-//	public Button btnDeny;
+	public Button btnConfirm;
+	public Button btnDeny;
 	
 	public RelativeLayout layout_onduty;
 	public TextView tvOnduty;
@@ -88,8 +88,8 @@ public class AddScheduleView extends RelativeLayout {
 		et_new_activity_alert = (TextView) findViewById(R.id.et_new_activity_alert);
 		layoutAlert = (RelativeLayout) findViewById(R.id.layoutAlert);
 		layoutTimeZone = (RelativeLayout) findViewById(R.id.layout_timeZone);
-//		btnConfirm = (Button) findViewById(R.id.btn_confirm);
-//		btnDeny = (Button) findViewById(R.id.btn_deny);
+		btnConfirm = (Button) findViewById(R.id.btn_confirm);
+		btnDeny = (Button) findViewById(R.id.btn_deny);
 		layout_onduty=(RelativeLayout)findViewById(R.id.layout_onduty);
 		tvOnduty=(TextView)findViewById(R.id.tvOnduty);
 	}

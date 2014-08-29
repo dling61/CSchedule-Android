@@ -2,12 +2,11 @@ package com.e2wstudy.cschedule;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.e2wstude.schedule.interfaces.ActvityInterface;
 import com.e2wstudy.cschedule.adapter.SharedMemberAdapter;
 import com.e2wstudy.cschedule.adapter.TextViewBaseAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
 import com.e2wstudy.cschedule.models.ActivityTable;
+import com.e2wstudy.cschedule.models.Alert;
 import com.e2wstudy.cschedule.models.MyActivity;
 import com.e2wstudy.cschedule.models.OndutyTable;
 import com.e2wstudy.cschedule.models.ParticipantTable;
@@ -15,6 +14,7 @@ import com.e2wstudy.cschedule.models.Schedule;
 import com.e2wstudy.cschedule.models.ScheduleTable;
 import com.e2wstudy.cschedule.models.SharedMemberTable;
 import com.e2wstudy.cschedule.models.Sharedmember;
+import com.e2wstudy.cschedule.models.TimeZoneModel;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
@@ -50,8 +50,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	AddActivityView view;
 	String activity_id = "";
 	
-
-
 	// shared role for privacy
 	int shared_role = CommConstant.OWNER;
 
@@ -65,16 +63,23 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		setContentView(view.layout);
 
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(mContext);
-
-		// thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
-		// new SharedReference().getCurrentOwnerId(mContext), 0, 0, "",
-		// MyDate.transformLocalDateTimeToUTCFormat(MyDate
-		// .getCurrentDateTime()),
-		// MyDate.transformLocalDateTimeToUTCFormat(MyDate
-		// .getCurrentDateTime()), "", 0, 0);
+		
+		ArrayList<TimeZoneModel> listTimeZone=new ArrayList<TimeZoneModel>();
+		ArrayList<Alert>listAlert=new ArrayList<Alert>();
+		int tz=1;
+		int alert=1;
+		if(listTimeZone!=null&&listTimeZone.size()>0)
+		{
+			tz=listTimeZone.get(0).getId();
+		}
+		
+		if(listAlert!=null&&listAlert.size()>0)
+		{
+			alert=listAlert.get(0).getId();
+		}
 
 		thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
-				new SharedReference().getCurrentOwnerId(mContext), "", "", 0);
+				new SharedReference().getCurrentOwnerId(mContext), "", "", 0,alert,tz);
 
 		Intent myIntent = getIntent();
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, 3);
@@ -85,14 +90,13 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			Log.i("next service id", "is " + dbHelper.getNextActivityID());
 			thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
 					new SharedReference().getCurrentOwnerId(mContext), "", "",
-					CommConstant.OWNER);
+					CommConstant.OWNER,alert,tz);
 			view.titleBar.layout_save.setVisibility(View.GONE);
 			view.titleBar.layout_next.setVisibility(View.VISIBLE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
 			shared_role = myIntent.getIntExtra(CommConstant.ROLE,
 					CommConstant.OWNER);
-
 			thisActivity = dbHelper.getActivity(activity_id);
 			// set visible when edit
 			view.btn_add_paticipant.setVisibility(View.VISIBLE);
@@ -103,22 +107,25 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		this.initViewValues();
 		onClickListener();
 
-//		try {
-//			registerReceiver(activityGetSharedMemberComplete, new IntentFilter(
-//					CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE));
-//			registerReceiver(deleteActivityComplete, new IntentFilter(
-//					CommConstant.DELETE_ACTIVITY_COMPLETE));
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
+		try {
+			registerReceiver(activityGetSharedMemberComplete, new IntentFilter(
+					CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE));
+			registerReceiver(deleteActivityComplete, new IntentFilter(
+					CommConstant.DELETE_ACTIVITY_COMPLETE));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
-//
-//	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
-//		public void onReceive(Context arg0, Intent arg1) {
-//
-//		
-//		}
-//	};
+
+	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
+		public void onReceive(Context arg0, Intent arg1) {
+
+			finish();
+			// overridePendingTransition(R.anim.push_left_in,
+			// R.anim.push_left_out);
+			Utils.postLeftToRight(mContext);
+		}
+	};
 
 	@Override
 	protected void onResume() {
@@ -283,12 +290,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-//		try {
-//			unregisterReceiver(deleteActivityComplete);
-//			unregisterReceiver(activityGetSharedMemberComplete);
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
+		try {
+			unregisterReceiver(deleteActivityComplete);
+			unregisterReceiver(activityGetSharedMemberComplete);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	/**
@@ -681,30 +688,27 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				newActivity.put(ParticipantTable.user_login,
 						new SharedReference().getCurrentOwnerId(mContext));
 				
+				ArrayList<TimeZoneModel> listTimeZone=DatabaseHelper.getSharedDatabaseHelper(mContext).getTimeZone();
+				ArrayList<Alert> listAlert=DatabaseHelper.getSharedDatabaseHelper(mContext).getAlerts();
+				if(listAlert!=null&&listAlert.size()>0)
+				{
+					int alertId=listAlert.get(0).getId();
+					newActivity.put(ActivityTable.alertId, alertId);
+				}
+				if(listTimeZone!=null&&listTimeZone.size()>0)
+				{
+					int timeZoneId=listTimeZone.get(0).getId();
+					newActivity.put(ActivityTable.timeZoneId, timeZoneId);
+				}								
 				
 				if (dbHelper.insertActivity(newActivity)) {
 
 				}
 				WebservicesHelper ws = new WebservicesHelper(mContext);
-				ws.addActivity(thisActivity,activityInterface);
+				ws.addActivity(thisActivity);
 			}
 		}
 	}
-	
-	ActvityInterface activityInterface=new ActvityInterface() {
-		
-		@Override
-		public void onError(String error) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-		@Override
-		public void onComplete() {
-			finish();
-			Utils.postLeftToRight(mContext);
-		}
-	};
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);

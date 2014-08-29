@@ -1,7 +1,6 @@
 package com.e2wstudy.cschedule.utils;
 
 import android.graphics.Color;
-
 /**
  * @author khoahuyen
  * 
@@ -78,10 +77,4 @@ public class CommConstant {
 	public static final String PROPERTY_APP_VERSION = "appVersion";
 	public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	public final static String DEFAULT_DATE="1700-01-01 12:00:00";
-	public static int NOTIFICATION_ID=1;
-	public static boolean MUST_UPDATE=false;
-	public static String DEFAULT_VERSION="1.1.0";
-	public static boolean SHOW_UPDATE_FULL=false;
-	public static boolean SHOW_UPDATE=false;
-//	public static boolean IS_DUPLICATE_USER_LOGIN=false;
 }

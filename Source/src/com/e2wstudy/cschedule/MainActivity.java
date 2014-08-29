@@ -4,14 +4,13 @@
 package com.e2wstudy.cschedule;
 
 import com.e2wstudy.cschedule.db.DatabaseHelper;
+import com.e2wstudy.cschedule.interfaces.GetServerSettingInterface;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
-import com.e2wstudy.cschedule.utils.DownloadInterface;
+import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.TitleBarView;
-import com.e2wstudy.cschedule.views.ToastDialog;
-import com.google.android.gms.internal.cm;
 
 import android.os.Bundle;
 import android.content.Context;
@@ -34,44 +33,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+	
 		setContentView(R.layout.activity_main);
 		mContext = this;
-		findViewById();
-		onClickListener();
-				// serverSetting();
-
 		
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		ws.getServerSetting(new DownloadInterface() {
-
+//		serverSetting();
+		
+		WebservicesHelper ws=new WebservicesHelper(mContext);
+		ws.getServerSetting(new GetServerSettingInterface() {
+			
 			@Override
 			public void onComplete() {
-				
-				// TODO Auto-generated method stub
 				Utils.checkCurrentVersion(mContext);
-				btn_create_account.setEnabled(true);
-				btn_sign_in.setEnabled(true);
-			}
-			@Override
-			public void onError() {
-//				Utils.checkCurrentVersion(mContext);
-				btn_create_account.setEnabled(true);
-				btn_sign_in.setEnabled(true);
-				// TODO Auto-generated method stub
-				final ToastDialog dialog = new ToastDialog(mContext, "Get server setting error!");
-				dialog.show();
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
-					}
-				});
+				
 			}
 		});
 		
-	
+		findViewById();
+		onClickListener();
 	}
 
 	/**
@@ -93,31 +72,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 		btn_create_account.setOnClickListener(this);
 		btn_sign_in.setOnClickListener(this);
 	}
-
-	// /**
-	// * load server setting
-	// * */
-	// private void serverSetting()
-	// {
-	// WebservicesHelper ws = new WebservicesHelper(mContext);
-	// ws.getServerSetting();
-	// }
+	
+	
+//	/**
+//	 * load server setting
+//	 * */
+//	private void serverSetting()
+//	{
+//		WebservicesHelper ws = new WebservicesHelper(mContext);
+//		ws.getServerSetting();
+//	}
 
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == btn_sign_in) {
-			if ((!CommConstant.MUST_UPDATE)&&(!CommConstant.UPDATE)) {
-				signInPressed();
-			} else {
-//				Utils.checkCurrentVersion(MainActivity.this);
-			}
+			
+			signInPressed();
 		} else if (v == btn_create_account) {
-			if (!CommConstant.MUST_UPDATE && (!CommConstant.UPDATE)) {
-				createAccountPressed();
-			} else {
-//	/			Utils.checkCurrentVersion(MainActivity.this);
-			}
+			createAccountPressed();
 		}
 	}
 
@@ -136,6 +109,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 		finish();
 		Utils.pushRightToLeft(mContext);
 
+		
 		Intent intent = new Intent(this, LoginActivity.class);
 		this.startActivity(intent);
 	}
@@ -153,12 +127,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 	@Override
 	public void onBackPressed() {
-
-		final ConfirmDialog dialog = new ConfirmDialog(MainActivity.this,
-				mContext.getResources().getString(R.string.sure_to_exit));
+		
+		final ConfirmDialog dialog=new ConfirmDialog(MainActivity.this,mContext.getResources().getString(R.string.sure_to_exit));
 		dialog.show();
 		dialog.btnCancel.setOnClickListener(new OnClickListener() {
-
+			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -166,30 +139,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 			}
 		});
 		dialog.btnOk.setOnClickListener(new OnClickListener() {
-
+			
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-			
-				deleteDatabase(DatabaseHelper.DB_NAME);
+				SharedReference ref=new SharedReference();
+				ref.setLastestParticipantLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
+				ref.setLastestScheduleLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
+				ref.setLastestServiceLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
+				DatabaseHelper.getSharedDatabaseHelper(mContext).deleteTablesExitApp();
 				System.exit(0);
 			}
 		});
 	}
-
+	
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-//		btn_create_account.setEnabled(false);
-//		btn_sign_in.setEnabled(false);
 		
-//		CommConstant.UPDATE=true;
-//		if(CommConstant.UPDATE||CommConstant.MUST_UPDATE)
-//		{
-			Utils.checkCurrentVersion(mContext);
-//		}
-
-		
+		Utils.checkCurrentVersion(MainActivity.this);
 	}
 }

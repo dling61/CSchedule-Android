@@ -4,13 +4,10 @@
 package com.e2wstudy.cschedule;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONException;
 
-import com.e2wstudy.cschedule.db.DatabaseHelper;
-import com.e2wstudy.cschedule.models.TimeZoneModel;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
@@ -74,7 +71,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		mContext = this;
-		
 		setContentView(R.layout.log_in);
 		Intent intent = getIntent();
 		if (intent != null) {
@@ -150,6 +146,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 		@Override
 		protected void onPostExecute(String msg) {
+//			finish();
 		}
 	}
 
@@ -266,19 +263,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				return;
 			}
 
-			SharedReference ref=new SharedReference();
-			String email=ref.getEmail(mContext);
-			
-//			if(username.equals(email))
-//			{
-//				CommConstant.IS_DUPLICATE_USER_LOGIN=true;
-//			}
-			
-			deleteDatabase(DatabaseHelper.DB_NAME);
-			
 			login(username, password);
 		} else if (v == titleBar.layout_back) {
-			CommConstant.UPDATE=true;
 			Utils.hideKeyboard((Activity) mContext, txt_email);
 			Utils.hideKeyboard((Activity) mContext, txt_password);
 			Intent intent = new Intent(mContext, MainActivity.class);
@@ -370,11 +356,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		}
 		Utils.postLeftToRight(mContext);
 		finish();
-		
-		CommConstant.UPDATE=true;
 		Intent intent = new Intent(mContext, MainActivity.class);
 		mContext.startActivity(intent);
-		
 
 	}
 }

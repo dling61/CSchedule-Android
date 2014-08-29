@@ -3,8 +3,6 @@ package com.e2wstudy.cschedule;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.e2wstudy.cschedule.utils.CommConstant;
-
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -79,15 +77,13 @@ public class GCMIntentService extends IntentService {
 		Set<String> keys = bundle.keySet();
 		Iterator<String> it = keys.iterator();
 		if (bundle != null) {
-			 sendNotification(bundle.toString());
-			
 			while (it.hasNext()) {
 				String key = it.next();
 				Log.e("PUSH", "[" + key + "=" + bundle.get(key) + "]");
 //				Toast.makeText(getApplicationContext(),"[" + key + "=" + bundle.get(key) + "]" ,Toast.LENGTH_LONG).show();
 				if(key.equals("message"))
 				{
-				   sendNotification(bundle.get(key).toString());
+				   sendNotification("[" + key + "=" + bundle.get(key) + "]");
 				   break;
 				}
 			}
@@ -119,7 +115,7 @@ public class GCMIntentService extends IntentService {
 //        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     	/****************************Vu Le Added*********************************/
         Context context = getBaseContext();
-        int icon = R.drawable.ic_launcher;
+        int icon = R.drawable.mainpage_bigicon;
 		long when = System.currentTimeMillis();
 		
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
@@ -142,7 +138,7 @@ public class GCMIntentService extends IntentService {
 
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
-		notificationManager.notify(CommConstant.NOTIFICATION_ID++, mBuilder.build());
+		notificationManager.notify(0, mBuilder.build());
 		/****************************End*********************************/
     }
 }

@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +19,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.Log;
@@ -312,66 +316,57 @@ public class Utils {
 					mContext).getCurrentVersion();
 			// check version
 			if (appversion == null) {
-				// CommConstant.UPDATE = true;
 				return;
 			}
+			String currentVersion = getVersionName(mContext).replace(".", "");
+			String serverVersion = appversion.getAppversion().replace(".", "");
+			long currentVer = Long.parseLong(currentVersion);
+			long serverVer = Long.parseLong(serverVersion);
+			if (currentVer < serverVer) {
+				if (appversion.getEnforce() == 0) {
+					if (!CommConstant.UPDATE) {
+						CommConstant.UPDATE=true;
+						final ConfirmDialog dialog = new ConfirmDialog(
+								mContext, appversion.getMsg());
+						dialog.show();
+						dialog.btnCancel.setText("Don't update");
+						dialog.btnOk.setText("Update");
+						dialog.btnCancel
+								.setOnClickListener(new OnClickListener() {
 
-			String currentVersion = new SharedReference().getVersion(mContext);
-			// String currentVersion = Utils.getVersionName(mContext);
-			String vs = appversion.getAppversion().replace(".", ";");
-			String[] split = vs.split(";");
-			currentVersion = currentVersion.replace(".", ";");
-			String[] splitCurrentVersion = currentVersion.split(";");
+									@Override
+									public void onClick(View v) {
+										dialog.dismiss();
+//										CommConstant.UPDATE=false;
+									}
+								});
+						dialog.btnOk.setOnClickListener(new OnClickListener() {
 
-			// boolean flag = true;
-			int flag = -1;// flag=0: have new version, no request update. =1:
-							// request update. =-1: no new version
-			if (splitCurrentVersion != null && split != null) {
-				if (split.length == splitCurrentVersion.length) {
-					if (split.length == 3) {
-						if (Integer.parseInt(split[0]) > Integer
-								.parseInt(splitCurrentVersion[0])) {
-							flag = 1;
-						} else {
-							if (Integer.parseInt(split[1]) > Integer
-									.parseInt(splitCurrentVersion[1])) {
-								flag = 1;
-							} else {
-								if (Integer.parseInt(split[2]) > Integer
-										.parseInt(splitCurrentVersion[2])) {
-									flag = 1;
-								}
+							@Override
+							public void onClick(View v) {
+								dialog.dismiss();
+								// go to google play
+								Utils.goToGooglePlay(
+										mContext,
+										mContext.getResources().getString(
+												R.string.package_name));
+//								CommConstant.UPDATE=false;
 							}
-						}
+						});
 					}
-				}
-
-			}
-
-			if (flag == 1) {
-				CommConstant.UPDATE = true;
-				if (appversion.getEnforce() == 1) {
-					flag = 1;
-					if (CommConstant.SHOW_UPDATE) {
-						return;
-					}
-					if (CommConstant.SHOW_UPDATE_FULL) {
-						return;
-					}
-
-					CommConstant.MUST_UPDATE = true;
+				} else if (appversion.getEnforce() == 1) {
+					if (!CommConstant.UPDATE) {
+						CommConstant.UPDATE=true;
 					final UpdateDialog dialog = new UpdateDialog(mContext);
 					dialog.show();
-					CommConstant.SHOW_UPDATE = true;
 
 					dialog.btnOk.setText("Update CSchedule");
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
 
 						@Override
 						public void onClick(View v) {
-							// CommConstant.UPDATE=false;
+							 CommConstant.UPDATE=false;
 							dialog.dismiss();
-							CommConstant.SHOW_UPDATE = false;
 
 							// go to google play
 							Utils.goToGooglePlay(
@@ -381,53 +376,10 @@ public class Utils {
 
 						}
 					});
-				} else if (appversion.getEnforce() == 0) {
-					flag = 0;
-					CommConstant.UPDATE = true;
-					if (CommConstant.SHOW_UPDATE) {
-						return;
 					}
-					if (CommConstant.SHOW_UPDATE_FULL) {
-						return;
-					}
-
-					final ConfirmDialog dialog = new ConfirmDialog(mContext,
-							appversion.getMsg());
-					dialog.show();
-					CommConstant.SHOW_UPDATE_FULL = true;
-					dialog.btnCancel.setText("Don't update");
-					dialog.btnOk.setText("Update");
-					dialog.btnCancel.setOnClickListener(new OnClickListener() {
-
-						@Override
-						public void onClick(View v) {
-							CommConstant.UPDATE = false;
-							dialog.dismiss();
-							CommConstant.SHOW_UPDATE_FULL = false;
-						}
-					});
-					dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-						@Override
-						public void onClick(View v) {
-							CommConstant.UPDATE = false;
-							dialog.dismiss();
-							CommConstant.SHOW_UPDATE_FULL = false;
-
-							// go to google play
-							Utils.goToGooglePlay(
-									mContext,
-									mContext.getResources().getString(
-											R.string.package_name));
-						}
-					});
 				}
 			}
 
-			else {
-				// CommConstant.UPDATE=false;
-				CommConstant.UPDATE = false;
-			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

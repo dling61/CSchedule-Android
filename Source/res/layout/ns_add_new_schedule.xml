@@ -265,7 +265,7 @@
 
                     <TextView
                         android:id="@+id/tv_new_activity_alert"
-                          style="@style/tvTitleStyleTimezone"
+                        style="@style/tvTitleStyle"
                         android:layout_height="fill_parent"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
@@ -386,7 +386,7 @@
 
                 <TextView
                     android:id="@+id/tv_onduty"
-                      style="@style/tvTitleStyleTimezone"
+                    style="@style/tvTitleStyle"
                     android:layout_height="fill_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"

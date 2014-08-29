@@ -8,14 +8,6 @@ public class AppVersion {
 	String osversion = "";
 	String msg = "";
 
-	public String getMsg() {
-		return msg;
-	}
-
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
-
 	public int getAppId() {
 		return appId;
 	}
@@ -33,14 +25,22 @@ public class AppVersion {
 	}
 
 	public AppVersion(int appId, String appversion, int enforce, String os,
-			String osversion,String msg) {
+			String osversion, String msg) {
 		super();
 		this.appId = appId;
 		this.appversion = appversion;
 		this.enforce = enforce;
 		this.os = os;
 		this.osversion = osversion;
-		this.msg=msg;
+		this.msg = msg;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
 	}
 
 	public int getEnforce() {

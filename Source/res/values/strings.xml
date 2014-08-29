@@ -223,11 +223,10 @@
     <string name="confirm">Confirm</string>
     <string name="deny">Deny</string>
     <string name="please_select_time_zone">Please select time zone</string>
-    <string name="out_of_update">Your version of CSchedule is being tired.\nUpdate the latest version today.</string>
+    <string name="out_of_update">Your version of CSchedule is being retired.\nUpdate to the latest version today.</string>
     <string name="update">Update</string>
     <string name="confirmation">Confirmation</string>
     <string name="schedule_without_participant">Are you sure you want to create a schedule without a participant on duty?</string>
     <string name="edit_schedule_without_participant">Are you sure you want to edit a schedule without a participant on duty?</string>
- <item name="is_at_least_api_12" type="bool">false</item>
-    <item name="is_at_most_api_11" type="bool">true</item>
+
 </resources>

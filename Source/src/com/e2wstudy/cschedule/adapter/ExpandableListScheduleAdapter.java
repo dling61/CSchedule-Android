@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.devsmart.android.ui.HorizontalListView;
-import com.e2wstude.schedule.interfaces.ConfirmInterface;
-import com.e2wstude.schedule.interfaces.RefreshScheduleInterface;
 import com.e2wstudy.cschedule.CreateNewScheduleActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -26,6 +24,7 @@ import com.e2wstudy.cschedule.views.ParticipantInforDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,25 +41,24 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 	public Map<String, ArrayList<Schedule>> scheduleCollection;
 	public ArrayList<String> listSchedulesByDay;
 	private LayoutInflater mInflater;
-	DatabaseHelper dbHelper;
+//	DatabaseHelper dbHelper;
 	boolean isToday;
 	Date nearestDate;// date nearest current date
 	public int group_position_scrolled = 0;// scroll to nearest date
 
-	RefreshScheduleInterface refreshScheduleInterface;
 	public ExpandableListScheduleAdapter() {
 
 	}
 
 	public ExpandableListScheduleAdapter(Context context,
 			ArrayList<String> listSchedulesByDay,
-			Map<String, ArrayList<Schedule>> scheduleCollection,RefreshScheduleInterface refreshScheduleInterface) {
+			Map<String, ArrayList<Schedule>> scheduleCollection) {
 		this.context = context;
 		this.scheduleCollection = scheduleCollection;
 		this.listSchedulesByDay = listSchedulesByDay;
-this.refreshScheduleInterface=refreshScheduleInterface;
+
 		mInflater = LayoutInflater.from(context);
-		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
+//		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
 
 	}
 
@@ -103,7 +101,7 @@ this.refreshScheduleInterface=refreshScheduleInterface;
 		final Schedule schedule = (Schedule) getChild(groupPosition,
 				childPosition);
 		if (schedule != null) {
-			MyActivity activity = dbHelper
+			MyActivity activity = DatabaseHelper.getSharedDatabaseHelper(context)
 					.getActivity(schedule.getService_ID());
 			String activity_name = activity != null ? activity
 					.getActivity_name() : "";
@@ -114,19 +112,27 @@ this.refreshScheduleInterface=refreshScheduleInterface;
 
 			viewHolder.service_TV.setText(activity_name);
 			viewHolder.time_TV.setText(date.toLowerCase());
-			// viewHolder.participants_TV.setText(members);
-			List<Confirm> memberids = dbHelper
+			
+			Log.d("activityname",activity.getActivity_name());
+			List<Confirm> memberids = DatabaseHelper.getSharedDatabaseHelper(context)
 					.getParticipantsForSchedule(schedule.getSchedule_ID());
 			if (memberids != null && memberids.size() > 0) {
+				
+				Log.d("memberid",memberids.toString());
 				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(schedule,
-						memberids, activity.getActivity_ID());
+						memberids,schedule.getService_ID());
+				viewHolder.listview.setAdapter(adapter);
+//				viewHolder.listview.setVisibility(View.VISIBLE);
+				
+			}
+			else
+			{
+				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(schedule,null,schedule.getService_ID());
 				viewHolder.listview.setAdapter(adapter);
 			}
 			convertView.setOnClickListener(new OnClickListener() {
-
 				@Override
 				public void onClick(View v) {
-
 					Intent inforActivityIntent = new Intent(context,
 							CreateNewScheduleActivity.class);
 					inforActivityIntent.putExtra(CommConstant.TYPE,
@@ -252,6 +258,10 @@ this.refreshScheduleInterface=refreshScheduleInterface;
 
 		@Override
 		public int getCount() {
+			if(listParticipantId==null)
+			{
+				return 0;
+			}
 			return listParticipantId.size();
 		}
 
@@ -281,7 +291,7 @@ this.refreshScheduleInterface=refreshScheduleInterface;
 			}
 			final Confirm member = listParticipantId.get(position);
 			if (member != null) {
-				final Sharedmember sm = dbHelper.getSharedmember(
+				final Sharedmember sm = DatabaseHelper.getSharedDatabaseHelper(context).getSharedmember(
 						member.getMemberId(), activity_id);
 				if (sm != null) {
 					holder.title.setText(sm.getName());
@@ -393,13 +403,13 @@ this.refreshScheduleInterface=refreshScheduleInterface;
 									context);
 							if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
 								confirm.setConfirm(CommConstant.CONFIRM_CONFIRMED);
-								ws.updateConfirmStatus(schedule, confirm,confirmStatusInterface);
+								ws.updateConfirmStatus(schedule, confirm);
 							} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_DENIED) {
 								confirm.setConfirm(CommConstant.CONFIRM_CONFIRMED);
-								ws.updateConfirmStatus(schedule, confirm, confirmStatusInterface);
+								ws.updateConfirmStatus(schedule, confirm);
 							} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_CONFIRMED) {
 								confirm.setConfirm(CommConstant.CONFIRM_DENIED);
-								ws.updateConfirmStatus(schedule, confirm,confirmStatusInterface);
+								ws.updateConfirmStatus(schedule, confirm);
 							}
 						} else {
 							Utils.makeAPhoneCall(context,
@@ -413,7 +423,7 @@ this.refreshScheduleInterface=refreshScheduleInterface;
 									context);
 							if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
 								confirm.setConfirm(CommConstant.CONFIRM_DENIED);
-								ws.updateConfirmStatus(schedule, confirm,confirmStatusInterface);
+								ws.updateConfirmStatus(schedule, confirm);
 							}
 						} else {
 							Utils.sendAMessage(context, participant.getMobile());
@@ -452,20 +462,4 @@ this.refreshScheduleInterface=refreshScheduleInterface;
 			ex.printStackTrace();
 		}
 	}
-	
-	ConfirmInterface confirmStatusInterface=new ConfirmInterface() {
-		
-		@Override
-		public void onError(String error) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-		@Override
-		public void onComplete() {
-			// TODO Auto-generated method stub
-			refreshScheduleInterface.onRefresh();
-		}
-	};
-	 
 }

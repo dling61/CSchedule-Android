@@ -12,5 +12,4 @@ public class OndutyTable {
 	public static final String role="role";
 	public static final String user_login="user_login";
 	public static final String confirm="confirm";
-
 }

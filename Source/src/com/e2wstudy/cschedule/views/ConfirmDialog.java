@@ -39,8 +39,7 @@ public class ConfirmDialog extends Dialog {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		setContentView(R.layout.confirm_add_participant_dialog);
-		setCanceledOnTouchOutside(false);
-		setCancelable(false);
+		setCanceledOnTouchOutside(true);
 		btnOk = (Button) findViewById(R.id.btn_ok);
 		btnCancel = (Button) findViewById(R.id.btn_cancel);
 		tvTitle = (TextView) findViewById(R.id.tv_title);
