@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.models.ActivityTable;
 import com.e2wstudy.cschedule.models.Alert;
 import com.e2wstudy.cschedule.models.AlertTable;
+import com.e2wstudy.cschedule.models.AppVersion;
 import com.e2wstudy.cschedule.models.AppVersionTable;
 import com.e2wstudy.cschedule.models.Confirm;
 import com.e2wstudy.cschedule.models.MyActivity;
@@ -31,12 +31,11 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.test.ApplicationTestCase;
 import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "cschedule";
-	public static final int DB_VERSION = 7;
+	public static final int DB_VERSION = 14;
 	public static DatabaseHelper sharedDatabaseHelper;
 	public static final int NEW = 0;
 	public static final int EXISTED = 1;
@@ -48,7 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private Context context;
 
-	DatabaseHelper(Context context) {
+	public DatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		this.context = context;
 	}
@@ -89,6 +88,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ActivityTable.last_ModifiedTime + " TEXT,"
 				+ ActivityTable.is_Deleted + " INTEGER NOT NULL,"
 				+ ParticipantTable.user_login + " text not null,"
+				+ ActivityTable.timzoneId + " int not null default 1," 
+				+ ActivityTable.alertId + " int not null default 1," 
 				+ ActivityTable.is_Synchronized + " INTEGER NOT NULL);");
 
 		db.execSQL("CREATE TABLE " + ScheduleTable.ScheduleTableName + "("
@@ -146,8 +147,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ AppVersionTable.id + " INTEGER PRIMARY KEY NOT NULL,"
 				+ AppVersionTable.appversion + " TEXT NOT NULL,"
 				+ AppVersionTable.enforce + " INTEGER NOT NULL,"
-				+ AppVersionTable.os + " TEXT NOT NULL,"
-				+ AppVersionTable.osversion + " TEXT NOT NULL);");
+				+ AppVersionTable.os + " TEXT NOT NULL," + AppVersionTable.msg
+				+ " TEXT NOT NULL," + AppVersionTable.osversion
+				+ " TEXT NOT NULL);");
 
 	}
 
@@ -207,21 +209,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public ArrayList<TimeZoneModel> getTimeZone() {
 		ArrayList<TimeZoneModel> timeZones = new ArrayList<TimeZoneModel>();
 		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + TimeZoneTable.TimeZoneTableName, null);
+				"SELECT * FROM " + TimeZoneTable.TimeZoneTableName
+						+ " order by " + TimeZoneTable.displayorder + " ASC",
+				null);
 		while (c.moveToNext()) {
 			int id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
 			String tzname = c.getString(c.getColumnIndex(TimeZoneTable.tzname));
-Log.d("timezone name",tzname);
+			Log.d("timezone name", tzname);
 			String displayname = c.getString(c
 					.getColumnIndex(TimeZoneTable.displayname));
-			Log.d("display name",displayname);
-//			int index1 = displayname.indexOf(")");
-//			try {
-//				displayname = displayname.substring(index1 + 1,
-//						displayname.length());
-//			} catch (Exception ex) {
-//				ex.printStackTrace();
-//			}
+			Log.d("display name", displayname);
+			// int index1 = displayname.indexOf(")");
+			// try {
+			// displayname = displayname.substring(index1 + 1,
+			// displayname.length());
+			// } catch (Exception ex) {
+			// ex.printStackTrace();
+			// }
 			String displayorder = c.getString(c
 					.getColumnIndex(TimeZoneTable.displayorder));
 			String abbrtzname = c.getString(c
@@ -545,7 +549,7 @@ Log.d("timezone name",tzname);
 				+ ScheduleTable.user_login + "='"
 				+ new SharedReference().getCurrentOwnerId(context)
 				+ "' order  by datetime(" + ScheduleTable.start_Time + ") ASC";
-		Log.d("get all schedule", sql);
+		Log.e("get all schedule", sql);
 
 		while (c.moveToNext()) {
 			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
@@ -599,7 +603,7 @@ Log.d("timezone name",tzname);
 				+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
 				+ ScheduleTable.user_login + "='"
 				+ new SharedReference().getCurrentOwnerId(context) + "'";
-		Log.d("query schedule", query);
+		Log.e("query schedule", query);
 		Cursor mCount = this.getWritableDatabase().rawQuery(query, null);
 		if (mCount != null) {
 			// if(mCount.moveToFirst())
@@ -654,7 +658,7 @@ Log.d("timezone name",tzname);
 						+ new SharedReference().getCurrentOwnerId(context)
 						+ " order  by datetime(" + ScheduleTable.start_Time
 						+ ") ASC", null);
-		Log.d("me schedule",
+		Log.e("me schedule",
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 						+ ScheduleTable.is_Deleted + "=0 and "
 						+ ScheduleTable.user_login + "='"
@@ -1084,6 +1088,31 @@ Log.d("timezone name",tzname);
 	}
 
 	/**
+	 * get timezone, alert of activity
+	 * */
+	public ArrayList<Integer> getTimeZoneAlertDefaultOfActivity(
+			String activityId) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		try {
+			Cursor c = this.getWritableDatabase().rawQuery(
+					"SELECT *  FROM " + ActivityTable.ActivityTableName
+							+ " WHERE " + ActivityTable.service_ID + " = "
+							+ activityId, null);
+			if (c.moveToNext()) {
+
+				int timeZoneId = c.getInt(c.getColumnIndex(ActivityTable.timzoneId));
+				int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+				result.add(timeZoneId);
+				result.add(alertId);
+			}
+			c.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
 	 * get timezone
 	 * */
 	public TimeZoneModel getTimeZone(int timeZoneId) {
@@ -1194,15 +1223,54 @@ Log.d("timezone name",tzname);
 		return (id == (-1)) ? false : true;
 	}
 
-	public String getCurrentVersion() {
+	public AppVersion getCurrentVersion() {
 		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + AppVersionTable.appversion + " from "
-						+ AppVersionTable.appVersionTable + " where "
+				"SELECT * from " + AppVersionTable.appVersionTable + " where "
 						+ AppVersionTable.os + " = 'ANDROID'", null);
 		while (c.moveToNext()) {
-			return c.getString(c.getColumnIndex(AppVersionTable.appversion));
+			String appVersion = "";
+			try {
+				appVersion = c.getString(c
+						.getColumnIndex(AppVersionTable.appversion));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			int appId = -1;
+			try {
+				appId = Integer.parseInt(c.getString(c
+						.getColumnIndex(AppVersionTable.id)));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			String os = c.getString(c.getColumnIndex(AppVersionTable.os));
+			String appversion = c.getString(c
+					.getColumnIndex(AppVersionTable.appversion));
+			int enforce = 0;
+			try {
+				enforce = Integer.parseInt(c.getString(c
+						.getColumnIndex(AppVersionTable.enforce)));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			String osversion = "";
+			try {
+				osversion = c.getString(c
+						.getColumnIndex(AppVersionTable.osversion));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+			String msg = "";
+			try {
+				msg = c.getString(c.getColumnIndex(AppVersionTable.msg));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			AppVersion version = new AppVersion(appId, appversion, enforce, os,
+					osversion, msg);
+			return version;
 		}
-		return "0.0.0";
+		return null;
 	}
 
 	public boolean isScheduleExisted(int scheduleID) {
@@ -1248,6 +1316,13 @@ Log.d("timezone name",tzname);
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				AppVersionTable.appVersionTable, AppVersionTable.id,
 				contentValue, SQLiteDatabase.CONFLICT_IGNORE);
+
+		AppVersion tzm = getCurrentVersion();
+		if (tzm != null) {
+
+			Log.d("appversion", tzm.getAppversion() + "/msg: " + tzm.getMsg());
+
+		}
 		return (result == -1) ? false : true;
 	}
 
@@ -1263,6 +1338,12 @@ Log.d("timezone name",tzname);
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				AlertTable.alertTableName, AlertTable.id, alert,
 				SQLiteDatabase.CONFLICT_IGNORE);
+		ArrayList<Alert> listTimeZone = getAlerts();
+		if (listTimeZone != null && listTimeZone.size() > 0) {
+			for (Alert tzm : listTimeZone) {
+				Log.d("alert", tzm.getAname());
+			}
+		}
 		return (result == -1) ? false : true;
 	}
 
@@ -1271,6 +1352,7 @@ Log.d("timezone name",tzname);
 		int result = this.getWritableDatabase().update(
 				AlertTable.alertTableName, alert, AlertTable.id + "=?",
 				whereArgs);
+
 		return (result == 1) ? true : false;
 	}
 
@@ -1278,6 +1360,12 @@ Log.d("timezone name",tzname);
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				TimeZoneTable.TimeZoneTableName, TimeZoneTable.id, timeZone,
 				SQLiteDatabase.CONFLICT_IGNORE);
+		ArrayList<TimeZoneModel> listTimeZone = getTimeZone();
+		if (listTimeZone != null && listTimeZone.size() > 0) {
+			for (TimeZoneModel tzm : listTimeZone) {
+				Log.d("tmz", tzm.getAbbrtzname());
+			}
+		}
 		return (result == -1) ? false : true;
 	}
 
@@ -1318,6 +1406,9 @@ Log.d("timezone name",tzname);
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				ActivityTable.ActivityTableName, ActivityTable.service_ID,
 				newActivity, SQLiteDatabase.CONFLICT_IGNORE);
+		ArrayList<TimeZoneModel> listTimezone = DatabaseHelper.getSharedDatabaseHelper(context)
+				.getTimeZone();
+		Log.e("VULE insert ac",""+listTimezone.size());
 		return (result == -1) ? false : true;
 	}
 
@@ -1326,6 +1417,9 @@ Log.d("timezone name",tzname);
 		int result = this.getWritableDatabase().update(
 				ActivityTable.ActivityTableName, newActivity,
 				ActivityTable.service_ID + "=?", whereArgs);
+		ArrayList<TimeZoneModel> listTimezone = DatabaseHelper.getSharedDatabaseHelper(context)
+				.getTimeZone();
+		Log.e("VULE update ac",""+listTimezone.size());
 		return (result == 1) ? true : false;
 	}
 
@@ -1334,6 +1428,9 @@ Log.d("timezone name",tzname);
 		int result = this.getWritableDatabase().delete(
 				ActivityTable.ActivityTableName,
 				ActivityTable.service_ID + "=?", whereArgs);
+		ArrayList<TimeZoneModel> listTimezone = DatabaseHelper.getSharedDatabaseHelper(context)
+				.getTimeZone();
+		Log.e("VULE delete ac",""+listTimezone.size());
 		return (result == 1) ? true : false;
 	}
 
@@ -1341,6 +1438,9 @@ Log.d("timezone name",tzname);
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				ScheduleTable.ScheduleTableName, ScheduleTable.schedule_ID,
 				newSchedule, SQLiteDatabase.CONFLICT_IGNORE);
+		ArrayList<TimeZoneModel> listTimezone = DatabaseHelper.getSharedDatabaseHelper(context)
+				.getTimeZone();
+		Log.e("insert schedule",""+listTimezone.size());
 		return (result == -1) ? false : true;
 	}
 
@@ -1349,6 +1449,9 @@ Log.d("timezone name",tzname);
 		int result = this.getWritableDatabase().update(
 				ScheduleTable.ScheduleTableName, newSchedule,
 				ScheduleTable.schedule_ID + "=?", whereArgs);
+		ArrayList<TimeZoneModel> listTimezone = DatabaseHelper.getSharedDatabaseHelper(context)
+				.getTimeZone();
+		Log.e("update schedule",""+listTimezone.size());
 		return (result == 1) ? true : false;
 	}
 
@@ -1357,6 +1460,9 @@ Log.d("timezone name",tzname);
 		int result = this.getWritableDatabase().delete(
 				ScheduleTable.ScheduleTableName,
 				ScheduleTable.schedule_ID + "=?", whereArgs);
+		ArrayList<TimeZoneModel> listTimezone = DatabaseHelper.getSharedDatabaseHelper(context)
+				.getTimeZone();
+		Log.e("delete schedule",""+listTimezone.size());
 		return (result == 1) ? true : false;
 	}
 
@@ -1492,30 +1598,34 @@ Log.d("timezone name",tzname);
 	}
 
 	public void evacuateDatabase() {
-		this.getWritableDatabase().delete(ActivityTable.ActivityTableName,
-				null, null);
-		this.getWritableDatabase().delete(
-				ParticipantTable.ParticipantTableName, null, null);
-		this.getWritableDatabase().delete(
-				SharedMemberTable.SharedMemberTableName, null, null);
-		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
-				null);
-		this.getWritableDatabase().delete(ActivityTable.ActivityTableName,
-				null, null);
-		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
-				null, null);
+		try {
+			this.getWritableDatabase().delete(ActivityTable.ActivityTableName,
+					null, null);
+			this.getWritableDatabase().delete(
+					ParticipantTable.ParticipantTableName, null, null);
+			this.getWritableDatabase().delete(
+					SharedMemberTable.SharedMemberTableName, null, null);
+			this.getWritableDatabase().delete(OndutyTable.OntudyTableName,
+					null, null);
+			this.getWritableDatabase().delete(ActivityTable.ActivityTableName,
+					null, null);
+			this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
+					null, null);
 
-		this.getWritableDatabase().delete(TimeZoneTable.TimeZoneTableName,
-				null, null);
-
-		this.getWritableDatabase()
-				.delete(AlertTable.alertTableName, null, null);
-
-		this.getWritableDatabase().delete(AppVersionTable.appVersionTable,
-				null, null);
-		SharedPreferences settings = context.getSharedPreferences(
-				SharedReference.MY_PREFERENCE, Context.MODE_PRIVATE);
-		settings.edit().clear().commit();
+			// this.getWritableDatabase().delete(TimeZoneTable.TimeZoneTableName,
+			// null, null);
+			//
+			// this.getWritableDatabase()
+			// .delete(AlertTable.alertTableName, null, null);
+			//
+			// this.getWritableDatabase().delete(AppVersionTable.appVersionTable,
+			// null, null);
+			SharedPreferences settings = context.getSharedPreferences(
+					SharedReference.MY_PREFERENCE, Context.MODE_PRIVATE);
+			settings.edit().clear().commit();
+		} catch (Exception exx) {
+			exx.printStackTrace();
+		}
 	}
 
 	public int getNextActivityID() {

@@ -12,7 +12,9 @@ public class SharedReference {
 	public static final String MY_PREFERENCE = "MyPreferences";
 	final String TIMEZONE = "time_zone";
 	String TAG = "SharedReference";
-
+	final static String ALERT_TYPE = "alert_type";
+String APP_VERSION="APP_VERSION";
+String TIMEZONE_ID="timezone_id";
 	/**
 	 * Set username to shared reference
 	 * */
@@ -125,10 +127,12 @@ public class SharedReference {
 
 	public String getLastestParticipantLastModifiedTime(Context context) {
 		SharedPreferences sp = context.getSharedPreferences(MY_PREFERENCE, 0);
-		String lastParticipantModified = sp.getString(
-		// Data is cleaned after exit
-		// Current date should be written
-				CommConstant.LAST_PARTICIPANT_MODIFY,CommConstant.DEFAULT_DATE);
+		String lastParticipantModified = sp
+				.getString(
+						// Data is cleaned after exit
+						// Current date should be written
+						CommConstant.LAST_PARTICIPANT_MODIFY,
+						CommConstant.DEFAULT_DATE);
 		return lastParticipantModified;
 	}
 
@@ -138,7 +142,8 @@ public class SharedReference {
 		String lastScheduleModified = "";
 		try {
 			lastScheduleModified = sp.getString(
-					CommConstant.LAST_SCHEDULE_MODIFIED,CommConstant.DEFAULT_DATE);
+					CommConstant.LAST_SCHEDULE_MODIFIED,
+					CommConstant.DEFAULT_DATE);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -264,8 +269,8 @@ public class SharedReference {
 	// }
 
 	public void storeRegistrationId(Context context, String regId) {
-		SharedPreferences prefs = context.getSharedPreferences(
-				MY_PREFERENCE, 0);
+		SharedPreferences prefs = context
+				.getSharedPreferences(MY_PREFERENCE, 0);
 		int appVersion = Utils.getAppVersion(context);
 		Log.i(TAG, "Saving regId on app version " + appVersion);
 		SharedPreferences.Editor editor = prefs.edit();
@@ -284,4 +289,67 @@ public class SharedReference {
 		return gcmId;
 	}
 
+
+	/**
+	 * set latest alert type
+	 * */
+	public void setLatestAlertType(Context context, int alertType) {
+		SharedPreferences appSharedPrefs = context.getSharedPreferences(
+				MY_PREFERENCE, 0);
+		Editor prefsEditor = appSharedPrefs.edit();
+		prefsEditor.putInt(ALERT_TYPE,alertType);
+		prefsEditor.commit();
+	}
+
+	/**
+	 * get latest alert type
+	 * */
+	public int getLatestAlertType(Context context) {
+		SharedPreferences sp = context
+				.getSharedPreferences(MY_PREFERENCE, -100);
+		int alertType = sp.getInt(ALERT_TYPE,CommConstant.ALERT_DEFAULT);
+		return alertType;
+	}
+	
+	/**
+	 * set latest time zone 
+	 * */
+	public void setLatestTimeZone(Context context, int timeZoneId) {
+		SharedPreferences appSharedPrefs = context.getSharedPreferences(
+				MY_PREFERENCE, 0);
+		Editor prefsEditor = appSharedPrefs.edit();
+		prefsEditor.putInt(TIMEZONE,timeZoneId);
+		prefsEditor.commit();
+	}
+
+	/**
+	 * get latest alert type
+	 * */
+	public int getLatestTimeZone(Context context) {
+		SharedPreferences sp = context
+				.getSharedPreferences(MY_PREFERENCE, -100);
+		int alertType = sp.getInt(ALERT_TYPE,CommConstant.ALERT_DEFAULT);
+		return alertType;
+	}
+	
+	/**
+	 * set version
+	 * */
+	public void setVersion(Context context,String version) {
+		SharedPreferences appSharedPrefs = context.getSharedPreferences(
+				MY_PREFERENCE, 0);
+		Editor prefsEditor = appSharedPrefs.edit();
+		prefsEditor.putString(APP_VERSION,version);
+		prefsEditor.commit();
+	}
+
+	/**
+	 * get version
+	 * */
+	public String getVersion(Context context) {
+		SharedPreferences sp = context
+				.getSharedPreferences(MY_PREFERENCE, -100);
+		return sp.getString(APP_VERSION,CommConstant.DEFAULT_VERSION);
+	}
+	
 }

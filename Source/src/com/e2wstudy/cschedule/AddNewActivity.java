@@ -2,6 +2,8 @@ package com.e2wstudy.cschedule;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.e2wstude.schedule.interfaces.ActvityInterface;
 import com.e2wstudy.cschedule.adapter.SharedMemberAdapter;
 import com.e2wstudy.cschedule.adapter.TextViewBaseAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -21,8 +23,6 @@ import com.e2wstudy.cschedule.views.AddActivityView;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.ParticipantInforDialog;
 import com.e2wstudy.cschedule.views.ToastDialog;
-import com.google.android.gms.internal.di;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -103,25 +103,22 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		this.initViewValues();
 		onClickListener();
 
-		try {
-			registerReceiver(activityGetSharedMemberComplete, new IntentFilter(
-					CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE));
-			registerReceiver(deleteActivityComplete, new IntentFilter(
-					CommConstant.DELETE_ACTIVITY_COMPLETE));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+//		try {
+//			registerReceiver(activityGetSharedMemberComplete, new IntentFilter(
+//					CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE));
+//			registerReceiver(deleteActivityComplete, new IntentFilter(
+//					CommConstant.DELETE_ACTIVITY_COMPLETE));
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//		}
 	}
-
-	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
-		public void onReceive(Context arg0, Intent arg1) {
-
-			finish();
-			// overridePendingTransition(R.anim.push_left_in,
-			// R.anim.push_left_out);
-			Utils.postLeftToRight(mContext);
-		}
-	};
+//
+//	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
+//		public void onReceive(Context arg0, Intent arg1) {
+//
+//		
+//		}
+//	};
 
 	@Override
 	protected void onResume() {
@@ -286,12 +283,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		try {
-			unregisterReceiver(deleteActivityComplete);
-			unregisterReceiver(activityGetSharedMemberComplete);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+//		try {
+//			unregisterReceiver(deleteActivityComplete);
+//			unregisterReceiver(activityGetSharedMemberComplete);
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//		}
 	}
 
 	/**
@@ -683,14 +680,31 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				newActivity.put(ActivityTable.last_ModifiedTime, "nouploaded");
 				newActivity.put(ParticipantTable.user_login,
 						new SharedReference().getCurrentOwnerId(mContext));
+				
+				
 				if (dbHelper.insertActivity(newActivity)) {
 
 				}
 				WebservicesHelper ws = new WebservicesHelper(mContext);
-				ws.addActivity(thisActivity);
+				ws.addActivity(thisActivity,activityInterface);
 			}
 		}
 	}
+	
+	ActvityInterface activityInterface=new ActvityInterface() {
+		
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void onComplete() {
+			finish();
+			Utils.postLeftToRight(mContext);
+		}
+	};
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);

@@ -461,11 +461,11 @@ public class MyDate {
 			String hour = timecomponents[0];
 			String minite = timecomponents[1];
 			int hourint = Integer.valueOf(hour);
-			if (hourint > 12) {
-				return (hourint - 12) + ":" + minite;
-			} else {
+//			if (hourint > 12) {
+//				return (hourint - 12) + ":" + minite;
+//			} else {
 				return hour + ":" + minite;
-			}
+//			}
 		}
 		
 		

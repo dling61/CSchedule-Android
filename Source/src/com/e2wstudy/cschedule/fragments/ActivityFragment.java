@@ -2,6 +2,7 @@ package com.e2wstudy.cschedule.fragments;
 
 import java.util.ArrayList;
 
+import com.e2wstude.schedule.interfaces.ActvityInterface;
 import com.e2wstudy.cschedule.AddNewActivity;
 import com.e2wstudy.cschedule.adapter.ActivityAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -30,7 +31,6 @@ import android.view.ViewGroup;
 public class ActivityFragment extends Fragment implements OnClickListener {
 	ActivityView view;
 	Context mContext;
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -38,6 +38,8 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 		onClickListener();
 	}
 
+	
+	
 	public static ActivityFragment getInstance() {
 		return ActivityFragment.getInstance();
 	}
@@ -75,8 +77,28 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 		return view;
 	}
 
-	BroadcastReceiver changeAcitivityList = new BroadcastReceiver() {
-		public void onReceive(Context arg0, Intent arg1) {
+//	BroadcastReceiver changeAcitivityList = new BroadcastReceiver() {
+//		public void onReceive(Context arg0, Intent arg1) {
+//			DatabaseHelper dbHelper = DatabaseHelper
+//					.getSharedDatabaseHelper(mContext);
+//			ArrayList<MyActivity> activities = dbHelper.getActivities();
+//			if (activities != null && activities.size() > 0) {
+//				ActivityAdapter activityAdapter = new ActivityAdapter(mContext,
+//						activities);
+//				view.listview.setAdapter(activityAdapter);
+//				view.listview.setVisibility(View.VISIBLE);
+//				view.layout_no_activity.setVisibility(View.GONE);
+//			} else {
+//				view.listview.setVisibility(View.GONE);
+//				view.layout_no_activity.setVisibility(View.VISIBLE);
+//			}
+//		}
+//	};
+
+	public void setInterface(ActvityInterface activityInterface)
+	{
+		if(activityInterface!=null)
+		{
 			DatabaseHelper dbHelper = DatabaseHelper
 					.getSharedDatabaseHelper(mContext);
 			ArrayList<MyActivity> activities = dbHelper.getActivities();
@@ -91,29 +113,29 @@ public class ActivityFragment extends Fragment implements OnClickListener {
 				view.layout_no_activity.setVisibility(View.VISIBLE);
 			}
 		}
-	};
-
+	}
+	
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
-		IntentFilter filterRefreshUpdate = new IntentFilter();
-		filterRefreshUpdate.addAction(CommConstant.DELETE_ACTIVITY_COMPLETE);
-		filterRefreshUpdate.addAction(CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
-		filterRefreshUpdate.addAction(CommConstant.UPDATE_SCHEDULE);
-		filterRefreshUpdate
-				.addAction(CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
-		filterRefreshUpdate
-				.addAction(CommConstant.ADD_SHARED_MEMBER_FROM_ACTIVITY);
-		filterRefreshUpdate.addAction(CommConstant.ADD_CONTACT_SUCCESS);
-		getActivity()
-				.registerReceiver(changeAcitivityList, filterRefreshUpdate);
+//		IntentFilter filterRefreshUpdate = new IntentFilter();
+//		filterRefreshUpdate.addAction(CommConstant.DELETE_ACTIVITY_COMPLETE);
+//		filterRefreshUpdate.addAction(CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
+//		filterRefreshUpdate.addAction(CommConstant.UPDATE_SCHEDULE);
+//		filterRefreshUpdate
+//				.addAction(CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
+//		filterRefreshUpdate
+//				.addAction(CommConstant.ADD_SHARED_MEMBER_FROM_ACTIVITY);
+//		filterRefreshUpdate.addAction(CommConstant.ADD_CONTACT_SUCCESS);
+//		getActivity()
+//				.registerReceiver(changeAcitivityList, filterRefreshUpdate);
 	}
 
 	@Override
 	public void onDetach() {
 		// TODO Auto-generated method stub
 		super.onDetach();
-		getActivity().unregisterReceiver(changeAcitivityList);
+//		getActivity().unregisterReceiver(changeAcitivityList);
 	}
 }

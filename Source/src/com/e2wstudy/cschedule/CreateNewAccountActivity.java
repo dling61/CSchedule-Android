@@ -4,6 +4,7 @@
 package com.e2wstudy.cschedule;
 
 import com.e2wstudy.cschedule.net.WebservicesHelper;
+import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.TitleBarView;
 import com.e2wstudy.cschedule.views.ToastDialog;
@@ -104,6 +105,7 @@ public class CreateNewAccountActivity extends BaseActivity implements
 				});
 			}
 		} else if (v == titleBar.layout_back) {
+			CommConstant.UPDATE=true;
 			Utils.hideKeyboard(CreateNewAccountActivity.this, name_tv);
 			Utils.hideKeyboard(CreateNewAccountActivity.this, email_tv);
 			Utils.hideKeyboard(CreateNewAccountActivity.this, passwd_tv);
@@ -210,6 +212,7 @@ public class CreateNewAccountActivity extends BaseActivity implements
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
+		CommConstant.UPDATE=true;
 		Utils.hideKeyboard(CreateNewAccountActivity.this, name_tv);
 		Utils.hideKeyboard(CreateNewAccountActivity.this, email_tv);
 		Utils.hideKeyboard(CreateNewAccountActivity.this, passwd_tv);

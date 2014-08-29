@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.devsmart.android.ui.HorizontalListView;
+import com.e2wstude.schedule.interfaces.ConfirmInterface;
+import com.e2wstude.schedule.interfaces.RefreshScheduleInterface;
 import com.e2wstudy.cschedule.CreateNewScheduleActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -45,17 +47,18 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 	Date nearestDate;// date nearest current date
 	public int group_position_scrolled = 0;// scroll to nearest date
 
+	RefreshScheduleInterface refreshScheduleInterface;
 	public ExpandableListScheduleAdapter() {
 
 	}
 
 	public ExpandableListScheduleAdapter(Context context,
 			ArrayList<String> listSchedulesByDay,
-			Map<String, ArrayList<Schedule>> scheduleCollection) {
+			Map<String, ArrayList<Schedule>> scheduleCollection,RefreshScheduleInterface refreshScheduleInterface) {
 		this.context = context;
 		this.scheduleCollection = scheduleCollection;
 		this.listSchedulesByDay = listSchedulesByDay;
-
+this.refreshScheduleInterface=refreshScheduleInterface;
 		mInflater = LayoutInflater.from(context);
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
 
@@ -390,13 +393,13 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 									context);
 							if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
 								confirm.setConfirm(CommConstant.CONFIRM_CONFIRMED);
-								ws.updateConfirmStatus(schedule, confirm);
+								ws.updateConfirmStatus(schedule, confirm,confirmStatusInterface);
 							} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_DENIED) {
 								confirm.setConfirm(CommConstant.CONFIRM_CONFIRMED);
-								ws.updateConfirmStatus(schedule, confirm);
+								ws.updateConfirmStatus(schedule, confirm, confirmStatusInterface);
 							} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_CONFIRMED) {
 								confirm.setConfirm(CommConstant.CONFIRM_DENIED);
-								ws.updateConfirmStatus(schedule, confirm);
+								ws.updateConfirmStatus(schedule, confirm,confirmStatusInterface);
 							}
 						} else {
 							Utils.makeAPhoneCall(context,
@@ -410,7 +413,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 									context);
 							if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
 								confirm.setConfirm(CommConstant.CONFIRM_DENIED);
-								ws.updateConfirmStatus(schedule, confirm);
+								ws.updateConfirmStatus(schedule, confirm,confirmStatusInterface);
 							}
 						} else {
 							Utils.sendAMessage(context, participant.getMobile());
@@ -449,4 +452,20 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 			ex.printStackTrace();
 		}
 	}
+	
+	ConfirmInterface confirmStatusInterface=new ConfirmInterface() {
+		
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void onComplete() {
+			// TODO Auto-generated method stub
+			refreshScheduleInterface.onRefresh();
+		}
+	};
+	 
 }

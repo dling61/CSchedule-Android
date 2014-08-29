@@ -8,5 +8,6 @@ public class AppVersionTable {
 	public static final String os = "os";
 	public static final String osversion = "osversion";	
 	public static final String appVersionTable = "app_version_table";
+	public static final String msg="msg";
 
 }

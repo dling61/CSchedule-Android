@@ -12,12 +12,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import com.e2wstude.schedule.interfaces.ActvityInterface;
+import com.e2wstude.schedule.interfaces.RefreshScheduleInterface;
+import com.e2wstude.schedule.interfaces.ScheduleInterface;
 import com.e2wstudy.cschedule.CreateNewScheduleActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.adapter.ExpandableListScheduleAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
 import com.e2wstudy.cschedule.models.Schedule;
-import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.MyDate;
 import com.e2wstudy.cschedule.utils.Utils;
@@ -42,7 +44,7 @@ import android.widget.ExpandableListView.OnGroupClickListener;
  * @author Huyen
  * 
  */
-public class ScheduleFragment extends Fragment implements OnClickListener {
+public class ScheduleFragment extends Fragment implements OnClickListener,RefreshScheduleInterface{
 	ScheduleView view;
 	Context mContext;
 
@@ -57,6 +59,32 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	int group_scroll = 0;
 	String FORMAT_MMM_DD_YYYY = "MMM dd, yyyy";// format MMM-dd-yyyy
 	String FORMAT_FULL_DATE = "yyyy-MM-dd HH:mm:ss";// yyyy-MM-dd HH:mm:ss
+	ExpandableListScheduleAdapter adapter = null;
+	public static ScheduleFragment getInstance() {
+		return ScheduleFragment.getInstance();
+	}
+	
+	public void setInterface(ScheduleInterface scheduleInterface)
+	{
+		if(scheduleInterface!=null)
+		{
+			processDataForAdapterListview();
+		}
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = new ScheduleView(getActivity());
+		this.view = (ScheduleView) view;
+		return view;
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -65,10 +93,6 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		initData();
 		onClickListener();
 
-	}
-
-	public static ScheduleFragment getInstance() {
-		return ScheduleFragment.getInstance();
 	}
 
 	/**
@@ -86,7 +110,6 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_schedule) {
-		
 			Intent intent = new Intent(mContext,
 					CreateNewScheduleActivity.class);
 			intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
@@ -96,18 +119,24 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			type = ALL;
 			processDataForAdapterListview();
 			view.btn_all.setBackgroundResource(R.drawable.me_unselected);
-			view.btn_me.setBackgroundResource(R.drawable.btn_schedule_unselected);
-			view.btn_all.setTextColor(mContext.getResources().getColor(R.color.white));
-			view.btn_me.setTextColor(mContext.getResources().getColor(R.color.me_unselected));
-			
+			view.btn_me
+					.setBackgroundResource(R.drawable.btn_schedule_unselected);
+			view.btn_all.setTextColor(mContext.getResources().getColor(
+					R.color.white));
+			view.btn_me.setTextColor(mContext.getResources().getColor(
+					R.color.me_unselected));
+
 			// view.btn_today.setBackgroundResource(R.drawable.today_border);
 		} else if (v == view.btn_me) {
 			type = ME;
 			processDataForAdapterListview();
-			view.btn_all.setBackgroundResource(R.drawable.btn_schedule_unselected);
+			view.btn_all
+					.setBackgroundResource(R.drawable.btn_schedule_unselected);
 			view.btn_me.setBackgroundResource(R.drawable.me_unselected);
-			view.btn_all.setTextColor(mContext.getResources().getColor(R.color.me_unselected));
-			view.btn_me.setTextColor(mContext.getResources().getColor(R.color.white));
+			view.btn_all.setTextColor(mContext.getResources().getColor(
+					R.color.me_unselected));
+			view.btn_me.setTextColor(mContext.getResources().getColor(
+					R.color.white));
 		}
 		// will show all schedule for all day
 		else if (v == view.btn_refresh) {
@@ -119,91 +148,62 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			// view.btn_all.setBackgroundResource(R.drawable.me_border);
 			// view.btn_me.setBackgroundResource(R.drawable.me_border);
 			view.btn_today.setBackgroundResource(R.drawable.today_border);
-			view.btn_today.setTextColor(mContext.getResources().getColor(R.color.me_unselected));
+			view.btn_today.setTextColor(mContext.getResources().getColor(
+					R.color.me_unselected));
 		} else if (v == view.btn_today) {
 			isToday = !isToday;
-			if(isToday)
-			{
+			if (isToday) {
 				view.btn_today.setBackgroundResource(R.drawable.me_unselected);
-				view.btn_today.setTextColor(mContext.getResources().getColor(R.color.btn_schedule_unselected));
-			}
-			else
-			{
+				view.btn_today.setTextColor(mContext.getResources().getColor(
+						R.color.btn_schedule_unselected));
+			} else {
 				view.btn_today.setBackgroundResource(R.drawable.today_border);
-				view.btn_today.setTextColor(mContext.getResources().getColor(R.color.text_today_schedule));
+				view.btn_today.setTextColor(mContext.getResources().getColor(
+						R.color.text_today_schedule));
 			}
-			processDataForAdapterListview();
+			// processDataForAdapterListview();
 			// view.btn_all.setBackgroundResource(R.drawable.me_border);
 			// view.btn_me.setBackgroundResource(R.drawable.me_border);
 
-			
 		}
-	}
-
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View view = new ScheduleView(getActivity());
-		this.view = (ScheduleView) view;
-		return view;
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
-		IntentFilter filterRefreshUpdate = new IntentFilter();
-		filterRefreshUpdate.addAction(CommConstant.DELETE_SCHEDULE_COMPLETE);
-		filterRefreshUpdate.addAction(CommConstant.SCHEDULE_READY);
-		filterRefreshUpdate.addAction(CommConstant.UPDATE_SCHEDULE);
-		filterRefreshUpdate.addAction(CommConstant.CHANGE_CONFIRM_STATUS_SUCCESSFULLY);
-		getActivity().registerReceiver(scheduleReadyComplete,
-				filterRefreshUpdate);
+//		IntentFilter filterRefreshUpdate = new IntentFilter();
+//		filterRefreshUpdate.addAction(CommConstant.DELETE_SCHEDULE_COMPLETE);
+//		filterRefreshUpdate.addAction(CommConstant.SCHEDULE_READY);
+//		filterRefreshUpdate.addAction(CommConstant.UPDATE_SCHEDULE);
+//		filterRefreshUpdate
+//				.addAction(CommConstant.CHANGE_CONFIRM_STATUS_SUCCESSFULLY);
+//		getActivity().registerReceiver(scheduleReadyComplete,
+//				filterRefreshUpdate);
 	}
 
 	@Override
 	public void onDetach() {
 		// TODO Auto-generated method stub
 		super.onDetach();
-		getActivity().unregisterReceiver(scheduleReadyComplete);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
+//		getActivity().unregisterReceiver(scheduleReadyComplete);
 	}
 
 	private void initData() {
 		// get all data after that, go to tab
-
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		ws.getAllActivitys();
-		ws.getParticipantsFromWeb();
-		ws.getAllSchedule();
 		now = new Date().getTime();
 		dates = new ArrayList<Date>();
-
+		
 	}
 
 	/**
 	 * process data for adapter to set expandablelistview
 	 * */
 	private void processDataForAdapterListview() {
+
 		ArrayList<String> listDateString = new ArrayList<String>();
 		HashMap<String, ArrayList<Schedule>> listScheduleByDay = new HashMap<String, ArrayList<Schedule>>();
+
 		DatabaseHelper dbHelper = DatabaseHelper
 				.getSharedDatabaseHelper(mContext);
 
@@ -216,19 +216,25 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		SimpleDateFormat formatMmmDdYyyy = new SimpleDateFormat(
 				FORMAT_MMM_DD_YYYY);
 
-		switch (type) {	
+		switch (type) {
 		case ME:
-			view.btn_all.setBackgroundResource(R.drawable.btn_schedule_unselected);
+			view.btn_all
+					.setBackgroundResource(R.drawable.btn_schedule_unselected);
 			view.btn_me.setBackgroundResource(R.drawable.me_unselected);
-			view.btn_all.setTextColor(mContext.getResources().getColor(R.color.text_today_schedule));
-			view.btn_me.setTextColor(mContext.getResources().getColor(R.color.white));
+			view.btn_all.setTextColor(mContext.getResources().getColor(
+					R.color.text_today_schedule));
+			view.btn_me.setTextColor(mContext.getResources().getColor(
+					R.color.white));
 			schedules = dbHelper.getMeSchedule();
 			break;
 		case ALL:
 			view.btn_all.setBackgroundResource(R.drawable.me_unselected);
-			view.btn_me.setBackgroundResource(R.drawable.btn_schedule_unselected);
-			view.btn_all.setTextColor(mContext.getResources().getColor(R.color.white));
-			view.btn_me.setTextColor(mContext.getResources().getColor(R.color.text_today_schedule));
+			view.btn_me
+					.setBackgroundResource(R.drawable.btn_schedule_unselected);
+			view.btn_all.setTextColor(mContext.getResources().getColor(
+					R.color.white));
+			view.btn_me.setTextColor(mContext.getResources().getColor(
+					R.color.text_today_schedule));
 			schedules = dbHelper.getAllSchedules();
 			break;
 		default:
@@ -258,9 +264,10 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 							todayStr)) {
 						dates.add(date);
 					}
-					
-					//if not today or istoday&& datestring is today
-					if ((!isToday)|| (isToday && todayStrLess
+
+					// if not today or istoday&& datestring is today
+					if ((!isToday)
+							|| (isToday && todayStrLess
 									.equalsIgnoreCase(dateString))) {
 						Calendar c = Calendar.getInstance();
 
@@ -365,9 +372,17 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 					}
 
-					ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter(
-							getActivity(), listDateString, listScheduleByDay);
-					view.expand_list_schedule.setAdapter(adapter);
+					if (adapter == null) {
+						adapter = new ExpandableListScheduleAdapter(
+								getActivity(), listDateString,
+								listScheduleByDay,this);
+						view.expand_list_schedule.setAdapter(adapter);
+					} else {
+						adapter.listSchedulesByDay = listDateString;
+						adapter.scheduleCollection = listScheduleByDay;
+						adapter.notifyDataSetChanged();
+					}
+
 					// adapter.setNearestDate(closest);
 					Log.d("scroll position", group_scroll + "");
 
@@ -388,10 +403,9 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 					// scroll to nearest
 					view.expand_list_schedule.setSelectedGroup(group_scroll);
-				}
-				else
-				{
-					ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
+				} else {
+					// ExpandableListScheduleAdapter adapter = new
+					// ExpandableListScheduleAdapter();
 					view.expand_list_schedule.setAdapter(adapter);
 				}
 			} catch (Exception ex) {
@@ -450,5 +464,13 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	public void onDestroy() {
 		super.onDestroy();
 
+	}
+
+	@Override
+	public void onRefresh() {
+		// TODO Auto-generated method stub
+		Log.d("schedule fragment", "refresh schedule");
+		processDataForAdapterListview();
+		view.btn_refresh.setEnabled(true);
 	}
 }
