@@ -38,6 +38,7 @@ public class UpdateDialog extends Dialog {
 		getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		setContentView(R.layout.update_dialog);
 		setCanceledOnTouchOutside(false);
+		setCancelable(false);
 		btnOk = (Button) findViewById(R.id.btn_ok);
 	
 	}

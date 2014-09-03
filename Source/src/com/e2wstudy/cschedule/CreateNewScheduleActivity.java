@@ -228,22 +228,22 @@ public class CreateNewScheduleActivity extends Activity implements
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
 				myActivity = listActivity.get(position);
-				if(myActivity!=null)
-				{
+				if (myActivity != null) {
 					activity_id = myActivity.getActivity_ID();
-					view.et_new_activity_name.setText(myActivity.getActivity_name());
-					int tz=myActivity.getTimezoneId();
-					int alertId=myActivity.getAlertId();
-					TimeZoneModel timeZoneModel=DatabaseHelper.getSharedDatabaseHelper(mContext).getTimeZone(tz);
-					Alert alertModel=DatabaseHelper.getSharedDatabaseHelper(mContext).getAlert(alertId);
-					if(timeZoneModel!=null)
-					{
-						String timeZoneName=timeZoneModel.getTzname();
+					view.et_new_activity_name.setText(myActivity
+							.getActivity_name());
+					int tz = myActivity.getTimezoneId();
+					int alertId = myActivity.getAlertId();
+					TimeZoneModel timeZoneModel = DatabaseHelper
+							.getSharedDatabaseHelper(mContext).getTimeZone(tz);
+					Alert alertModel = DatabaseHelper.getSharedDatabaseHelper(
+							mContext).getAlert(alertId);
+					if (timeZoneModel != null) {
+						String timeZoneName = timeZoneModel.getTzname();
 						view.et_new_activity_time_zone.setText(timeZoneName);
 					}
-					if(alertModel!=null)
-					{
-						String alertType=alertModel.getAname();
+					if (alertModel != null) {
+						String alertType = alertModel.getAname();
 						view.et_new_activity_alert.setText(alertType);
 					}
 				}
@@ -254,7 +254,6 @@ public class CreateNewScheduleActivity extends Activity implements
 
 	}
 
-	
 	BroadcastReceiver updateSchedule = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
 
@@ -397,8 +396,7 @@ public class CreateNewScheduleActivity extends Activity implements
 				}
 				view.tvOnduty.setText(participant);
 				view.layout_onduty.setVisibility(View.VISIBLE);
-			}
-			else {
+			} else {
 				view.layout_onduty.setVisibility(View.GONE);
 			}
 		}
@@ -919,6 +917,13 @@ public class CreateNewScheduleActivity extends Activity implements
 				if (schedule_id > 0) {
 					thisSchedule = dbHelper.getScheduleSortedByID(schedule_id);
 				}
+
+				TimeZoneModel timeZoneModel = DatabaseHelper
+						.getSharedDatabaseHelper(mContext).getTimeZone(
+								thisSchedule.getTzid());
+				if (timeZoneModel != null) {
+					thisSchedule.setTzName(timeZoneModel.getTzname());
+				}
 				view.btn_remove_schedule.setVisibility(View.VISIBLE);
 				view.titleBar.layout_next.setVisibility(View.GONE);
 				view.titleBar.layout_save.setVisibility(View.VISIBLE);
@@ -948,7 +953,8 @@ public class CreateNewScheduleActivity extends Activity implements
 			TimeZoneModel currentTimeZone = DatabaseHelper
 					.getSharedDatabaseHelper(mContext).getTimeZone(timeZone);
 			if (currentTimeZone != null) {
-				view.et_new_activity_time_zone.setText(currentTimeZone.getTzname());
+				view.et_new_activity_time_zone.setText(currentTimeZone
+						.getTzname());
 			}
 
 			/**
@@ -998,10 +1004,10 @@ public class CreateNewScheduleActivity extends Activity implements
 				view.et_startTime.setEnabled(true);
 				view.et_on_duty.setEnabled(true);
 				view.et_new_activity_description.setEnabled(true);
-				view.et_new_activity_description.setFocusableInTouchMode(true);				
+				view.et_new_activity_description.setFocusableInTouchMode(true);
 				view.titleBar.layout_save.setEnabled(true);
 				view.titleBar.layout_next.setEnabled(true);
-				view.layout_onduty.setEnabled(true);	
+				view.layout_onduty.setEnabled(true);
 				view.layout_onduty.setVisibility(View.VISIBLE);
 			} else {
 				// only view
@@ -1277,11 +1283,12 @@ public class CreateNewScheduleActivity extends Activity implements
 		cv.put(ScheduleTable.alert, thisSchedule.getAlert());
 		cv.put(ScheduleTable.timeZone, thisSchedule.getTzid());
 		dbHelper.insertSchedule(cv);
-		
-		ContentValues contentValues=new ContentValues();
-		contentValues.put(ActivityTable.alertId	,thisSchedule.getAlert());
+
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(ActivityTable.alertId, thisSchedule.getAlert());
 		contentValues.put(ActivityTable.timeZoneId, thisSchedule.getTzid());
-//		contentValues.put(ActivityTable.service_ID, thisSchedule.getService_ID());
+		// contentValues.put(ActivityTable.service_ID,
+		// thisSchedule.getService_ID());
 		dbHelper.updateActivity(thisSchedule.getService_ID(), contentValues);
 	}
 
@@ -1459,12 +1466,12 @@ public class CreateNewScheduleActivity extends Activity implements
 		cv.put(ScheduleTable.alert, thisSchedule.getAlert());
 		dbHelper.updateSchedule(thisSchedule.getSchedule_ID(), cv);
 		dbHelper.deleteRelatedOnduty(thisSchedule.getSchedule_ID());
-	
-		
-		ContentValues contentValues=new ContentValues();
-		contentValues.put(ActivityTable.alertId	,thisSchedule.getAlert());
+
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(ActivityTable.alertId, thisSchedule.getAlert());
 		contentValues.put(ActivityTable.timeZoneId, thisSchedule.getTzid());
-//		contentValues.put(ActivityTable.service_ID, thisSchedule.getService_ID());
+		// contentValues.put(ActivityTable.service_ID,
+		// thisSchedule.getService_ID());
 		dbHelper.updateActivity(thisSchedule.getService_ID(), contentValues);
 	}
 

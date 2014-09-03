@@ -22,7 +22,7 @@ public class OnUpgradeBroadcastReceiver extends BroadcastReceiver {
 			android.util.Log.d("AppLog", "other apps were upgraded");
 			try {
 				
-				new SharedReference().setVersion(context, appVersion);
+//				new SharedReference().setVersion(context, appVersion);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -30,11 +30,10 @@ public class OnUpgradeBroadcastReceiver extends BroadcastReceiver {
 		}
 		android.util.Log.d("AppLog", "current app was upgraded");
 		try {
-			new SharedReference().setVersion(context,appVersion);
+//			new SharedReference().setVersion(context,appVersion);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		CommConstant.UPDATE=false;
-		CommConstant.MUST_UPDATE=false;
 	}
 }

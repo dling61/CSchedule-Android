@@ -37,9 +37,10 @@ public class ConfirmDialog extends Dialog {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		setContentView(R.layout.confirm_add_participant_dialog);
-		setCanceledOnTouchOutside(true);
+		setCanceledOnTouchOutside(false);
 		btnOk = (Button) findViewById(R.id.btn_ok);
 		btnCancel = (Button) findViewById(R.id.btn_cancel);
 		tvTitle = (TextView) findViewById(R.id.tv_title);

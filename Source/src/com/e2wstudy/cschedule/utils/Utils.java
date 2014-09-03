@@ -365,7 +365,7 @@ public class Utils {
 
 						@Override
 						public void onClick(View v) {
-							 CommConstant.UPDATE=false;
+							CommConstant.UPDATE=false;
 							dialog.dismiss();
 
 							// go to google play
