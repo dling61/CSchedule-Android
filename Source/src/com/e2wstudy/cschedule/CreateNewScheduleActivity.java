@@ -1062,26 +1062,31 @@ public class CreateNewScheduleActivity extends Activity implements
 
 	public void setStartTime() {
 		Log.d(" set start time utc", thisSchedule.getStarttime());
-		String[] startdatetime = MyDate.getTimeFromUTCToTimeZone(
-				thisSchedule.getStarttime(), thisSchedule.getTzName()).split(
-				":");
+		String[] startdatetime = MyDate
+				.getTimeFromUTCToTimeZoneStartEnd(thisSchedule.getStarttime(),
+						thisSchedule.getTzName()).replace("am", "")
+				.replace("pm", "").replace("AM", "").replace("PM", "").trim()
+				.split(":");
 
 		int hour = Integer.valueOf(startdatetime[0]);
 		int minute = Integer.valueOf(startdatetime[1]);
 		TimePickerDialog dialog = new TimePickerDialog(this, this, hour,
-				minute, true);
+				minute, false);
 		dialog.setTitle("Set Start Time");
 		dialog.show();
 		StartOrEnd = START;
 	}
 
 	public void setEndTime() {
-		String[] enddatetime = MyDate.getTimeFromUTCToTimeZone(
-				thisSchedule.getEndtime(), thisSchedule.getTzName()).split(":");
+		String[] enddatetime = MyDate
+				.getTimeFromUTCToTimeZoneStartEnd(thisSchedule.getEndtime(),
+						thisSchedule.getTzName()).replace("am", "")
+				.replace("pm", "").replace("AM", "").replace("PM", "").trim()
+				.split(":");
 		int hour = Integer.valueOf(enddatetime[0]);
 		int minute = Integer.valueOf(enddatetime[1]);
 		TimePickerDialog dialog = new TimePickerDialog(this, this, hour,
-				minute, true);
+				minute, false);
 		dialog.setTitle("Set End Time");
 		dialog.show();
 		StartOrEnd = END;
@@ -1110,13 +1115,19 @@ public class CreateNewScheduleActivity extends Activity implements
 		} else {
 			hourMinute = this.view.et_endTime.getText().toString().trim();
 		}
+		String amPm="am";
+//		if(hourMinute.contains("PM"))
+//		{
+//			amPm="pm";
+//		}
 		hourMinute = hourMinute.replace("AM", "").replace("PM", "");
 		hourMinute = hourMinute.trim() + ":00";
+//		hourMinute+=" "+amPm;
 		Log.d("hourMinute", hourMinute);
 		String weekday = MyDate.getWeekdayTimeZone(year + "-" + monthstr + "-"
 				+ daystr + " "
 				+ (hourMinute.equals("") ? "00:00:00" : hourMinute));
-
+Log.d("weekday",weekday);
 		String fulldate = weekday;
 		if (StartOrEnd == START) {
 			this.view.et_startDate.setText(fulldate);
@@ -1167,6 +1178,7 @@ public class CreateNewScheduleActivity extends Activity implements
 	public void onTimeSet(TimePicker arg0, int hour, int minute) {
 		// TODO Auto-generated method stub
 		String hourstr = String.valueOf(hour);
+		Log.d("hour set", hour + "");
 		if (hour < 10)
 			hourstr = "0" + hourstr;
 		String minutestr = String.valueOf(minute);

@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.adapter.MyPagerAdapter;
 import com.e2wstudy.cschedule.adapter.MyTabFactory;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -68,17 +69,44 @@ public class CategoryTabActivity extends FragmentActivity implements
 	public static boolean flag_schedule = false;
 	public static boolean flag_activity = false;
 	public static boolean flag_contact = false;
-	ArrayList<TimeZoneModel> listTimeZone=new ArrayList<TimeZoneModel>();
-	ArrayList<Alert>listAlert=new ArrayList<Alert>();
-	int tz=1;
-	int alert=1;
-	
+	ArrayList<TimeZoneModel> listTimeZone = new ArrayList<TimeZoneModel>();
+	ArrayList<Alert> listAlert = new ArrayList<Alert>();
+	int tz = 1;
+	int alert = 1;
+
 	public static CategoryTabActivity getTab(Context context) {
 		if (sharedTab == null) {
 			sharedTab = new CategoryTabActivity();
 		}
 		return sharedTab;
 	}
+
+	LoginInterface loginInterface = new LoginInterface() {
+
+		@Override
+		public void onStart() {
+			// TODO Auto-generated method stub
+			showLoading(CategoryTabActivity.this);
+		}
+
+		@Override
+		public void onFinish() {
+			// TODO Auto-generated method stub
+			dimissDialog();
+		}
+
+		@Override
+		public void onError() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			// TODO Auto-generated method stub
+
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,17 +119,14 @@ public class CategoryTabActivity extends FragmentActivity implements
 
 		mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
 		menuApp = (MenuAppView) findViewById(R.id.menuTop);
-		
 
-		if(listTimeZone!=null&&listTimeZone.size()>0)
-		{
-			tz=listTimeZone.get(0).getId();
+		if (listTimeZone != null && listTimeZone.size() > 0) {
+			tz = listTimeZone.get(0).getId();
 		}
-		if(listAlert!=null&&listAlert.size()>0)
-		{
-			alert=listAlert.get(0).getId();
+		if (listAlert != null && listAlert.size() > 0) {
+			alert = listAlert.get(0).getId();
 		}
-		
+
 		// Tab Initialization
 		initialiseTabHost();
 		initData();
@@ -153,8 +178,8 @@ public class CategoryTabActivity extends FragmentActivity implements
 
 	JsonHttpResponseHandler activityDownloadCompleteHandler = new JsonHttpResponseHandler() {
 		@Override
-		public void onSuccess(int statusCode,
-				Header[] headers, JSONObject response) {
+		public void onSuccess(int statusCode, Header[] headers,
+				JSONObject response) {
 			// TODO Auto-generated method stub
 			super.onSuccess(statusCode, headers, response);
 			final SharedReference ref = new SharedReference();
@@ -218,11 +243,10 @@ public class CategoryTabActivity extends FragmentActivity implements
 					String last_modified = service.getString("lastmodified");
 					newActivity.put(ActivityTable.last_ModifiedTime,
 							last_modified);
-				
+
 					Log.i("getActivitiesFromWeb lastmodified ", last_modified
 							+ "");
-					
-					
+
 					if (dbHelper.isActivityExisted(activityid) == false) {
 						newActivity.put(ActivityTable.alertId, alert);
 						newActivity.put(ActivityTable.timeZoneId, tz);
@@ -238,9 +262,9 @@ public class CategoryTabActivity extends FragmentActivity implements
 									+ " successfully!");
 					}
 
-					ws.getSharedmembersForActivity(activityid);
+					ws.getSharedmembersForActivity(activityid,loginInterface);
 					// TODO: will delete if service get all schedule implemented
-					ws.getSchedulesForActivity(activityid);
+					ws.getSchedulesForActivity(activityid,loginInterface);
 
 				}
 				// SEND broadcast to activity
@@ -264,20 +288,18 @@ public class CategoryTabActivity extends FragmentActivity implements
 			}
 		}
 
-//		public void onFailure(Throwable e, String response) {
+		// public void onFailure(Throwable e, String response) {
 		@Override
-		public void onFailure(int statusCode,
-				Header[] headers, String response,
-				Throwable throwable) {
+		public void onFailure(int statusCode, Header[] headers,
+				String response, Throwable throwable) {
 			// TODO Auto-generated method stub
-			super.onFailure(statusCode, headers,
-					response, throwable);
-//			dimissDialog();
+			super.onFailure(statusCode, headers, response, throwable);
+			// dimissDialog();
 			CategoryTabActivity.flag_activity = true;
-			if (flag_activity && flag_contact && flag_schedule
-					&& loadingPopup.isShowing()) {
-				dimissDialog();
-			}
+			// if (flag_activity && flag_contact && flag_schedule
+			// && loadingPopup.isShowing()) {
+			dimissDialog();
+			// }
 			final ToastDialog dialog = new ToastDialog(mContext, mContext
 					.getResources().getString(R.string.error_load_activity));
 			dialog.show();
@@ -290,30 +312,30 @@ public class CategoryTabActivity extends FragmentActivity implements
 			});
 		}
 
-		// public void onStart() {
-		// showLoading(mContext);
-		// };
-		//
+		@Override
 		public void onFinish() {
-			CategoryTabActivity.flag_activity = true;
-			if (flag_activity && flag_contact && flag_schedule
-					&& loadingPopup.isShowing()) {
-				dimissDialog();
-			}
+			// CategoryTabActivity.flag_activity = true;
+			// if (flag_activity && flag_contact && flag_schedule
+			// && loadingPopup.isShowing()) {
+			dimissDialog();
+			// }
+
+		};
+
+		@Override
+		public void onStart() {
+			showLoading(CategoryTabActivity.this);
 		};
 	};
 
 	private void initData() {
+
 		// get all data after that, go to tab
 		WebservicesHelper ws = new WebservicesHelper(mContext);
-		
+		// showLoading(CategoryTabActivity.this);
 		ws.getAllActivitys(activityDownloadCompleteHandler);
-		ws.getParticipantsFromWeb();
-//		ws.getAllSchedule();
-//		ws.getServerSetting();
-//		if (!CommConstant.DOWNLOAD_SETTING) {
-			
-//		}
+		ws.getParticipantsFromWeb(loginInterface);
+
 	}
 
 	// show loading
@@ -322,8 +344,10 @@ public class CategoryTabActivity extends FragmentActivity implements
 			loadingPopup = new LoadingPopupViewHolder(mContext,
 					DIALOG_LOADING_THEME);
 		}
-		loadingPopup.setCancelable(false);
-		loadingPopup.show();
+		loadingPopup.setCancelable(true);
+		if (!loadingPopup.isShowing()) {
+			loadingPopup.show();
+		}
 	}
 
 	public void dimissDialog() {
@@ -455,11 +479,15 @@ public class CategoryTabActivity extends FragmentActivity implements
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				SharedReference ref=new SharedReference();
-				ref.setLastestParticipantLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
-				ref.setLastestScheduleLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
-				ref.setLastestServiceLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
-				DatabaseHelper.getSharedDatabaseHelper(mContext).deleteTablesExitApp();
+				SharedReference ref = new SharedReference();
+				ref.setLastestParticipantLastModifiedTime(mContext,
+						CommConstant.DEFAULT_DATE);
+				ref.setLastestScheduleLastModifiedTime(mContext,
+						CommConstant.DEFAULT_DATE);
+				ref.setLastestServiceLastModifiedTime(mContext,
+						CommConstant.DEFAULT_DATE);
+				DatabaseHelper.getSharedDatabaseHelper(mContext)
+						.deleteTablesExitApp();
 				System.exit(0);
 			}
 		});

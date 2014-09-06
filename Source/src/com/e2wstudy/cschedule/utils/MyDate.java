@@ -9,11 +9,19 @@ public class MyDate {
 
 	public final static int STANDARD = 1;
 	public final static int SIMPLE = 2;
+	public final static int TIME = 3;
 
+	public static final String DATE_TIME_FORMAT_STANDARD = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_TIME_FORMAT_SIMPLE = "yyyy-MM-dd";
+	public static final String TIME_ZONE_UTC = "UTC";
+	public static final String TIME_FORMAT_STANDARD = "hh:mm a";
+	public static final String START_END_TIME_FORMAT="HH:mm";
+	public final static int START_END=5;
 	// public final static int WEEKDAY = 3;
 
 	public static String transformUTCDateToLocalDate(int format, String UTCTime) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date value = null;
 		try {
@@ -27,10 +35,13 @@ public class MyDate {
 		SimpleDateFormat dateFormatter = null;
 		switch (format) {
 		case STANDARD:
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
 			break;
 		case SIMPLE:
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_SIMPLE);
+			break;
+		case TIME:
+			dateFormatter = new SimpleDateFormat(TIME_FORMAT_STANDARD);
 			break;
 		}
 
@@ -40,8 +51,10 @@ public class MyDate {
 
 	}
 
-	public static String convertUTCDateToCustomTimezone(String tzName,int format, String UTCTime) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static String convertUTCDateToCustomTimezone(String tzName,
+			int format, String UTCTime) {
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date value = null;
 		try {
@@ -55,10 +68,13 @@ public class MyDate {
 		SimpleDateFormat dateFormatter = null;
 		switch (format) {
 		case STANDARD:
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
 			break;
 		case SIMPLE:
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_SIMPLE);
+			break;
+		case TIME:
+			dateFormatter = new SimpleDateFormat(TIME_FORMAT_STANDARD);
 			break;
 		}
 
@@ -67,10 +83,10 @@ public class MyDate {
 		return dt;
 
 	}
-	
-	
+
 	public static String transformPhoneDateTimeToUTCFormat(String localDatetime) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getDefault());
 		Date value = null;
 		try {
@@ -82,14 +98,16 @@ public class MyDate {
 			e.printStackTrace();
 		}
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(
-				"yyyy-MM-dd HH:mm:ss");
+				DATE_TIME_FORMAT_STANDARD);
 		dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		String utct = dateFormatter.format(value);
 		return utct;
 	}
-	
-	public static String transformLocalDateTimeToUTCFormat(String timeZone,String localDatetime) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	public static String transformLocalDateTimeToUTCFormat(String timeZone,
+			String localDatetime) {
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
 		Date value = null;
 		try {
@@ -101,29 +119,29 @@ public class MyDate {
 			e.printStackTrace();
 		}
 		SimpleDateFormat dateFormatter = new SimpleDateFormat(
-				"yyyy-MM-dd HH:mm:ss");
+				DATE_TIME_FORMAT_STANDARD);
 		dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		String utct = dateFormatter.format(value);
 		return utct;
 	}
-	
+
 	public static String getCurrentDateTime() {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
+		SimpleDateFormat df = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
+
 		Date d = new Date();
 		return df.format(d);
 	}
-	
 
 	public static String getCurrentDateTime(String timeZone) {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat df = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
 		df.setTimeZone(TimeZone.getTimeZone(timeZone));
 		Date d = new Date();
 		return df.format(d);
 	}
 
 	public static String transformCurrentDateUTCDateToLocalDate(int format) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date value = null;
 		try {
@@ -137,10 +155,13 @@ public class MyDate {
 		SimpleDateFormat dateFormatter = null;
 		switch (format) {
 		case STANDARD:
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
 			break;
 		case SIMPLE:
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_SIMPLE);
+			break;
+		case TIME:
+			dateFormatter = new SimpleDateFormat(TIME_FORMAT_STANDARD);
 			break;
 		}
 
@@ -151,7 +172,8 @@ public class MyDate {
 	}
 
 	public static String getWeekdayFromUTCTime(String UTCTime) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date value = null;
 		try {
@@ -231,23 +253,9 @@ public class MyDate {
 	}
 
 	public static String getTimeWithAPMFromUTCTime(String UTCTime) {
-		String datetime = MyDate.transformUTCDateToLocalDate(STANDARD, UTCTime);
-		String[] parts = datetime.split(" ");
-		String time = parts[1];
-		String[] timecomponents = time.split(":");
-		String hour = timecomponents[0];
-		String minite = timecomponents[1];
-		int hourint = Integer.valueOf(hour);
-		if (hourint > 12) {
-			return (hourint - 12) + ":" + minite + " PM";
-		} else {
-			return hour + ":" + minite + " AM";
-		}
-	}
-
-	public static String getTimeFromTimeZone(String UTCTime) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
+		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date value = null;
 		try {
 			value = formatter.parse(UTCTime);
@@ -258,25 +266,35 @@ public class MyDate {
 			e.printStackTrace();
 		}
 		SimpleDateFormat dateFormatter = null;
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		dateFormatter = new SimpleDateFormat(TIME_FORMAT_STANDARD);
+		dateFormatter.setTimeZone(TimeZone.getDefault());
 		String dt = dateFormatter.format(value);
-		String[] parts = dt.split(" ");
-		String time = parts[1];
-		String[] timecomponents = time.split(":");
-		String hour = timecomponents[0];
-		String minite = timecomponents[1];
-		int hourint = Integer.valueOf(hour);
-		if (hourint > 12) {
-			return (hourint - 12) + ":" + minite + " PM";
-		} else {
-			return hour + ":" + minite + " AM";
-		}
+		return dt;
 	}
-	
-	
+
+	public static String getTimeFromTimeZone(String UTCTime) {
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
+
+		Date value = null;
+		try {
+			value = formatter.parse(UTCTime);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		SimpleDateFormat dateFormatter = null;
+		dateFormatter = new SimpleDateFormat(TIME_FORMAT_STANDARD);
+		String dt = dateFormatter.format(value);
+		return dt;
+	}
+
 	public static boolean IsFirstDateLaterThanSecondDate(String firstdate,
 			String seconddate) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		try {
 			Date date1 = formatter.parse(firstdate);
@@ -297,7 +315,7 @@ public class MyDate {
 	 * */
 	public static String getDateTime(String dateTime, String changeTimeZone) {
 		SimpleDateFormat sourceFormat = new SimpleDateFormat(
-				"yyyy-MM-dd HH:mm:ss");
+				DATE_TIME_FORMAT_STANDARD);
 		sourceFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date parsed;
 		try {
@@ -305,7 +323,7 @@ public class MyDate {
 			parsed = sourceFormat.parse(dateTime);
 			TimeZone tz = TimeZone.getTimeZone(changeTimeZone);
 			SimpleDateFormat destFormat = new SimpleDateFormat(
-					"yyyy-MM-dd HH:mm:ss");
+					DATE_TIME_FORMAT_STANDARD);
 			destFormat.setTimeZone(tz);
 
 			return destFormat.format(parsed);
@@ -318,7 +336,8 @@ public class MyDate {
 
 	public static String transformToCustomUtc(String timeZone, int format,
 			String UTCTime) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
 		Date value = null;
 		try {
@@ -332,10 +351,10 @@ public class MyDate {
 		SimpleDateFormat dateFormatter = null;
 		switch (format) {
 		case STANDARD:
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
 			break;
 		case SIMPLE:
-			dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_SIMPLE);
 			break;
 		}
 
@@ -345,10 +364,11 @@ public class MyDate {
 
 	}
 
-	public static String getWeekdayTimeZone( String time) {
+	public static String getWeekdayTimeZone(String time) {
 		String dateFormat = "EEE, MMM dd, yyyy";
-		SimpleDateFormat formatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
-		
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
+
 		Date value = null;
 		try {
 			value = formatter.parse(time);
@@ -365,10 +385,8 @@ public class MyDate {
 		return dt;
 
 	}
-	
-	
-	public static String getDateFromUTCToTimeZone(String date,String timeZone)
-	{
+
+	public static String getDateFromUTCToTimeZone(String date, String timeZone) {
 		String dateFormat = "EEE, MMM dd, yyyy";
 		SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 		formatter.setTimeZone(TimeZone.getTimeZone(timeZone));
@@ -381,13 +399,14 @@ public class MyDate {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		formatter = new SimpleDateFormat("yyyy-MM-dd");		
+		formatter = new SimpleDateFormat(DATE_TIME_FORMAT_SIMPLE);
 		return formatter.format(value);
 	}
-	
+
 	public static String getWeekdayUTCFromLocal(String timeZone, String time) {
 		String dateFormat = "EEE, MMM dd, yyyy";
-		SimpleDateFormat formatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
 		formatter.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC));
 		Date value = null;
 		try {
@@ -412,102 +431,63 @@ public class MyDate {
 	public static String getTimeFromLocalToLocalTime(String lastTime,
 			String lastTimeZone, String currentTimeZone) {
 		String utcTime = convertLocalTimeToUTCTime(lastTime, lastTimeZone);
-		String datetime = convertUTCDateToLocalDate(currentTimeZone, STANDARD,
+		String datetime = convertUTCDateToLocalDate(currentTimeZone, TIME,
 				utcTime);
-
-		String[] parts = datetime.split(" ");
-		String time = parts[1];
-		String[] timecomponents = time.split(":");
-		String hour = timecomponents[0];
-		String minite = timecomponents[1];
-		int hourint = Integer.valueOf(hour);
-		if (hourint > 12) {
-			return (hourint - 12) + ":" + minite + " PM";
-		} else {
-			return hour + ":" + minite + " AM";
-		}
+		return datetime;
 	}
 
 	// get time from local time to another local time
 	public static String getTimeFromUTCToLocalTime(String lastTime,
 			String currentTimeZone) {
-
-		String datetime = convertUTCDateToLocalDate(currentTimeZone, STANDARD,
+		String datetime = convertUTCDateToLocalDate(currentTimeZone, TIME,
 				lastTime);
+		return datetime;	
+	}
 
-		String[] parts = datetime.split(" ");
-		String time = parts[1];
-		String[] timecomponents = time.split(":");
-		String hour = timecomponents[0];
-		String minite = timecomponents[1];
-		int hourint = Integer.valueOf(hour);
-		if (hourint > 12) {
-			return (hourint - 12) + ":" + minite + " PM";
-		} else {
-			return hour + ":" + minite + " AM";
-		}
+	// get time from local time to another local time
+	public static String getTimeFromUTCToTimeZone(String lastTime,
+			String currentTimeZone) {
+
+		String datetime = convertUTCDateToLocalDate(currentTimeZone, TIME,
+				lastTime);
+		return datetime;
 	}
 	
-	// get time from local time to another local time
-		public static String getTimeFromUTCToTimeZone(String lastTime,
+	
+	
+	// get time from local time to another local time set start end
+		public static String getTimeFromUTCToTimeZoneStartEnd(String lastTime,
 				String currentTimeZone) {
 
-			String datetime = convertUTCDateToLocalDate(currentTimeZone, STANDARD,
+			String datetime = convertUTCDateToLocalDate(currentTimeZone, START_END,
 					lastTime);
-
-			String[] parts = datetime.split(" ");
-			String time = parts[1];
-			String[] timecomponents = time.split(":");
-			String hour = timecomponents[0];
-			String minite = timecomponents[1];
-			int hourint = Integer.valueOf(hour);
-			if (hourint > 12) {
-				return (hourint - 12) + ":" + minite;
-			} else {
-				return hour + ":" + minite;
-			}
-		}
-		
-		
-		public static String getTimeFromTimeZoneToUTC(String lastTime,
-				String currentTimeZone) {
-
-			SimpleDateFormat formatter = new SimpleDateFormat(
-					DATE_TIME_FORMAT_STANDARD);
-			formatter.setTimeZone(TimeZone.getTimeZone(currentTimeZone));
-			Date value = null;
-			try {
-				value = formatter.parse(lastTime);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			} catch (java.text.ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			SimpleDateFormat dateFormatter = null;			
-			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
-
-			dateFormatter.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC));
-			String datetime = dateFormatter.format(value);
 			return datetime;
-//			String[] parts = datetime.split(" ");
-//			String time = parts[1];
-//			String[] timecomponents = time.split(":");
-//			String hour = timecomponents[0];
-//			String minite = timecomponents[1];
-//			int hourint = Integer.valueOf(hour);
-//			if (hourint > 12) {
-//				return (hourint - 12) + ":" + minite;
-//			} else {
-//				return hour + ":" + minite;
-//			}
 		}
-		
-		
+	
 
-	public static final String DATE_TIME_FORMAT_STANDARD = "yyyy-MM-dd HH:mm:ss";
-	public static final String DATE_TIME_FORMAT_SIMPLE = "yyyy-MM-dd";
-	public static final String TIME_ZONE_UTC = "UTC";
+	public static String getTimeFromTimeZoneToUTC(String lastTime,
+			String currentTimeZone) {
+
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				DATE_TIME_FORMAT_STANDARD);
+		formatter.setTimeZone(TimeZone.getTimeZone(currentTimeZone));
+		Date value = null;
+		try {
+			value = formatter.parse(lastTime);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		SimpleDateFormat dateFormatter = null;
+		dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_STANDARD);
+
+		dateFormatter.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_UTC));
+		String datetime = dateFormatter.format(value);
+		return datetime;
+	}
+
 
 	// convert local time to UTC time
 	public static String convertLocalTimeToUTCTime(String localTime,
@@ -553,6 +533,12 @@ public class MyDate {
 		case SIMPLE:
 			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_SIMPLE);
 			break;
+		case TIME:
+			dateFormatter = new SimpleDateFormat(TIME_FORMAT_STANDARD);
+			break;
+		case START_END:
+			dateFormatter = new SimpleDateFormat(START_END_TIME_FORMAT);
+			break;
 		}
 
 		dateFormatter.setTimeZone(TimeZone.getTimeZone(timeZone));
@@ -582,6 +568,9 @@ public class MyDate {
 			break;
 		case SIMPLE:
 			dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT_SIMPLE);
+			break;
+		case TIME:
+			dateFormatter = new SimpleDateFormat(TIME_FORMAT_STANDARD);
 			break;
 		}
 

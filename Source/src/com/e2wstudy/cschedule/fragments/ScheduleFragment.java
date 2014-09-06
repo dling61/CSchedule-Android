@@ -211,9 +211,12 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 		SimpleDateFormat fullDatetimeFormat = new SimpleDateFormat(
 				FORMAT_FULL_DATE);
+		fullDatetimeFormat.setTimeZone(TimeZone.getDefault());
+		
 		SimpleDateFormat formatMmmDdYyyy = new SimpleDateFormat(
 				FORMAT_MMM_DD_YYYY);
-
+		fullDatetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		
 		switch (type) {	
 		case ME:
 			view.btn_all.setBackgroundResource(R.drawable.btn_schedule_unselected);
@@ -240,9 +243,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			String todayStrLess = formatMmmDdYyyy.format(today);
 
 			// group schedule same date
-			for (Schedule schedule : schedules) {
-
-				fullDatetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			for (Schedule schedule : schedules) {				
 				Date date;
 				try {
 					date = (Date) fullDatetimeFormat.parse(schedule
@@ -417,7 +418,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
 			view.expand_list_schedule.setAdapter(adapter);
 
-			ArrayList<Schedule> listSchedules = new ArrayList<>();
+			ArrayList<Schedule> listSchedules = new ArrayList<Schedule>();
 			switch (type) {
 			case ME:
 				listSchedules = dbHelper.getAllSchedules();

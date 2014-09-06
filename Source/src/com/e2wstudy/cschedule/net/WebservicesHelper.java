@@ -4,17 +4,16 @@
 package com.e2wstudy.cschedule.net;
 
 import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.Header;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.CategoryTabActivity;
 import com.e2wstudy.cschedule.LoginActivity;
 import com.e2wstudy.cschedule.R;
@@ -45,13 +44,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.DownloadListener;
 import android.widget.Toast;
 
 import com.e2wstudy.cschedule.models.AppVersionTable;
@@ -70,7 +67,7 @@ public class WebservicesHelper {
 
 	// progress dialog
 	ProgressDialog progress = null;
-//	DatabaseHelper DatabaseHelper.getSharedDatabaseHelper(Context);
+	// DatabaseHelper DatabaseHelper.getSharedDatabaseHelper(Context);
 	public static LoadingPopupViewHolder loadingPopup;
 	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
 
@@ -88,12 +85,15 @@ public class WebservicesHelper {
 	public void showLoading(Context Context) {
 		try {
 			if (loadingPopup == null) {
-				loadingPopup = new LoadingPopupViewHolder(Context,
+				loadingPopup = new LoadingPopupViewHolder(
+						context.getApplicationContext(),
 						CategoryTabActivity.DIALOG_LOADING_THEME);
 			}
 			loadingPopup.setCancelable(true);
 
-			loadingPopup.show();
+			if (!loadingPopup.isShowing()) {
+				loadingPopup.show();
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -132,7 +132,8 @@ public class WebservicesHelper {
 			progress.setMessage(Context.getResources().getString(
 					R.string.processing));
 		}
-//		DatabaseHelper.getSharedDatabaseHelper(Context) = DatabaseHelper.getSharedDatabaseHelper(Context);
+		// DatabaseHelper.getSharedDatabaseHelper(Context) =
+		// DatabaseHelper.getSharedDatabaseHelper(Context);
 
 		if (loadingPopup == null) {
 			loadingPopup = new LoadingPopupViewHolder(Context,
@@ -200,8 +201,7 @@ public class WebservicesHelper {
 										if (response.get(CommConstant.OWNER_ID) != null) {
 
 											((Activity) context).finish();
-											Intent intent = new Intent(
-													context,
+											Intent intent = new Intent(context,
 													LoginActivity.class);
 											intent.putExtra(CommConstant.EMAIL,
 													email);
@@ -366,44 +366,14 @@ public class WebservicesHelper {
 		String userId;
 		String deviceId;
 		String registrationId;
-
-		// show loading
-		public void showLoading(Context Context) {
-			try {
-				// if (loadingPopup == null) {
-				// loadingPopup = new LoadingPopupViewHolder(Context,
-				// CategoryTabActivity.DIALOG_LOADING_THEME);
-				// }
-				// loadingPopup.setCancelable(false);
-
-				loadingPopup.show();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		public void dimissDialog() {
-			try {
-				// if (loadingPopup != null && loadingPopup.isShowing()) {
-				loadingPopup.dismiss();
-				loadingPopup.cancel();
-				// }
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
+LoginInterface loginInterface;
 		public RegisterGcm(Context Context, final String userId,
-				final String deviceId, String registrationId) {
+				final String deviceId, String registrationId,LoginInterface loginInterface) {
 			this.Context = Context;
 			this.userId = userId;
 			this.deviceId = deviceId;
 			this.registrationId = registrationId;
-			if (loadingPopup == null) {
-				loadingPopup = new LoadingPopupViewHolder(Context,
-						DIALOG_LOADING_THEME);
-			}
-			loadingPopup.setCancelable(true);
+			this.loginInterface=loginInterface;
 
 		}
 
@@ -411,8 +381,8 @@ public class WebservicesHelper {
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
 			super.onPreExecute();
-			// dialog.show();
-			showLoading(Context);
+			loginInterface.onStart();
+			
 		}
 
 		@Override
@@ -485,15 +455,15 @@ public class WebservicesHelper {
 				ex.printStackTrace();
 
 			}
-			dimissDialog();
+			loginInterface.onFinish();
 		}
 	}
 
 	/**
 	 * Login if success go to TabAcivity else show Toast notify login fail
 	 * */
-	public void login(final String email, final String password)
-			throws JSONException {
+	public void login(final String email, final String password,
+			final LoginInterface loginInterface) throws JSONException {
 		String signInUrl = BaseUrl.BASEURL + "creator?action=signin" + "&"
 				+ BaseUrl.URL_POST_FIX;
 		Log.i("sign in url is", signInUrl);
@@ -506,430 +476,222 @@ public class WebservicesHelper {
 			StringEntity entity = new StringEntity(jsonParams.toString());
 			Log.d("login param", jsonParams.toString());
 
-			// if (Utils.isNetworkOnline(Context)) {
-			client.post(null, signInUrl, entity, "application/json",
-					new JsonHttpResponseHandler() {
+			if (Utils.isNetworkOnline(context)) {
+				client.post(null, signInUrl, entity, "application/json",
+						new JsonHttpResponseHandler() {
 
-						@Override
-						public void onSuccess(int statusCode, Header[] headers,
-								JSONObject response) {
-							// TODO Auto-generated method stub
-							super.onSuccess(statusCode, headers, response);
-							Log.i("successful response", response.toString());
-							try {
-
-								String username = response
-										.getString("username");
-								SharedReference sharedReference = new SharedReference();
-								String lastUsername=sharedReference.getUsername(context);
-								if(!lastUsername.equals(username))
-								{
-									sharedReference.setLastestServiceLastModifiedTime(context,CommConstant.DEFAULT_DATE);
-									sharedReference.setLastestParticipantLastModifiedTime(context,CommConstant.DEFAULT_DATE);
-									sharedReference.setLastestScheduleLastModifiedTime(context,CommConstant.DEFAULT_DATE);
-//									DatabaseHelper.getSharedDatabaseHelper(Context).evacuateDatabase();
-								}
-								
-								sharedReference.setUsername(context, username);
-
-								sharedReference.setAccount(context,
+							@Override
+							public void onSuccess(int statusCode,
+									Header[] headers, JSONObject response) {
+								// TODO Auto-generated method stub
+								super.onSuccess(statusCode, headers, response);
+								Log.i("successful response",
 										response.toString());
-								int ownerid = response.getInt("ownerid");
-								Log.i("SignIn ownerid ", ownerid + "");
-								int idCostant = ownerid * 10000;
+								try {
 
-								sharedReference.setCurrentParticipant(context,
-										idCostant + "");
+									String username = response
+											.getString("username");
+									SharedReference sharedReference = new SharedReference();
+									String lastUsername = sharedReference
+											.getUsername(context);
+									if (!lastUsername.equals(username)) {
+										sharedReference
+												.setLastestServiceLastModifiedTime(
+														context,
+														CommConstant.DEFAULT_DATE);
+										sharedReference
+												.setLastestParticipantLastModifiedTime(
+														context,
+														CommConstant.DEFAULT_DATE);
+										sharedReference
+												.setLastestScheduleLastModifiedTime(
+														context,
+														CommConstant.DEFAULT_DATE);
+										// DatabaseHelper.getSharedDatabaseHelper(Context).evacuateDatabase();
+									}
 
-								// Check id
-								int nextserviceidOriginal = response
-										.getInt("serviceid");
-								Log.i("nextserviceidOriginal",
-										nextserviceidOriginal + "");
-								int nextmemberidOriginal = response
-										.getInt("memberid");
-								Log.i("nextmemberidOriginal",
-										nextmemberidOriginal + "");
-								int nextscheduleidOriginal = response
-										.getInt("scheduleid");
-								Log.i("nextscheduleidOriginal",
-										nextscheduleidOriginal + "");
-								int nextserviceid = -1;
-								// If it is the first time to establish an
-								// activity
-								if (nextserviceidOriginal == 0) {
-									nextserviceid = idCostant
-											+ nextserviceidOriginal + 1;
+									sharedReference.setUsername(context,
+											username);
 
+									sharedReference.setAccount(context,
+											response.toString());
+									int ownerid = response.getInt("ownerid");
+									Log.i("SignIn ownerid ", ownerid + "");
+									int idCostant = ownerid * 10000;
+
+									sharedReference.setCurrentParticipant(
+											context, idCostant + "");
+
+									// Check id
+									int nextserviceidOriginal = response
+											.getInt("serviceid");
+									Log.i("nextserviceidOriginal",
+											nextserviceidOriginal + "");
+									int nextmemberidOriginal = response
+											.getInt("memberid");
+									Log.i("nextmemberidOriginal",
+											nextmemberidOriginal + "");
+									int nextscheduleidOriginal = response
+											.getInt("scheduleid");
+									Log.i("nextscheduleidOriginal",
+											nextscheduleidOriginal + "");
+									int nextserviceid = -1;
+									// If it is the first time to establish an
+									// activity
+									if (nextserviceidOriginal == 0) {
+										nextserviceid = idCostant
+												+ nextserviceidOriginal + 1;
+
+									}
+									// If activities has established
+									else {
+										nextserviceid = nextserviceidOriginal + 1;
+										Log.i("SignIn nextserviceid ",
+												nextserviceid + "");
+									}
+									int nextmemberid = -1;
+									// If it is the first time to establish a
+									// member
+									if (nextmemberidOriginal == 0) {
+										nextmemberid = idCostant
+												+ nextmemberidOriginal + 1;
+										Log.i("SignIn nextserviceid ",
+												nextmemberid + "");
+									}
+									// If members has established
+									else {
+										nextmemberid = nextmemberidOriginal + 1;
+										Log.i("SignIn nextserviceid ",
+												nextmemberid + "");
+									}
+									int nextscheduleid = -1;
+									// If it is the first time to establish a
+									// schedule
+									if (nextscheduleidOriginal == 0) {
+										nextscheduleid = idCostant
+												+ nextscheduleidOriginal + 1;
+										Log.i("SignIn nextscheduleid ",
+												nextscheduleid + "");
+									} else {
+										nextscheduleid = nextscheduleidOriginal + 1;
+										Log.i("SignIn nextscheduleid ",
+												nextscheduleid + "");
+									}
+
+									int nextSharedMemberId = -1;
+									// If it is the first time to establish a
+									// schedule
+									if (nextscheduleidOriginal == 0) {
+										nextscheduleid = idCostant
+												+ nextscheduleidOriginal + 1;
+										Log.i("SignIn nextscheduleid ",
+												nextscheduleid + "");
+									} else {
+										nextscheduleid = nextscheduleidOriginal + 1;
+										Log.i("SignIn nextscheduleid ",
+												nextscheduleid + "");
+									}
+
+									sharedReference.setInformationUserLogined(
+											context, username, email, ownerid,
+											nextserviceid, nextmemberid,
+											nextscheduleid);
+
+									new RegisterGcm(context, String
+											.valueOf(ownerid), Utils
+											.getDeviceId(context),
+											new SharedReference()
+													.getRegistrationId(context),loginInterface)
+											.execute();
+
+									uploadRecentEditedActivitiesToWeb();
+									uploadRecentEditedParticipantsToWeb();
+									uploadRecentNewActivitiesToWeb();
+									uploadRecentNewParticipantsToWeb();
+									uploadRecentNewSchedulesToWeb();
+
+									try {
+										dimissDialog();
+									} catch (Exception ex) {
+										ex.printStackTrace();
+									}
+
+									((Activity) context).finish();
+									Utils.postLeftToRight(context);
+
+									Intent intent = new Intent(context,
+											CategoryTabActivity.class);
+									context.startActivity(intent);
+
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
-								// If activities has established
-								else {
-									nextserviceid = nextserviceidOriginal + 1;
-									Log.i("SignIn nextserviceid ",
-											nextserviceid + "");
-								}
-								int nextmemberid = -1;
-								// If it is the first time to establish a
-								// member
-								if (nextmemberidOriginal == 0) {
-									nextmemberid = idCostant
-											+ nextmemberidOriginal + 1;
-									Log.i("SignIn nextserviceid ", nextmemberid
-											+ "");
-								}
-								// If members has established
-								else {
-									nextmemberid = nextmemberidOriginal + 1;
-									Log.i("SignIn nextserviceid ", nextmemberid
-											+ "");
-								}
-								int nextscheduleid = -1;
-								// If it is the first time to establish a
-								// schedule
-								if (nextscheduleidOriginal == 0) {
-									nextscheduleid = idCostant
-											+ nextscheduleidOriginal + 1;
-									Log.i("SignIn nextscheduleid ",
-											nextscheduleid + "");
-								} else {
-									nextscheduleid = nextscheduleidOriginal + 1;
-									Log.i("SignIn nextscheduleid ",
-											nextscheduleid + "");
-								}
+							}
 
-								int nextSharedMemberId = -1;
-								// If it is the first time to establish a
-								// schedule
-								if (nextscheduleidOriginal == 0) {
-									nextscheduleid = idCostant
-											+ nextscheduleidOriginal + 1;
-									Log.i("SignIn nextscheduleid ",
-											nextscheduleid + "");
-								} else {
-									nextscheduleid = nextscheduleidOriginal + 1;
-									Log.i("SignIn nextscheduleid ",
-											nextscheduleid + "");
-								}
+							@Override
+							public void onFailure(int statusCode,
+									Header[] headers, String responseString,
+									Throwable throwable) {
+								// TODO Auto-generated method stub
+								super.onFailure(statusCode, headers,
+										responseString, throwable);
 
-								sharedReference.setInformationUserLogined(
-										context, username, email, ownerid,
-										nextserviceid, nextmemberid,
-										nextscheduleid);
-
-								new RegisterGcm(context, String
-										.valueOf(ownerid), Utils
-										.getDeviceId(context),
-										new SharedReference()
-												.getRegistrationId(context))
-										.execute();
-
-								uploadRecentEditedActivitiesToWeb();
-								uploadRecentEditedParticipantsToWeb();
-								uploadRecentNewActivitiesToWeb();
-								uploadRecentNewParticipantsToWeb();
-								uploadRecentNewSchedulesToWeb();
+								Log.d("login", "failure " + responseString);
 
 								try {
+
 									dimissDialog();
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
-
-								((Activity) context).finish();
-								Utils.postLeftToRight(context);
-
-								Intent intent = new Intent(context,
-										CategoryTabActivity.class);
-								context.startActivity(intent);
-
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-
-						public void onSuccess(JSONObject response) {
-							Log.i("successful response", response.toString());
-							try {
-
-								String username = response
-										.getString("username");
-								SharedReference sharedReference = new SharedReference();
-								sharedReference.setUsername(context, username);
-
-								sharedReference.setAccount(context,
-										response.toString());
-								int ownerid = response.getInt("ownerid");
-								Log.i("SignIn ownerid ", ownerid + "");
-								int idCostant = ownerid * 10000;
-
-								sharedReference.setCurrentParticipant(context,
-										idCostant + "");
-
-								// Check id
-								int nextserviceidOriginal = response
-										.getInt("serviceid");
-								Log.i("nextserviceidOriginal",
-										nextserviceidOriginal + "");
-								int nextmemberidOriginal = response
-										.getInt("memberid");
-								Log.i("nextmemberidOriginal",
-										nextmemberidOriginal + "");
-								int nextscheduleidOriginal = response
-										.getInt("scheduleid");
-								Log.i("nextscheduleidOriginal",
-										nextscheduleidOriginal + "");
-								int nextserviceid = -1;
-								// If it is the first time to establish an
-								// activity
-								if (nextserviceidOriginal == 0) {
-									nextserviceid = idCostant
-											+ nextserviceidOriginal + 1;
-
-								}
-								// If activities has established
-								else {
-									nextserviceid = nextserviceidOriginal + 1;
-									Log.i("SignIn nextserviceid ",
-											nextserviceid + "");
-								}
-								int nextmemberid = -1;
-								// If it is the first time to establish a
-								// member
-								if (nextmemberidOriginal == 0) {
-									nextmemberid = idCostant
-											+ nextmemberidOriginal + 1;
-									Log.i("SignIn nextserviceid ", nextmemberid
-											+ "");
-								}
-								// If members has established
-								else {
-									nextmemberid = nextmemberidOriginal + 1;
-									Log.i("SignIn nextserviceid ", nextmemberid
-											+ "");
-								}
-								int nextscheduleid = -1;
-								// If it is the first time to establish a
-								// schedule
-								if (nextscheduleidOriginal == 0) {
-									nextscheduleid = idCostant
-											+ nextscheduleidOriginal + 1;
-									Log.i("SignIn nextscheduleid ",
-											nextscheduleid + "");
-								} else {
-									nextscheduleid = nextscheduleidOriginal + 1;
-									Log.i("SignIn nextscheduleid ",
-											nextscheduleid + "");
-								}
-
-								int nextSharedMemberId = -1;
-								// If it is the first time to establish a
-								// schedule
-								if (nextscheduleidOriginal == 0) {
-									nextscheduleid = idCostant
-											+ nextscheduleidOriginal + 1;
-									Log.i("SignIn nextscheduleid ",
-											nextscheduleid + "");
-								} else {
-									nextscheduleid = nextscheduleidOriginal + 1;
-									Log.i("SignIn nextscheduleid ",
-											nextscheduleid + "");
-								}
-
-								sharedReference.setInformationUserLogined(
-										context, username, email, ownerid,
-										nextserviceid, nextmemberid,
-										nextscheduleid);
-
-								new RegisterGcm(context, String
-										.valueOf(ownerid), Utils
-										.getDeviceId(context),
-										new SharedReference()
-												.getRegistrationId(context))
-										.execute();
-
-								uploadRecentEditedActivitiesToWeb();
-								uploadRecentEditedParticipantsToWeb();
-								uploadRecentNewActivitiesToWeb();
-								uploadRecentNewParticipantsToWeb();
-								uploadRecentNewSchedulesToWeb();
-
 								try {
-									dimissDialog();
+									final ToastDialog noNetwork = new ToastDialog(
+											context,
+											"Invalid email or password");
+									noNetwork.show();
+									noNetwork.btnOk
+											.setOnClickListener(new OnClickListener() {
+
+												@Override
+												public void onClick(View v) {
+													noNetwork.dismiss();
+												}
+											});
+
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
-
-								((Activity) context).finish();
-								Utils.postLeftToRight(context);
-
-								Intent intent = new Intent(context,
-										CategoryTabActivity.class);
-								context.startActivity(intent);
-
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-
-						public void onFailure(Throwable error, String content) {
-							try {
-
-								dimissDialog();
-							} catch (Exception ex) {
-								ex.printStackTrace();
 							}
 
-							if (error.getCause() instanceof ConnectTimeoutException
-									|| error.getCause() instanceof UnknownHostException) {
-
-								final ToastDialog noNetwork = new ToastDialog(
-										context, context.getResources()
-												.getString(R.string.no_network));
-								noNetwork.show();
-								noNetwork.btnOk
-										.setOnClickListener(new OnClickListener() {
-
-											@Override
-											public void onClick(View v) {
-												noNetwork.dismiss();
-											}
-										});
-
-							} else {
-								final ToastDialog dialog = new ToastDialog(
-										context, context.getResources()
-												.getString(R.string.login_fail));
-								dialog.show();
-								dialog.btnOk
-										.setOnClickListener(new OnClickListener() {
-
-											@Override
-											public void onClick(View v) {
-												dialog.dismiss();
-											}
-										});
-							}
-						}
-
-						@Override
-						public void onFailure(int statusCode, Header[] headers,
-								String responseString, Throwable throwable) {
-							// TODO Auto-generated method stub
-							super.onFailure(statusCode, headers,
-									responseString, throwable);
-
-							Log.d("login", "failure " + responseString);
-
-							try {
-
-								dimissDialog();
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-							try {
-								final ToastDialog noNetwork = new ToastDialog(
-										context, "Invalid email or password");
-								noNetwork.show();
-								noNetwork.btnOk
-										.setOnClickListener(new OnClickListener() {
-
-											@Override
-											public void onClick(View v) {
-												noNetwork.dismiss();
-											}
-										});
-
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						}
-
-						public void onFailure(Throwable e) {
-							Log.e("login fail dd", "OnFailure!", e);
-							try {
-
-								dimissDialog();
-							} catch (Exception ex) {
-								ex.printStackTrace();
+							@Override
+							public void onStart() {
+								// TODO Auto-generated method stub
+								super.onStart();
+								// showLoading(context);
+								loginInterface.onStart();
 							}
 
-							final ToastDialog noNetwork = new ToastDialog(
-									context, context.getResources()
-											.getString(R.string.no_network));
-							noNetwork.show();
-							noNetwork.btnOk
-									.setOnClickListener(new OnClickListener() {
-
-										@Override
-										public void onClick(View v) {
-											noNetwork.dismiss();
-										}
-									});
-
-						}
-
-						public void onFailure(Throwable e,
-								JSONArray errorResponse) {
-							Log.e("Login fail", "OnFailure!", e);
-							try {
-
-								dimissDialog();
-							} catch (Exception ex) {
-								ex.printStackTrace();
+							@Override
+							public void onFinish() {
+								// TODO Auto-generated method stub
+								super.onFinish();
+								loginInterface.onFinish();
 							}
+						});
+			} else {
 
-							final ToastDialog noNetwork = new ToastDialog(
-									context, errorResponse.toString());
-							noNetwork.show();
-							noNetwork.btnOk
-									.setOnClickListener(new OnClickListener() {
+				final ToastDialog dialog = new ToastDialog(context, context
+						.getResources().getString(R.string.no_network));
+				dialog.show();
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
 
-										@Override
-										public void onClick(View v) {
-											noNetwork.dismiss();
-										}
-									});
-
-						}
-
-						@Override
-						public void onStart() {
-							// TODO Auto-generated method stub
-							super.onStart();
-							showLoading(context);
-						}
-
-						@Override
-						public void onFinish() {
-							// TODO Auto-generated method stub
-							super.onFinish();
-							try {
-								// if (progress.isShowing()) {
-								// progress.dismiss();
-								// }
-								dimissDialog();
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-
-						}
-					});
-			// }
-			// else {
-			//
-			// final ToastDialog dialog = new ToastDialog(Context, Context
-			// .getResources().getString(R.string.no_network));
-			// dialog.show();
-			// dialog.btnOk.setOnClickListener(new OnClickListener() {
-			//
-			// @Override
-			// public void onClick(View v) {
-			// dialog.dismiss();
-			// }
-			// });
-			// }
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+			}
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -972,7 +734,7 @@ public class WebservicesHelper {
 	/**
 	 * get all activity of current owner id
 	 * */
-	public void getAllActivitys() {
+	public void getAllActivitys(final LoginInterface loginInterface) {
 		String activityUrl = BaseUrl.BASEURL + "services" + "?"
 				+ BaseUrl.URL_POST_FIX;
 		Log.i("get all activity url is :", activityUrl);
@@ -994,7 +756,6 @@ public class WebservicesHelper {
 						// TODO Auto-generated method stub
 						super.onSuccess(statusCode, headers, response);
 						final SharedReference ref = new SharedReference();
-					
 
 						Log.i("get all activity", response.toString());
 						try {
@@ -1008,16 +769,20 @@ public class WebservicesHelper {
 							if (deleted_services_count > 0) {
 								for (int i = 0; i < deleted_services_count; i++) {
 									String id = deleted_services.getString(i);
-									List<Schedule> sbelongtoa = DatabaseHelper.getSharedDatabaseHelper(context)
+									List<Schedule> sbelongtoa = DatabaseHelper
+											.getSharedDatabaseHelper(context)
 											.getSchedulesBelongtoActivity(id);
 									for (int j = 0; j < sbelongtoa.size(); j++) {
 										Schedule schedule = sbelongtoa.get(j);
-										DatabaseHelper.getSharedDatabaseHelper(context).deleteRelatedOnduty(schedule
-												.getSchedule_ID());
-										DatabaseHelper.getSharedDatabaseHelper(context).deleteSchedule(schedule
-												.getSchedule_ID());
+										DatabaseHelper.getSharedDatabaseHelper(
+												context).deleteRelatedOnduty(
+												schedule.getSchedule_ID());
+										DatabaseHelper.getSharedDatabaseHelper(
+												context).deleteSchedule(
+												schedule.getSchedule_ID());
 									}
-									DatabaseHelper.getSharedDatabaseHelper(context).deleteActivity(id);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteActivity(id);
 								}
 							}
 
@@ -1073,27 +838,31 @@ public class WebservicesHelper {
 								Log.i("getActivitiesFromWeb lastmodified ",
 										last_modified + "");
 
-								if (DatabaseHelper.getSharedDatabaseHelper(context).isActivityExisted(activityid) == false) {
+								if (DatabaseHelper.getSharedDatabaseHelper(
+										context).isActivityExisted(activityid) == false) {
 									newActivity.put(ActivityTable.service_ID,
 											activityid);
 									Log.i("getActivitiesFromWeb service_ID ",
 											activityid + "");
-									if (DatabaseHelper.getSharedDatabaseHelper(context).insertActivity(newActivity))
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context)
+											.insertActivity(newActivity))
 										Log.i("database", "insert service "
 												+ serviceName
 												+ " successfully!");
 								} else {
-									if (DatabaseHelper.getSharedDatabaseHelper(context).updateActivity(activityid,
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).updateActivity(activityid,
 											newActivity))
 										Log.i("database", "update service "
 												+ serviceName
 												+ " successfully!");
 								}
 
-								ws.getSharedmembersForActivity(activityid);
+								ws.getSharedmembersForActivity(activityid,loginInterface);
 								// TODO: will delete if service get all schedule
 								// implemented
-								ws.getSchedulesForActivity(activityid);
+								ws.getSchedulesForActivity(activityid,loginInterface);
 
 							}
 							// SEND broadcast to activity
@@ -1208,17 +977,22 @@ public class WebservicesHelper {
 							if (deleted_services_count > 0) {
 								for (int i = 0; i < deleted_services_count; i++) {
 									int id = deletedschedules.getInt(i);
-									if (DatabaseHelper.getSharedDatabaseHelper(context).isOndutyExisted(id)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).isOndutyExisted(id)) {
 										// Log.i("database", "schedule " +
 										// scheduleID +
 										// " already exists");
-										if (DatabaseHelper.getSharedDatabaseHelper(context).deleteRelatedOnduty(id)) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.deleteRelatedOnduty(id)) {
 											// Log.i("database",
 											// "delete schedule " +
 											// scheduleID + " successfully!");
 										}
 									}
-									DatabaseHelper.getSharedDatabaseHelper(context).deleteSchedule(id);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteSchedule(id);
 								}
 							}
 
@@ -1250,20 +1024,24 @@ public class WebservicesHelper {
 
 								int scheduleID = Schedule.getInt("scheduleid");
 
-								if (DatabaseHelper.getSharedDatabaseHelper(context).isScheduleExisted(scheduleID) == false) {
+								if (DatabaseHelper.getSharedDatabaseHelper(
+										context).isScheduleExisted(scheduleID) == false) {
 									cv.put(ScheduleTable.schedule_ID,
 											Schedule.getInt("scheduleid"));
 									Log.i("scheduleid",
 											"= "
 													+ Schedule
 															.getInt("scheduleid"));
-									if (DatabaseHelper.getSharedDatabaseHelper(context).insertSchedule(cv)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).insertSchedule(cv)) {
 										// Log.i("database", "insert schedule "
 										// +
 										// scheduleID + " successfully!");
 									}
 								} else {
-									if (DatabaseHelper.getSharedDatabaseHelper(context).updateSchedule(scheduleID, cv))
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSchedule(scheduleID,
+											cv))
 										;
 									{
 										// Log.i("database", "update schedule "
@@ -1272,9 +1050,11 @@ public class WebservicesHelper {
 									}
 								}
 
-								if (DatabaseHelper.getSharedDatabaseHelper(context).isOndutyExisted(scheduleID)) {
-									if (DatabaseHelper.getSharedDatabaseHelper(context)
-											.deleteRelatedOnduty(scheduleID)) {
+								if (DatabaseHelper.getSharedDatabaseHelper(
+										context).isOndutyExisted(scheduleID)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteRelatedOnduty(
+											scheduleID)) {
 									}
 								}
 
@@ -1305,7 +1085,10 @@ public class WebservicesHelper {
 										newOnduty.put(
 												OndutyTable.is_Synchronized, 1);
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context).insertOnduty(newOnduty)) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context).insertOnduty(
+														newOnduty)) {
 										}
 									}
 								}
@@ -1337,17 +1120,22 @@ public class WebservicesHelper {
 							if (deleted_services_count > 0) {
 								for (int i = 0; i < deleted_services_count; i++) {
 									int id = deletedschedules.getInt(i);
-									if (DatabaseHelper.getSharedDatabaseHelper(context).isOndutyExisted(id)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).isOndutyExisted(id)) {
 										// Log.i("database", "schedule " +
 										// scheduleID +
 										// " already exists");
-										if (DatabaseHelper.getSharedDatabaseHelper(context).deleteRelatedOnduty(id)) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.deleteRelatedOnduty(id)) {
 											// Log.i("database",
 											// "delete schedule " +
 											// scheduleID + " successfully!");
 										}
 									}
-									DatabaseHelper.getSharedDatabaseHelper(context).deleteSchedule(id);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteSchedule(id);
 								}
 							}
 
@@ -1379,20 +1167,24 @@ public class WebservicesHelper {
 
 								int scheduleID = Schedule.getInt("scheduleid");
 
-								if (DatabaseHelper.getSharedDatabaseHelper(context).isScheduleExisted(scheduleID) == false) {
+								if (DatabaseHelper.getSharedDatabaseHelper(
+										context).isScheduleExisted(scheduleID) == false) {
 									cv.put(ScheduleTable.schedule_ID,
 											Schedule.getInt("scheduleid"));
 									Log.i("scheduleid",
 											"= "
 													+ Schedule
 															.getInt("scheduleid"));
-									if (DatabaseHelper.getSharedDatabaseHelper(context).insertSchedule(cv)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).insertSchedule(cv)) {
 										// Log.i("database", "insert schedule "
 										// +
 										// scheduleID + " successfully!");
 									}
 								} else {
-									if (DatabaseHelper.getSharedDatabaseHelper(context).updateSchedule(scheduleID, cv))
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSchedule(scheduleID,
+											cv))
 										;
 									{
 										// Log.i("database", "update schedule "
@@ -1401,9 +1193,11 @@ public class WebservicesHelper {
 									}
 								}
 
-								if (DatabaseHelper.getSharedDatabaseHelper(context).isOndutyExisted(scheduleID)) {
-									if (DatabaseHelper.getSharedDatabaseHelper(context)
-											.deleteRelatedOnduty(scheduleID)) {
+								if (DatabaseHelper.getSharedDatabaseHelper(
+										context).isOndutyExisted(scheduleID)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteRelatedOnduty(
+											scheduleID)) {
 									}
 								}
 
@@ -1434,7 +1228,10 @@ public class WebservicesHelper {
 										newOnduty.put(
 												OndutyTable.is_Synchronized, 1);
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context).insertOnduty(newOnduty)) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context).insertOnduty(
+														newOnduty)) {
 										}
 									}
 								}
@@ -1523,7 +1320,7 @@ public class WebservicesHelper {
 		}
 	}
 
-	public void getSchedulesForActivity(final String activityid) {
+	public void getSchedulesForActivity(final String activityid,final LoginInterface loginInterface) {
 		String SchedulesUrl = BaseUrl.BASEURL + "services/" + activityid
 				+ "/schedules" + "?" + BaseUrl.URL_POST_FIX;
 		final SharedReference ref = new SharedReference();
@@ -1545,7 +1342,8 @@ public class WebservicesHelper {
 							JSONObject response) {
 						// TODO Auto-generated method stub
 						super.onSuccess(statusCode, headers, response);
-						Log.i("get schedule item with activity="+activityid, response.toString());
+						Log.i("get schedule item with activity=" + activityid,
+								response.toString());
 						try {
 							JSONArray deletedschedules = response
 									.getJSONArray("deletedschedules");
@@ -1554,17 +1352,22 @@ public class WebservicesHelper {
 							if (deleted_services_count > 0) {
 								for (int i = 0; i < deleted_services_count; i++) {
 									int id = deletedschedules.getInt(i);
-									if (DatabaseHelper.getSharedDatabaseHelper(context).isOndutyExisted(id)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).isOndutyExisted(id)) {
 										// Log.i("database", "schedule " +
 										// scheduleID +
 										// " already exists");
-										if (DatabaseHelper.getSharedDatabaseHelper(context).deleteRelatedOnduty(id)) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.deleteRelatedOnduty(id)) {
 											// Log.i("database",
 											// "delete schedule " +
 											// scheduleID + " successfully!");
 										}
 									}
-									DatabaseHelper.getSharedDatabaseHelper(context).deleteSchedule(id);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteSchedule(id);
 								}
 							}
 
@@ -1602,20 +1405,24 @@ public class WebservicesHelper {
 								// Log.i("Webservice","schedule " + scheduleID +
 								// " has members " +
 								// Schedule.getString("members"));
-								if (DatabaseHelper.getSharedDatabaseHelper(context).isScheduleExisted(scheduleID) == false) {
+								if (DatabaseHelper.getSharedDatabaseHelper(
+										context).isScheduleExisted(scheduleID) == false) {
 									cv.put(ScheduleTable.schedule_ID,
 											schedule.getInt("scheduleid"));
 									Log.i("scheduleid",
 											"= "
 													+ schedule
 															.getInt("scheduleid"));
-									if (DatabaseHelper.getSharedDatabaseHelper(context).insertSchedule(cv)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).insertSchedule(cv)) {
 										// Log.i("database", "insert schedule "
 										// +
 										// scheduleID + " successfully!");
 									}
 								} else {
-									if (DatabaseHelper.getSharedDatabaseHelper(context).updateSchedule(scheduleID, cv))
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSchedule(scheduleID,
+											cv))
 
 									{
 										// Log.i("database", "update schedule "
@@ -1624,12 +1431,14 @@ public class WebservicesHelper {
 									}
 								}
 
-								if (DatabaseHelper.getSharedDatabaseHelper(context).isOndutyExisted(scheduleID)) {
+								if (DatabaseHelper.getSharedDatabaseHelper(
+										context).isOndutyExisted(scheduleID)) {
 									// Log.i("database", "schedule " +
 									// scheduleID +
 									// " already exists");
-									if (DatabaseHelper.getSharedDatabaseHelper(context)
-											.deleteRelatedOnduty(scheduleID)) {
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteRelatedOnduty(
+											scheduleID)) {
 										// Log.i("database", "delete schedule "
 										// +
 										// scheduleID + " successfully!");
@@ -1666,7 +1475,10 @@ public class WebservicesHelper {
 										newOnduty.put(
 												OndutyTable.is_Synchronized, 1);
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context).insertOnduty(newOnduty)) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context).insertOnduty(
+														newOnduty)) {
 
 										}
 
@@ -1699,22 +1511,12 @@ public class WebservicesHelper {
 					public void onStart() {
 						// TODO Auto-generated method stub
 						super.onStart();
-						try {
-							showLoading(context);
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
+						loginInterface.onStart();
 					}
 
 					@Override
 					public void onFinish() {
-						// TODO Auto-generated method stub
-						super.onFinish();
-						try {
-
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
+						loginInterface.onFinish();
 					}
 
 					@Override
@@ -1757,7 +1559,7 @@ public class WebservicesHelper {
 		}
 	}
 
-	public void getParticipantsFromWeb() {
+	public void getParticipantsFromWeb(final LoginInterface loginInterface) {
 		String ParticipantUrl = BaseUrl.BASEURL + "members" + "?"
 				+ BaseUrl.URL_POST_FIX;
 		Log.i("url is :", ParticipantUrl);
@@ -1795,7 +1597,10 @@ public class WebservicesHelper {
 
 										for (int i = 0; i < delete_members_count; i++) {
 											int id = deleted_member.getInt(i);
-											DatabaseHelper.getSharedDatabaseHelper(context).deleteParticipant(id);
+											DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.deleteParticipant(id);
 
 										}
 									}
@@ -1850,23 +1655,32 @@ public class WebservicesHelper {
 										int participantID = Participant
 												.getInt("memberid");
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context)
-												.isParticipantExisted(participantID) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isParticipantExisted(
+														participantID) == false) {
 											// int participant_ID = (Participant
 											// .getInt("memberid"));
 											cv.put(ParticipantTable.participant_ID,
 													participantID);
 											Log.i("getParticipantsFromWeb participant_ID ",
 													participantID + "");
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertParticipant(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertParticipant(cv))
 												Log.i("database",
 														"insert participant "
 																+ Participant
 																		.getString("membername")
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateParticipant(
-													participantID, cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateParticipant(
+															participantID, cv))
 												Log.i("database",
 														"update participant "
 																+ Participant
@@ -1906,7 +1720,10 @@ public class WebservicesHelper {
 
 										for (int i = 0; i < delete_members_count; i++) {
 											int id = deleted_member.getInt(i);
-											DatabaseHelper.getSharedDatabaseHelper(context).deleteParticipant(id);
+											DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.deleteParticipant(id);
 
 										}
 									}
@@ -1961,23 +1778,32 @@ public class WebservicesHelper {
 										int participantID = Participant
 												.getInt("memberid");
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context)
-												.isParticipantExisted(participantID) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isParticipantExisted(
+														participantID) == false) {
 											// int participant_ID = (Participant
 											// .getInt("memberid"));
 											cv.put(ParticipantTable.participant_ID,
 													participantID);
 											Log.i("getParticipantsFromWeb participant_ID ",
 													participantID + "");
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertParticipant(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertParticipant(cv))
 												Log.i("database",
 														"insert participant "
 																+ Participant
 																		.getString("membername")
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateParticipant(
-													participantID, cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateParticipant(
+															participantID, cv))
 												Log.i("database",
 														"update participant "
 																+ Participant
@@ -2031,30 +1857,18 @@ public class WebservicesHelper {
 										});
 							}
 
-							// @Override
-							// public void onStart() {
-							// // TODO Auto-generated method stub
-							// super.onStart();
-							// showLoading(Context);
-							// }
+							 @Override
+							 public void onStart() {
+							 // TODO Auto-generated method stub
+							 super.onStart();
+							 loginInterface.onStart();
+							 }
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								CategoryTabActivity.flag_contact = true;
-								try {
-									if (CategoryTabActivity.flag_activity
-											&& CategoryTabActivity.flag_contact
-											&& CategoryTabActivity.flag_schedule
-											&& CategoryTabActivity.loadingPopup
-													.isShowing()) {
-										CategoryTabActivity.loadingPopup
-												.dismiss();
-									}
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
+								loginInterface.onFinish();
 
 							}
 						});
@@ -2130,15 +1944,24 @@ public class WebservicesHelper {
 												displayorder);
 										cv.put(TimeZoneTable.tzname, tzname);
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isTimeZoneExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isTimeZoneExisted(id) == false) {
 											cv.put(TimeZoneTable.id, id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertTimeZone(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertTimeZone(cv))
 												Log.i("database",
 														"insert timezone "
 																+ timeZoneName
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateTimeZone(id, cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateTimeZone(id, cv))
 												Log.i("database",
 														"update timezone "
 																+ timeZoneName
@@ -2163,16 +1986,25 @@ public class WebservicesHelper {
 										ContentValues cv = new ContentValues();
 										cv.put(com.e2wstudy.cschedule.models.AlertTable.aname,
 												alert);
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isAlertExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isAlertExisted(id) == false) {
 											cv.put(com.e2wstudy.cschedule.models.AlertTable.id,
 													id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertAlert(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertAlert(cv))
 												Log.i("database",
 														"insert timezone "
 																+ alert
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateAlert(id, cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateAlert(id, cv))
 												Log.i("database",
 														"update timezone "
 																+ alert
@@ -2204,16 +2036,24 @@ public class WebservicesHelper {
 												osversion);
 										cv.put(AppVersionTable.enforce, enforce);
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isVersionExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isVersionExisted(id) == false) {
 											cv.put(AppVersionTable.id, id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertAppVersion(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertAppVersion(cv))
 												Log.i("database",
 														"insert appversion "
 																+ osversion
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateAppVersion(id,
-													cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateAppVersion(id, cv))
 												Log.i("database",
 														"update appversion "
 																+ osversion
@@ -2270,15 +2110,24 @@ public class WebservicesHelper {
 												displayorder);
 										cv.put(TimeZoneTable.tzname, tzname);
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isTimeZoneExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isTimeZoneExisted(id) == false) {
 											cv.put(TimeZoneTable.id, id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertTimeZone(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertTimeZone(cv))
 												Log.i("database",
 														"insert timezone "
 																+ timeZoneName
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateTimeZone(id, cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateTimeZone(id, cv))
 												Log.i("database",
 														"update timezone "
 																+ timeZoneName
@@ -2303,16 +2152,25 @@ public class WebservicesHelper {
 										ContentValues cv = new ContentValues();
 										cv.put(com.e2wstudy.cschedule.models.AlertTable.aname,
 												alert);
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isAlertExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isAlertExisted(id) == false) {
 											cv.put(com.e2wstudy.cschedule.models.AlertTable.id,
 													id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertAlert(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertAlert(cv))
 												Log.i("database",
 														"insert timezone "
 																+ alert
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateAlert(id, cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateAlert(id, cv))
 												Log.i("database",
 														"update timezone "
 																+ alert
@@ -2344,16 +2202,24 @@ public class WebservicesHelper {
 												osversion);
 										cv.put(AppVersionTable.enforce, enforce);
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isVersionExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isVersionExisted(id) == false) {
 											cv.put(AppVersionTable.id, id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertAppVersion(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertAppVersion(cv))
 												Log.i("database",
 														"insert appversion "
 																+ osversion
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateAppVersion(id,
-													cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateAppVersion(id, cv))
 												Log.i("database",
 														"update appversion "
 																+ osversion
@@ -2500,15 +2366,24 @@ public class WebservicesHelper {
 												displayorder);
 										cv.put(TimeZoneTable.tzname, tzname);
 
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isTimeZoneExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isTimeZoneExisted(id) == false) {
 											cv.put(TimeZoneTable.id, id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertTimeZone(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertTimeZone(cv))
 												Log.i("database",
 														"insert timezone "
 																+ timeZoneName
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateTimeZone(id, cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateTimeZone(id, cv))
 												Log.i("database",
 														"update timezone "
 																+ timeZoneName
@@ -2533,16 +2408,25 @@ public class WebservicesHelper {
 										ContentValues cv = new ContentValues();
 										cv.put(com.e2wstudy.cschedule.models.AlertTable.aname,
 												alert);
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isAlertExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isAlertExisted(id) == false) {
 											cv.put(com.e2wstudy.cschedule.models.AlertTable.id,
 													id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertAlert(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertAlert(cv))
 												Log.i("database",
 														"insert timezone "
 																+ alert
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateAlert(id, cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateAlert(id, cv))
 												Log.i("database",
 														"update timezone "
 																+ alert
@@ -2575,16 +2459,24 @@ public class WebservicesHelper {
 										cv.put(AppVersionTable.enforce, enforce);
 										String msg = version.getString("msg");
 										cv.put(AppVersionTable.msg, msg);
-										if (DatabaseHelper.getSharedDatabaseHelper(context).isVersionExisted(id) == false) {
+										if (DatabaseHelper
+												.getSharedDatabaseHelper(
+														context)
+												.isVersionExisted(id) == false) {
 											cv.put(AppVersionTable.id, id);
-											if (DatabaseHelper.getSharedDatabaseHelper(context).insertAppVersion(cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.insertAppVersion(cv))
 												Log.i("database",
 														"insert appversion "
 																+ osversion
 																+ " successfully!");
 										} else {
-											if (DatabaseHelper.getSharedDatabaseHelper(context).updateAppVersion(id,
-													cv))
+											if (DatabaseHelper
+													.getSharedDatabaseHelper(
+															context)
+													.updateAppVersion(id, cv))
 												Log.i("database",
 														"update appversion "
 																+ osversion
@@ -2696,14 +2588,16 @@ public class WebservicesHelper {
 	// cv.put(TimeZoneTable.displayorder, displayorder);
 	// cv.put(TimeZoneTable.tzname, tzname);
 	//
-	// if (DatabaseHelper.getSharedDatabaseHelper(Context).isTimeZoneExisted(id) == false) {
+	// if (DatabaseHelper.getSharedDatabaseHelper(Context).isTimeZoneExisted(id)
+	// == false) {
 	// cv.put(TimeZoneTable.id, id);
 	// if (DatabaseHelper.getSharedDatabaseHelper(Context).insertTimeZone(cv))
 	// Log.i("database", "insert timezone "
 	// + timeZoneName
 	// + " successfully!");
 	// } else {
-	// if (DatabaseHelper.getSharedDatabaseHelper(Context).updateTimeZone(id, cv))
+	// if (DatabaseHelper.getSharedDatabaseHelper(Context).updateTimeZone(id,
+	// cv))
 	// Log.i("database", "update timezone "
 	// + timeZoneName
 	// + " successfully!");
@@ -2798,7 +2692,8 @@ public class WebservicesHelper {
 	// ContentValues cv = new ContentValues();
 	// cv.put(com.e2wstudy.cschedule.models.AlertTable.aname,
 	// alert);
-	// if (DatabaseHelper.getSharedDatabaseHelper(Context).isAlertExisted(id) == false) {
+	// if (DatabaseHelper.getSharedDatabaseHelper(Context).isAlertExisted(id) ==
+	// false) {
 	// cv.put(com.e2wstudy.cschedule.models.AlertTable.id,
 	// id);
 	// if (DatabaseHelper.getSharedDatabaseHelper(Context).insertAlert(cv))
@@ -2912,10 +2807,12 @@ public class WebservicesHelper {
 									cv.put(ActivityTable.last_ModifiedTime,
 											last_modified);
 									cv.put(ActivityTable.is_Synchronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateActivity(
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateActivity(
 											activity.getActivity_ID(), cv);
 									Log.i("last_modified", last_modified);
-									if (DatabaseHelper.getSharedDatabaseHelper(context).updateActivity(
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).updateActivity(
 											activity.getActivity_ID(), cv)) {
 										// Toast.makeText(this,
 										// "insert activity successfully",
@@ -2924,18 +2821,7 @@ public class WebservicesHelper {
 
 									SharedReference ref = new SharedReference();
 									ref.setLastestServiceLastModifiedTime(
-											context, last_modified);
-
-									// get all activity for refresh and
-									// synchronize
-									// with server
-									getAllActivitys();
-									//
-									// if (CategoryTabActivity.currentPage !=
-									// CategoryTabActivity.TAB_ACTIVITY) {
-									// CategoryTabActivity
-									// .moveToTab(CategoryTabActivity.TAB_ACTIVITY);
-									// }
+											context, last_modified);							
 
 									Intent intent = new Intent(
 											CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
@@ -2960,10 +2846,12 @@ public class WebservicesHelper {
 									cv.put(ActivityTable.last_ModifiedTime,
 											last_modified);
 									cv.put(ActivityTable.is_Synchronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateActivity(
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateActivity(
 											activity.getActivity_ID(), cv);
 									Log.i("last_modified", last_modified);
-									if (DatabaseHelper.getSharedDatabaseHelper(context).updateActivity(
+									if (DatabaseHelper.getSharedDatabaseHelper(
+											context).updateActivity(
 											activity.getActivity_ID(), cv)) {
 										// Toast.makeText(this,
 										// "insert activity successfully",
@@ -2973,17 +2861,6 @@ public class WebservicesHelper {
 									SharedReference ref = new SharedReference();
 									ref.setLastestServiceLastModifiedTime(
 											context, last_modified);
-
-									// get all activity for refresh and
-									// synchronize
-									// with server
-									getAllActivitys();
-									//
-									// if (CategoryTabActivity.currentPage !=
-									// CategoryTabActivity.TAB_ACTIVITY) {
-									// CategoryTabActivity
-									// .moveToTab(CategoryTabActivity.TAB_ACTIVITY);
-									// }
 
 									Intent intent = new Intent(
 											CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
@@ -3121,7 +2998,8 @@ public class WebservicesHelper {
 									cv.put(ScheduleTable.last_Modified,
 											last_modified);
 									cv.put(ScheduleTable.is_Synchronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSchedule(id, cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSchedule(id, cv);
 									Log.i("last_modified", last_modified);
 
 									// go to schedule
@@ -3157,7 +3035,8 @@ public class WebservicesHelper {
 									cv.put(ScheduleTable.last_Modified,
 											last_modified);
 									cv.put(ScheduleTable.is_Synchronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSchedule(id, cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSchedule(id, cv);
 									Log.i("last_modified", last_modified);
 
 									// go to schedule
@@ -3309,7 +3188,8 @@ public class WebservicesHelper {
 									cv.put(ScheduleTable.last_Modified,
 											last_modified);
 									cv.put(ScheduleTable.is_Synchronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSchedule(id, cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSchedule(id, cv);
 									// Log.i("last_modified", last_modified);
 									// Intent intent = new Intent(
 									// CommConstant.UPDATE_SCHEDULE);
@@ -3339,7 +3219,8 @@ public class WebservicesHelper {
 									cv.put(ScheduleTable.last_Modified,
 											last_modified);
 									cv.put(ScheduleTable.is_Synchronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSchedule(id, cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSchedule(id, cv);
 									// Log.i("last_modified", last_modified);
 									// Intent intent = new Intent(
 									// CommConstant.UPDATE_SCHEDULE);
@@ -3473,7 +3354,8 @@ public class WebservicesHelper {
 											pin.getConfirm());
 									cv.put(OndutyTable.schedule_ID,
 											schedule.getSchedule_ID());
-									DatabaseHelper.getSharedDatabaseHelper(context).updateOnduty(
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateOnduty(
 											schedule.getSchedule_ID(),
 											pin.getMemberId(), cv);
 									// go to schedule
@@ -3506,7 +3388,8 @@ public class WebservicesHelper {
 											pin.getConfirm());
 									cv.put(OndutyTable.schedule_ID,
 											schedule.getSchedule_ID());
-									DatabaseHelper.getSharedDatabaseHelper(context).updateOnduty(
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateOnduty(
 											schedule.getSchedule_ID(),
 											pin.getMemberId(), cv);
 									// go to schedule
@@ -3641,8 +3524,10 @@ public class WebservicesHelper {
 					try {
 						if (response.getString("lastmodified") != null) {
 
-							DatabaseHelper.getSharedDatabaseHelper(context).deleteRelatedOnduty(schedule_id);
-							DatabaseHelper.getSharedDatabaseHelper(context).deleteSchedule(schedule_id);
+							DatabaseHelper.getSharedDatabaseHelper(context)
+									.deleteRelatedOnduty(schedule_id);
+							DatabaseHelper.getSharedDatabaseHelper(context)
+									.deleteSchedule(schedule_id);
 							Log.i("delete schedule", "successfully");
 
 							Intent intent = new Intent(
@@ -3659,8 +3544,10 @@ public class WebservicesHelper {
 					try {
 						if (response.getString("lastmodified") != null) {
 
-							DatabaseHelper.getSharedDatabaseHelper(context).deleteRelatedOnduty(schedule_id);
-							DatabaseHelper.getSharedDatabaseHelper(context).deleteSchedule(schedule_id);
+							DatabaseHelper.getSharedDatabaseHelper(context)
+									.deleteRelatedOnduty(schedule_id);
+							DatabaseHelper.getSharedDatabaseHelper(context)
+									.deleteSchedule(schedule_id);
 							Log.i("delete schedule", "successfully");
 
 							Intent intent = new Intent(
@@ -3703,10 +3590,10 @@ public class WebservicesHelper {
 							throwable);
 
 					dimissDialog();
-					final ToastDialog dialog = new ToastDialog(context,
-							context.getResources().getString(
+					final ToastDialog dialog = new ToastDialog(context, context
+							.getResources().getString(
 									R.string.delete_schedule_error)
-									+ " " + responseString.toString());
+							+ " " + responseString.toString());
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
 
@@ -3905,8 +3792,8 @@ public class WebservicesHelper {
 	}
 
 	public void uploadRecentNewActivitiesToWeb() {
-		List<MyActivity> unsyncedActivities = DatabaseHelper.getSharedDatabaseHelper(context)
-				.getUnsyncedNewActivities();
+		List<MyActivity> unsyncedActivities = DatabaseHelper
+				.getSharedDatabaseHelper(context).getUnsyncedNewActivities();
 		for (int i = 0; i < unsyncedActivities.size(); i++) {
 			MyActivity ma = unsyncedActivities.get(i);
 			this.addActivity(ma);
@@ -3915,7 +3802,8 @@ public class WebservicesHelper {
 
 	public void uploadRecentEditedActivitiesToWeb() {
 		try {
-			List<MyActivity> unsyncedActivities = DatabaseHelper.getSharedDatabaseHelper(context)
+			List<MyActivity> unsyncedActivities = DatabaseHelper
+					.getSharedDatabaseHelper(context)
 					.getUnsyncedEditedActivities();
 			for (int i = 0; i < unsyncedActivities.size(); i++) {
 				MyActivity ma = unsyncedActivities.get(i);
@@ -3927,8 +3815,8 @@ public class WebservicesHelper {
 	}
 
 	public void uploadRecentNewParticipantsToWeb() {
-		List<Participant> unsyncedParticipants = DatabaseHelper.getSharedDatabaseHelper(context)
-				.getUnsyncedNewParticipants();
+		List<Participant> unsyncedParticipants = DatabaseHelper
+				.getSharedDatabaseHelper(context).getUnsyncedNewParticipants();
 		for (int i = 0; i < unsyncedParticipants.size(); i++) {
 			Participant p = unsyncedParticipants.get(i);
 			addParticipant(p);
@@ -3936,7 +3824,8 @@ public class WebservicesHelper {
 	}
 
 	public void uploadRecentEditedParticipantsToWeb() {
-		List<Participant> unsyncedParticipants = DatabaseHelper.getSharedDatabaseHelper(context)
+		List<Participant> unsyncedParticipants = DatabaseHelper
+				.getSharedDatabaseHelper(context)
 				.getUnsyncedEditedParticipants();
 		for (int i = 0; i < unsyncedParticipants.size(); i++) {
 			Participant p = unsyncedParticipants.get(i);
@@ -3945,22 +3834,23 @@ public class WebservicesHelper {
 	}
 
 	public void uploadRecentNewSchedulesToWeb() {
-		List<Schedule> unsyncedSchedules = DatabaseHelper.getSharedDatabaseHelper(context).getUnsyncedNewSchedules();
+		List<Schedule> unsyncedSchedules = DatabaseHelper
+				.getSharedDatabaseHelper(context).getUnsyncedNewSchedules();
 		for (int i = 0; i < unsyncedSchedules.size(); i++) {
 			Schedule s = unsyncedSchedules.get(i);
-			List<Confirm> members = DatabaseHelper.getSharedDatabaseHelper(context).getParticipantsForSchedule(s
-					.getSchedule_ID());
+			List<Confirm> members = DatabaseHelper.getSharedDatabaseHelper(
+					context).getParticipantsForSchedule(s.getSchedule_ID());
 			this.addSchedule(s, members);
 		}
 	}
 
 	public void uploadRecentEditedSchedulesToWeb() {
-		List<Schedule> unsyncedSchedules = DatabaseHelper.getSharedDatabaseHelper(context)
-				.getUnsyncedEditedSchedules();
+		List<Schedule> unsyncedSchedules = DatabaseHelper
+				.getSharedDatabaseHelper(context).getUnsyncedEditedSchedules();
 		for (int i = 0; i < unsyncedSchedules.size(); i++) {
 			Schedule s = unsyncedSchedules.get(i);
-			List<Confirm> members = DatabaseHelper.getSharedDatabaseHelper(context).getParticipantsForSchedule(s
-					.getSchedule_ID());
+			List<Confirm> members = DatabaseHelper.getSharedDatabaseHelper(
+					context).getParticipantsForSchedule(s.getSchedule_ID());
 			this.updateSchedule(s, members);
 		}
 	}
@@ -3968,7 +3858,7 @@ public class WebservicesHelper {
 	/**
 	 * Get member shared for actiivty
 	 * */
-	public void getSharedmembersForActivity(final String activity_id) {
+	public void getSharedmembersForActivity(final String activity_id,final LoginInterface loginInterface) {
 		String sharedmembersUrl = BaseUrl.BASEURL + "services/" + activity_id
 				+ "/sharedmembers" + "?" + BaseUrl.URL_POST_FIX;
 		Log.i("shared member url :", sharedmembersUrl);
@@ -3993,7 +3883,8 @@ public class WebservicesHelper {
 						if (deleted_member_count > 0) {
 							for (int i = 0; i < deleted_member_count; i++) {
 								int id = deleteMember.getInt(i);
-								DatabaseHelper.getSharedDatabaseHelper(context).deleteSharedmember(id, activity_id);
+								DatabaseHelper.getSharedDatabaseHelper(context)
+										.deleteSharedmember(id, activity_id);
 							}
 						}
 
@@ -4025,13 +3916,15 @@ public class WebservicesHelper {
 							cv.put(SharedMemberTable.last_modified, sm_lastmdf);
 							cv.put(SharedMemberTable.is_Deleted, 0);
 							cv.put(SharedMemberTable.is_Synced, 1);
-							if (DatabaseHelper.getSharedDatabaseHelper(context).isSharedmemberExisted(sm_id,
-									activity_id)) {
-								DatabaseHelper.getSharedDatabaseHelper(context).updateSharedmember(sm_id, activity_id,
-										cv);
+							if (DatabaseHelper.getSharedDatabaseHelper(context)
+									.isSharedmemberExisted(sm_id, activity_id)) {
+								DatabaseHelper.getSharedDatabaseHelper(context)
+										.updateSharedmember(sm_id, activity_id,
+												cv);
 							} else {
 								cv.put(SharedMemberTable.member_id, sm_id);
-								DatabaseHelper.getSharedDatabaseHelper(context).insertSharedmember(cv);
+								DatabaseHelper.getSharedDatabaseHelper(context)
+										.insertSharedmember(cv);
 							}
 						}
 
@@ -4060,7 +3953,8 @@ public class WebservicesHelper {
 						if (deleted_member_count > 0) {
 							for (int i = 0; i < deleted_member_count; i++) {
 								int id = deleteMember.getInt(i);
-								DatabaseHelper.getSharedDatabaseHelper(context).deleteSharedmember(id, activity_id);
+								DatabaseHelper.getSharedDatabaseHelper(context)
+										.deleteSharedmember(id, activity_id);
 							}
 						}
 
@@ -4092,13 +3986,15 @@ public class WebservicesHelper {
 							cv.put(SharedMemberTable.last_modified, sm_lastmdf);
 							cv.put(SharedMemberTable.is_Deleted, 0);
 							cv.put(SharedMemberTable.is_Synced, 1);
-							if (DatabaseHelper.getSharedDatabaseHelper(context).isSharedmemberExisted(sm_id,
-									activity_id)) {
-								DatabaseHelper.getSharedDatabaseHelper(context).updateSharedmember(sm_id, activity_id,
-										cv);
+							if (DatabaseHelper.getSharedDatabaseHelper(context)
+									.isSharedmemberExisted(sm_id, activity_id)) {
+								DatabaseHelper.getSharedDatabaseHelper(context)
+										.updateSharedmember(sm_id, activity_id,
+												cv);
 							} else {
 								cv.put(SharedMemberTable.member_id, sm_id);
-								DatabaseHelper.getSharedDatabaseHelper(context).insertSharedmember(cv);
+								DatabaseHelper.getSharedDatabaseHelper(context)
+										.insertSharedmember(cv);
 							}
 						}
 
@@ -4123,8 +4019,8 @@ public class WebservicesHelper {
 					// TODO Auto-generated method stub
 					super.onFailure(statusCode, headers, responseString,
 							throwable);
-					final ToastDialog dialog = new ToastDialog(context,
-							context.getResources().getString(
+					final ToastDialog dialog = new ToastDialog(context, context
+							.getResources().getString(
 									R.string.get_shared_member_error));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
@@ -4136,27 +4032,20 @@ public class WebservicesHelper {
 					});
 				}
 
-				// @Override
-				// public void onStart() {
-				// // TODO Auto-generated method stub
-				// super.onStart();
-				// showLoading(Context);
-				// }
-				//
-				// @Override
-				// public void onFinish() {
-				// // TODO Auto-generated method stub
-				// super.onFinish();
-				// try {
-				// // if (progress.isShowing()) {
-				// // progress.dismiss();
-				// // }
-				// dimissDialog();
-				// } catch (Exception ex) {
-				// ex.printStackTrace();
-				// }
-				//
-				// }
+				 @Override
+				 public void onStart() {
+				 // TODO Auto-generated method stub
+				 super.onStart();
+				 loginInterface.onStart();
+				 }
+				
+				 @Override
+				 public void onFinish() {
+				 // TODO Auto-generated method stub
+				 super.onFinish();
+				loginInterface.onFinish();
+				
+				 }
 			});
 		} else {
 			final ToastDialog dialog = new ToastDialog(context, context
@@ -4214,7 +4103,8 @@ public class WebservicesHelper {
 
 									lastmodify = response
 											.getString("lastmodified");
-									Participant member = DatabaseHelper.getSharedDatabaseHelper(context)
+									Participant member = DatabaseHelper
+											.getSharedDatabaseHelper(context)
 											.getParticipant(memberid);
 									ContentValues cv = new ContentValues();
 									cv.put(SharedMemberTable.member_name,
@@ -4230,8 +4120,9 @@ public class WebservicesHelper {
 									cv.put(SharedMemberTable.last_modified,
 											lastmodify);
 									cv.put(SharedMemberTable.is_Synced, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSharedmember(member.getID(),
-											cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSharedmember(
+											member.getID(), cv);
 									Intent intent = new Intent(
 											CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
 									intent.putExtra(CommConstant.ACTIVITY_ID,
@@ -4273,7 +4164,8 @@ public class WebservicesHelper {
 
 									lastmodify = response
 											.getString("lastmodified");
-									Participant member = DatabaseHelper.getSharedDatabaseHelper(context)
+									Participant member = DatabaseHelper
+											.getSharedDatabaseHelper(context)
 											.getParticipant(memberid);
 									ContentValues cv = new ContentValues();
 									cv.put(SharedMemberTable.member_name,
@@ -4289,8 +4181,9 @@ public class WebservicesHelper {
 									cv.put(SharedMemberTable.last_modified,
 											lastmodify);
 									cv.put(SharedMemberTable.is_Synced, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSharedmember(member.getID(),
-											cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSharedmember(
+											member.getID(), cv);
 									Intent intent = new Intent(
 											CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
 									intent.putExtra(CommConstant.ACTIVITY_ID,
@@ -4393,7 +4286,8 @@ public class WebservicesHelper {
 					try {
 						String lastmodified = response
 								.getString("lastmodified");
-						DatabaseHelper.getSharedDatabaseHelper(context).deleteSharedmember(memberid, activityid);
+						DatabaseHelper.getSharedDatabaseHelper(context)
+								.deleteSharedmember(memberid, activityid);
 						SharedReference ref = new SharedReference();
 						ref.setLastestServiceLastModifiedTime(context,
 								lastmodified);
@@ -4412,7 +4306,8 @@ public class WebservicesHelper {
 					try {
 						String lastmodified = response
 								.getString("lastmodified");
-						DatabaseHelper.getSharedDatabaseHelper(context).deleteSharedmember(memberid, activityid);
+						DatabaseHelper.getSharedDatabaseHelper(context)
+								.deleteSharedmember(memberid, activityid);
 						SharedReference ref = new SharedReference();
 						ref.setLastestServiceLastModifiedTime(context,
 								lastmodified);
@@ -4432,8 +4327,8 @@ public class WebservicesHelper {
 					super.onFailure(statusCode, headers, responseString,
 							throwable);
 					dimissDialog();
-					final ToastDialog dialog = new ToastDialog(context,
-							context.getResources().getString(
+					final ToastDialog dialog = new ToastDialog(context, context
+							.getResources().getString(
 									R.string.delete_participant_error));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
@@ -4598,7 +4493,9 @@ public class WebservicesHelper {
 										cv.put(ParticipantTable.is_Sychronized,
 												1);
 
-										DatabaseHelper.getSharedDatabaseHelper(context).updateParticipant(id, cv);
+										DatabaseHelper.getSharedDatabaseHelper(
+												context).updateParticipant(id,
+												cv);
 									} else {
 										Toast.makeText(context,
 												response.toString(),
@@ -4630,7 +4527,9 @@ public class WebservicesHelper {
 										cv.put(ParticipantTable.is_Sychronized,
 												1);
 
-										DatabaseHelper.getSharedDatabaseHelper(context).updateParticipant(id, cv);
+										DatabaseHelper.getSharedDatabaseHelper(
+												context).updateParticipant(id,
+												cv);
 									} else {
 										Toast.makeText(context,
 												response.toString(),
@@ -4753,7 +4652,8 @@ public class WebservicesHelper {
 									cv.put(ParticipantTable.last_Modified,
 											last_modified);
 									cv.put(ParticipantTable.is_Sychronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateParticipant(id, cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateParticipant(id, cv);
 
 									ContentValues contentValues = new ContentValues();
 									contentValues.put(
@@ -4765,7 +4665,8 @@ public class WebservicesHelper {
 									contentValues.put(
 											SharedMemberTable.member_name,
 											participant.getName());
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSharedmember(
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSharedmember(
 											participant.getID(), contentValues);
 
 									((Activity) context).finish();
@@ -4789,7 +4690,8 @@ public class WebservicesHelper {
 									cv.put(ParticipantTable.last_Modified,
 											last_modified);
 									cv.put(ParticipantTable.is_Sychronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateParticipant(id, cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateParticipant(id, cv);
 
 									ContentValues contentValues = new ContentValues();
 									contentValues.put(
@@ -4801,7 +4703,8 @@ public class WebservicesHelper {
 									contentValues.put(
 											SharedMemberTable.member_name,
 											participant.getName());
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSharedmember(
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSharedmember(
 											participant.getID(), contentValues);
 
 									((Activity) context).finish();
@@ -4900,8 +4803,10 @@ public class WebservicesHelper {
 							ContentValues cv = new ContentValues();
 							cv.put(ParticipantTable.is_Deleted, 1);
 							cv.put(ParticipantTable.is_Sychronized, 1);
-							// DatabaseHelper.getSharedDatabaseHelper(Context).updateParticipant(id, cv);
-							DatabaseHelper.getSharedDatabaseHelper(context).deleteParticipant(id);
+							// DatabaseHelper.getSharedDatabaseHelper(Context).updateParticipant(id,
+							// cv);
+							DatabaseHelper.getSharedDatabaseHelper(context)
+									.deleteParticipant(id);
 
 						}
 						((Activity) context).finish();
@@ -4923,8 +4828,10 @@ public class WebservicesHelper {
 							ContentValues cv = new ContentValues();
 							cv.put(ParticipantTable.is_Deleted, 1);
 							cv.put(ParticipantTable.is_Sychronized, 1);
-							// DatabaseHelper.getSharedDatabaseHelper(Context).updateParticipant(id, cv);
-							DatabaseHelper.getSharedDatabaseHelper(context).deleteParticipant(id);
+							// DatabaseHelper.getSharedDatabaseHelper(Context).updateParticipant(id,
+							// cv);
+							DatabaseHelper.getSharedDatabaseHelper(context)
+									.deleteParticipant(id);
 
 						}
 						((Activity) context).finish();
@@ -4944,8 +4851,8 @@ public class WebservicesHelper {
 					// TODO Auto-generated method stub
 					super.onFailure(statusCode, headers, responseString,
 							throwable);
-					final ToastDialog dialog = new ToastDialog(context,
-							context.getResources().getString(
+					final ToastDialog dialog = new ToastDialog(context, context
+							.getResources().getString(
 									R.string.delete_contact_error));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
@@ -5054,7 +4961,8 @@ public class WebservicesHelper {
 									cv.put(ActivityTable.last_ModifiedTime,
 											last_modified);
 									cv.put(ActivityTable.is_Synchronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateActivity(id, cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateActivity(id, cv);
 									Log.i("last_modified", last_modified);
 									SharedReference ref = new SharedReference();
 									ref.setLastestServiceLastModifiedTime(
@@ -5081,7 +4989,8 @@ public class WebservicesHelper {
 									cv.put(ActivityTable.last_ModifiedTime,
 											last_modified);
 									cv.put(ActivityTable.is_Synchronized, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateActivity(id, cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateActivity(id, cv);
 									Log.i("last_modified", last_modified);
 									SharedReference ref = new SharedReference();
 									ref.setLastestServiceLastModifiedTime(
@@ -5184,17 +5093,20 @@ public class WebservicesHelper {
 					Log.d("delete activity", response.toString());
 					try {
 						if (response.getString("lastmodified") != null) {
-							ArrayList<Sharedmember> listSharedMemberOfActivity = DatabaseHelper.getSharedDatabaseHelper(context)
+							ArrayList<Sharedmember> listSharedMemberOfActivity = DatabaseHelper
+									.getSharedDatabaseHelper(context)
 									.getSharedMemberForActivity(id);
 							if (listSharedMemberOfActivity != null
 									&& listSharedMemberOfActivity.size() > 0) {
 								for (Sharedmember sharedMember : listSharedMemberOfActivity) {
-									DatabaseHelper.getSharedDatabaseHelper(context).deleteSharedmember(
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteSharedmember(
 											sharedMember.getID(), id);
 								}
 							}
 
-							List<Schedule> sbelongtoa = DatabaseHelper.getSharedDatabaseHelper(context)
+							List<Schedule> sbelongtoa = DatabaseHelper
+									.getSharedDatabaseHelper(context)
 									.getSchedulesBelongtoActivity(id);
 							for (int i = 0; i < sbelongtoa.size(); i++) {
 								ContentValues scv = new ContentValues();
@@ -5204,15 +5116,21 @@ public class WebservicesHelper {
 										.getSchedule_ID();
 								// (sharedMember.getID(),id);
 
-								List<Integer> onduties = DatabaseHelper.getSharedDatabaseHelper(context)
-										.getOndutyRecordsForSchedule(schedule_id);
+								List<Integer> onduties = DatabaseHelper
+										.getSharedDatabaseHelper(context)
+										.getOndutyRecordsForSchedule(
+												schedule_id);
 								for (int j = 0; j < onduties.size(); j++) {
-									DatabaseHelper.getSharedDatabaseHelper(context).deleteRelatedOnduty(schedule_id);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).deleteRelatedOnduty(
+											schedule_id);
 								}
-								DatabaseHelper.getSharedDatabaseHelper(context).deleteSchedule(Integer.parseInt(id));
+								DatabaseHelper.getSharedDatabaseHelper(context)
+										.deleteSchedule(Integer.parseInt(id));
 							}
 
-							DatabaseHelper.getSharedDatabaseHelper(context).deleteActivity(id);
+							DatabaseHelper.getSharedDatabaseHelper(context)
+									.deleteActivity(id);
 
 							Log.i("delete activity", "successfully");
 							Intent intent = new Intent(
@@ -5259,8 +5177,8 @@ public class WebservicesHelper {
 					// TODO Auto-generated method stub
 					super.onFailure(statusCode, headers, responseString,
 							throwable);
-					final ToastDialog dialog = new ToastDialog(context,
-							context.getResources().getString(
+					final ToastDialog dialog = new ToastDialog(context, context
+							.getResources().getString(
 									R.string.delete_activity_error));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
@@ -5336,7 +5254,8 @@ public class WebservicesHelper {
 
 									lastmodify = response
 											.getString("lastmodified");
-									Participant member = DatabaseHelper.getSharedDatabaseHelper(context)
+									Participant member = DatabaseHelper
+											.getSharedDatabaseHelper(context)
 											.getParticipant(memberid);
 									ContentValues cv = new ContentValues();
 									cv.put(SharedMemberTable.member_name,
@@ -5352,8 +5271,9 @@ public class WebservicesHelper {
 									cv.put(SharedMemberTable.last_modified,
 											lastmodify);
 									cv.put(SharedMemberTable.is_Synced, 1);
-									DatabaseHelper.getSharedDatabaseHelper(context).updateSharedmember(member.getID(),
-											cv);
+									DatabaseHelper.getSharedDatabaseHelper(
+											context).updateSharedmember(
+											member.getID(), cv);
 									Intent intent = new Intent(
 											CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
 									intent.putExtra(CommConstant.ACTIVITY_ID,

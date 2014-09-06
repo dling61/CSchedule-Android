@@ -8,10 +8,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONException;
 
+import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
+import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.TitleBarView;
 import com.e2wstudy.cschedule.views.ToastDialog;
 import com.google.android.gms.common.ConnectionResult;
@@ -40,7 +42,7 @@ import android.widget.LinearLayout;
  * @version 1.0
  * @Date April 8th,2014 @ This class helps users login to app}
  * */
-public class LoginActivity extends BaseActivity implements OnClickListener {
+public class LoginActivity extends Activity implements OnClickListener {
 	Button signin_btn;
 	Context mContext;
 	EditText txt_email;
@@ -63,8 +65,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	GoogleCloudMessaging gcm;
 	AtomicInteger msgId = new AtomicInteger();
 	SharedPreferences prefs;
-	
+
 	String regid;
+	public static LoadingPopupViewHolder loadingPopup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +91,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			gcm = GoogleCloudMessaging.getInstance(this);
 			regid = new SharedReference().getRegistrationId(mContext);
 
-//			if (regid.equals("")) {
-				new RegisterGCMTask().execute();
-//			}
+			// if (regid.equals("")) {
+			new RegisterGCMTask().execute();
+			// }
 		}
 
 	}
@@ -117,7 +120,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					gcm = GoogleCloudMessaging.getInstance(mContext);
 				}
 				regid = gcm.register(CommConstant.SENDER_ID);
-				Log.d("registration id",regid);
+				Log.d("registration id", regid);
 				msg = "Device registered, registration ID=" + regid;
 
 				// You should send the registration ID to your server over HTTP,
@@ -146,7 +149,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 		@Override
 		protected void onPostExecute(String msg) {
-//			finish();
+			// finish();
 		}
 	}
 
@@ -304,7 +307,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				WebservicesHelper helper = new WebservicesHelper(mContext);
 				try {
 					helper.login(txt_email.getText().toString(), txt_password
-							.getText().toString());
+							.getText().toString(), loginInterface);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -314,33 +317,95 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		}
 	};
 
+	LoginInterface loginInterface = new LoginInterface() {
+
+		@Override
+		public void onStart() {
+			// TODO Auto-generated method stub
+			showLoading(LoginActivity.this);
+		}
+
+		@Override
+		public void onFinish() {
+			// TODO Auto-generated method stub
+			dimissDialog();
+		}
+
+		@Override
+		public void onError() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			// TODO Auto-generated method stub
+
+		}
+	};
+
+	// show loading
+	public void showLoading(Context Context) {
+		try {
+			if (loadingPopup == null) {
+				loadingPopup = new LoadingPopupViewHolder(LoginActivity.this,
+						CategoryTabActivity.DIALOG_LOADING_THEME);
+			}
+			loadingPopup.setCancelable(true);
+			loadingPopup.show();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void dimissDialog() {
+		try {
+			// if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
+			loadingPopup.cancel();
+			// }
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	/**
 	 * Login
 	 * */
 	public void login(String email, String password) {
 		Utils.hideKeyboard((Activity) mContext, txt_email);
 		Utils.hideKeyboard((Activity) mContext, txt_password);
-		if (Utils.isNetworkOnline(mContext)) {
-			// code if connected
-			WebservicesHelper helper = new WebservicesHelper(mContext);
-			try {
-				helper.login(txt_email.getText().toString(), txt_password
-						.getText().toString());
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			final ToastDialog dialog = new ToastDialog(mContext, mContext
-					.getResources().getString(R.string.no_network));
-			dialog.show();
-			dialog.btnOk.setOnClickListener(new OnClickListener() {
+		// if (Utils.isNetworkOnline(mContext)) {
+		// // code if connected
+		// WebservicesHelper helper = new WebservicesHelper(mContext);
+		// try {
+		// helper.login(txt_email.getText().toString(), txt_password
+		// .getText().toString(),loginInterface);
+		// } catch (JSONException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// } else {
+		// final ToastDialog dialog = new ToastDialog(mContext, mContext
+		// .getResources().getString(R.string.no_network));
+		// dialog.show();
+		// dialog.btnOk.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View v) {
+		// dialog.dismiss();
+		// }
+		// });
+		// }
 
-				@Override
-				public void onClick(View v) {
-					dialog.dismiss();
-				}
-			});
+		WebservicesHelper helper = new WebservicesHelper(mContext);
+		try {
+			helper.login(txt_email.getText().toString(), txt_password.getText()
+					.toString(), loginInterface);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
