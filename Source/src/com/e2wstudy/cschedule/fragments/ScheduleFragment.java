@@ -417,7 +417,7 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
 			view.expand_list_schedule.setAdapter(adapter);
 
-			ArrayList<Schedule> listSchedules = new ArrayList<Schedule>();
+			ArrayList<Schedule> listSchedules = new ArrayList<>();
 			switch (type) {
 			case ME:
 				listSchedules = dbHelper.getAllSchedules();
