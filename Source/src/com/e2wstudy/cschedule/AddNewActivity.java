@@ -2,6 +2,8 @@ package com.e2wstudy.cschedule;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.adapter.SharedMemberAdapter;
 import com.e2wstudy.cschedule.adapter.TextViewBaseAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -21,6 +23,7 @@ import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.AddActivityView;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
+import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.ParticipantInforDialog;
 import com.e2wstudy.cschedule.views.ToastDialog;
 import android.annotation.SuppressLint;
@@ -52,7 +55,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	
 	// shared role for privacy
 	int shared_role = CommConstant.OWNER;
-
+	public LoadingPopupViewHolder loadingPopup;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -117,6 +121,52 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	// show loading
+	public void showLoading(Context mContext) {
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(mContext,
+					CategoryTabActivity.DIALOG_LOADING_THEME);
+		}
+		loadingPopup.setCancelable(true);
+		if (!loadingPopup.isShowing()) {
+			loadingPopup.show();
+		}
+	}
+
+	public void dimissDialog() {
+		if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
+		}
+	}
+
+	LoginInterface loginInterface = new LoginInterface() {
+
+		@Override
+		public void onStart() {
+			// TODO Auto-generated method stub
+			showLoading(AddNewActivity.this);
+		}
+
+		@Override
+		public void onFinish() {
+			// TODO Auto-generated method stub
+			dimissDialog();
+		}
+
+		@Override
+		public void onError() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			// TODO Auto-generated method stub
+
+		}
+	};
+
+	
 	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
 
@@ -596,7 +646,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				dbHelper.updateActivity(thisActivity.getActivity_ID(), cv);
 
 				WebservicesHelper ws = new WebservicesHelper(mContext);
-				ws.updateActivity(thisActivity);
+				ws.updateActivity(thisActivity,loginInterface);
 
 			}
 		}
@@ -705,7 +755,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 				}
 				WebservicesHelper ws = new WebservicesHelper(mContext);
-				ws.addActivity(thisActivity);
+				ws.addActivity(thisActivity,loginInterface);
 			}
 		}
 	}

@@ -147,7 +147,7 @@ public class WebservicesHelper {
 	 * account failure
 	 * */
 	public void createAccount(final String email, final String password,
-			String username, String mobile) {
+			String username, String mobile,final LoginInterface loginInterface) {
 
 		String signUpUrl = BaseUrl.BASEURL + "creator?action=register" + "&"
 				+ BaseUrl.URL_POST_FIX;
@@ -316,21 +316,15 @@ public class WebservicesHelper {
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								showLoading(context);
+//								showLoading(context);
+								loginInterface.onStart();
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								try {
-									// if (progress.isShowing()) {
-									// progress.dismiss();
-									// }
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
+							loginInterface.onFinish();
 
 							}
 						});
@@ -2766,7 +2760,7 @@ LoginInterface loginInterface;
 	 * “serviceid”: “2222222”, “servicename”: “Food Service”, “desp”: “This is a
 	 * cleaning service”, } }
 	 * */
-	public void addActivity(final MyActivity activity) {
+	public void addActivity(final MyActivity activity,final LoginInterface loginActivity) {
 		String ActivityUrl = BaseUrl.BASEURL + "services" + "?"
 				+ BaseUrl.URL_POST_FIX;
 		try {
@@ -2905,22 +2899,14 @@ LoginInterface loginInterface;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								showLoading(context);
+								loginActivity.onStart();
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								try {
-									// if (progress.isShowing()) {
-									// progress.dismiss();
-									// }
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
-
+								loginActivity.onFinish();
 							}
 						});
 			} else {
@@ -2944,7 +2930,7 @@ LoginInterface loginInterface;
 		}
 	}
 
-	public void addSchedule(Schedule schedule, List<Confirm> pins) {
+	public void addSchedule(Schedule schedule, List<Confirm> pins,final LoginInterface loginInterface) {
 		// String ScheduleUrl = BASEURL + "schedules";
 		String ScheduleUrl = BaseUrl.BASEURL + "schedules" + "?"
 				+ BaseUrl.URL_POST_FIX;
@@ -3097,21 +3083,15 @@ LoginInterface loginInterface;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								showLoading(context);
+//								showLoading(context);
+								loginInterface.onStart();
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								try {
-									// if (progress.isShowing()) {
-									// progress.dismiss();
-									// }
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
+								loginInterface.onFinish();
 
 							}
 						});
@@ -3137,7 +3117,7 @@ LoginInterface loginInterface;
 		}
 	}
 
-	public void updateSchedule(Schedule schedule, List<Confirm> pins) {
+	public void updateSchedule(Schedule schedule, List<Confirm> pins,final LoginInterface loginInterface) {
 		// String ScheduleUrl = BASEURL + "schedules/" +
 		// schedule.getScheduleID();
 		String ScheduleUrl = BaseUrl.BASEURL + "schedules/"
@@ -3275,21 +3255,15 @@ LoginInterface loginInterface;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								showLoading(context);
+//								showLoading(context);
+								loginInterface.onStart();
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								try {
-									// if (progress.isShowing()) {
-									// progress.dismiss();
-									// }
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
+								loginInterface.onFinish();
 
 							}
 						});
@@ -3796,7 +3770,7 @@ LoginInterface loginInterface;
 				.getSharedDatabaseHelper(context).getUnsyncedNewActivities();
 		for (int i = 0; i < unsyncedActivities.size(); i++) {
 			MyActivity ma = unsyncedActivities.get(i);
-			this.addActivity(ma);
+			this.addActivity(ma,loginInterface);
 		}
 	}
 
@@ -3807,7 +3781,7 @@ LoginInterface loginInterface;
 					.getUnsyncedEditedActivities();
 			for (int i = 0; i < unsyncedActivities.size(); i++) {
 				MyActivity ma = unsyncedActivities.get(i);
-				updateActivity(ma);
+				updateActivity(ma,loginInterface);
 			}
 		} catch (Exception ex) {
 
@@ -3819,7 +3793,7 @@ LoginInterface loginInterface;
 				.getSharedDatabaseHelper(context).getUnsyncedNewParticipants();
 		for (int i = 0; i < unsyncedParticipants.size(); i++) {
 			Participant p = unsyncedParticipants.get(i);
-			addParticipant(p);
+			addParticipant(p,loginInterface);
 		}
 	}
 
@@ -3829,10 +3803,35 @@ LoginInterface loginInterface;
 				.getUnsyncedEditedParticipants();
 		for (int i = 0; i < unsyncedParticipants.size(); i++) {
 			Participant p = unsyncedParticipants.get(i);
-			this.updateParticipant(p);
+			this.updateParticipant(p,loginInterface);
 		}
 	}
-
+LoginInterface loginInterface=new LoginInterface() {
+	
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onFinish() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onError() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onComplete() {
+		// TODO Auto-generated method stub
+		
+	}
+};
 	public void uploadRecentNewSchedulesToWeb() {
 		List<Schedule> unsyncedSchedules = DatabaseHelper
 				.getSharedDatabaseHelper(context).getUnsyncedNewSchedules();
@@ -3840,7 +3839,7 @@ LoginInterface loginInterface;
 			Schedule s = unsyncedSchedules.get(i);
 			List<Confirm> members = DatabaseHelper.getSharedDatabaseHelper(
 					context).getParticipantsForSchedule(s.getSchedule_ID());
-			this.addSchedule(s, members);
+			this.addSchedule(s, members,loginInterface);
 		}
 	}
 
@@ -3851,7 +3850,7 @@ LoginInterface loginInterface;
 			Schedule s = unsyncedSchedules.get(i);
 			List<Confirm> members = DatabaseHelper.getSharedDatabaseHelper(
 					context).getParticipantsForSchedule(s.getSchedule_ID());
-			this.updateSchedule(s, members);
+			this.updateSchedule(s, members,loginInterface);
 		}
 	}
 
@@ -4450,7 +4449,7 @@ LoginInterface loginInterface;
 	// }
 	// }
 
-	public void addParticipant(Participant participant) {
+	public void addParticipant(Participant participant,final LoginInterface loginInterface) {
 		String ParticipantUrl = BaseUrl.BASEURL + "members" + "?"
 				+ BaseUrl.URL_POST_FIX;
 		final int id = participant.getID();
@@ -4575,22 +4574,14 @@ LoginInterface loginInterface;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								showLoading(context);
+								loginInterface.onStart();
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								try {
-									// if (progress.isShowing()) {
-									// progress.dismiss();
-									// }
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
-
+								loginInterface.onFinish();
 							}
 						});
 			} else {
@@ -4617,7 +4608,7 @@ LoginInterface loginInterface;
 	/**
 	 * Update participant: update table ParticipantTable and SharedMemberTable
 	 * */
-	public void updateParticipant(final Participant participant) {
+	public void updateParticipant(final Participant participant,final LoginInterface loginInterface) {
 		String ParticipantUrl = BaseUrl.BASEURL + "members/"
 				+ participant.getID() + "?" + BaseUrl.URL_POST_FIX;
 		Log.i("updateParticipant ParticipantUrl ", ParticipantUrl);
@@ -4745,21 +4736,14 @@ LoginInterface loginInterface;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								showLoading(context);
+								loginInterface.onStart();
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								try {
-									// if (progress.isShowing()) {
-									// progress.dismiss();
-									// }
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
+							loginInterface.onFinish();
 
 							}
 						});
@@ -4924,7 +4908,7 @@ LoginInterface loginInterface;
 	// }
 	// }
 
-	public void updateActivity(MyActivity activity) {
+	public void updateActivity(MyActivity activity,final LoginInterface loginInterface) {
 		String ActivityUrl = BaseUrl.BASEURL + "services/"
 				+ activity.getActivity_ID() + "?" + BaseUrl.URL_POST_FIX;
 		final String id = activity.getActivity_ID();
@@ -5035,22 +5019,14 @@ LoginInterface loginInterface;
 							public void onStart() {
 								// TODO Auto-generated method stub
 								super.onStart();
-								showLoading(context);
+								loginInterface.onStart();
 							}
 
 							@Override
 							public void onFinish() {
 								// TODO Auto-generated method stub
 								super.onFinish();
-								try {
-									// if (progress.isShowing()) {
-									// progress.dismiss();
-									// }
-									dimissDialog();
-								} catch (Exception ex) {
-									ex.printStackTrace();
-								}
-
+								loginInterface.onFinish();
 							}
 						});
 			} else {

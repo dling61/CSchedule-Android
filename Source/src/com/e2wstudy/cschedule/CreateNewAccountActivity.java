@@ -3,8 +3,10 @@
  * */
 package com.e2wstudy.cschedule;
 
+import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.Utils;
+import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.TitleBarView;
 import com.e2wstudy.cschedule.views.ToastDialog;
 import android.app.ProgressDialog;
@@ -37,6 +39,7 @@ public class CreateNewAccountActivity extends BaseActivity implements
 	ProgressDialog mDialog;
 	TitleBarView titleBar;
 	LinearLayout signin_inputs;
+	public LoadingPopupViewHolder loadingPopup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,50 @@ public class CreateNewAccountActivity extends BaseActivity implements
 		titleBar.layout_next.setVisibility(View.GONE);
 
 	}
+	// show loading
+	public void showLoading(Context mContext) {
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(mContext,
+					CategoryTabActivity.DIALOG_LOADING_THEME);
+		}
+		loadingPopup.setCancelable(true);
+		if (!loadingPopup.isShowing()) {
+			loadingPopup.show();
+		}
+	}
+
+	public void dimissDialog() {
+		if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
+		}
+	}
+
+	LoginInterface loginInterface = new LoginInterface() {
+
+		@Override
+		public void onStart() {
+			// TODO Auto-generated method stub
+			showLoading(CreateNewAccountActivity.this);
+		}
+
+		@Override
+		public void onFinish() {
+			// TODO Auto-generated method stub
+			dimissDialog();
+		}
+
+		@Override
+		public void onError() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			// TODO Auto-generated method stub
+
+		}
+	};
 
 	@Override
 	public void onClick(View v) {
@@ -193,7 +240,7 @@ public class CreateNewAccountActivity extends BaseActivity implements
 			try {
 
 				WebservicesHelper helper = new WebservicesHelper(mContext);
-				helper.createAccount(email, password, username, mobile);
+				helper.createAccount(email, password, username, mobile,loginInterface);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

@@ -3,6 +3,7 @@ package com.e2wstudy.cschedule;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
 import com.e2wstudy.cschedule.models.Participant;
 import com.e2wstudy.cschedule.models.ParticipantTable;
@@ -61,6 +62,33 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		onClickListener();
 	}
 
+	LoginInterface loginInterface = new LoginInterface() {
+
+		@Override
+		public void onStart() {
+			// TODO Auto-generated method stub
+			showLoading(AddNewContactActivity.this);
+		}
+
+		@Override
+		public void onFinish() {
+			// TODO Auto-generated method stub
+			dimissDialog();
+		}
+
+		@Override
+		public void onError() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			// TODO Auto-generated method stub
+
+		}
+	};
+	
 	/**
 	 * Set edittext editable or not
 	 * */
@@ -354,10 +382,10 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			cv.put(ParticipantTable.user_login,
 					new SharedReference().getCurrentOwnerId(mContext));
 			dbHelper.insertParticipant(cv);
-			ws.addParticipant(thisParticipant);
+			ws.addParticipant(thisParticipant,loginInterface);
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			dbHelper.updateParticipant(thisParticipant.getID(), cv);
-			ws.updateParticipant(thisParticipant);
+			ws.updateParticipant(thisParticipant,loginInterface);
 		}
 
 	}

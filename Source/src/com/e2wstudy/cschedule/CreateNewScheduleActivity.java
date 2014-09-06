@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.adapter.ActivityNameAdapter;
 import com.e2wstudy.cschedule.adapter.AlertTextBaseAdapter;
 import com.e2wstudy.cschedule.adapter.SharedMemberAdapter;
@@ -26,6 +28,7 @@ import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.AddScheduleView;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
+import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.PopupDialog;
 import com.e2wstudy.cschedule.views.ToastDialog;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -97,6 +100,8 @@ public class CreateNewScheduleActivity extends Activity implements
 	boolean isShowPopupTimeZone = false;
 	boolean isShowPopupAlert = false;
 
+	public LoadingPopupViewHolder loadingPopup;
+	
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
@@ -1304,6 +1309,53 @@ Log.d("weekday",weekday);
 		dbHelper.updateActivity(thisSchedule.getService_ID(), contentValues);
 	}
 
+	// show loading
+		public void showLoading(Context mContext) {
+			if (loadingPopup == null) {
+				loadingPopup = new LoadingPopupViewHolder(mContext,
+						CategoryTabActivity.DIALOG_LOADING_THEME);
+			}
+			loadingPopup.setCancelable(true);
+			if (!loadingPopup.isShowing()) {
+				loadingPopup.show();
+			}
+		}
+
+		public void dimissDialog() {
+			if (loadingPopup != null && loadingPopup.isShowing()) {
+				loadingPopup.dismiss();
+			}
+		}
+
+		LoginInterface loginInterface = new LoginInterface() {
+
+			@Override
+			public void onStart() {
+				// TODO Auto-generated method stub
+				showLoading(CreateNewScheduleActivity.this);
+			}
+
+			@Override
+			public void onFinish() {
+				// TODO Auto-generated method stub
+				dimissDialog();
+			}
+
+			@Override
+			public void onError() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onComplete() {
+				// TODO Auto-generated method stub
+
+			}
+		};
+
+		
+		
 	/**
 	 * Create new schedule
 	 * */
@@ -1334,7 +1386,7 @@ Log.d("weekday",weekday);
 						}
 					}
 					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.addSchedule(thisSchedule, listPins);
+					ws.addSchedule(thisSchedule, listPins,loginInterface);
 				} else {
 					popUpNoParticipant();
 				}
@@ -1368,11 +1420,11 @@ Log.d("weekday",weekday);
 				if (composeType == DatabaseHelper.NEW) {
 					insertToLocalDatabase();
 					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.addSchedule(thisSchedule, listPins);
+					ws.addSchedule(thisSchedule, listPins,loginInterface);
 				} else if (composeType == DatabaseHelper.EXISTED) {
 					editScheduleLocalDatabase();
 					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.updateSchedule(thisSchedule, listPins);
+					ws.updateSchedule(thisSchedule, listPins,loginInterface);
 				}
 
 			}
@@ -1512,7 +1564,7 @@ Log.d("weekday",weekday);
 						dbHelper.insertOnduty(onduty);
 					}
 					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.updateSchedule(thisSchedule, listPins);
+					ws.updateSchedule(thisSchedule, listPins,loginInterface);
 				} else {
 					popUpNoParticipant();
 				}
