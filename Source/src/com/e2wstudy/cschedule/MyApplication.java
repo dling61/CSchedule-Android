@@ -40,7 +40,9 @@ public class MyApplication extends Application {
 			clientRequest = new AsyncHttpClient();
 			clientRequest.setTimeout(10000);
 			clientRequest.setMaxRetriesAndTimeout(1,10000);
-			clientRequest.addHeader("Content-type", "application/json");
+			clientRequest.addHeader("Accept", "application/json");
+//			clientRequest.addHeader("Content-type", "application/json");
+			
 			clientRequest.addHeader("User-Agent", USER_AGENT_STRING);
 		}
 		return clientRequest;

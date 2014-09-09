@@ -35,6 +35,7 @@ import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import android.app.ProgressDialog;
@@ -1297,9 +1298,7 @@ public class WebservicesHelper {
 								ref.setLastestServiceLastModifiedTime(context,
 										last_modified);
 
-								// Intent intent = new Intent(
-								// CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
-								// context.sendBroadcast(intent);
+								
 
 								addNewActivityInterface.onComplete();
 								getSharedmembersForActivity(context,
@@ -1321,7 +1320,9 @@ public class WebservicesHelper {
 												context.sendBroadcast(intent);
 											}
 										});
-
+								 Intent intent = new Intent(
+										 CommConstant.UPDATE_SCHEDULE);
+										 context.sendBroadcast(intent);
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -1384,6 +1385,10 @@ public class WebservicesHelper {
 						@Override
 						public void onSuccess(int statusCode, Header[] headers,
 								byte[] responseBody) {
+							
+							if(statusCode==200)
+							{
+							
 							String responseText = Utils
 									.convertBytesArrayToString(responseBody);
 							Log.d("add new schedule",
@@ -1407,17 +1412,19 @@ public class WebservicesHelper {
 								CategoryTabActivity.currentPage = CategoryTabActivity.TAB_SCHEDULE;
 								addNewScheduleInterface.onComplete();
 
-								// Intent intent = new Intent(
-								// CommConstant.UPDATE_SCHEDULE);
-								// context.sendBroadcast(intent);
-								//
-								// ((Activity) context).finish();
-								// Utils.postLeftToRight(context);
+								Intent intent=new Intent(CommConstant.UPDATE_SCHEDULE);
+								context.sendBroadcast(intent);
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 								addNewScheduleInterface
 										.onError("Have an error occur");
+							}
+							}
+							else if(statusCode==201)
+							{
+								addNewScheduleInterface
+								.onError("This schedule exists already");
 							}
 						}
 
@@ -1493,7 +1500,8 @@ public class WebservicesHelper {
 								addUpdateScheduleInterface.onComplete();
 
 								CategoryTabActivity.currentPage = CategoryTabActivity.TAB_SCHEDULE;
-
+								Intent intent=new Intent(CommConstant.UPDATE_SCHEDULE);
+								context.sendBroadcast(intent);
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -1532,7 +1540,7 @@ public class WebservicesHelper {
 						.getCurrentOwnerId(context)), pin.getConfirm());
 		if (Utils.isNetworkOnline(context)) {
 			MyApplication.clientRequest().put(context, updateConfirmStatus,
-					entity, "", new AsyncHttpResponseHandler() {
+					entity,CONTENT_TYPE, new AsyncHttpResponseHandler() {
 						@Override
 						public void onStart() {
 							// TODO Auto-generated method stub
@@ -1570,6 +1578,9 @@ public class WebservicesHelper {
 												schedule.getSchedule_ID(),
 												pin.getMemberId(), cv);
 								updateConfirmStatusInterface.onComplete();
+								
+								Intent intent=new Intent(CommConstant.UPDATE_SCHEDULE);
+								context.sendBroadcast(intent);
 
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
@@ -1606,7 +1617,9 @@ public class WebservicesHelper {
 				+ schedule.getSchedule_ID() + "?" + BaseUrl.URL_POST_FIX;
 		final int schedule_id = schedule.getSchedule_ID();
 		if (Utils.isNetworkOnline(context)) {
-			MyApplication.clientRequest().delete(context, scheduleUrl,
+			AsyncHttpClient clientRequest=MyApplication.clientRequest();
+			clientRequest.addHeader("Content-Type", CONTENT_TYPE);
+			clientRequest.delete(context, scheduleUrl,
 					new AsyncHttpResponseHandler() {
 						@Override
 						public void onStart() {
@@ -1642,9 +1655,9 @@ public class WebservicesHelper {
 											.deleteSchedule(schedule_id);
 									scheduleInterface.onComplete();
 
-									// Intent intent = new Intent(
-									// CommConstant.DELETE_SCHEDULE_COMPLETE);
-									// context.sendBroadcast(intent);
+									 Intent intent = new Intent(
+									 CommConstant.DELETE_SCHEDULE_COMPLETE);
+									 context.sendBroadcast(intent);
 								}
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
@@ -2164,7 +2177,9 @@ public class WebservicesHelper {
 				+ "/" + "sharedmembers/" + memberid + "?"
 				+ BaseUrl.URL_POST_FIX;
 		if (Utils.isNetworkOnline(context)) {
-			MyApplication.clientRequest().delete(context, sharedmemberUrl,
+			AsyncHttpClient clientRequest=MyApplication.clientRequest();
+			clientRequest.addHeader("Content-Type", CONTENT_TYPE);
+			clientRequest.delete(context, sharedmemberUrl,
 					new AsyncHttpResponseHandler() {
 
 						public void onSuccess(int statusCode, Header[] headers,
@@ -2531,7 +2546,9 @@ public class WebservicesHelper {
 		Log.d("delete contact", urlDeleteContact);
 		final int id = participant.getID();
 		if (Utils.isNetworkOnline(context)) {
-			MyApplication.clientRequest().delete(context, urlDeleteContact,
+			AsyncHttpClient clientRequest=MyApplication.clientRequest();
+			clientRequest.addHeader("Content-Type", CONTENT_TYPE);
+			clientRequest.delete(context, urlDeleteContact,
 					new AsyncHttpResponseHandler() {
 						@Override
 						public void onStart() {
@@ -2654,9 +2671,9 @@ public class WebservicesHelper {
 
 									// ((Activity) context).finish();
 									// Utils.postLeftToRight(context);
-									// Intent intent = new Intent(
-									// CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
-									// context.sendBroadcast(intent);
+									 Intent intent = new Intent(
+											 CommConstant.UPDATE_SCHEDULE);
+											 context.sendBroadcast(intent);
 									activityInterface.onComplete();
 
 								} catch (JSONException e) {
@@ -2701,9 +2718,12 @@ public class WebservicesHelper {
 			final ActvityInterface activityInterface) {
 		String url = BaseUrl.BASEURL + "services/" + activity.getActivity_ID()
 				+ "?" + BaseUrl.URL_POST_FIX;
+		Log.d("delete activity url",url);
 		final String id = activity.getActivity_ID();
 		if (Utils.isNetworkOnline(context)) {
-			MyApplication.clientRequest().delete(context, url,
+			AsyncHttpClient clientRequest=MyApplication.clientRequest();
+			clientRequest.addHeader("Content-Type", CONTENT_TYPE);
+			clientRequest.delete(context, url,
 					new AsyncHttpResponseHandler() {
 						@Override
 						public void onStart() {
@@ -2779,9 +2799,9 @@ public class WebservicesHelper {
 											context).deleteActivity(id);
 
 									Log.i("delete activity", "successfully");
-									// Intent intent = new Intent(
-									// CommConstant.DELETE_ACTIVITY_COMPLETE);
-									// context.sendBroadcast(intent);
+									 Intent intent = new Intent(
+											 CommConstant.UPDATE_SCHEDULE);
+											 context.sendBroadcast(intent);
 
 									activityInterface.onComplete();
 								}
