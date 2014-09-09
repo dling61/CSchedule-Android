@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 devsmartlib/bin/
 devsmartlib/.settings/org.eclipse.jdt.core.prefs
 Source/bin
+=======
+Source/bin
+devsmartlib/bin
+>>>>>>> 3e1303b486d6e6f1a7e44ca9821fb783a7a42e73
