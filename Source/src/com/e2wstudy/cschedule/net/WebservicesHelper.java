@@ -37,7 +37,6 @@ import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.ToastDialog;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -61,7 +60,6 @@ import com.e2wstudy.schedule.interfaces.SetTokenInterface;
 import com.e2wstudy.schedule.interfaces.SharedMemberInterface;
 import com.e2wstudy.schedule.interfaces.SignUpInterface;
 import com.e2wstudy.schedule.interfaces.UpdateConfirmStatusInterface;
-import com.google.android.gms.internal.ac;
 
 /**
  * @class WebservicesHelper
@@ -162,6 +160,7 @@ public class WebservicesHelper {
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+									signUpInterface.onFailure("Have an error occur");
 								}
 							}
 
@@ -219,7 +218,7 @@ public class WebservicesHelper {
 									.convertBytesArrayToString(responseBody);
 							Log.i("successful login",
 									String.valueOf(responseText));
-							onLoginSuccessComplete(context, responseText, email);
+							onLoginSuccessComplete(context, responseText, email,loginInterface);
 							loginInterface.onComplete();
 						}
 
@@ -552,7 +551,7 @@ public class WebservicesHelper {
 	}
 
 	private void onLoginSuccessComplete(final Context context,
-			String responseText, String email) {
+			String responseText, String email,LoginInterface iLogin) {
 		try {
 			JSONObject response = new JSONObject(responseText);
 			String username = response.getString("username");
@@ -638,6 +637,7 @@ public class WebservicesHelper {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			iLogin.onError("Have an error occur");
 		}
 	}
 
@@ -670,7 +670,7 @@ public class WebservicesHelper {
 										.convertBytesArrayToString(responseBody);
 								Log.i("get schedule ", responseText);
 								getScheduleForActivityComplete(context,
-										responseText);
+										responseText,scheduleInterface);
 								scheduleInterface.onComplete();
 							}
 
@@ -739,7 +739,7 @@ public class WebservicesHelper {
 								Log.i("get schedule item with activity="
 										+ activityid, responseText);
 								getScheduleForActivityComplete(context,
-										responseText);
+										responseText,scheduleInterface);
 								scheduleInterface.onComplete();
 							}
 
@@ -780,7 +780,7 @@ public class WebservicesHelper {
 	}
 
 	private void getScheduleForActivityComplete(final Context context,
-			String responseText) {
+			String responseText,ScheduleInterface iSchedule) {
 		try {
 			JSONObject response = new JSONObject(responseText);
 			JSONArray deletedschedules = response
@@ -877,6 +877,7 @@ public class WebservicesHelper {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			iSchedule.onError("Have an error occur");
 		}
 	}
 
@@ -924,7 +925,7 @@ public class WebservicesHelper {
 										.convertBytesArrayToString(responseBody);
 								Log.d("load contact", responseText);
 								getParticipantFromWebComplete(context,
-										responseText);
+										responseText,getParticipantInterface);
 
 								getParticipantInterface.onComplete();
 							}
@@ -961,7 +962,7 @@ public class WebservicesHelper {
 	}
 
 	private void getParticipantFromWebComplete(final Context context,
-			String responseText) {
+			String responseText,GetParticipantInterface iParticipant) {
 		Log.i("successful response get participant from web",
 				responseText.toString());
 		try {
@@ -1047,6 +1048,7 @@ public class WebservicesHelper {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			iParticipant.onError("Have an error occur");
 		}
 	}
 
@@ -1228,6 +1230,7 @@ public class WebservicesHelper {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		}
 	}
 
@@ -1646,6 +1649,7 @@ public class WebservicesHelper {
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
+								scheduleInterface.onError("Have an error occur");
 							}
 						}
 
@@ -1980,6 +1984,7 @@ public class WebservicesHelper {
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
+								sharedMemberInterface.onError("Have an error occur");
 							}
 
 						}
@@ -2096,6 +2101,7 @@ public class WebservicesHelper {
 								} catch (JSONException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
+									sharedMemberInterface.onError("Have an error occur");
 								}
 
 							}
@@ -2186,6 +2192,7 @@ public class WebservicesHelper {
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
+							sharedMemberInterface.onError("Have an error occur");
 							}
 						}
 
@@ -2371,6 +2378,7 @@ public class WebservicesHelper {
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+									contactInterface.onError("Have an error occur");
 								}
 							}
 
@@ -2483,6 +2491,7 @@ public class WebservicesHelper {
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
+									contactInterface.onError("Have an error occur");
 								}
 							}
 
@@ -2544,7 +2553,7 @@ public class WebservicesHelper {
 								byte[] responseBody) {
 							String responseText = Utils
 									.convertBytesArrayToString(responseBody);
-							Log.d("delete str", responseText.toString());
+							Log.d("delete contact", responseText.toString());
 							try {
 								JSONObject response = new JSONObject(
 										responseText);
@@ -2567,6 +2576,7 @@ public class WebservicesHelper {
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
+								contactInterface.onError("Have an error occur");
 							}
 						}
 
@@ -2778,6 +2788,7 @@ public class WebservicesHelper {
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
+							activityInterface.onError("Have an error occur");
 							}
 						}
 
