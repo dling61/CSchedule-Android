@@ -3,12 +3,6 @@ package com.e2wstudy.cschedule;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.adapter.MyPagerAdapter;
 import com.e2wstudy.cschedule.adapter.MyTabFactory;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -16,23 +10,19 @@ import com.e2wstudy.cschedule.fragments.AccountFragment;
 import com.e2wstudy.cschedule.fragments.ActivityFragment;
 import com.e2wstudy.cschedule.fragments.ContactFragment;
 import com.e2wstudy.cschedule.fragments.ScheduleFragment;
-import com.e2wstudy.cschedule.models.ActivityTable;
 import com.e2wstudy.cschedule.models.Alert;
-import com.e2wstudy.cschedule.models.Schedule;
 import com.e2wstudy.cschedule.models.TimeZoneModel;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
-import com.e2wstudy.cschedule.utils.CommConstant;
-import com.e2wstudy.cschedule.utils.MyDate;
-import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.CustomViewPager;
 import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.MenuAppView;
-import com.e2wstudy.cschedule.views.ToastDialog;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
+import com.e2wstudy.schedule.interfaces.ActvityInterface;
+import com.e2wstudy.schedule.interfaces.GetParticipantInterface;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
+import com.e2wstudy.schedule.interfaces.ScheduleInterface;
+import com.e2wstudy.schedule.interfaces.SharedMemberInterface;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -40,7 +30,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TabHost;
@@ -74,39 +63,17 @@ public class CategoryTabActivity extends FragmentActivity implements
 	int tz = 1;
 	int alert = 1;
 
+	ScheduleFragment schedule;
+	ContactFragment contact;
+	ActivityFragment activity;
+	AccountFragment account;
+
 	public static CategoryTabActivity getTab(Context context) {
 		if (sharedTab == null) {
 			sharedTab = new CategoryTabActivity();
 		}
 		return sharedTab;
 	}
-
-	LoginInterface loginInterface = new LoginInterface() {
-
-		@Override
-		public void onStart() {
-			// TODO Auto-generated method stub
-			showLoading(CategoryTabActivity.this);
-		}
-
-		@Override
-		public void onFinish() {
-			// TODO Auto-generated method stub
-			dimissDialog();
-		}
-
-		@Override
-		public void onError() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onComplete() {
-			// TODO Auto-generated method stub
-
-		}
-	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -126,13 +93,12 @@ public class CategoryTabActivity extends FragmentActivity implements
 		if (listAlert != null && listAlert.size() > 0) {
 			alert = listAlert.get(0).getId();
 		}
+		List<Fragment> fragments = getFragments();
 
 		// Tab Initialization
 		initialiseTabHost();
 		initData();
 
-		// Fragments and ViewPager Initialization
-		List<Fragment> fragments = getFragments();
 		pageAdapter = new MyPagerAdapter(getSupportFragmentManager(), fragments);
 		mViewPager.setAdapter(pageAdapter);
 		mViewPager.setOnPageChangeListener(CategoryTabActivity.this);
@@ -145,18 +111,6 @@ public class CategoryTabActivity extends FragmentActivity implements
 			ex.printStackTrace();
 		}
 	}
-
-	//
-	// @Override
-	// protected void onPause() {
-	// try {
-	// unregisterReceiver(goToActivity);
-	//
-	// } catch (Exception ex) {
-	// ex.printStackTrace();
-	// }
-	// super.onPause();
-	// };
 
 	protected void onDestroy() {
 		try {
@@ -176,165 +130,85 @@ public class CategoryTabActivity extends FragmentActivity implements
 		}
 	};
 
-	JsonHttpResponseHandler activityDownloadCompleteHandler = new JsonHttpResponseHandler() {
-		@Override
-		public void onSuccess(int statusCode, Header[] headers,
-				JSONObject response) {
-			// TODO Auto-generated method stub
-			super.onSuccess(statusCode, headers, response);
-			final SharedReference ref = new SharedReference();
-			final DatabaseHelper dbHelper = DatabaseHelper
-					.getSharedDatabaseHelper(mContext);
-			Log.i("get all activity", response.toString());
-			try {
-				// deleted services and schedule relationship with this
-				// service
-				JSONArray deleted_services = response
-						.getJSONArray("deletedservices");
-				int deleted_services_count = deleted_services.length();
-				if (deleted_services_count > 0) {
-					for (int i = 0; i < deleted_services_count; i++) {
-						String id = deleted_services.getString(i);
-						List<Schedule> sbelongtoa = dbHelper
-								.getSchedulesBelongtoActivity(id);
-						for (int j = 0; j < sbelongtoa.size(); j++) {
-							Schedule schedule = sbelongtoa.get(j);
-							dbHelper.deleteRelatedOnduty(schedule
-									.getSchedule_ID());
-							dbHelper.deleteSchedule(schedule.getSchedule_ID());
-						}
-						dbHelper.deleteActivity(id);
-					}
-				}
-
-				// services
-				JSONArray services = response.getJSONArray("services");
-				int service_count = services.length();
-
-				WebservicesHelper ws = new WebservicesHelper(mContext);
-				for (int i = 0; i < service_count; i++) {
-					JSONObject service = services.getJSONObject(i);
-					ContentValues newActivity = new ContentValues();
-					int ownid = service.getInt("creatorid");
-					newActivity.put(ActivityTable.own_ID, ownid);
-					Log.i("getActivitiesFromWeb own_ID ", ownid + "");
-					String activityid = service.getString("serviceid");
-
-					String serviceName = service.getString("servicename");
-					newActivity.put(ActivityTable.service_Name, serviceName);
-					Log.i("getActivitiesFromWeb service_Name ", serviceName
-							+ "");
-					int role = service.getInt("sharedrole");
-					newActivity.put(ActivityTable.sharedrole, role);
-					Log.i("getActivitiesFromWeb sharedrole ", role + "");
-					String description = service.getString("desp");
-					newActivity.put(ActivityTable.service_description,
-							description);
-					Log.i("getActivitiesFromWeb service_description ",
-							description + "");
-
-					int is_deleted = 0;
-					newActivity.put(ActivityTable.is_Deleted, is_deleted);
-					int is_synchronized = 1;
-					newActivity.put(ActivityTable.is_Synchronized,
-							is_synchronized);
-					newActivity.put(ActivityTable.user_login,
-							new SharedReference().getCurrentOwnerId(mContext));
-					String last_modified = service.getString("lastmodified");
-					newActivity.put(ActivityTable.last_ModifiedTime,
-							last_modified);
-
-					Log.i("getActivitiesFromWeb lastmodified ", last_modified
-							+ "");
-
-					if (dbHelper.isActivityExisted(activityid) == false) {
-						newActivity.put(ActivityTable.alertId, alert);
-						newActivity.put(ActivityTable.timeZoneId, tz);
-						newActivity.put(ActivityTable.service_ID, activityid);
-						Log.i("getActivitiesFromWeb service_ID ", activityid
-								+ "");
-						if (dbHelper.insertActivity(newActivity))
-							Log.i("database", "insert service " + serviceName
-									+ " successfully!");
-					} else {
-						if (dbHelper.updateActivity(activityid, newActivity))
-							Log.i("database", "update service " + serviceName
-									+ " successfully!");
-					}
-
-					ws.getSharedmembersForActivity(activityid,loginInterface);
-					// TODO: will delete if service get all schedule implemented
-					ws.getSchedulesForActivity(activityid,loginInterface);
-
-				}
-				// SEND broadcast to activity
-				Intent intent = new Intent(
-						CommConstant.ACTIVITY_DOWNLOAD_SUCCESS);
-				mContext.sendBroadcast(intent);
-				ref.setLastestServiceLastModifiedTime(mContext, MyDate
-						.transformPhoneDateTimeToUTCFormat(MyDate
-								.getCurrentDateTime()));
-				isActivityDownloadDone = true;
-				if (dbHelper.getNumberActivity() > 0) {
-					moveToPage(TAB_SCHEDULE);
-				} else {
-					moveToPage(TAB_ACTIVITY);
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		// public void onFailure(Throwable e, String response) {
-		@Override
-		public void onFailure(int statusCode, Header[] headers,
-				String response, Throwable throwable) {
-			// TODO Auto-generated method stub
-			super.onFailure(statusCode, headers, response, throwable);
-			// dimissDialog();
-			CategoryTabActivity.flag_activity = true;
-			// if (flag_activity && flag_contact && flag_schedule
-			// && loadingPopup.isShowing()) {
-			dimissDialog();
-			// }
-			final ToastDialog dialog = new ToastDialog(mContext, mContext
-					.getResources().getString(R.string.error_load_activity));
-			dialog.show();
-			dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					dialog.dismiss();
-				}
-			});
-		}
-
-		@Override
-		public void onFinish() {
-			// CategoryTabActivity.flag_activity = true;
-			// if (flag_activity && flag_contact && flag_schedule
-			// && loadingPopup.isShowing()) {
-			dimissDialog();
-			// }
-
-		};
+	LoadingInterface loadingInterface = new LoadingInterface() {
 
 		@Override
 		public void onStart() {
 			showLoading(CategoryTabActivity.this);
-		};
+		}
+
+		@Override
+		public void onFinish() {
+			dimissDialog();
+		}
+	};
+
+	ActvityInterface activityInterface = new ActvityInterface() {
+
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			activity.onDownloadComplete();
+
+		}
+	};
+
+	ScheduleInterface scheduleInterface = new ScheduleInterface() {
+
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			schedule.scheduleDownloadComplete();
+		}
+	};
+
+	SharedMemberInterface sharedMemberInterface = new SharedMemberInterface() {
+
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			schedule.scheduleDownloadComplete();
+			activity.onDownloadComplete();
+		}
+	};
+
+	GetParticipantInterface iParticipant = new GetParticipantInterface() {
+
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			contact.onDownloadComplete();
+		}
 	};
 
 	private void initData() {
 
 		// get all data after that, go to tab
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		// showLoading(CategoryTabActivity.this);
-		ws.getAllActivitys(activityDownloadCompleteHandler);
-		ws.getParticipantsFromWeb(loginInterface);
+		WebservicesHelper ws = WebservicesHelper.getInstance();
+		ws.getAllActivitys(mContext,loadingInterface, activityInterface,
+				scheduleInterface, sharedMemberInterface);
+//		ws.getSchedules(mContext, loadingInterface, scheduleInterface);
+		ws.getParticipantsFromWeb(mContext,iParticipant, loadingInterface);
 
 	}
 
@@ -414,12 +288,11 @@ public class CategoryTabActivity extends FragmentActivity implements
 		List<Fragment> fList = new ArrayList<Fragment>();
 
 		// TODO Put here your Fragments
-		ScheduleFragment schedule = new ScheduleFragment();
-		ContactFragment contact = new ContactFragment();
+		schedule = new ScheduleFragment();
+		contact = new ContactFragment();
 		contact.setInSideTab(true);
-		ActivityFragment activity = new ActivityFragment();
-
-		AccountFragment account = new AccountFragment();
+		activity = new ActivityFragment();
+		account = new AccountFragment();
 		fList.add(schedule);
 		fList.add(contact);
 		fList.add(activity);
@@ -479,13 +352,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				SharedReference ref = new SharedReference();
-				ref.setLastestParticipantLastModifiedTime(mContext,
-						CommConstant.DEFAULT_DATE);
-				ref.setLastestScheduleLastModifiedTime(mContext,
-						CommConstant.DEFAULT_DATE);
-				ref.setLastestServiceLastModifiedTime(mContext,
-						CommConstant.DEFAULT_DATE);
+
 				DatabaseHelper.getSharedDatabaseHelper(mContext)
 						.deleteTablesExitApp();
 				System.exit(0);

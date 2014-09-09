@@ -1,4 +1,4 @@
-package com.e2wstude.schedule.interfaces;
+package com.e2wstudy.schedule.interfaces;
 
 public class ScheduleAbstract implements ActvityInterface{
 

@@ -3,6 +3,8 @@ package com.e2wstudy.cschedule.net;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.e2wstudy.schedule.interfaces.GetServerSettingInterface;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -58,8 +60,33 @@ public class NetworkReceiver extends BroadcastReceiver {
 		else
 		{
 			if (!CommConstant.DOWNLOAD_SETTING) {
-				WebservicesHelper ws=new WebservicesHelper(context);
-				ws.getServerSetting();
+				WebservicesHelper.getInstance().getServerSetting(context,new GetServerSettingInterface( ) {
+					
+					@Override
+					public void onError(String error) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onComplete() {
+						// TODO Auto-generated method stub
+						
+					}
+				},new LoadingInterface() {
+					
+					@Override
+					public void onStart() {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onFinish() {
+						// TODO Auto-generated method stub
+						
+					}
+				});
 			}
 		}
 		

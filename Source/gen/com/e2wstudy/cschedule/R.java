@@ -196,6 +196,10 @@ containing a value of this type.
          */
         public static final int zOrderOnTop=0x7f010010;
     }
+    public static final class bool {
+        public static final int is_at_least_api_12=0x7f0b0000;
+        public static final int is_at_most_api_11=0x7f0b0001;
+    }
     public static final class color {
         public static final int Calendar_DayBgColor=0x7f050024;
         public static final int Calendar_WeekBgColor=0x7f050022;
@@ -704,14 +708,14 @@ containing a value of this type.
         public static final int update_dialog=0x7f030028;
     }
     public static final class menu {
-        public static final int activitymenu=0x7f0c0000;
-        public static final int activityorgmenu=0x7f0c0001;
-        public static final int activityparmenu=0x7f0c0002;
-        public static final int alertmenu=0x7f0c0003;
-        public static final int main=0x7f0c0004;
-        public static final int participantmenu=0x7f0c0005;
-        public static final int schedulemenu=0x7f0c0006;
-        public static final int scheduleorgmenu=0x7f0c0007;
+        public static final int activitymenu=0x7f0d0000;
+        public static final int activityorgmenu=0x7f0d0001;
+        public static final int activityparmenu=0x7f0d0002;
+        public static final int alertmenu=0x7f0d0003;
+        public static final int main=0x7f0d0004;
+        public static final int participantmenu=0x7f0d0005;
+        public static final int schedulemenu=0x7f0d0006;
+        public static final int scheduleorgmenu=0x7f0d0007;
     }
     public static final class string {
         public static final int about=0x7f07006c;
@@ -960,27 +964,27 @@ containing a value of this type.
 
         
          */
-        public static final int AppBaseTheme=0x7f0b0000;
+        public static final int AppBaseTheme=0x7f0c0000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f0b0001;
-        public static final int buttonRemoveStyle=0x7f0b0006;
-        public static final int buttonStyle=0x7f0b0005;
-        public static final int confirmTitleStyle=0x7f0b0002;
-        public static final int confirm_btn=0x7f0b000b;
-        public static final int dateStyle=0x7f0b0004;
-        public static final int edStyle=0x7f0b000e;
-        public static final int edStyleActivity=0x7f0b0011;
-        public static final int edStyleDate=0x7f0b0010;
-        public static final int edStyleTimeZone=0x7f0b000f;
-        public static final int edittextStyle=0x7f0b0003;
-        public static final int title_bar_tv=0x7f0b000d;
-        public static final int toast=0x7f0b000c;
-        public static final int tvContactName=0x7f0b000a;
-        public static final int tvContactStyle=0x7f0b0009;
-        public static final int tvTitleStyle=0x7f0b0007;
-        public static final int tvTitleStyleTimezone=0x7f0b0008;
+        public static final int AppTheme=0x7f0c0001;
+        public static final int buttonRemoveStyle=0x7f0c0006;
+        public static final int buttonStyle=0x7f0c0005;
+        public static final int confirmTitleStyle=0x7f0c0002;
+        public static final int confirm_btn=0x7f0c000b;
+        public static final int dateStyle=0x7f0c0004;
+        public static final int edStyle=0x7f0c000e;
+        public static final int edStyleActivity=0x7f0c0011;
+        public static final int edStyleDate=0x7f0c0010;
+        public static final int edStyleTimeZone=0x7f0c000f;
+        public static final int edittextStyle=0x7f0c0003;
+        public static final int title_bar_tv=0x7f0c000d;
+        public static final int toast=0x7f0c000c;
+        public static final int tvContactName=0x7f0c000a;
+        public static final int tvContactStyle=0x7f0c0009;
+        public static final int tvTitleStyle=0x7f0c0007;
+        public static final int tvTitleStyleTimezone=0x7f0c0008;
     }
     public static final class styleable {
         /** Attributes that can be used with a AdsAttrs.

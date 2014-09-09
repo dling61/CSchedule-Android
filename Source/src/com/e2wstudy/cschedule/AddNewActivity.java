@@ -3,7 +3,6 @@ package com.e2wstudy.cschedule;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.adapter.SharedMemberAdapter;
 import com.e2wstudy.cschedule.adapter.TextViewBaseAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -26,13 +25,15 @@ import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.ParticipantInforDialog;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.e2wstudy.schedule.interfaces.ActvityInterface;
+import com.e2wstudy.schedule.interfaces.AddUpdateScheduleInterface;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
+import com.e2wstudy.schedule.interfaces.SharedMemberInterface;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,11 +53,11 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	Context mContext;
 	AddActivityView view;
 	String activity_id = "";
-	
+
 	// shared role for privacy
 	int shared_role = CommConstant.OWNER;
 	public LoadingPopupViewHolder loadingPopup;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -67,23 +68,22 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		setContentView(view.layout);
 
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(mContext);
-		
-		ArrayList<TimeZoneModel> listTimeZone=new ArrayList<TimeZoneModel>();
-		ArrayList<Alert>listAlert=new ArrayList<Alert>();
-		int tz=1;
-		int alert=1;
-		if(listTimeZone!=null&&listTimeZone.size()>0)
-		{
-			tz=listTimeZone.get(0).getId();
+
+		ArrayList<TimeZoneModel> listTimeZone = new ArrayList<TimeZoneModel>();
+		ArrayList<Alert> listAlert = new ArrayList<Alert>();
+		int tz = 1;
+		int alert = 1;
+		if (listTimeZone != null && listTimeZone.size() > 0) {
+			tz = listTimeZone.get(0).getId();
 		}
-		
-		if(listAlert!=null&&listAlert.size()>0)
-		{
-			alert=listAlert.get(0).getId();
+
+		if (listAlert != null && listAlert.size() > 0) {
+			alert = listAlert.get(0).getId();
 		}
 
 		thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
-				new SharedReference().getCurrentOwnerId(mContext), "", "", 0,alert,tz);
+				new SharedReference().getCurrentOwnerId(mContext), "", "", 0,
+				alert, tz);
 
 		Intent myIntent = getIntent();
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, 3);
@@ -94,7 +94,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			Log.i("next service id", "is " + dbHelper.getNextActivityID());
 			thisActivity = new MyActivity(dbHelper.getNextActivityID() + "",
 					new SharedReference().getCurrentOwnerId(mContext), "", "",
-					CommConstant.OWNER,alert,tz);
+					CommConstant.OWNER, alert, tz);
 			view.titleBar.layout_save.setVisibility(View.GONE);
 			view.titleBar.layout_next.setVisibility(View.VISIBLE);
 		} else if (composeType == DatabaseHelper.EXISTED) {
@@ -110,15 +110,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 		this.initViewValues();
 		onClickListener();
-
-		try {
-			registerReceiver(activityGetSharedMemberComplete, new IntentFilter(
-					CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE));
-			registerReceiver(deleteActivityComplete, new IntentFilter(
-					CommConstant.DELETE_ACTIVITY_COMPLETE));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 	}
 
 	// show loading
@@ -139,41 +130,17 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	LoginInterface loginInterface = new LoginInterface() {
+	LoadingInterface loadingInterface = new LoadingInterface() {
 
 		@Override
 		public void onStart() {
-			// TODO Auto-generated method stub
 			showLoading(AddNewActivity.this);
+
 		}
 
 		@Override
 		public void onFinish() {
-			// TODO Auto-generated method stub
 			dimissDialog();
-		}
-
-		@Override
-		public void onError() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onComplete() {
-			// TODO Auto-generated method stub
-
-		}
-	};
-
-	
-	BroadcastReceiver deleteActivityComplete = new BroadcastReceiver() {
-		public void onReceive(Context arg0, Intent arg1) {
-
-			finish();
-			// overridePendingTransition(R.anim.push_left_in,
-			// R.anim.push_left_out);
-			Utils.postLeftToRight(mContext);
 		}
 	};
 
@@ -220,12 +187,6 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		}
 
 	}
-
-	BroadcastReceiver activityGetSharedMemberComplete = new BroadcastReceiver() {
-		public void onReceive(Context arg0, Intent arg1) {
-			setParticipantOfActivity();
-		}
-	};
 
 	private void participantInforDialog(final Sharedmember participant) {
 		String[] array = getResources().getStringArray(
@@ -332,21 +293,31 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 	// delete participant from activity
 	public void removeParticipant(Sharedmember participant) {
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		ws.deleteSharedmemberOfActivity(participant.getID(), activity_id);
+		WebservicesHelper ws = WebservicesHelper.getInstance();
+		ws.deleteSharedmemberOfActivity(mContext,participant.getID(), activity_id,
+				loadingInterface, iSharedMember);
 	}
 
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		try {
-			unregisterReceiver(deleteActivityComplete);
-			unregisterReceiver(activityGetSharedMemberComplete);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+	SharedMemberInterface iSharedMember = new SharedMemberInterface() {
+
+		@Override
+		public void onError(String error) {
+			final ToastDialog dialog = new ToastDialog(mContext, error);
+			dialog.show();
+			dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+				}
+			});
 		}
-	}
+
+		@Override
+		public void onComplete() {
+			setParticipantOfActivity();
+		}
+	};
 
 	/**
 	 * On Click listener
@@ -439,15 +410,16 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		if (v == view.titleBar.layout_next) {
 			if (composeType == DatabaseHelper.NEW) {
-//				Utils.isNetworkAvailable(createNewActivityHandle);
+				// Utils.isNetworkAvailable(createNewActivityHandle);
 				// createNewActivity();
-				
+
 				if (Utils.isNetworkOnline(mContext)) {
 					// code if connected
 					createNewActivity();
 				} else {
-					final ToastDialog dialog = new ToastDialog(mContext, mContext
-							.getResources().getString(R.string.no_network));
+					final ToastDialog dialog = new ToastDialog(mContext,
+							mContext.getResources().getString(
+									R.string.no_network));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
 
@@ -457,7 +429,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 						}
 					});
 				}
-				
+
 			}
 		} else if (v == view.btn_add_paticipant) {
 			if (composeType == DatabaseHelper.EXISTED) {
@@ -485,15 +457,16 @@ public class AddNewActivity extends Activity implements OnClickListener {
 
 		} else if (v == view.titleBar.layout_save) {
 			if (composeType == DatabaseHelper.EXISTED) {
-//				Utils.isNetworkAvailable(editActivityHandle);
+				// Utils.isNetworkAvailable(editActivityHandle);
 				// editActivity();
-				
+
 				if (Utils.isNetworkOnline(mContext)) {
 					// code if connected
 					editActivity();
 				} else {
-					final ToastDialog dialog = new ToastDialog(mContext, mContext
-							.getResources().getString(R.string.no_network));
+					final ToastDialog dialog = new ToastDialog(mContext,
+							mContext.getResources().getString(
+									R.string.no_network));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
 
@@ -504,14 +477,15 @@ public class AddNewActivity extends Activity implements OnClickListener {
 					});
 				}
 			} else if (composeType == DatabaseHelper.NEW) {
-//				Utils.isNetworkAvailable(createNewActivityHandle);
+				// Utils.isNetworkAvailable(createNewActivityHandle);
 				// createNewActivity();
 				if (Utils.isNetworkOnline(mContext)) {
 					// code if connected
 					createNewActivity();
 				} else {
-					final ToastDialog dialog = new ToastDialog(mContext, mContext
-							.getResources().getString(R.string.no_network));
+					final ToastDialog dialog = new ToastDialog(mContext,
+							mContext.getResources().getString(
+									R.string.no_network));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
 
@@ -540,9 +514,9 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				cv.put(SharedMemberTable.is_Synced, 0);
 				dbHelper.updateSharedmember(sharedMember.getID(), activity_id,
 						cv);
-				WebservicesHelper ws = new WebservicesHelper(mContext);
-				ws.deleteSharedmemberOfActivity(sharedMember.getID(),
-						activity_id);
+				WebservicesHelper ws = WebservicesHelper.getInstance();
+				ws.deleteSharedmemberOfActivity(mContext,sharedMember.getID(),
+						activity_id, loadingInterface, iSharedMember);
 			}
 		}
 
@@ -564,8 +538,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				dbHelper.updateOnduty(schedule_id, ocv);
 			}
 			dbHelper.updateSchedule(schedule_id, scv);
-			WebservicesHelper ws = new WebservicesHelper(mContext);
-			ws.deleteSchedule(sbelongtoa.get(i));
+			WebservicesHelper ws = WebservicesHelper.getInstance();
+			ws.deleteSchedule(mContext,sbelongtoa.get(i), iSchedule, loadingInterface);
 		}
 
 		ContentValues cv = new ContentValues();
@@ -573,9 +547,53 @@ public class AddNewActivity extends Activity implements OnClickListener {
 		cv.put(ActivityTable.is_Synchronized, 0);
 		dbHelper.updateActivity(activity_id, cv);
 
-		WebservicesHelper ws = new WebservicesHelper(mContext);
-		ws.deleteActivity(thisActivity);
+		WebservicesHelper ws = WebservicesHelper.getInstance();
+		ws.deleteActivity(mContext,thisActivity, loadingInterface, iActivity);
 	}
+
+	ActvityInterface iActivity = new ActvityInterface() {
+
+		@Override
+		public void onError(String error) {
+			final ToastDialog dialog = new ToastDialog(mContext, error);
+			dialog.show();
+			dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+				}
+			});
+		}
+
+		@Override
+		public void onComplete() {
+			finish();
+			Utils.postLeftToRight(mContext);
+		}
+	};
+
+	AddUpdateScheduleInterface iSchedule = new AddUpdateScheduleInterface() {
+
+		@Override
+		public void onError(String error) {
+			final ToastDialog dialog = new ToastDialog(mContext, error);
+			dialog.show();
+			dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+				}
+			});
+		}
+
+		@Override
+		public void onComplete() {
+			finish();
+			Utils.postLeftToRight(mContext);
+		}
+	};
 
 	/**
 	 * Delete activity
@@ -594,14 +612,15 @@ public class AddNewActivity extends Activity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				// deleteActivity();
-//				Utils.isNetworkAvailable(deleteActivityHandle);
-				
+				// Utils.isNetworkAvailable(deleteActivityHandle);
+
 				if (Utils.isNetworkOnline(mContext)) {
 					// code if connected
 					deleteActivity();
 				} else {
-					final ToastDialog dialog = new ToastDialog(mContext, mContext
-							.getResources().getString(R.string.no_network));
+					final ToastDialog dialog = new ToastDialog(mContext,
+							mContext.getResources().getString(
+									R.string.no_network));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
 
@@ -611,7 +630,7 @@ public class AddNewActivity extends Activity implements OnClickListener {
 						}
 					});
 				}
-				
+
 				dialog.dismiss();
 			}
 		});
@@ -645,8 +664,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				cv.put(ActivityTable.is_Synchronized, 0);
 				dbHelper.updateActivity(thisActivity.getActivity_ID(), cv);
 
-				WebservicesHelper ws = new WebservicesHelper(mContext);
-				ws.updateActivity(thisActivity,loginInterface);
+				WebservicesHelper ws = WebservicesHelper.getInstance();
+				ws.updateActivity(mContext,thisActivity, loadingInterface, iActivity);
 
 			}
 		}
@@ -737,29 +756,34 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				newActivity.put(ActivityTable.last_ModifiedTime, "nouploaded");
 				newActivity.put(ParticipantTable.user_login,
 						new SharedReference().getCurrentOwnerId(mContext));
+
 				
-				ArrayList<TimeZoneModel> listTimeZone=DatabaseHelper.getSharedDatabaseHelper(mContext).getTimeZone();
-				ArrayList<Alert> listAlert=DatabaseHelper.getSharedDatabaseHelper(mContext).getAlerts();
-				if(listAlert!=null&&listAlert.size()>0)
-				{
-					int alertId=listAlert.get(0).getId();
+				
+				
+				
+				ArrayList<TimeZoneModel> listTimeZone = DatabaseHelper
+						.getSharedDatabaseHelper(mContext).getTimeZone();
+				ArrayList<Alert> listAlert = DatabaseHelper
+						.getSharedDatabaseHelper(mContext).getAlerts();
+				if (listAlert != null && listAlert.size() > 0) {
+					int alertId = listAlert.get(0).getId();
 					newActivity.put(ActivityTable.alertId, alertId);
 				}
-				if(listTimeZone!=null&&listTimeZone.size()>0)
-				{
-					int timeZoneId=listTimeZone.get(0).getId();
+				if (listTimeZone != null && listTimeZone.size() > 0) {
+					int timeZoneId = listTimeZone.get(0).getId();
 					newActivity.put(ActivityTable.timeZoneId, timeZoneId);
-				}								
-				
+				}
+
 				if (dbHelper.insertActivity(newActivity)) {
 
 				}
-				WebservicesHelper ws = new WebservicesHelper(mContext);
-				ws.addActivity(thisActivity,loginInterface);
+				
+				WebservicesHelper ws = WebservicesHelper.getInstance();
+				ws.addActivity(mContext,thisActivity, loadingInterface,iActivity);
 			}
 		}
 	}
-
+	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == 222) {

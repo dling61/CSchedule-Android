@@ -6,10 +6,8 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.adapter.ActivityNameAdapter;
 import com.e2wstudy.cschedule.adapter.AlertTextBaseAdapter;
-import com.e2wstudy.cschedule.adapter.SharedMemberAdapter;
 import com.e2wstudy.cschedule.adapter.TextBaseAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
 import com.e2wstudy.cschedule.models.ActivityTable;
@@ -31,6 +29,9 @@ import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.PopupDialog;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.e2wstudy.schedule.interfaces.AddUpdateScheduleInterface;
+import com.e2wstudy.schedule.interfaces.GetServerSettingInterface;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -43,10 +44,7 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,7 +70,7 @@ public class CreateNewScheduleActivity extends Activity implements
 	private Schedule thisSchedule;
 	private int composeType;
 	private int StartOrEnd;
-	private DatabaseHelper dbHelper;
+	
 	// private ArrayList<Confirm> pins;
 
 	AddScheduleView view;
@@ -113,12 +111,12 @@ public class CreateNewScheduleActivity extends Activity implements
 		composeType = myIntent.getIntExtra(CommConstant.TYPE, -1);
 		activity_id = myIntent.getStringExtra(CommConstant.ACTIVITY_ID);
 
-		dbHelper = DatabaseHelper.getSharedDatabaseHelper(this);
+		
 
 		creator = new SharedReference().getCurrentOwnerId(mContext);
 		// view.et_new_activity_description.setFocusable(false);
 		if (activity_id != null && (!activity_id.equals(""))) {
-			myActivity = dbHelper.getActivity(activity_id);
+			myActivity = DatabaseHelper.getSharedDatabaseHelper(mContext).getActivity(activity_id);
 		} else {
 			// TODO:make activityname is suggestion activity in system
 		}
@@ -130,87 +128,12 @@ public class CreateNewScheduleActivity extends Activity implements
 		initViewValues();
 
 		onClickListener();
-		try {
-			// registerReceiver(getTimeZoneComplete, new IntentFilter(
-			// CommConstant.TIMEZONE_DOWNLOAD_SUCCESSFULLY));
-			registerReceiver(getServerSettingComplete, new IntentFilter(
-					CommConstant.ALERT_DOWNLOAD_SUCCESSFULLY));
-
-			registerReceiver(updateSchedule, new IntentFilter(
-					CommConstant.CHANGE_CONFIRM_STATUS_SUCCESSFULLY));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 	}
 
-	Handler createNewScheduleHandle = new Handler() {
+	
 
-		@Override
-		public void handleMessage(Message msg) {
 
-			if (msg.what != 1) { // code if not connected
-				final ToastDialog dialog = new ToastDialog(mContext, mContext
-						.getResources().getString(R.string.no_network));
-				dialog.show();
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
-					}
-				});
-			} else { // code if connected
-				createNewSchedule();
-			}
-
-		}
-	};
-
-	Handler editScheduleHandle = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-
-			if (msg.what != 1) { // code if not connected
-				final ToastDialog dialog = new ToastDialog(mContext, mContext
-						.getResources().getString(R.string.no_network));
-				dialog.show();
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
-					}
-				});
-			} else { // code if connected
-				editSchedule();
-			}
-
-		}
-	};
-
-	Handler deleteScheduleHandle = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-
-			if (msg.what != 1) { // code if not connected
-				final ToastDialog dialog = new ToastDialog(mContext, mContext
-						.getResources().getString(R.string.no_network));
-				dialog.show();
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
-					}
-				});
-			} else { // code if connected
-				deleteSchedule();
-			}
-
-		}
-	};
+	
 
 	/**
 	 * Return popup activityname have shared role owner or organizer
@@ -266,8 +189,17 @@ public class CreateNewScheduleActivity extends Activity implements
 		}
 
 	};
-	BroadcastReceiver getServerSettingComplete = new BroadcastReceiver() {
-		public void onReceive(Context arg0, Intent arg1) {
+	
+	GetServerSettingInterface iServerSetting=new GetServerSettingInterface() {
+		
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void onComplete() {
 			listAlert = DatabaseHelper.getSharedDatabaseHelper(mContext)
 					.getAlerts();
 			listTimezone = DatabaseHelper.getSharedDatabaseHelper(mContext)
@@ -288,33 +220,6 @@ public class CreateNewScheduleActivity extends Activity implements
 			}
 		}
 	};
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		try {
-			// unregisterReceiver(getTimeZoneComplete);
-			// unregisterReceiver(getAlertComplete);
-			unregisterReceiver(getServerSettingComplete);
-			unregisterReceiver(updateSchedule);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-		try {
-			// unregisterReceiver(deleteScheduleComplete);
-			// unregisterReceiver(onDutyComplete);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -327,14 +232,14 @@ public class CreateNewScheduleActivity extends Activity implements
 	 * */
 	private void setParticipantOfActivity(List<Confirm> pins) {
 		if (activity_id != null && (!activity_id.equals(""))) {
-			DatabaseHelper dbHelper = DatabaseHelper
-					.getSharedDatabaseHelper(mContext);
+//			DatabaseHelper dbHelper = DatabaseHelper
+//					.getSharedDatabaseHelper(mContext);
 			ArrayList<Sharedmember> list_participant = new ArrayList<Sharedmember>();
 
 			if (pins != null && pins.size() > 0) {
 				for (int i = 0; i < pins.size(); i++) {
 					int member_id = pins.get(i).getMemberId();
-					Sharedmember p = dbHelper.getSharedmember(member_id,
+					Sharedmember p = DatabaseHelper.getSharedDatabaseHelper(mContext).getSharedmember(member_id,
 							activity_id);
 					if (p != null) {
 						p.isChecked = true;
@@ -343,40 +248,40 @@ public class CreateNewScheduleActivity extends Activity implements
 								.getEmail(mContext);
 						String email = p.getEmail();
 
-						// if user login is not owner
-						if (currentParticipant.equals(email)) {
-							int confirm = pins.get(i).getConfirm();
-							switch (confirm) {
-							case CommConstant.CONFIRM_CONFIRMED:
-								view.btnConfirm.setVisibility(View.GONE);
-								view.btnDeny.setVisibility(View.VISIBLE);
-								break;
-							case CommConstant.CONFIRM_DENIED:
-								view.btnDeny.setVisibility(View.GONE);
-								view.btnConfirm.setVisibility(View.VISIBLE);
-								break;
-							case CommConstant.CONFIRM_UNKNOWN:
-								view.btnConfirm.setVisibility(View.VISIBLE);
-								view.btnDeny.setVisibility(View.VISIBLE);
-								break;
-							default:
-								view.btnConfirm.setVisibility(View.GONE);
-								view.btnDeny.setVisibility(View.GONE);
-								break;
-							}
-						}
-						if (p.getRole() == CommConstant.OWNER) {
-							view.btnConfirm.setVisibility(View.GONE);
-							view.btnDeny.setVisibility(View.GONE);
-						}
+//						 if user login is not owner
+//						if (currentParticipant.equals(email)) {
+//							int confirm = pins.get(i).getConfirm();
+//							switch (confirm) {
+//							case CommConstant.CONFIRM_CONFIRMED:
+//								view.btnConfirm.setVisibility(View.GONE);
+//								view.btnDeny.setVisibility(View.VISIBLE);
+//								break;
+//							case CommConstant.CONFIRM_DENIED:
+//								view.btnDeny.setVisibility(View.GONE);
+//								view.btnConfirm.setVisibility(View.VISIBLE);
+//								break;
+//							case CommConstant.CONFIRM_UNKNOWN:
+//								view.btnConfirm.setVisibility(View.VISIBLE);
+//								view.btnDeny.setVisibility(View.VISIBLE);
+//								break;
+//							default:
+//								view.btnConfirm.setVisibility(View.GONE);
+//								view.btnDeny.setVisibility(View.GONE);
+//								break;
+//							}
+//						}
+//						if (p.getRole() == CommConstant.OWNER) {
+//							view.btnConfirm.setVisibility(View.GONE);
+//							view.btnDeny.setVisibility(View.GONE);
+//						}
 					}
 
 				}
 			}
 
 			if (list_participant != null && list_participant.size() > 0) {
-				final SharedMemberAdapter adapter = new SharedMemberAdapter(
-						mContext, list_participant, false, false, true);
+//				final SharedMemberAdapter adapter = new SharedMemberAdapter(
+//						mContext, list_participant, false, false, true);
 
 				String participant = "";
 				int size = list_participant.size();
@@ -400,9 +305,9 @@ public class CreateNewScheduleActivity extends Activity implements
 					participant += ", ...";
 				}
 				view.tvOnduty.setText(participant);
-				view.layout_onduty.setVisibility(View.VISIBLE);
+//				view.layout_onduty.setVisibility(View.VISIBLE);
 			} else {
-				view.layout_onduty.setVisibility(View.GONE);
+				view.tvOnduty.setText("");
 			}
 		}
 	}
@@ -522,38 +427,39 @@ public class CreateNewScheduleActivity extends Activity implements
 			}
 		}
 
-		else if (v == view.btnConfirm) {
-			WebservicesHelper ws = new WebservicesHelper(mContext);
-			try {
-				int member_id = DatabaseHelper
-						.getSharedDatabaseHelper(mContext)
-						.getSharedMemberOfEmail(
-								new SharedReference().getEmail(mContext));
-				if (member_id != -1) {
-					Confirm confirm = new Confirm(member_id,
-							CommConstant.CONFIRM_CONFIRMED);
-					ws.updateConfirmStatus(thisSchedule, confirm);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		} else if (v == view.btnDeny) {
-			WebservicesHelper ws = new WebservicesHelper(mContext);
-			try {
-
-				int member_id = DatabaseHelper
-						.getSharedDatabaseHelper(mContext)
-						.getSharedMemberOfEmail(
-								new SharedReference().getEmail(mContext));
-				if (member_id != -1) {
-					Confirm confirm = new Confirm(member_id,
-							CommConstant.CONFIRM_DENIED);
-					ws.updateConfirmStatus(thisSchedule, confirm);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		} else if (v == view.et_on_duty) {
+//		else if (v == view.btnConfirm) {
+//			WebservicesHelper ws = WebservicesHelper.getInstance();
+//			try {
+//				int member_id = DatabaseHelper
+//						.getSharedDatabaseHelper(mContext)
+//						.getSharedMemberOfEmail(
+//								new SharedReference().getEmail(mContext));
+//				if (member_id != -1) {
+//					Confirm confirm = new Confirm(member_id,
+//							CommConstant.CONFIRM_CONFIRMED);
+//					ws.updateConfirmStatus(thisSchedule, confirm);
+//				}
+//			} catch (Exception ex) {
+//				ex.printStackTrace();
+//			}
+//		} else if (v == view.btnDeny) {
+//			WebservicesHelper ws = new WebservicesHelper(mContext);
+//			try {
+//
+//				int member_id = DatabaseHelper
+//						.getSharedDatabaseHelper(mContext)
+//						.getSharedMemberOfEmail(
+//								new SharedReference().getEmail(mContext));
+//				if (member_id != -1) {
+//					Confirm confirm = new Confirm(member_id,
+//							CommConstant.CONFIRM_DENIED);
+//					ws.updateConfirmStatus(thisSchedule, confirm);
+//				}
+//			} catch (Exception ex) {
+//				ex.printStackTrace();
+//			}
+//		} 
+		else if (v == view.et_on_duty) {
 			if (!view.et_new_activity_name.getText().toString().trim()
 					.equals("")) {
 
@@ -770,9 +676,8 @@ public class CreateNewScheduleActivity extends Activity implements
 					isShowPopupAlert = false;
 
 					if (!CommConstant.DOWNLOAD_SETTING) {
-						WebservicesHelper ws = new WebservicesHelper(mContext);
-						// ws.getTimezoneSetting();
-						ws.getServerSetting();
+						WebservicesHelper ws = WebservicesHelper.getInstance();
+						ws.getServerSetting(mContext,iServerSetting,loadingInterface);
 					}
 				}
 			}
@@ -792,9 +697,8 @@ public class CreateNewScheduleActivity extends Activity implements
 					isShowPopupAlert = true;
 					isShowPopupTimeZone = false;
 					if (!CommConstant.DOWNLOAD_SETTING) {
-						WebservicesHelper ws = new WebservicesHelper(mContext);
-						// ws.getTimezoneSetting();
-						ws.getServerSetting();
+						WebservicesHelper ws = WebservicesHelper.getInstance();
+						ws.getServerSetting(mContext,iServerSetting,loadingInterface);
 					}
 				}
 			}
@@ -817,7 +721,7 @@ public class CreateNewScheduleActivity extends Activity implements
 			listAlert = DatabaseHelper.getSharedDatabaseHelper(mContext)
 					.getAlerts();
 			if (composeType == DatabaseHelper.NEW) {
-				Log.i("next service id", "is " + dbHelper.getNextActivityID());
+				Log.i("next service id", "is " + DatabaseHelper.getSharedDatabaseHelper(mContext).getNextActivityID());
 				int tz = 0;
 				String tzName = "UTC";
 				if (listTimezone != null && listTimezone.size() > 0) {
@@ -826,7 +730,7 @@ public class CreateNewScheduleActivity extends Activity implements
 				}
 				thisSchedule = new Schedule(
 						new SharedReference().getCurrentOwnerId(mContext),
-						dbHelper.getNextScheduleID(), activity_id == null ? "0"
+						DatabaseHelper.getSharedDatabaseHelper(mContext).getNextScheduleID(), activity_id == null ? "0"
 								: activity_id,
 						MyDate.transformLocalDateTimeToUTCFormat(tzName,
 								MyDate.getCurrentDateTime(tzName)),
@@ -895,9 +799,9 @@ public class CreateNewScheduleActivity extends Activity implements
 					// first item to textview timezone
 
 					if (!CommConstant.DOWNLOAD_SETTING) {
-						WebservicesHelper ws = new WebservicesHelper(mContext);
+						WebservicesHelper ws = WebservicesHelper.getInstance();
 						// ws.getTimezoneSetting();
-						ws.getServerSetting();
+						ws.getServerSetting(mContext,iServerSetting,loadingInterface);
 					}
 				}
 
@@ -912,15 +816,41 @@ public class CreateNewScheduleActivity extends Activity implements
 				} else {
 					// download from server, after download success set
 					// first item to textview timezone
-					WebservicesHelper ws = new WebservicesHelper(mContext);
-					// ws.getAlertSetting();
-					ws.getServerSetting();
+					WebservicesHelper ws = WebservicesHelper.getInstance();
+					// ws.getTimezoneSetting();
+					ws.getServerSetting(mContext,new GetServerSettingInterface() {
+						
+						@Override
+						public void onError(String error) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onComplete() {
+							// TODO Auto-generated method stub
+							
+						}
+					},new LoadingInterface() {
+						
+						@Override
+						public void onStart() {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onFinish() {
+							// TODO Auto-generated method stub
+							
+						}
+					});
 				}
 
 			} else if (composeType == DatabaseHelper.EXISTED) {
 
 				if (schedule_id > 0) {
-					thisSchedule = dbHelper.getScheduleSortedByID(schedule_id);
+					thisSchedule = DatabaseHelper.getSharedDatabaseHelper(mContext).getScheduleSortedByID(schedule_id);
 				}
 
 				TimeZoneModel timeZoneModel = DatabaseHelper
@@ -935,17 +865,15 @@ public class CreateNewScheduleActivity extends Activity implements
 				view.titleBar.tv_name.setText(mContext.getResources()
 						.getString(R.string.edit_schedule));
 				if (thisSchedule != null) {
-					listPins = (ArrayList<Confirm>) dbHelper
+					listPins = (ArrayList<Confirm>) DatabaseHelper.getSharedDatabaseHelper(mContext)
 							.getParticipantsForSchedule(thisSchedule
 									.getSchedule_ID());
 
-					if (listPins != null && listPins.size() > 0) {
-						// view.layout_on_duty.setVisibility(View.VISIBLE);
-						view.layout_onduty.setVisibility(View.VISIBLE);
-					} else {
-						// view.layout_on_duty.setVisibility(View.GONE);
-						view.layout_onduty.setVisibility(View.GONE);
-					}
+//					if (listPins != null && listPins.size() > 0) {
+//						// view.layout_on_duty.setVisibility(View.VISIBLE);
+//						view.layout_onduty.setVisibility(View.VISIBLE);
+//					}
+					
 					setParticipantOfActivity(listPins);
 				}
 
@@ -974,8 +902,8 @@ public class CreateNewScheduleActivity extends Activity implements
 			view.et_new_activity_name.setText(myActivity != null ? myActivity
 					.getActivity_name() : "");
 
-			String startdate = thisSchedule != null ? thisSchedule
-					.getStarttime() : "";
+//			String startdate = thisSchedule != null ? thisSchedule
+//					.getStarttime() : "";
 
 			// change starttime and endtime follow current timezone
 			String startTime = thisSchedule.getStarttime();
@@ -1120,7 +1048,7 @@ public class CreateNewScheduleActivity extends Activity implements
 		} else {
 			hourMinute = this.view.et_endTime.getText().toString().trim();
 		}
-		String amPm="am";
+//		String amPm="am";
 //		if(hourMinute.contains("PM"))
 //		{
 //			amPm="pm";
@@ -1299,14 +1227,14 @@ Log.d("weekday",weekday);
 				new SharedReference().getCurrentOwnerId(mContext));
 		cv.put(ScheduleTable.alert, thisSchedule.getAlert());
 		cv.put(ScheduleTable.timeZone, thisSchedule.getTzid());
-		dbHelper.insertSchedule(cv);
+		DatabaseHelper.getSharedDatabaseHelper(mContext).insertSchedule(cv);
 
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(ActivityTable.alertId, thisSchedule.getAlert());
 		contentValues.put(ActivityTable.timeZoneId, thisSchedule.getTzid());
 		// contentValues.put(ActivityTable.service_ID,
 		// thisSchedule.getService_ID());
-		dbHelper.updateActivity(thisSchedule.getService_ID(), contentValues);
+		DatabaseHelper.getSharedDatabaseHelper(mContext).updateActivity(thisSchedule.getService_ID(), contentValues);
 	}
 
 	// show loading
@@ -1327,33 +1255,21 @@ Log.d("weekday",weekday);
 			}
 		}
 
-		LoginInterface loginInterface = new LoginInterface() {
-
-			@Override
-			public void onStart() {
-				// TODO Auto-generated method stub
-				showLoading(CreateNewScheduleActivity.this);
-			}
-
-			@Override
-			public void onFinish() {
-				// TODO Auto-generated method stub
-				dimissDialog();
-			}
-
-			@Override
-			public void onError() {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onComplete() {
-				// TODO Auto-generated method stub
-
-			}
-		};
-
+		
+LoadingInterface loadingInterface=new LoadingInterface() {
+	
+	@Override
+	public void onStart() {
+		// TODO Auto-generated method stub
+		showLoading(CreateNewScheduleActivity.this);
+	}
+	
+	@Override
+	public void onFinish() {
+		// TODO Auto-generated method stub
+		dimissDialog();
+	}
+};
 		
 		
 	/**
@@ -1382,11 +1298,11 @@ Log.d("weekday",weekday);
 							onduty.put(OndutyTable.last_Modified, "");
 							onduty.put(OndutyTable.is_Deleted, 0);
 							onduty.put(OndutyTable.is_Synchronized, 0);
-							dbHelper.insertOnduty(onduty);
+							DatabaseHelper.getSharedDatabaseHelper(mContext).insertOnduty(onduty);
 						}
 					}
-					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.addSchedule(thisSchedule, listPins,loginInterface);
+					WebservicesHelper ws = WebservicesHelper.getInstance();
+					ws.addSchedule(mContext,thisSchedule, listPins,loadingInterface,iSchedule);
 				} else {
 					popUpNoParticipant();
 				}
@@ -1398,6 +1314,30 @@ Log.d("weekday",weekday);
 
 	}
 
+	AddUpdateScheduleInterface iSchedule=new AddUpdateScheduleInterface() {
+		
+		@Override
+		public void onError(String error) {
+			final ToastDialog dialog = new ToastDialog(
+					mContext, error);
+			dialog.show();
+			dialog.btnOk
+					.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(
+								View v) {
+							dialog.dismiss();
+						}
+					});
+		}
+		
+		@Override
+		public void onComplete() {
+			 ((Activity) mContext).finish();
+			 Utils.postLeftToRight(mContext);
+		}
+	};
 	/**
 	 * Pop up without participant
 	 * */
@@ -1419,12 +1359,12 @@ Log.d("weekday",weekday);
 				dialog.dismiss();
 				if (composeType == DatabaseHelper.NEW) {
 					insertToLocalDatabase();
-					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.addSchedule(thisSchedule, listPins,loginInterface);
+					WebservicesHelper ws =WebservicesHelper.getInstance();
+					ws.addSchedule(mContext,thisSchedule, listPins,loadingInterface,iSchedule);
 				} else if (composeType == DatabaseHelper.EXISTED) {
 					editScheduleLocalDatabase();
-					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.updateSchedule(thisSchedule, listPins,loginInterface);
+					WebservicesHelper ws = WebservicesHelper.getInstance();
+					ws.updateSchedule(mContext,thisSchedule, listPins,loadingInterface,iSchedule);
 				}
 
 			}
@@ -1467,10 +1407,10 @@ Log.d("weekday",weekday);
 				}
 				view.et_new_activity_time_zone.setText(displayName);
 
-				int timeZoneId = thisSchedule.getTzid();
-				TimeZoneModel lastTimeZone = DatabaseHelper
-						.getSharedDatabaseHelper(mContext).getTimeZone(
-								timeZoneId);
+//				int timeZoneId = thisSchedule.getTzid();
+//				TimeZoneModel lastTimeZone = DatabaseHelper
+//						.getSharedDatabaseHelper(mContext).getTimeZone(
+//								timeZoneId);
 				TimeZoneModel currentTimeZone = array.get(position);
 				thisSchedule.setTzid(array.get(position).getId());
 				thisSchedule.setTzName(array.get(position).getTzname());
@@ -1528,15 +1468,15 @@ Log.d("weekday",weekday);
 		cv.put(ScheduleTable.is_Synchronized, 0);
 		cv.put(ScheduleTable.timeZone, thisSchedule.getTzid());
 		cv.put(ScheduleTable.alert, thisSchedule.getAlert());
-		dbHelper.updateSchedule(thisSchedule.getSchedule_ID(), cv);
-		dbHelper.deleteRelatedOnduty(thisSchedule.getSchedule_ID());
+		DatabaseHelper.getSharedDatabaseHelper(mContext).updateSchedule(thisSchedule.getSchedule_ID(), cv);
+		DatabaseHelper.getSharedDatabaseHelper(mContext).deleteRelatedOnduty(thisSchedule.getSchedule_ID());
 
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(ActivityTable.alertId, thisSchedule.getAlert());
 		contentValues.put(ActivityTable.timeZoneId, thisSchedule.getTzid());
 		// contentValues.put(ActivityTable.service_ID,
 		// thisSchedule.getService_ID());
-		dbHelper.updateActivity(thisSchedule.getService_ID(), contentValues);
+		DatabaseHelper.getSharedDatabaseHelper(mContext).updateActivity(thisSchedule.getService_ID(), contentValues);
 	}
 
 	/**
@@ -1561,10 +1501,10 @@ Log.d("weekday",weekday);
 						onduty.put(OndutyTable.last_Modified, "");
 						onduty.put(OndutyTable.is_Deleted, 0);
 						onduty.put(OndutyTable.is_Synchronized, 0);
-						dbHelper.insertOnduty(onduty);
+						DatabaseHelper.getSharedDatabaseHelper(mContext).insertOnduty(onduty);
 					}
-					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.updateSchedule(thisSchedule, listPins,loginInterface);
+					WebservicesHelper ws = WebservicesHelper.getInstance();
+					ws.updateSchedule(mContext,thisSchedule, listPins,loadingInterface,iSchedule);
 				} else {
 					popUpNoParticipant();
 				}
@@ -1586,8 +1526,8 @@ Log.d("weekday",weekday);
 			try {
 				if (response.getString("lastmodified") != null) {
 
-					dbHelper.deleteRelatedOnduty(schedule_id);
-					dbHelper.deleteSchedule(schedule_id);
+					DatabaseHelper.getSharedDatabaseHelper(mContext).deleteRelatedOnduty(schedule_id);
+					DatabaseHelper.getSharedDatabaseHelper(mContext).deleteSchedule(schedule_id);
 					Log.i("delete schedule", "successfully");
 					finish();
 					Utils.postLeftToRight(mContext);
@@ -1670,19 +1610,19 @@ Log.d("weekday",weekday);
 					scv.put(ScheduleTable.is_Synchronized, 0);
 
 					int schedule_id = thisSchedule.getSchedule_ID();
-					dbHelper.updateSchedule(schedule_id, scv);
-					List<Integer> onduties = dbHelper
+					DatabaseHelper.getSharedDatabaseHelper(mContext).updateSchedule(schedule_id, scv);
+					List<Integer> onduties = DatabaseHelper.getSharedDatabaseHelper(mContext)
 							.getOndutyRecordsForSchedule(schedule_id);
 					for (int j = 0; j < onduties.size(); j++) {
 						ContentValues ocv = new ContentValues();
 						ocv.put(OndutyTable.is_Deleted, 1);
 						ocv.put(OndutyTable.is_Synchronized, 0);
 						int onduty_id = onduties.get(j);
-						dbHelper.updateSchedule(onduty_id, ocv);
+						DatabaseHelper.getSharedDatabaseHelper(mContext).updateSchedule(onduty_id, ocv);
 					}
 
-					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.deleteSchedule(thisSchedule, deleteScheduleHandler);
+					WebservicesHelper ws = WebservicesHelper.getInstance();
+					ws.deleteSchedule(mContext,thisSchedule,iSchedule,loadingInterface);
 
 					dialog.dismiss();
 
@@ -1700,6 +1640,7 @@ Log.d("weekday",weekday);
 		});
 	}
 
+	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == 333) {
@@ -1752,6 +1693,7 @@ Log.d("weekday",weekday);
 		}
 	}
 
+	
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub

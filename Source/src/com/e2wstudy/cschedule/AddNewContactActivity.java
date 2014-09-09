@@ -1,9 +1,5 @@
 package com.e2wstudy.cschedule;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
 import com.e2wstudy.cschedule.models.Participant;
 import com.e2wstudy.cschedule.models.ParticipantTable;
@@ -15,8 +11,8 @@ import com.e2wstudy.cschedule.views.AddParticipantView;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
 import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.ToastDialog;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
+import com.e2wstudy.schedule.interfaces.ContactInterface;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -24,13 +20,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.Toast;
 
 /**
  * @author khoahuyen
@@ -43,11 +36,11 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	Context mContext;
 	int selectedParticipantID = -1;
 	ProgressDialog progress = null;
-
+	LoadingPopupViewHolder loadingPopup;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		mContext = this;
 		view = new AddParticipantView(mContext);
 		this.setContentView(view.layout);
@@ -62,33 +55,6 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		onClickListener();
 	}
 
-	LoginInterface loginInterface = new LoginInterface() {
-
-		@Override
-		public void onStart() {
-			// TODO Auto-generated method stub
-			showLoading(AddNewContactActivity.this);
-		}
-
-		@Override
-		public void onFinish() {
-			// TODO Auto-generated method stub
-			dimissDialog();
-		}
-
-		@Override
-		public void onError() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onComplete() {
-			// TODO Auto-generated method stub
-
-		}
-	};
-	
 	/**
 	 * Set edittext editable or not
 	 * */
@@ -118,8 +84,8 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_email);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_mobile);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
-//			addContact();
-//			Utils.isNetworkAvailable(createNewContactHandle);
+			// addContact();
+			// Utils.isNetworkAvailable(createNewContactHandle);
 			if (Utils.isNetworkOnline(mContext)) {
 				// code if connected
 				addContact();
@@ -139,20 +105,21 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_email);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_mobile);
 			Utils.hideKeyboard(AddNewContactActivity.this, view.et_name);
-			
+
 			((Activity) mContext).finish();
-//			Utils.postLeftToRight(mContext);
+			// Utils.postLeftToRight(mContext);
 		} else if (v == view.btn_remove_contact) {
 			if (selectedParticipantID > 0) {
-//				removeParticipant();
-//				Utils.isNetworkAvailable(deleteContactHandle);
-				
+				// removeParticipant();
+				// Utils.isNetworkAvailable(deleteContactHandle);
+
 				if (Utils.isNetworkOnline(mContext)) {
 					// code if connected
 					removeParticipant();
 				} else {
-					final ToastDialog dialog = new ToastDialog(mContext, mContext
-							.getResources().getString(R.string.no_network));
+					final ToastDialog dialog = new ToastDialog(mContext,
+							mContext.getResources().getString(
+									R.string.no_network));
 					dialog.show();
 					dialog.btnOk.setOnClickListener(new OnClickListener() {
 
@@ -204,10 +171,11 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		Log.d("current ownerid", currentOwnerId + "");
 		Log.d("participant delete", thisParticipant.getID() + "");
 		if (thisParticipant.getID() == currentOwnerId) {
-			final ToastDialog dialog=new ToastDialog(mContext, mContext.getResources().getString(R.string.your_contact));
+			final ToastDialog dialog = new ToastDialog(mContext, mContext
+					.getResources().getString(R.string.your_contact));
 			dialog.show();
 			dialog.btnOk.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					dialog.dismiss();
@@ -223,62 +191,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	JsonHttpResponseHandler deleteContactHandler = new JsonHttpResponseHandler() {
-		public void onSuccess(JSONObject response) {
-			Log.d("delete str", response.toString());
-			try {
-				if (response.getString("lastmodified") != null) {
 
-					ContentValues cv = new ContentValues();
-					cv.put(ParticipantTable.is_Deleted, 1);
-					cv.put(ParticipantTable.is_Sychronized, 1);
-					// dbHelper.updateParticipant(id, cv);
-					if (thisParticipant.getID() > 0) {
-						DatabaseHelper dbHelper = DatabaseHelper
-								.getSharedDatabaseHelper(mContext);
-						dbHelper.deleteParticipant(thisParticipant.getID());
-					}
-					((Activity) mContext).finish();
-					Utils.postLeftToRight(mContext);
-					Intent intent = new Intent(
-							CommConstant.DELETE_CONTACT_COMPLETE);
-					mContext.sendBroadcast(intent);
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		public void onFailure(Throwable e, String response) {
-
-			final ToastDialog dialog=new ToastDialog(mContext, mContext.getResources().getString(R.string.delete_contact_error));
-			dialog.show();
-			dialog.btnOk.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					dialog.dismiss();
-				}
-			});
-		}
-
-		@Override
-		public void onStart() {
-			// TODO Auto-generated method stub
-			super.onStart();
-			showLoading(mContext);
-		}
-
-		@Override
-		public void onFinish() {
-			// TODO Auto-generated method stub
-			super.onFinish();
-			// progress.dismiss();
-			dimissDialog();
-		}
-	};
-	LoadingPopupViewHolder loadingPopup;
 
 	// show loading
 	public void showLoading(Context mContext) {
@@ -319,13 +232,52 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (selectedParticipantID > 0) {
-					WebservicesHelper ws = new WebservicesHelper(mContext);
-					ws.deleteParticipant(thisParticipant);
+					WebservicesHelper ws = WebservicesHelper.getInstance();
+					ws.deleteParticipant(mContext,thisParticipant,loadingInterface,iContact);
 				}
 			}
 		});
 	}
+	
+	ContactInterface iContact=new ContactInterface() {
+		
+		@Override
+		public void onError(String error) {
+			final ToastDialog dialog = new ToastDialog(
+					mContext, error);
+			dialog.show();
+			dialog.btnOk
+					.setOnClickListener(new OnClickListener() {
 
+						@Override
+						public void onClick(
+								View v) {
+							dialog.dismiss();
+						}
+					});
+		}
+		
+		@Override
+		public void onComplete() {
+			((Activity) mContext).finish();
+			Utils.postLeftToRight(mContext);
+		}
+	};
+
+	LoadingInterface loadingInterface = new LoadingInterface() {
+
+		@Override
+		public void onStart() {
+			showLoading(AddNewContactActivity.this);
+		}
+
+		@Override
+		public void onFinish() {
+			dimissDialog();
+		}
+	};
+
+	
 	/**
 	 * Add contact if create new and update if edit mode
 	 * */
@@ -342,11 +294,11 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 				+ (isEmailOK == false ? "\n"
 						+ getResources().getString(R.string.email_invalid) : "");
 		if (!createLog.equals("")) {
-//			Toast.makeText(this, createLog, Toast.LENGTH_LONG).show();
-			final ToastDialog dialog=new ToastDialog(mContext,createLog);
+			// Toast.makeText(this, createLog, Toast.LENGTH_LONG).show();
+			final ToastDialog dialog = new ToastDialog(mContext, createLog);
 			dialog.show();
 			dialog.btnOk.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					dialog.dismiss();
@@ -367,7 +319,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		cv.put(ParticipantTable.is_Registered, 1);
 		cv.put(ParticipantTable.is_Deleted, 0);
 		cv.put(ParticipantTable.is_Sychronized, 0);
-		WebservicesHelper ws = new WebservicesHelper(mContext);
+		WebservicesHelper ws = WebservicesHelper.getInstance();
 		DatabaseHelper dbHelper = DatabaseHelper
 				.getSharedDatabaseHelper(mContext);
 
@@ -382,10 +334,10 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			cv.put(ParticipantTable.user_login,
 					new SharedReference().getCurrentOwnerId(mContext));
 			dbHelper.insertParticipant(cv);
-			ws.addParticipant(thisParticipant,loginInterface);
+			ws.addParticipant(mContext,thisParticipant, loadingInterface,iContact);
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			dbHelper.updateParticipant(thisParticipant.getID(), cv);
-			ws.updateParticipant(thisParticipant,loginInterface);
+			ws.updateParticipant(mContext,thisParticipant, loadingInterface,iContact);
 		}
 
 	}
@@ -439,55 +391,11 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			}
 		}
 	}
+
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-//		Utils.postLeftToRight(mContext);
+		// Utils.postLeftToRight(mContext);
 	}
-	Handler createNewContactHandle = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-
-			if (msg.what != 1) { // code if not connected
-				final ToastDialog dialog = new ToastDialog(mContext, mContext
-						.getResources().getString(R.string.no_network));
-				dialog.show();
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
-					}
-				});
-			} else { // code if connected
-				addContact();
-			}
-
-		}
-	};
-	
-	Handler deleteContactHandle = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-
-			if (msg.what != 1) { // code if not connected
-				final ToastDialog dialog = new ToastDialog(mContext, mContext
-						.getResources().getString(R.string.no_network));
-				dialog.show();
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
-					}
-				});
-			} else { // code if connected
-				removeParticipant();
-			}
-
-		}
-	};
 }

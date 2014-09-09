@@ -12,7 +12,7 @@ public class ActivityTable {
 	public static final String own_ID = "ownid";
 	// public static final String repeat = "repeat";
 	public static final String service_description = "service_desp";
-	public static final String service_ID = "serviceid";
+	public static final String service_ID = "_id";
 	public static final String sharedrole = "sharedrole";
 	public static final String service_Name = "servicename";
 	public static final String ActivityTableName = "Activity";

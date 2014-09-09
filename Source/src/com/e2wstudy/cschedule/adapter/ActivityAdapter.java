@@ -50,6 +50,15 @@ public class ActivityAdapter extends BaseAdapter {
 
 	public void setItems(List<MyActivity> items) {
 		this.mItems = items;
+		DatabaseHelper db = DatabaseHelper.getSharedDatabaseHelper(mContext);
+		// get all participant of activity
+		for (MyActivity activity : mItems) {
+			ArrayList<Sharedmember> arrParticipant = db
+					.getParticipantsOfActivity(activity.getActivity_ID());
+			listParticipant.put(activity.getActivity_ID(), arrParticipant);
+			listParticipantName.put(activity.getActivity_ID(),
+					Utils.getStringNameArrParticipant(arrParticipant));
+		}
 	}
 
 	@Override

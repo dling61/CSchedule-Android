@@ -1,4 +1,4 @@
-package com.e2wstudy.cschedule.interfaces;
+package com.e2wstudy.schedule.interfaces;
 
 public interface ActvityInterface {
 	public void onComplete();

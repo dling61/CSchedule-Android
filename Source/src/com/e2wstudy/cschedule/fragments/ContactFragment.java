@@ -55,33 +55,14 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		onClickListener();
 	}
 
-	@Override
-	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
-		super.onAttach(activity);
-		IntentFilter filterRefreshUpdate = new IntentFilter();
-		filterRefreshUpdate.addAction(CommConstant.DELETE_CONTACT_COMPLETE);
-		filterRefreshUpdate.addAction(CommConstant.PARTICIPANT_READY);
-		filterRefreshUpdate.addAction(CommConstant.ADD_CONTACT_SUCCESS);
-		getActivity().registerReceiver(contactDownloadComplete,
-				filterRefreshUpdate);
-	}
-
-	@Override
-	public void onDetach() {
-		// TODO Auto-generated method stub
-		super.onDetach();
-		getActivity().unregisterReceiver(contactDownloadComplete);
-	}
-
 	private void initData() {
-//		if (tab) {
-//			view.btn_add_participant.setVisibility(View.VISIBLE);
-//
-//		} else {
-//			view.btn_add_participant.setVisibility(View.GONE);
-//			
-//		}
+		// if (tab) {
+		// view.btn_add_participant.setVisibility(View.VISIBLE);
+		//
+		// } else {
+		// view.btn_add_participant.setVisibility(View.GONE);
+		//
+		// }
 		DatabaseHelper db = DatabaseHelper.getSharedDatabaseHelper(mContext);
 		if (activity_id != null && (!activity_id.equals(""))) {
 			myActivity = db.getActivity(activity_id);
@@ -96,14 +77,15 @@ public class ContactFragment extends Fragment implements OnClickListener {
 
 	private void onClickListener() {
 		view.btn_add_participant.setOnClickListener(this);
-//		view.btn_next.setOnClickListener(this);
+		// view.btn_next.setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_participant) {
-//			((Activity) mContext).overridePendingTransition(R.anim.animation_enter,
-//				      R.anim.animation_leave);
+			// ((Activity)
+			// mContext).overridePendingTransition(R.anim.animation_enter,
+			// R.anim.animation_leave);
 			Intent intent = new Intent(mContext, AddNewContactActivity.class);
 			intent.putExtra("type", DatabaseHelper.NEW);
 			mContext.startActivity(intent);
@@ -113,29 +95,29 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		 * When clicking on “next”, call API to create shared members for this
 		 * activity in the server
 		 */
-//		else if (v == view.btn_next) {
-//			// get list participant checked, share with viewer role
-//			if (adapter != null && adapter.participants != null) {
-//
-//				// ArrayList<Participant> listParticipantSelected=new
-//				// ArrayList<Participant>();
-//				WebservicesHelper ws = new WebservicesHelper(mContext);
-//
-//				for (Participant participant : adapter.participants) {
-//					if (participant.isChecked) {
-//						ws.postSharedmemberToActivity(participant.getID(),
-//								CommConstant.VIEWER, activity_id);
-//					}
-//
-//				}
-//				Intent intent = new Intent(mContext,
-//						CreateNewScheduleActivity.class);
-//				intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
-//				intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
-//				mContext.startActivity(intent);
-//			}
-//			// ws.alterSharedmemberToActivity(memberid, role, activityid);
-//		}
+		// else if (v == view.btn_next) {
+		// // get list participant checked, share with viewer role
+		// if (adapter != null && adapter.participants != null) {
+		//
+		// // ArrayList<Participant> listParticipantSelected=new
+		// // ArrayList<Participant>();
+		// WebservicesHelper ws = new WebservicesHelper(mContext);
+		//
+		// for (Participant participant : adapter.participants) {
+		// if (participant.isChecked) {
+		// ws.postSharedmemberToActivity(participant.getID(),
+		// CommConstant.VIEWER, activity_id);
+		// }
+		//
+		// }
+		// Intent intent = new Intent(mContext,
+		// CreateNewScheduleActivity.class);
+		// intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
+		// intent.putExtra(CommConstant.ACTIVITY_ID, activity_id);
+		// mContext.startActivity(intent);
+		// }
+		// // ws.alterSharedmemberToActivity(memberid, role, activityid);
+		// }
 	}
 
 	@Override
@@ -152,12 +134,13 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		return view;
 	}
 
-	BroadcastReceiver contactDownloadComplete = new BroadcastReceiver() {
-		public void onReceive(Context arg0, Intent arg1) {
-			DatabaseHelper dbHelper = DatabaseHelper
-					.getSharedDatabaseHelper(mContext);
-			ArrayList<Participant> participants = dbHelper.getParticipants();
+	
 
+	public void onDownloadComplete() {
+		DatabaseHelper dbHelper = DatabaseHelper
+				.getSharedDatabaseHelper(mContext);
+		ArrayList<Participant> participants = dbHelper.getParticipants();
+		if (participants != null && participants.size() > 0) {
 			adapter = new ParticipantAdapter(mContext, participants,
 					tab ? false : true, true);
 			view.list_contact.setAdapter(adapter);
@@ -185,11 +168,12 @@ public class ContactFragment extends Fragment implements OnClickListener {
 				view.layout_no_contact.setVisibility(View.VISIBLE);
 			}
 		}
-	};
+	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		onDownloadComplete();
 	}
 
 	@Override

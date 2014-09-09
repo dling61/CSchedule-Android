@@ -4,13 +4,15 @@
 package com.e2wstudy.cschedule;
 
 import com.e2wstudy.cschedule.db.DatabaseHelper;
-import com.e2wstudy.cschedule.interfaces.GetServerSettingInterface;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
+import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.TitleBarView;
+import com.e2wstudy.schedule.interfaces.GetServerSettingInterface;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
 
 import android.os.Bundle;
 import android.content.Context;
@@ -29,29 +31,73 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 	Button btn_sign_in;
 	Context mContext;
 	TitleBarView titleBar;
+	public static LoadingPopupViewHolder loadingPopup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	
+
 		setContentView(R.layout.activity_main);
 		mContext = this;
-		
-//		serverSetting();
-		
-		WebservicesHelper ws=new WebservicesHelper(mContext);
-		ws.getServerSetting(new GetServerSettingInterface() {
-			
+
+		// serverSetting();
+
+		WebservicesHelper ws = WebservicesHelper.getInstance();
+		ws.getServerSetting(mContext, new GetServerSettingInterface() {
+
 			@Override
 			public void onComplete() {
 				Utils.checkCurrentVersion(mContext);
-				
+
+			}
+
+			@Override
+			public void onError(String error) {
+				// TODO Auto-generated method stub
+
+			}
+		}, new LoadingInterface() {
+
+			@Override
+			public void onStart() {
+				showLoading(MainActivity.this);
+			}
+
+			@Override
+			public void onFinish() {
+				dimissDialog();
 			}
 		});
-		
+
 		findViewById();
 		onClickListener();
-		
+
+	}
+
+	// show loading
+	public void showLoading(Context mContext) {
+		try {
+			if (loadingPopup == null) {
+				loadingPopup = new LoadingPopupViewHolder(mContext,
+						CategoryTabActivity.DIALOG_LOADING_THEME);
+			}
+			loadingPopup.setCancelable(true);
+			if (!loadingPopup.isShowing()) {
+				loadingPopup.show();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void dimissDialog() {
+		try {
+			if (loadingPopup != null && loadingPopup.isShowing()) {
+				loadingPopup.dismiss();
+			}
+		} catch (Exception exx) {
+			exx.printStackTrace();
+		}
 	}
 
 	/**
@@ -73,22 +119,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 		btn_create_account.setOnClickListener(this);
 		btn_sign_in.setOnClickListener(this);
 	}
-	
-	
-//	/**
-//	 * load server setting
-//	 * */
-//	private void serverSetting()
-//	{
-//		WebservicesHelper ws = new WebservicesHelper(mContext);
-//		ws.getServerSetting();
-//	}
+
+	// /**
+	// * load server setting
+	// * */
+	// private void serverSetting()
+	// {
+	// WebservicesHelper ws = new WebservicesHelper(mContext);
+	// ws.getServerSetting();
+	// }
 
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == btn_sign_in) {
-			
+
 			signInPressed();
 		} else if (v == btn_create_account) {
 			createAccountPressed();
@@ -110,7 +155,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 		finish();
 		Utils.pushRightToLeft(mContext);
 
-		
 		Intent intent = new Intent(this, LoginActivity.class);
 		this.startActivity(intent);
 	}
@@ -128,11 +172,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 	@Override
 	public void onBackPressed() {
-		
-		final ConfirmDialog dialog=new ConfirmDialog(MainActivity.this,mContext.getResources().getString(R.string.sure_to_exit));
+
+		final ConfirmDialog dialog = new ConfirmDialog(MainActivity.this,
+				mContext.getResources().getString(R.string.sure_to_exit));
 		dialog.show();
 		dialog.btnCancel.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -140,25 +185,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 			}
 		});
 		dialog.btnOk.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				SharedReference ref=new SharedReference();
-				ref.setLastestParticipantLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
-				ref.setLastestScheduleLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
-				ref.setLastestServiceLastModifiedTime(mContext, CommConstant.DEFAULT_DATE);
-				DatabaseHelper.getSharedDatabaseHelper(mContext).deleteTablesExitApp();
+				SharedReference ref = new SharedReference();
+				ref.setLastestParticipantLastModifiedTime(mContext,
+						CommConstant.DEFAULT_DATE);
+				ref.setLastestScheduleLastModifiedTime(mContext,
+						CommConstant.DEFAULT_DATE);
+				ref.setLastestServiceLastModifiedTime(mContext,
+						CommConstant.DEFAULT_DATE);
+				DatabaseHelper.getSharedDatabaseHelper(mContext)
+						.deleteTablesExitApp();
 				System.exit(0);
 			}
 		});
 	}
-	
+
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
 		Utils.checkCurrentVersion(MainActivity.this);
 	}
 }

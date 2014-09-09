@@ -1,5 +1,6 @@
 package com.e2wstudy.cschedule.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -411,6 +412,20 @@ public class Utils {
 			ex.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static String convertBytesArrayToString(byte[] responseBody) {
+		try {
+			return String.valueOf(new String(responseBody, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+		
 	}
 
 }

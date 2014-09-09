@@ -19,18 +19,16 @@ import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.ConfirmDialog;
+import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.ParticipantView;
-import com.e2wstudy.cschedule.views.ToastDialog;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
+import com.e2wstudy.schedule.interfaces.SharedMemberInterface;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,7 +53,8 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	ParticipantView view;
 	ArrayList<Participant> arrParticipant;
 	int type = -1;
-
+	public static LoadingPopupViewHolder loadingPopup;
+	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
 	ArrayList<Sharedmember> activityParticipant;
 
 	ArrayList<Sharedmember> arrSharemember;
@@ -74,44 +73,28 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 		this.selectedParticipant = selectedParticipant;
 	}
 
-	BroadcastReceiver activityDownloadComplete = new BroadcastReceiver() {
-		public void onReceive(Context arg0, Intent arg1) {
-			initData();
-		}
-	};
-
-	@Override
-	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
-		super.onAttach(activity);
-		IntentFilter filterRefreshUpdate = new IntentFilter();
-		filterRefreshUpdate
-				.addAction(CommConstant.GET_SHARED_MEMBER_ACTIVITY_COMPLETE);
-
-		filterRefreshUpdate.addAction(CommConstant.DELETE_CONTACT_COMPLETE);
-		filterRefreshUpdate.addAction(CommConstant.PARTICIPANT_READY);
-		filterRefreshUpdate.addAction(CommConstant.ADD_CONTACT_SUCCESS);
-
-		getActivity().registerReceiver(activityDownloadComplete,
-				filterRefreshUpdate);
-	}
-
-	@Override
-	public void onDetach() {
-		// TODO Auto-generated method stub
-		super.onDetach();
-		getActivity().unregisterReceiver(activityDownloadComplete);
-	}
-
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mContext = getActivity();
-
-		initData();
-
 		onClickListener();
 	}
+
+	SharedMemberInterface sharedMember = new SharedMemberInterface() {
+
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onComplete() {
+			// TODO Auto-generated method stub
+
+		}
+	};
 
 	private void initData() {
 
@@ -288,48 +271,16 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 																	participantSelected
 																			.getEmail());
 													dbHelper.insertSharedmember(contentValues);
-//													WebservicesHelper ws = new WebservicesHelper(
-//															mContext);
-													//
-													// // if role= owner &
-													// // participant selected
-													// is
-													// // user login, do nothing
-													// // int
-													// //
-													// role=myActivity.getRole();
-													//
-													// ws.postSharedmemberToActivity(
-													// participantSelected
-													// .getID(),
-													// CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
-													// activity_id);
 
-//													Utils.isNetworkAvailable(postSharedMemberHandle);
-													if (Utils.isNetworkOnline(mContext)) {
-														// code if connected
-														WebservicesHelper ws = new WebservicesHelper(mContext);
+													WebservicesHelper
+															.getInstance()
+															.postSharedmemberToActivity(mContext,
+																	participantSelected
+																			.getID(),
+																	CommConstant.ROLE_SHARE_MEMBER_ACTIVITY,
+																	activity_id,
+																	loadingInterface,sharedMemberInterface);
 
-														// if role= owner &
-														// participant selected is
-														// user login, do nothing
-														// int
-														// role=myActivity.getRole();
-
-														ws.postSharedmemberToActivity(participantSelected.getID(),
-																CommConstant.ROLE_SHARE_MEMBER_ACTIVITY, activity_id);
-													} else {
-														final ToastDialog dialog = new ToastDialog(mContext, mContext
-																.getResources().getString(R.string.no_network));
-														dialog.show();
-														dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-															@Override
-															public void onClick(View v) {
-																dialog.dismiss();
-															}
-														});
-													}
 												}
 
 											}
@@ -351,35 +302,31 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 		}
 	}
 
-	Handler postSharedMemberHandle = new Handler() {
+	
+	SharedMemberInterface sharedMemberInterface=new SharedMemberInterface() {
+		
+		@Override
+		public void onError(String error) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void onComplete() {
+			initData();
+		}
+	};
+	
+	LoadingInterface loadingInterface = new LoadingInterface() {
 
 		@Override
-		public void handleMessage(Message msg) {
+		public void onStart() {
+			showLoading(getActivity());
+		}
 
-			if (msg.what != 1) { // code if not connected
-				final ToastDialog dialog = new ToastDialog(mContext, mContext
-						.getResources().getString(R.string.no_network));
-				dialog.show();
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
-					}
-				});
-			} else { // code if connected
-				WebservicesHelper ws = new WebservicesHelper(mContext);
-
-				// if role= owner &
-				// participant selected is
-				// user login, do nothing
-				// int
-				// role=myActivity.getRole();
-
-				ws.postSharedmemberToActivity(participantSelected.getID(),
-						CommConstant.ROLE_SHARE_MEMBER_ACTIVITY, activity_id);
-			}
-
+		@Override
+		public void onFinish() {
+			dimissDialog();
 		}
 	};
 
@@ -473,7 +420,7 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		initData();
 	}
 
 	@Override
@@ -485,5 +432,23 @@ public class ParticipantFragment extends Fragment implements OnClickListener {
 	public void onDestroy() {
 		super.onDestroy();
 
+	}
+
+	// show loading
+	public void showLoading(Context mContext) {
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(mContext,
+					DIALOG_LOADING_THEME);
+		}
+		loadingPopup.setCancelable(true);
+		if (!loadingPopup.isShowing()) {
+			loadingPopup.show();
+		}
+	}
+
+	public void dimissDialog() {
+		if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
+		}
 	}
 }

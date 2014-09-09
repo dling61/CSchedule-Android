@@ -3,18 +3,23 @@
  * */
 package com.e2wstudy.cschedule;
 
-import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
+import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.TitleBarView;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
+import com.e2wstudy.schedule.interfaces.LoginInterface;
+import com.e2wstudy.schedule.interfaces.SignUpInterface;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -85,6 +90,7 @@ public class CreateNewAccountActivity extends BaseActivity implements
 		titleBar.layout_next.setVisibility(View.GONE);
 
 	}
+
 	// show loading
 	public void showLoading(Context mContext) {
 		if (loadingPopup == null) {
@@ -103,38 +109,13 @@ public class CreateNewAccountActivity extends BaseActivity implements
 		}
 	}
 
-	LoginInterface loginInterface = new LoginInterface() {
-
-		@Override
-		public void onStart() {
-			// TODO Auto-generated method stub
-			showLoading(CreateNewAccountActivity.this);
-		}
-
-		@Override
-		public void onFinish() {
-			// TODO Auto-generated method stub
-			dimissDialog();
-		}
-
-		@Override
-		public void onError() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onComplete() {
-			// TODO Auto-generated method stub
-
-		}
-	};
+	
 
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		if (v == btn_create) {
-//			Utils.isNetworkAvailable(createNewAccountHandle);
+			// Utils.isNetworkAvailable(createNewAccountHandle);
 			if (Utils.isNetworkOnline(mContext)) {
 				// code if connected
 				createNewAccount();
@@ -158,7 +139,7 @@ public class CreateNewAccountActivity extends BaseActivity implements
 			Intent intent = new Intent(mContext, MainActivity.class);
 			mContext.startActivity(intent);
 			Utils.postLeftToRight(mContext);
-			finish();				
+			finish();
 		}
 
 	}
@@ -173,11 +154,11 @@ public class CreateNewAccountActivity extends BaseActivity implements
 
 	Handler createNewAccountHandle = new Handler() {
 
-	    @Override
-	    public void handleMessage(Message msg) {
+		@Override
+		public void handleMessage(Message msg) {
 
-	        if (msg.what != 1) { // code if not connected
-	        	final ToastDialog dialog = new ToastDialog(mContext, mContext
+			if (msg.what != 1) { // code if not connected
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
 						.getResources().getString(R.string.no_network));
 				dialog.show();
 				dialog.btnOk.setOnClickListener(new OnClickListener() {
@@ -187,14 +168,13 @@ public class CreateNewAccountActivity extends BaseActivity implements
 						dialog.dismiss();
 					}
 				});
-	        } else { // code if connected
-	        	createNewAccount();
-	        }
+			} else { // code if connected
+				createNewAccount();
+			}
 
-	    }
+		}
 	};
-	
-	
+
 	/**
 	 * create new account
 	 * */
@@ -224,10 +204,10 @@ public class CreateNewAccountActivity extends BaseActivity implements
 						+ getResources().getString(
 								R.string.password_is_not_blank) : "");
 		if (!createLog.equals("")) {
-			final ToastDialog dialog=new ToastDialog(mContext, createLog);
+			final ToastDialog dialog = new ToastDialog(mContext, createLog);
 			dialog.show();
 			dialog.btnOk.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					dialog.dismiss();
@@ -239,8 +219,9 @@ public class CreateNewAccountActivity extends BaseActivity implements
 		if (isNameOK & isEmailOK && isPasswordOK) {
 			try {
 
-				WebservicesHelper helper = new WebservicesHelper(mContext);
-				helper.createAccount(email, password, username, mobile,loginInterface);
+				WebservicesHelper helper = WebservicesHelper.getInstance();
+				helper.createAccount(mContext,email, password, username, mobile,
+						loadingInterface, signUpInterface);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -253,6 +234,55 @@ public class CreateNewAccountActivity extends BaseActivity implements
 
 	}
 
+	LoadingInterface loadingInterface = new LoadingInterface() {
+
+		@Override
+		public void onStart() {
+			showLoading(mContext);
+
+		}
+
+		@Override
+		public void onFinish() {
+			dimissDialog();
+		}
+	};
+
+	SignUpInterface signUpInterface = new SignUpInterface() {
+
+		@Override
+		public void onFailure(String error) {
+			Log.d("sign up error",error);
+			final ToastDialog dialog = new ToastDialog(
+					mContext, error);
+			dialog.show();
+			dialog.btnOk
+					.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(
+								View v) {
+							dialog.dismiss();
+						}
+					});
+		}
+
+		@Override
+		public void onComplete(String username, String pass) {
+			Log.d("sign up success","username="+username+"; pass="+pass);
+			finish();
+			Intent intent = new Intent(mContext,
+					LoginActivity.class);
+			intent.putExtra(CommConstant.EMAIL,
+					username);
+			intent.putExtra(
+					CommConstant.PASSWORD,
+					pass);
+			startActivity(intent);
+			Utils.postLeftToRight(mContext);
+		}
+	};
+
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
@@ -262,7 +292,7 @@ public class CreateNewAccountActivity extends BaseActivity implements
 		Utils.hideKeyboard(CreateNewAccountActivity.this, passwd_tv);
 		Utils.hideKeyboard(CreateNewAccountActivity.this, mobile_tv);
 		Utils.postLeftToRight(mContext);
-		finish();		
+		finish();
 		Intent intent = new Intent(mContext, MainActivity.class);
 		mContext.startActivity(intent);
 

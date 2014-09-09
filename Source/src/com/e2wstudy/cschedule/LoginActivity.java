@@ -5,10 +5,7 @@ package com.e2wstudy.cschedule;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.json.JSONException;
-
-import com.e2wstude.schedule.interfaces.LoginInterface;
 import com.e2wstudy.cschedule.net.WebservicesHelper;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
@@ -16,6 +13,9 @@ import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.TitleBarView;
 import com.e2wstudy.cschedule.views.ToastDialog;
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
+import com.e2wstudy.schedule.interfaces.LoginInterface;
+import com.e2wstudy.schedule.interfaces.SetTokenInterface;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 //import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -27,8 +27,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,7 +45,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 	Context mContext;
 	EditText txt_email;
 	EditText txt_password;
-
 	String username, password = "";
 	LinearLayout layoutForgetPassword;
 	TitleBarView titleBar;
@@ -65,7 +62,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 	GoogleCloudMessaging gcm;
 	AtomicInteger msgId = new AtomicInteger();
 	SharedPreferences prefs;
-
 	String regid;
 	public static LoadingPopupViewHolder loadingPopup;
 
@@ -287,62 +283,97 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	Handler loginHandler = new Handler() {
 
+	LoadingInterface loadingInterface=new LoadingInterface() {
+		
 		@Override
-		public void handleMessage(Message msg) {
-
-			if (msg.what != 1) { // code if not connected
-				final ToastDialog dialog = new ToastDialog(mContext, mContext
-						.getResources().getString(R.string.no_network));
-				dialog.show();
-				dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
-					}
-				});
-			} else { // code if connected
-				WebservicesHelper helper = new WebservicesHelper(mContext);
-				try {
-					helper.login(txt_email.getText().toString(), txt_password
-							.getText().toString(), loginInterface);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
+		public void onStart() {
+			showLoading(LoginActivity.this);
+			
+		}
+		
+		@Override
+		public void onFinish() {
+			dimissDialog();
+			
 		}
 	};
-
+	
 	LoginInterface loginInterface = new LoginInterface() {
 
 		@Override
-		public void onStart() {
-			// TODO Auto-generated method stub
-			showLoading(LoginActivity.this);
-		}
+		public void onError(String error) {
+			Log.d("login error",error);
+			if(error==null||error.equals(""))
+			{
+				error="Invalid username or password";
+			}
+			final ToastDialog errorToast = new ToastDialog(
+					mContext,
+					error);
+			errorToast.show();
+			errorToast.btnOk
+					.setOnClickListener(new OnClickListener() {
 
-		@Override
-		public void onFinish() {
-			// TODO Auto-generated method stub
-			dimissDialog();
-		}
+						@Override
+						public void onClick(View v) {
+							errorToast.dismiss();
+						}
+					});
 
-		@Override
-		public void onError() {
-			// TODO Auto-generated method stub
 
 		}
 
 		@Override
 		public void onComplete() {
-			// TODO Auto-generated method stub
+			Log.d("login success","success");
+			
+			finish();
+			Utils.postLeftToRight(mContext);
+			Intent intent = new Intent(mContext,
+					CategoryTabActivity.class);
+			startActivity(intent);
+			
+			SetTokenInterface setTokenInterface=new SetTokenInterface() {
+				
+				@Override
+				public void onError(String error) {
+					final ToastDialog dialog = new ToastDialog(mContext,
+							error);
+					dialog.show();
 
+					dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+						}
+					});
+				}
+				
+				@Override
+				public void onComplete() {
+					
+					
+				}
+			};
+			//set Token
+			try {
+				WebservicesHelper.getInstance().setToken(mContext,new SharedReference().getOwnerId(mContext),
+						Utils.getDeviceId(mContext),
+						new SharedReference()
+								.getRegistrationId(mContext), setTokenInterface, loadingInterface);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
 		}
 	};
+	
+	
 
 	// show loading
 	public void showLoading(Context Context) {
@@ -376,33 +407,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 	public void login(String email, String password) {
 		Utils.hideKeyboard((Activity) mContext, txt_email);
 		Utils.hideKeyboard((Activity) mContext, txt_password);
-		// if (Utils.isNetworkOnline(mContext)) {
-		// // code if connected
-		// WebservicesHelper helper = new WebservicesHelper(mContext);
-		// try {
-		// helper.login(txt_email.getText().toString(), txt_password
-		// .getText().toString(),loginInterface);
-		// } catch (JSONException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// } else {
-		// final ToastDialog dialog = new ToastDialog(mContext, mContext
-		// .getResources().getString(R.string.no_network));
-		// dialog.show();
-		// dialog.btnOk.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// dialog.dismiss();
-		// }
-		// });
-		// }
-
-		WebservicesHelper helper = new WebservicesHelper(mContext);
+		WebservicesHelper helper =WebservicesHelper.getInstance();
 		try {
-			helper.login(txt_email.getText().toString(), txt_password.getText()
-					.toString(), loginInterface);
+			helper.login(mContext,txt_email.getText().toString(), txt_password.getText()
+					.toString(), loginInterface,loadingInterface);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

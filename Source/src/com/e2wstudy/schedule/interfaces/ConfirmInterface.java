@@ -1,4 +1,4 @@
-package com.e2wstude.schedule.interfaces;
+package com.e2wstudy.schedule.interfaces;
 
 public interface ConfirmInterface {
 	public void onComplete();

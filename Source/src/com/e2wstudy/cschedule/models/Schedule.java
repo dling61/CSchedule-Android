@@ -1,5 +1,8 @@
 package com.e2wstudy.cschedule.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Schedule {
 	private int owner_ID = -1;
 	private int schedule_ID = -1;
@@ -9,6 +12,7 @@ public class Schedule {
 	private String desp = "";
 //	private String abbrtzname = "";// timezone
 	private int alert = 0;
+	
 	public Schedule(int owner_ID, int schedule_ID, String service_ID,
 			String starttime, String endtime, String desp, int alert, int tzid,String tzName) {
 		super();
@@ -164,4 +168,6 @@ public class Schedule {
 	public void setTzName(String tzName) {
 		this.tzName = tzName;
 	}
+
+	
 }

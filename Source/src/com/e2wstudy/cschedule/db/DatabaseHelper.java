@@ -35,7 +35,7 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "cschedule";
-	public static final int DB_VERSION = 8;
+	public static final int DB_VERSION =12;
 	public static DatabaseHelper sharedDatabaseHelper;
 	public static final int NEW = 0;
 	public static final int EXISTED = 1;
@@ -88,9 +88,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ActivityTable.last_ModifiedTime + " TEXT,"
 				+ ActivityTable.is_Deleted + " INTEGER NOT NULL,"
 				+ ParticipantTable.user_login + " text not null,"
-				+ ActivityTable.alertId + " int,"
-				+ ActivityTable.timeZoneId + " int,"
-				+ ActivityTable.is_Synchronized + " INTEGER NOT NULL);");
+				+ ActivityTable.alertId + " int," + ActivityTable.timeZoneId
+				+ " int," + ActivityTable.is_Synchronized
+				+ " INTEGER NOT NULL);");
 
 		db.execSQL("CREATE TABLE " + ScheduleTable.ScheduleTableName + "("
 				+ ScheduleTable.schedule_ID + " INTEGER PRIMARY KEY NOT NULL,"
@@ -148,7 +148,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ AppVersionTable.appversion + " TEXT NOT NULL,"
 				+ AppVersionTable.enforce + " INTEGER NOT NULL,"
 				+ AppVersionTable.os + " TEXT NOT NULL," + AppVersionTable.msg
-				+ " text not null," + AppVersionTable.osversion
+				+ " text ," + AppVersionTable.osversion
 				+ " TEXT NOT NULL);");
 
 	}
@@ -168,6 +168,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TimeZoneTable.TimeZoneTableName);
 		db.execSQL("DROP TABLE IF EXISTS " + AlertTable.alertTableName);
 		db.execSQL("DROP TABLE IF EXISTS " + AppVersionTable.appVersionTable);
+	
 		onCreate(db);
 
 	}
@@ -197,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * from " + AppVersionTable.appVersionTable + " where "
 						+ AppVersionTable.os + " = 'ANDROID'", null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			String appVersion = "";
 			try {
 				appVersion = c.getString(c
@@ -240,6 +241,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					osversion, msg);
 			return version;
 		}
+		c.close();
 		return null;
 	}
 
@@ -252,7 +254,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				"SELECT * FROM " + TimeZoneTable.TimeZoneTableName
 						+ " order by " + TimeZoneTable.displayorder + " asc",
 				null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
 			String tzname = c.getString(c.getColumnIndex(TimeZoneTable.tzname));
 			Log.d("timezone name", tzname);
@@ -279,7 +281,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		ArrayList<Alert> alerts = new ArrayList<Alert>();
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + AlertTable.alertTableName, null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int id = c.getInt(c.getColumnIndex(AlertTable.id));
 			String aname = c.getString(c.getColumnIndex(AlertTable.aname));
 
@@ -298,27 +300,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ActivityTable.user_login + "='"
 						+ new SharedReference().getCurrentOwnerId(context)
 						+ "'", null);
-		while (c!=null&&c.moveToNext()) {
-			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
-			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
-			// int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
-			// int repeat = c.getInt(c.getColumnIndex(ActivityTable.repeat));
-			String name = c.getString(c
-					.getColumnIndex(ActivityTable.service_Name));
-			// String start = c.getString(c
-			// .getColumnIndex(ActivityTable.start_time));
-			// String end =
-			// c.getString(c.getColumnIndex(ActivityTable.end_time));
-			String desp = c.getString(c
-					.getColumnIndex(ActivityTable.service_description));
-			// int otc = c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
-			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int alertId=c.getInt(c.getColumnIndex(ActivityTable.alertId));
-			int timezoneId=c.getInt(c.getColumnIndex(ActivityTable.timeZoneId));
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp, role,alertId,timezoneId);
-			activities.add(newActivity);
+		try {
+			while (c != null && c.moveToNext()) {
+				String id = c.getString(c
+						.getColumnIndex(ActivityTable.service_ID));
+				int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
+				// int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
+				// int repeat =
+				// c.getInt(c.getColumnIndex(ActivityTable.repeat));
+				String name = c.getString(c
+						.getColumnIndex(ActivityTable.service_Name));
+				// String start = c.getString(c
+				// .getColumnIndex(ActivityTable.start_time));
+				// String end =
+				// c.getString(c.getColumnIndex(ActivityTable.end_time));
+				String desp = c.getString(c
+						.getColumnIndex(ActivityTable.service_description));
+				// int otc =
+				// c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
+				int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
+				int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+				int timezoneId = c.getInt(c
+						.getColumnIndex(ActivityTable.timeZoneId));
+				MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+						role, alertId, timezoneId);
+				activities.add(newActivity);
+			}
+			c.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		c.close();
 		return activities;
 	}
 
@@ -336,7 +347,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ CommConstant.OWNER + " or "
 						+ ActivityTable.sharedrole + " = "
 						+ CommConstant.ORGANIZER + ")", null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			String name = c.getString(c
@@ -345,9 +356,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ActivityTable.service_description));
 			// int otc = c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
 			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int alertId=c.getInt(c.getColumnIndex(ActivityTable.alertId));
-			int timezoneId=c.getInt(c.getColumnIndex(ActivityTable.timeZoneId));
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp, role,alertId,timezoneId);
+			int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+			int timezoneId = c.getInt(c
+					.getColumnIndex(ActivityTable.timeZoneId));
+			MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+					role, alertId, timezoneId);
 			activities.add(newActivity);
 		}
 		c.close();
@@ -365,7 +378,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						// + ActivityTable.own_ID + "= "+ ownid + " " + "AND "
 						+ ActivityTable.last_ModifiedTime + " LIKE" + "'no%'",
 				null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			// int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
@@ -382,11 +395,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ActivityTable.service_description));
 			// int otc = c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
 			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int alertId=c.getInt(c.getColumnIndex(ActivityTable.alertId));
-			int timezoneId=c.getInt(c.getColumnIndex(ActivityTable.timeZoneId));
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp, role,alertId,timezoneId);
+			int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+			int timezoneId = c.getInt(c
+					.getColumnIndex(ActivityTable.timeZoneId));
+			MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+					role, alertId, timezoneId);
 			activities.add(newActivity);
 		}
+		c.close();
 		return activities;
 	}
 
@@ -397,7 +413,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ActivityTable.is_Synchronized + "= 0" + " " + "AND "
 						+ ActivityTable.last_ModifiedTime + " LIKE" + "'2%'",
 				null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			// int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
@@ -412,12 +428,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					.getColumnIndex(ActivityTable.service_description));
 			// int otc = c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
 			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int timeZoneId=c.getInt(c.getColumnIndex(ActivityTable.timeZoneId));
-			int alertId=c.getInt(c.getColumnIndex(ActivityTable.alertId));
-			
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp, role,alertId,timeZoneId);
+			int timeZoneId = c.getInt(c
+					.getColumnIndex(ActivityTable.timeZoneId));
+			int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+
+			MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+					role, alertId, timeZoneId);
 			activities.add(newActivity);
 		}
+		c.close();
 		return activities;
 	}
 
@@ -425,7 +444,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ActivityTable.ActivityTableName + " WHERE "
 						+ ActivityTable.service_ID + " = " + service_id, null);
-		if (c!=null&&c.moveToNext()) {
+		if (c != null && c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
 			String name = c.getString(c
@@ -433,11 +452,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			String desp = c.getString(c
 					.getColumnIndex(ActivityTable.service_description));
 			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int alertId=c.getInt(c.getColumnIndex(ActivityTable.alertId));
-			int timezoneId=c.getInt(c.getColumnIndex(ActivityTable.timeZoneId));
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp, role,alertId,timezoneId);
+			int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+			int timezoneId = c.getInt(c
+					.getColumnIndex(ActivityTable.timeZoneId));
+			MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+					role, alertId, timezoneId);
 			return newActivity;
 		}
+		c.close();
 		return null;
 	}
 
@@ -445,7 +467,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 						+ ScheduleTable.schedule_ID + " = " + id, null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int sche_id = c.getInt(c.getColumnIndex(ScheduleTable.schedule_ID));
 			int owner_id = c.getInt(c.getColumnIndex(ScheduleTable.own_ID));
 			int serv_id = c.getInt(c.getColumnIndex(ScheduleTable.service_ID));
@@ -460,7 +482,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			Schedule newSchedule = new Schedule(owner_id, sche_id,
 					serv_id + "", startDate, endDate, desp, alert, timeZone);
 			return newSchedule;
-		}
+		}c.close();
 		return null;
 	}
 
@@ -470,7 +492,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ScheduleTable.service_ID + " = " + id + " AND "
 						+ ScheduleTable.is_Deleted + "=0", null);
 		List<Schedule> schedules = new ArrayList<Schedule>();
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int sche_id = c.getInt(c.getColumnIndex(ScheduleTable.schedule_ID));
 			int owner_id = c.getInt(c.getColumnIndex(ScheduleTable.own_ID));
 			int serv_id = c.getInt(c.getColumnIndex(ScheduleTable.service_ID));
@@ -488,6 +510,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					serv_id + "", startDate, endDate, desp, alert, timeZone);
 			schedules.add(newSchedule);
 		}
+		c.close();
 		return schedules;
 	}
 
@@ -501,7 +524,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ columnName + " ASC", null);
 		List<String> dates = new ArrayList<String>();
 		List<String> distinctdates = new ArrayList<String>();
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int columnIndex = c.getColumnIndex(columnName);
 			String Date = c.getString(columnIndex);
 			// Log.i("database", Date);
@@ -548,8 +571,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				schedules.add(newSchedule);
 			}
 			groupedSchedules.add(schedules);
+			c1.close();
 		}
-
+		c.close();
 		return groupedSchedules;
 	}
 
@@ -569,7 +593,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ "' order  by datetime(" + ScheduleTable.start_Time + ") ASC";
 		Log.d("get all schedule", sql);
 
-		while (c!=null&&c.moveToNext()) {
+		try
+		{
+		while (c != null && c.moveToNext()) {
 			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c.getString(startIndex);
 			int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
@@ -588,6 +614,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			Schedule newSchedule = new Schedule(owner_id, sche_id,
 					serv_id + "", startDate, endDate, desp, alert, timeZone);
 			allschedules.add(newSchedule);
+		}
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
 		}
 		// If not added,error will occour
 		// IllegalStateException: Process 5808 exceeded cursor quota 100, will
@@ -650,7 +680,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d("sharedmember of email", query);
 		Cursor c = this.getWritableDatabase().rawQuery(query, null);
 
-		if (c!=null&&c.moveToNext()) {
+		if (c != null && c.moveToNext()) {
 			int member_id = c.getInt(c
 					.getColumnIndex(SharedMemberTable.member_id));
 			return member_id;
@@ -685,7 +715,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ new SharedReference().getCurrentOwnerId(context)
 						+ " order  by datetime(" + ScheduleTable.start_Time
 						+ ") ASC");
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c.getString(startIndex);
 			int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
@@ -724,13 +754,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ columnName + " ASC", null);
 		List<String> dates = new ArrayList<String>();
 		List<String> distinctdates = new ArrayList<String>();
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int columnIndex = c.getColumnIndex(columnName);
 			String Date = c.getString(columnIndex);
 			// Log.i("database", Date);
 			dates.add(Date);
 		}
-
+		c.close();
 		String previousDate = "2";
 		for (int i = 0; i < dates.size(); i++) {
 			String newDate = dates.get(i);
@@ -740,6 +770,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			}
 			previousDate = newDate;
 		}
+		
 		return distinctdates;
 	}
 
@@ -752,7 +783,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 								+ "= 0" + " " + "AND "
 								+ ScheduleTable.last_Modified + " LIKE"
 								+ "'no%'", null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c.getString(startIndex);
 			int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
@@ -772,6 +803,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					serv_id + "", startDate, endDate, desp, alert, timeZone);
 			schedules.add(newSchedule);
 		}
+		c.close();
 		return schedules;
 	}
 
@@ -781,7 +813,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
 						+ ScheduleTable.is_Synchronized + "= 0" + " " + "AND "
 						+ ScheduleTable.last_Modified + " LIKE" + "'2%'", null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
 			String startDate = c.getString(startIndex);
 			int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
@@ -801,6 +833,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					serv_id + "", startDate, endDate, desp, alert, timeZone);
 			schedules.add(newSchedule);
 		}
+		c.close();
 		return schedules;
 	}
 
@@ -815,7 +848,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 							+ " WHERE " + ParticipantTable.participant_ID
 							+ " = " + member_id, null);
 			if (c != null) {
-				while (c!=null&&c.moveToNext()) {
+				while (c != null && c.moveToNext()) {
 					int id = c.getInt(c
 							.getColumnIndex(ParticipantTable.participant_ID));
 					int ownid = c.getInt(c
@@ -836,7 +869,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					// c.close();
 					// return newParticipant;
 				}
-				// return null;
+				c.close();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -844,6 +877,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 			return newParticipant;
 		}
+		
 	}
 
 	public Sharedmember getSharedmember(int member_id, String activity_id) {
@@ -852,7 +886,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ " WHERE " + SharedMemberTable.member_id + " = "
 						+ member_id + " AND " + SharedMemberTable.service_id
 						+ "=" + activity_id, null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int mem_id = c
 					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
 			int serviceid = c.getInt(c
@@ -869,6 +903,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 			return newSharedmember;
 		}
+		c.close();
 		return null;
 	}
 
@@ -881,7 +916,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ " WHERE " + SharedMemberTable.service_id + "="
 						+ activity_id, null);
 		ArrayList<Sharedmember> list_shared_member = new ArrayList<Sharedmember>();
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int mem_id = c
 					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
 			// int serviceid = c.getInt(c
@@ -899,6 +934,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			list_shared_member.add(shareMember);
 
 		}
+		c.close();
 		return list_shared_member;
 	}
 
@@ -914,7 +950,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ activity_id + " and " + SharedMemberTable.role
 						+ " <>" + CommConstant.PARTICIPANT, null);
 		ArrayList<Participant> list_participant = new ArrayList<Participant>();
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int mem_id = c
 					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
 			// int serviceid = c.getInt(c
@@ -931,6 +967,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			list_participant.add(new_participant);
 
 		}
+		c.close();
 		return list_participant;
 	}
 
@@ -947,11 +984,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ SharedMemberTable.member_id + "=" + member_id
 						+ " and ", null);
 		ArrayList<String> list_activity_id = new ArrayList<String>();
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
 			list_activity_id.add(id);
 
 		}
+		c.close();
 		return list_activity_id;
 	}
 
@@ -969,7 +1007,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ SharedMemberTable.member_email + "='" + member_email
 						+ "'", null);
 
-		if (c!=null&&c.moveToNext()) {
+		if (c != null && c.moveToNext()) {
 			number = c.getCount();
 		}
 		c.close();
@@ -986,7 +1024,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ activity_id + " and " + SharedMemberTable.is_Deleted
 						+ "=0", null);
 		ArrayList<Sharedmember> list_member = new ArrayList<Sharedmember>();
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int mem_id = c
 					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
 			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
@@ -1002,6 +1040,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			list_member.add(new_participant);
 
 		}
+		c.close();
 		return list_member;
 	}
 
@@ -1015,7 +1054,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ref.getCurrentOwnerId(context) + " order by "
 						+ ParticipantTable.participant_Name
 						+ " COLLATE NOCASE ASC", null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int id = c
 					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));
 			int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
@@ -1033,6 +1072,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				participants.add(newParticipant);
 			}
 		}
+		c.close();
 		return participants;
 	}
 
@@ -1043,7 +1083,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
 						+ " " + "AND " + ParticipantTable.last_Modified
 						+ " LIKE " + "'no%'", null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int id = c
 					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));
 			int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
@@ -1057,6 +1097,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					mobile, ownid);
 			participants.add(newParticipant);
 		}
+		c.close();
 		return participants;
 	}
 
@@ -1068,7 +1109,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ " AND " + ScheduleTable.is_Deleted + "= 0" + " "
 						+ "AND " + ParticipantTable.last_Modified + " LIKE "
 						+ "'2%'", null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int id = c
 					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));
 			int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
@@ -1082,26 +1123,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					mobile, ownid);
 			participants.add(newParticipant);
 		}
+		c.close();
 		return participants;
 	}
 
 	public List<Confirm> getParticipantsForSchedule(int schedule_id) {
 		List<Confirm> memberids = new ArrayList<Confirm>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + OndutyTable.participant_ID + ","
-						+ OndutyTable.confirm + " FROM "
-						+ OndutyTable.OntudyTableName + " WHERE "
-						+ OndutyTable.schedule_ID + " = " + schedule_id, null);
-		while (c!=null&&c.moveToNext()) {
-			int memberid_Index = c.getColumnIndex(OndutyTable.participant_ID);
-			int memberid = c.getInt(memberid_Index);
-			int confirm = c.getInt(c.getColumnIndex(OndutyTable.confirm));
-			Confirm con = new Confirm(memberid, confirm);
-			Log.d("member_id onduty", memberid + "");
-			memberids.add(con);
+		try {
+			Cursor c = this.getWritableDatabase().rawQuery(
+					"SELECT " + OndutyTable.participant_ID + ","
+							+ OndutyTable.confirm + " FROM "
+							+ OndutyTable.OntudyTableName + " WHERE "
+							+ OndutyTable.schedule_ID + " = " + schedule_id,
+					null);
+			while (c != null && c.moveToNext()) {
+				int memberid_Index = c
+						.getColumnIndex(OndutyTable.participant_ID);
+				int memberid = c.getInt(memberid_Index);
+				int confirm = c.getInt(c.getColumnIndex(OndutyTable.confirm));
+				Confirm con = new Confirm(memberid, confirm);
+				Log.d("member_id onduty", memberid + "");
+				memberids.add(con);
 
+			}
+			c.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		c.close();
 		return memberids;
 	}
 
@@ -1113,7 +1161,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT *  FROM " + TimeZoneTable.TimeZoneTableName + " WHERE "
 						+ TimeZoneTable.id + " = " + timeZoneId, null);
-		if (c!=null&&c.moveToNext()) {
+		if (c != null && c.moveToNext()) {
 			int id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
 			String tzname = c.getString(c.getColumnIndex(TimeZoneTable.tzname));
 			String displayname = c.getString(c
@@ -1137,7 +1185,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT *  FROM " + AlertTable.alertTableName + " WHERE "
 						+ AlertTable.id + " = " + alerId, null);
-		if (c!=null&&c.moveToNext()) {
+		if (c != null && c.moveToNext()) {
 			int id = c.getInt(c.getColumnIndex(AlertTable.id));
 			String aname = c.getString(c.getColumnIndex(AlertTable.aname));
 			alert = new Alert(id, aname);
@@ -1152,36 +1200,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				"SELECT " + OndutyTable.onduty_ID + " FROM "
 						+ OndutyTable.OntudyTableName + " WHERE "
 						+ OndutyTable.schedule_ID + " = " + id, null);
-		while (c!=null&&c.moveToNext()) {
+		if (c != null && c.moveToNext()) {
 			int ondutyid_Index = c.getColumnIndex(OndutyTable.onduty_ID);
 			int ondutyid = c.getInt(ondutyid_Index);
 			ondutyids.add(ondutyid);
 		}
+		c.close();
 		return ondutyids;
 	}
 
-	public boolean isActivityExisted(String activityID) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + ActivityTable.service_ID + " from "
-						+ ActivityTable.ActivityTableName + " where "
-						+ ActivityTable.service_ID + " = " + activityID, null);
-		int id = -1;
-		while (c!=null&&c.moveToNext())
-			id = c.getInt(c.getColumnIndex(ActivityTable.service_ID));
-		return (id == (-1)) ? false : true;
-	}
-
-	public boolean isParticipantExisted(int participantID) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + ParticipantTable.participant_ID + " from "
-						+ ParticipantTable.ParticipantTableName + " where "
-						+ ParticipantTable.participant_ID + " = "
-						+ participantID, null);
-		int id = -1;
-		while (c!=null&&c.moveToNext())
-			id = c.getInt(c.getColumnIndex(ParticipantTable.participant_ID));
-		return (id == (-1)) ? false : true;
-	}
 
 	public boolean isTimeZoneExisted(int timeZoneId) {
 		Cursor c = this.getWritableDatabase().rawQuery(
@@ -1189,8 +1216,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ TimeZoneTable.TimeZoneTableName + " where "
 						+ TimeZoneTable.id + " = " + timeZoneId, null);
 		int id = -1;
-		while (c!=null&&c.moveToNext())
+		if (c != null && c.moveToNext())
+		{
 			id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
+		}
+		c.close();
 		return (id == (-1)) ? false : true;
 	}
 
@@ -1200,8 +1230,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ AlertTable.alertTableName + " where " + AlertTable.id
 						+ " = " + alertId, null);
 		int id = -1;
-		while (c!=null&&c.moveToNext())
+		if (c != null && c.moveToNext())
+		{
 			id = c.getInt(c.getColumnIndex(AlertTable.id));
+		}
+		c.close();
+		
 		return (id == (-1)) ? false : true;
 	}
 
@@ -1211,21 +1245,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ AppVersionTable.appVersionTable + " where "
 						+ AppVersionTable.id + " = " + versionId, null);
 		int id = -1;
-		while (c!=null&&c.moveToNext())
+		if (c != null && c.moveToNext())
+		{
 			id = c.getInt(c.getColumnIndex(AppVersionTable.id));
+		}
+		c.close();
 		return (id == (-1)) ? false : true;
 	}
 
-	// public String getCurrentVersion() {
-	// Cursor c = this.getWritableDatabase().rawQuery(
-	// "SELECT " + AppVersionTable.appversion + " from "
-	// + AppVersionTable.appVersionTable + " where "
-	// + AppVersionTable.os + " = 'ANDROID'", null);
-	// while (c!=null&&c.moveToNext()) {
-	// return c.getString(c.getColumnIndex(AppVersionTable.appversion));
-	// }
-	// return "0.0.0";
-	// }
+//	 public String getCurrentVersion() {
+//	 Cursor c = this.getWritableDatabase().rawQuery(
+//	 "SELECT " + AppVersionTable.appversion + " from "
+//	 + AppVersionTable.appVersionTable + " where "
+//	 + AppVersionTable.os + " = 'ANDROID'", null);
+//	 while (c!=null&&c.moveToNext()) {
+//	 return c.getString(c.getColumnIndex(AppVersionTable.appversion));
+//	 }
+//	 return "0.0.0";
+//	 }
 
 	public boolean isScheduleExisted(int scheduleID) {
 		Cursor c = this.getWritableDatabase().rawQuery(
@@ -1233,8 +1270,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ ScheduleTable.ScheduleTableName + " where "
 						+ ScheduleTable.schedule_ID + " = " + scheduleID, null);
 		int id = -1;
-		while (c!=null&&c.moveToNext())
+		if (c != null && c.moveToNext()) {
 			id = c.getInt(c.getColumnIndex(ScheduleTable.schedule_ID));
+		}
+		c.close();
 		return (id == (-1)) ? false : true;
 	}
 
@@ -1244,8 +1283,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ OndutyTable.OntudyTableName + " where "
 						+ OndutyTable.schedule_ID + " = " + scheduleID, null);
 		int id = -1;
-		while (c!=null&&c.moveToNext())
+		if (c != null && c.moveToNext()) {
 			id = c.getInt(c.getColumnIndex(OndutyTable.schedule_ID));
+		}
+		c.close();
 		return (id == (-1)) ? false : true;
 	}
 
@@ -1257,19 +1298,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 						+ " AND " + SharedMemberTable.service_id + "="
 						+ activityid, null);
 		int id = -1;
-		while (c!=null&&c.moveToNext())
+		if (c != null && c.moveToNext()) {
 			// Wrong get method
 			// Couldn't read row 0, col -1 from CursorWindow. Make sure the
 			// Cursor is initialized correctly before accessing data from it.
 			// id = c.getInt(c.getColumnIndex(OndutyTable.schedule_ID));
 			id = c.getInt(c.getColumnIndex(SharedMemberTable.member_id));
+		}
+		c.close();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean insertAppVersion(ContentValues contentValue) {
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				AppVersionTable.appVersionTable, AppVersionTable.id,
-				contentValue, SQLiteDatabase.CONFLICT_IGNORE);
+				contentValue, SQLiteDatabase.CONFLICT_REPLACE);
 		return (result == -1) ? false : true;
 	}
 
@@ -1284,7 +1327,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public boolean insertAlert(ContentValues alert) {
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				AlertTable.alertTableName, AlertTable.id, alert,
-				SQLiteDatabase.CONFLICT_IGNORE);
+				SQLiteDatabase.CONFLICT_REPLACE);
 		return (result == -1) ? false : true;
 	}
 
@@ -1299,7 +1342,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public boolean insertTimeZone(ContentValues timeZone) {
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				TimeZoneTable.TimeZoneTableName, TimeZoneTable.id, timeZone,
-				SQLiteDatabase.CONFLICT_IGNORE);
+				SQLiteDatabase.CONFLICT_REPLACE);
 		return (result == -1) ? false : true;
 	}
 
@@ -1315,7 +1358,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				ParticipantTable.ParticipantTableName,
 				ParticipantTable.participant_ID, newParticipant,
-				SQLiteDatabase.CONFLICT_IGNORE);
+				SQLiteDatabase.CONFLICT_REPLACE);
 		return (result == -1) ? false : true;
 	}
 
@@ -1339,7 +1382,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				ActivityTable.ActivityTableName, ActivityTable.service_ID,
-				newActivity, SQLiteDatabase.CONFLICT_IGNORE);
+				newActivity, SQLiteDatabase.CONFLICT_REPLACE);
 		return (result == -1) ? false : true;
 	}
 
@@ -1362,7 +1405,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public boolean insertSchedule(ContentValues newSchedule) {
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				ScheduleTable.ScheduleTableName, ScheduleTable.schedule_ID,
-				newSchedule, SQLiteDatabase.CONFLICT_IGNORE);
+				newSchedule, SQLiteDatabase.CONFLICT_REPLACE);
 		return (result == -1) ? false : true;
 	}
 
@@ -1385,7 +1428,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public boolean insertOnduty(ContentValues newOnduty) {
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				OndutyTable.OntudyTableName, OndutyTable.service_ID, newOnduty,
-				SQLiteDatabase.CONFLICT_IGNORE);
+				SQLiteDatabase.CONFLICT_REPLACE);
 		return (result == -1) ? false : true;
 	}
 
@@ -1428,7 +1471,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		long result = this.getWritableDatabase().insertWithOnConflict(
 				SharedMemberTable.SharedMemberTableName,
 				SharedMemberTable.member_id, sharedmember,
-				SQLiteDatabase.CONFLICT_IGNORE);
+				SQLiteDatabase.CONFLICT_REPLACE);
 		return (result == -1) ? false : true;
 	}
 
@@ -1476,13 +1519,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Cursor c = this.getWritableDatabase().rawQuery(
 				"SELECT " + OndutyTable.participant_ID + " FROM "
 						+ OndutyTable.OntudyTableName, null);
-		while (c!=null&&c.moveToNext()) {
+		while (c != null && c.moveToNext()) {
 			int index = c.getColumnIndex(OndutyTable.participant_ID);
 			int memberid = c.getInt(index);
 			Participant p = this.getParticipant(memberid);
 			if ((p != null) && (p.getEmail().equalsIgnoreCase(userEmail)))
 				scheduleCounter++;
 		}
+		c.close();
 		return scheduleCounter;
 	}
 
@@ -1512,9 +1556,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		return isValid;
 	}
-	
-	public void deleteTablesExitApp()
-	{
+
+	public void deleteTablesExitApp() {
 		this.getWritableDatabase().delete(
 				ParticipantTable.ParticipantTableName, null, null);
 		this.getWritableDatabase().delete(
@@ -1523,6 +1566,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null);
 		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
 				null, null);
+		SharedReference ref = new SharedReference();
+		ref.setLastestParticipantLastModifiedTime(context,
+				CommConstant.DEFAULT_DATE);
+		ref.setLastestScheduleLastModifiedTime(context,
+				CommConstant.DEFAULT_DATE);
+		ref.setLastestServiceLastModifiedTime(context,
+				CommConstant.DEFAULT_DATE);
 	}
 
 	public void evacuateDatabase() {
@@ -1536,12 +1586,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				null);
 		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
 				null, null);
-//		this.getWritableDatabase().delete(TimeZoneTable.TimeZoneTableName,
-//				null, null);
-//		this.getWritableDatabase()
-//				.delete(AlertTable.alertTableName, null, null);
-//		this.getWritableDatabase().delete(AppVersionTable.appVersionTable,
-//				null, null);
+		// this.getWritableDatabase().delete(TimeZoneTable.TimeZoneTableName,
+		// null, null);
+		// this.getWritableDatabase()
+		// .delete(AlertTable.alertTableName, null, null);
+		// this.getWritableDatabase().delete(AppVersionTable.appVersionTable,
+		// null, null);
 		SharedPreferences settings = context.getSharedPreferences(
 				SharedReference.MY_PREFERENCE, Context.MODE_PRIVATE);
 		settings.edit().clear().commit();

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.devsmart.android.ui.HorizontalListView;
+import com.e2wstudy.cschedule.CategoryTabActivity;
 import com.e2wstudy.cschedule.CreateNewScheduleActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
@@ -19,8 +20,10 @@ import com.e2wstudy.cschedule.utils.MyDate;
 import com.e2wstudy.cschedule.utils.SharedReference;
 import com.e2wstudy.cschedule.utils.Utils;
 import com.e2wstudy.cschedule.views.DutyScheduleView;
+import com.e2wstudy.cschedule.views.LoadingPopupViewHolder;
 import com.e2wstudy.cschedule.views.ParticipantInforDialog;
-
+import com.e2wstudy.schedule.interfaces.LoadingInterface;
+import com.e2wstudy.schedule.interfaces.UpdateConfirmStatusInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -41,10 +44,13 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 	public Map<String, ArrayList<Schedule>> scheduleCollection;
 	public ArrayList<String> listSchedulesByDay;
 	private LayoutInflater mInflater;
-//	DatabaseHelper dbHelper;
+	// DatabaseHelper dbHelper;
 	boolean isToday;
 	Date nearestDate;// date nearest current date
 	public int group_position_scrolled = 0;// scroll to nearest date
+	public static LoadingPopupViewHolder loadingPopup;
+	UpdateConfirmStatusInterface iConfirm;
+	LoadingInterface loadingInterface;
 
 	public ExpandableListScheduleAdapter() {
 
@@ -52,13 +58,19 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 
 	public ExpandableListScheduleAdapter(Context context,
 			ArrayList<String> listSchedulesByDay,
-			Map<String, ArrayList<Schedule>> scheduleCollection) {
+			Map<String, ArrayList<Schedule>> scheduleCollection,
+			UpdateConfirmStatusInterface iConfirm,
+			LoadingInterface loadingInterface) {
 		this.context = context;
 		this.scheduleCollection = scheduleCollection;
 		this.listSchedulesByDay = listSchedulesByDay;
 
 		mInflater = LayoutInflater.from(context);
-//		dbHelper = DatabaseHelper.getSharedDatabaseHelper(context);
+		this.iConfirm = iConfirm;
+		this.loadingInterface = loadingInterface;
+	}
+
+	public void refreshData() {
 
 	}
 
@@ -101,7 +113,8 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		final Schedule schedule = (Schedule) getChild(groupPosition,
 				childPosition);
 		if (schedule != null) {
-			MyActivity activity = DatabaseHelper.getSharedDatabaseHelper(context)
+			MyActivity activity =
+			DatabaseHelper.getSharedDatabaseHelper(context)
 					.getActivity(schedule.getService_ID());
 			String activity_name = activity != null ? activity
 					.getActivity_name() : "";
@@ -112,22 +125,23 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 
 			viewHolder.service_TV.setText(activity_name);
 			viewHolder.time_TV.setText(date.toLowerCase());
-			
-			Log.d("activityname",activity.getActivity_name());
+
+			Log.d("activityname", activity.getActivity_name());
 			List<Confirm> memberids = DatabaseHelper.getSharedDatabaseHelper(context)
-					.getParticipantsForSchedule(schedule.getSchedule_ID());
+						.getParticipantsForSchedule(schedule.getSchedule_ID());
+		
 			if (memberids != null && memberids.size() > 0) {
-				
-				Log.d("memberid",memberids.toString());
+
+				Log.d("memberid", memberids.toString());
 				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(schedule,
-						memberids,schedule.getService_ID());
+						memberids, schedule.getService_ID()
+						);
 				viewHolder.listview.setAdapter(adapter);
-//				viewHolder.listview.setVisibility(View.VISIBLE);
-				
-			}
-			else
-			{
-				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(schedule,null,schedule.getService_ID());
+				// viewHolder.listview.setVisibility(View.VISIBLE);
+
+			} else {
+				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(schedule,
+						null, schedule.getService_ID());
 				viewHolder.listview.setAdapter(adapter);
 			}
 			convertView.setOnClickListener(new OnClickListener() {
@@ -247,6 +261,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		List<Confirm> listParticipantId;
 		String activity_id = "";
 		Schedule schedule;
+		
 
 		public OnDutyMemberAdapter(Schedule schedule,
 				List<Confirm> listParticipantId, String activity_id) {
@@ -258,8 +273,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 
 		@Override
 		public int getCount() {
-			if(listParticipantId==null)
-			{
+			if (listParticipantId == null) {
 				return 0;
 			}
 			return listParticipantId.size();
@@ -291,8 +305,7 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 			}
 			final Confirm member = listParticipantId.get(position);
 			if (member != null) {
-				final Sharedmember sm = DatabaseHelper.getSharedDatabaseHelper(context).getSharedmember(
-						member.getMemberId(), activity_id);
+				final Sharedmember sm = DatabaseHelper.getSharedDatabaseHelper(context).getSharedmember(member.getMemberId(),activity_id);
 				if (sm != null) {
 					holder.title.setText(sm.getName());
 
@@ -399,17 +412,21 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					case 0:
 						if (arraySize < 3) {
 							Confirm confirm = confirmStatus;
-							WebservicesHelper ws = new WebservicesHelper(
-									context);
+							WebservicesHelper ws = WebservicesHelper
+									.getInstance();
+
 							if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
 								confirm.setConfirm(CommConstant.CONFIRM_CONFIRMED);
-								ws.updateConfirmStatus(schedule, confirm);
+								ws.updateConfirmStatus(context, schedule,
+										confirm, loadingInterface, iConfirm);
 							} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_DENIED) {
 								confirm.setConfirm(CommConstant.CONFIRM_CONFIRMED);
-								ws.updateConfirmStatus(schedule, confirm);
+								ws.updateConfirmStatus(context, schedule,
+										confirm, loadingInterface, iConfirm);
 							} else if (confirmStatus.getConfirm() == CommConstant.CONFIRM_CONFIRMED) {
 								confirm.setConfirm(CommConstant.CONFIRM_DENIED);
-								ws.updateConfirmStatus(schedule, confirm);
+								ws.updateConfirmStatus(context, schedule,
+										confirm, loadingInterface, iConfirm);
 							}
 						} else {
 							Utils.makeAPhoneCall(context,
@@ -419,11 +436,12 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					case 1:
 						if (arraySize < 3) {
 							Confirm confirm = confirmStatus;
-							WebservicesHelper ws = new WebservicesHelper(
-									context);
+							WebservicesHelper ws = WebservicesHelper
+									.getInstance();
 							if (confirmStatus.getConfirm() == CommConstant.CONFIRM_UNKNOWN) {
 								confirm.setConfirm(CommConstant.CONFIRM_DENIED);
-								ws.updateConfirmStatus(schedule, confirm);
+								ws.updateConfirmStatus(context, schedule,
+										confirm, loadingInterface, iConfirm);
 							}
 						} else {
 							Utils.sendAMessage(context, participant.getMobile());
@@ -446,6 +464,24 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 					dialog.dismiss();
 				}
 			});
+		}
+	}
+
+	// show loading
+	public void showLoading(Context mContext) {
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(mContext,
+					CategoryTabActivity.DIALOG_LOADING_THEME);
+		}
+		loadingPopup.setCancelable(true);
+		if (!loadingPopup.isShowing()) {
+			loadingPopup.show();
+		}
+	}
+
+	public void dimissDialog() {
+		if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
 		}
 	}
 
