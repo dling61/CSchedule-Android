@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TabHost;
@@ -53,6 +54,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	boolean isScheduleDownloadDone = false;
 	public static int TAB_SCHEDULE = 0;
 	public static int TAB_ACTIVITY = 2;
+	public static int TAB_ACCOUNT = 3;
 	public static LoadingPopupViewHolder loadingPopup;
 	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
 	public static boolean flag_schedule = false;
@@ -243,7 +245,13 @@ public class CategoryTabActivity extends FragmentActivity implements
 	// Manages the Tab changes, synchronizing it with Pages
 	public void onTabChanged(String tag) {
 		int pos = this.mTabHost.getCurrentTab();
+		if(pos==TAB_ACCOUNT)
+		{
+			Log.d("tab account","selected");
+			contact.onResume();
+		}
 		mViewPager.setCurrentItem(pos);
+
 	}
 
 	@Override
