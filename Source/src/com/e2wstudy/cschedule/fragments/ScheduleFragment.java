@@ -11,16 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
-
 import com.e2wstudy.cschedule.CategoryTabActivity;
 import com.e2wstudy.cschedule.CreateNewScheduleActivity;
 import com.e2wstudy.cschedule.R;
 import com.e2wstudy.cschedule.adapter.ExpandableListScheduleAdapter;
 import com.e2wstudy.cschedule.db.DatabaseHelper;
-import com.e2wstudy.cschedule.models.Confirm;
-import com.e2wstudy.cschedule.models.MyActivity;
 import com.e2wstudy.cschedule.models.Schedule;
-import com.e2wstudy.cschedule.models.Sharedmember;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.MyDate;
 import com.e2wstudy.cschedule.utils.Utils;
@@ -29,9 +25,9 @@ import com.e2wstudy.cschedule.views.ScheduleView;
 import com.e2wstudy.cschedule.views.ToastDialog;
 import com.e2wstudy.schedule.interfaces.LoadingInterface;
 import com.e2wstudy.schedule.interfaces.UpdateConfirmStatusInterface;
-
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -58,11 +54,19 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	boolean isToday = false;
 	long now = 0;
 	List<Date> dates;
-	int group_scroll = 0;
+
 	String FORMAT_MMM_DD_YYYY = "MMM dd, yyyy";// format MMM-dd-yyyy
 	String FORMAT_FULL_DATE = "yyyy-MM-dd HH:mm:ss";// yyyy-MM-dd HH:mm:ss
 	ExpandableListScheduleAdapter adapter = null;
 	public static LoadingPopupViewHolder loadingPopup;
+
+	// ArrayList<String> listDateString = new ArrayList<String>();
+	// HashMap<String, ArrayList<Schedule>> listScheduleByDay = new
+	// HashMap<String, ArrayList<Schedule>>();
+	// ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+	LoadScheduleFromDbTask task;
+	boolean flag = false;
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -90,7 +94,6 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == view.btn_add_schedule) {
-
 			Intent intent = new Intent(mContext,
 					CreateNewScheduleActivity.class);
 			intent.putExtra(CommConstant.TYPE, DatabaseHelper.NEW);
@@ -98,7 +101,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			Utils.slideUpDown(mContext);
 		} else if (v == view.btn_all) {
 			type = ALL;
-			processDataForAdapterListview();
+			// processDataForAdapterListview();
+			new LoadScheduleFromDbTask().execute();
 			view.btn_all.setBackgroundResource(R.drawable.me_unselected);
 			view.btn_me
 					.setBackgroundResource(R.drawable.btn_schedule_unselected);
@@ -110,7 +114,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 			// view.btn_today.setBackgroundResource(R.drawable.today_border);
 		} else if (v == view.btn_me) {
 			type = ME;
-			processDataForAdapterListview();
+			// processDataForAdapterListview();
+			new LoadScheduleFromDbTask().execute();
 			view.btn_all
 					.setBackgroundResource(R.drawable.btn_schedule_unselected);
 			view.btn_me.setBackgroundResource(R.drawable.me_unselected);
@@ -123,11 +128,9 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		else if (v == view.btn_refresh) {
 			isToday = false;
 			// processDataForAdapterListview();
-			view.btn_refresh.setEnabled(false);
-			initData();
+			new LoadScheduleFromDbTask().execute();
+			// initData();
 
-			// view.btn_all.setBackgroundResource(R.drawable.me_border);
-			// view.btn_me.setBackgroundResource(R.drawable.me_border);
 			view.btn_today.setBackgroundResource(R.drawable.today_border);
 			view.btn_today.setTextColor(mContext.getResources().getColor(
 					R.color.me_unselected));
@@ -142,10 +145,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 				view.btn_today.setTextColor(mContext.getResources().getColor(
 						R.color.text_today_schedule));
 			}
-			processDataForAdapterListview();
-			// view.btn_all.setBackgroundResource(R.drawable.me_border);
-			// view.btn_me.setBackgroundResource(R.drawable.me_border);
-
+			// processDataForAdapterListview();
+			new LoadScheduleFromDbTask().execute();
 		}
 	}
 
@@ -169,29 +170,29 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		super.onCreate(savedInstanceState);
 	}
 
-	
 	@Override
 	public void onResume() {
 		super.onResume();
 		scheduleDownloadComplete();
 	}
-	// show loading
-		public void showLoading(Context mContext) {
-			if (loadingPopup == null) {
-				loadingPopup = new LoadingPopupViewHolder(mContext,
-						CategoryTabActivity.DIALOG_LOADING_THEME);
-			}
-			loadingPopup.setCancelable(true);
-			if (!loadingPopup.isShowing()) {
-				loadingPopup.show();
-			}
-		}
 
-		public void dimissDialog() {
-			if (loadingPopup != null && loadingPopup.isShowing()) {
-				loadingPopup.dismiss();
-			}
+	// show loading
+	public void showLoading(Context mContext) {
+		if (loadingPopup == null) {
+			loadingPopup = new LoadingPopupViewHolder(mContext,
+					CategoryTabActivity.DIALOG_LOADING_THEME);
 		}
+		loadingPopup.setCancelable(true);
+		if (!loadingPopup.isShowing()) {
+			loadingPopup.show();
+		}
+	}
+
+	public void dimissDialog() {
+		if (loadingPopup != null && loadingPopup.isShowing()) {
+			loadingPopup.dismiss();
+		}
+	}
 
 	private void initData() {
 		// get all data after that, go to tab
@@ -205,50 +206,133 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 	}
 
-	LoadingInterface iLoading=new LoadingInterface() {
-		
+	LoadingInterface iLoading = new LoadingInterface() {
+
 		@Override
 		public void onStart() {
 			showLoading(getActivity());
 		}
-		
+
 		@Override
 		public void onFinish() {
 			dimissDialog();
 		}
 	};
-	UpdateConfirmStatusInterface iConfirm=new UpdateConfirmStatusInterface() {
-		
+	UpdateConfirmStatusInterface iConfirm = new UpdateConfirmStatusInterface() {
+
 		@Override
 		public void onError(String error) {
-			final ToastDialog errorToast = new ToastDialog(
-					mContext,
-					error);
+			final ToastDialog errorToast = new ToastDialog(mContext, error);
 			errorToast.show();
-			errorToast.btnOk
-					.setOnClickListener(new OnClickListener() {
+			errorToast.btnOk.setOnClickListener(new OnClickListener() {
 
-						@Override
-						public void onClick(View v) {
-							errorToast.dismiss();
-						}
-					});
+				@Override
+				public void onClick(View v) {
+					errorToast.dismiss();
+				}
+			});
 		}
-		
+
 		@Override
 		public void onComplete() {
 			scheduleDownloadComplete();
 		}
 	};
-	
+
+	/**
+	 * Load schedule from db
+	 * */
+	class LoadScheduleFromDbTask extends
+			AsyncTask<String, Void, ArrayList<Integer>> {
+		public LoadScheduleFromDbTask() {
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			flag=false;
+			Log.d("start thread","start thead");
+			showLoading(mContext);
+		}
+
+		@Override
+		protected ArrayList<Integer> doInBackground(String... params) {
+			return processDataForAdapterListview();
+
+		}
+
+		@Override
+		protected void onCancelled() {
+			// TODO Auto-generated method stub
+			super.onCancelled();
+			Log.d("cancel thread","cancel thead");
+		}
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(ArrayList<Integer> result) {
+			Log.d("schedule result", result + "");
+			if (result != null && result.size() > 0) {
+				if (result.size() == 2) {
+					int count = result.get(0);
+					int groupScroll = result.get(1);
+					setViewData(count, groupScroll);
+				}
+
+				else {
+					if (adapter != null) {
+						adapter.listSchedulesByDay.clear();
+						adapter.scheduleCollection.clear();
+						if (view.expand_list_schedule.getAdapter() != null) {
+
+							adapter.notifyDataSetChanged();
+						} else {
+							view.expand_list_schedule.setAdapter(adapter);
+						}
+					} else {
+						// adapter.notifyDataSetChanged();
+					}
+
+					if (result.size() > 0) {
+						if (result.get(0) == 10) {
+							setViewNoData();
+						}
+
+					}
+				}
+
+			} else {
+				if (adapter != null) {
+					adapter.listSchedulesByDay.clear();
+					adapter.scheduleCollection.clear();
+					if (view.expand_list_schedule.getAdapter() != null) {
+
+						adapter.notifyDataSetChanged();
+					} else {
+						view.expand_list_schedule.setAdapter(adapter);
+					}
+				}
+			}
+			dimissDialog();
+			Log.d("finish thread","finish thead");
+			flag=true;
+		}
+	}
+
 	/**
 	 * process data for adapter to set expandablelistview
 	 * */
-	private void processDataForAdapterListview() {
+	private ArrayList<Integer> processDataForAdapterListview() {
+
 		ArrayList<String> listDateString = new ArrayList<String>();
 		HashMap<String, ArrayList<Schedule>> listScheduleByDay = new HashMap<String, ArrayList<Schedule>>();
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
-
+		ArrayList<Integer> returnValue = new ArrayList<Integer>();
+		int group_scroll = 0;
 		dates.clear();
 
 		SimpleDateFormat fullDatetimeFormat = new SimpleDateFormat(
@@ -261,24 +345,34 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 		switch (type) {
 		case ME:
-			view.btn_all
-					.setBackgroundResource(R.drawable.btn_schedule_unselected);
-			view.btn_me.setBackgroundResource(R.drawable.me_unselected);
-			view.btn_all.setTextColor(mContext.getResources().getColor(
-					R.color.text_today_schedule));
-			view.btn_me.setTextColor(mContext.getResources().getColor(
-					R.color.white));
-			schedules = DatabaseHelper.getSharedDatabaseHelper(mContext).getMeSchedule();
+			schedules = DatabaseHelper.getSharedDatabaseHelper(mContext)
+					.getMeSchedule();
+			try {
+				view.btn_all
+						.setBackgroundResource(R.drawable.btn_schedule_unselected);
+				view.btn_me.setBackgroundResource(R.drawable.me_unselected);
+				view.btn_all.setTextColor(mContext.getResources().getColor(
+						R.color.text_today_schedule));
+				view.btn_me.setTextColor(mContext.getResources().getColor(
+						R.color.white));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 		case ALL:
-			view.btn_all.setBackgroundResource(R.drawable.me_unselected);
-			view.btn_me
-					.setBackgroundResource(R.drawable.btn_schedule_unselected);
-			view.btn_all.setTextColor(mContext.getResources().getColor(
-					R.color.white));
-			view.btn_me.setTextColor(mContext.getResources().getColor(
-					R.color.text_today_schedule));
-			schedules = DatabaseHelper.getSharedDatabaseHelper(mContext).getAllSchedules();
+			schedules = DatabaseHelper.getSharedDatabaseHelper(mContext)
+					.getAllSchedules();
+			try {
+				view.btn_all.setBackgroundResource(R.drawable.me_unselected);
+				view.btn_me
+						.setBackgroundResource(R.drawable.btn_schedule_unselected);
+				view.btn_all.setTextColor(mContext.getResources().getColor(
+						R.color.white));
+				view.btn_me.setTextColor(mContext.getResources().getColor(
+						R.color.text_today_schedule));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			break;
 		default:
 			break;
@@ -349,28 +443,6 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 						if (listSchedule == null) {
 							listSchedule = new ArrayList<Schedule>();
 						}
-						
-//						MyActivity activity = DatabaseHelper.getSharedDatabaseHelper(
-//								mContext).getActivity(schedule.getService_ID());
-//						schedule.setMyActivity(activity);
-//						List<Confirm> memberids = DatabaseHelper.getSharedDatabaseHelper(
-//								mContext).getParticipantsForSchedule(
-//								schedule.getSchedule_ID());
-//						schedule.setListMemberId(memberids);
-//						
-//						if(memberids!=null&&memberids.size()>0)
-//						{
-//							ArrayList<Sharedmember> listSharedMember=new ArrayList<Sharedmember>();
-//							for(Confirm member:memberids)
-//							{
-//								final Sharedmember sm = DatabaseHelper.getSharedDatabaseHelper(
-//										mContext).getSharedmember(member.getMemberId(),
-//										activity.getActivity_ID());
-//								listSharedMember.add(sm);
-//							}
-//							schedule.setListSharedMember(listSharedMember);
-//						
-//						}
 						listSchedule.add(schedule);
 						listScheduleByDay.put(strDateTime, listSchedule);
 
@@ -435,85 +507,182 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 					}
 
+					// if (adapter == null) {
+					// adapter = new ExpandableListScheduleAdapter(
+					// getActivity(), listDateString,
+					// listScheduleByDay, iConfirm, iLoading);
+					// view.expand_list_schedule.setAdapter(adapter);
+					// } else {
+					// adapter.listSchedulesByDay = listDateString;
+					// adapter.scheduleCollection = listScheduleByDay;
+					// adapter.notifyDataSetChanged();
+					// }
+					// // adapter.setNearestDate(closest);
+					// Log.d("scroll position", group_scroll + "");
+					//
+					// view.expand_list_schedule
+					// .setOnGroupClickListener(new OnGroupClickListener() {
+					// @Override
+					// public boolean onGroupClick(
+					// ExpandableListView parent, View v,
+					// int groupPosition, long id) {
+					// return true; // This way the expander cannot
+					// // be
+					// // collapsed
+					// }
+					// });
+					// int count = adapter.getGroupCount();
+					// for (int position = 1; position <= count; position++)
+					// view.expand_list_schedule.expandGroup(position - 1);
+					//
+					// // scroll to nearest
+					// view.expand_list_schedule.setSelectedGroup(group_scroll);
+					// } else {
+					// if (adapter != null) {
+					// adapter.listSchedulesByDay.clear();
+					// adapter.scheduleCollection.clear();
+					// adapter.notifyDataSetChanged();
+					// }
+
+					// setViewData(listDateString, listScheduleByDay,
+					// schedules);
+
 					if (adapter == null) {
 						adapter = new ExpandableListScheduleAdapter(
 								getActivity(), listDateString,
-								listScheduleByDay,iConfirm,iLoading);
-						view.expand_list_schedule.setAdapter(adapter);
+								listScheduleByDay, iConfirm, iLoading);
+						// view.expand_list_schedule.setAdapter(adapter);
 					} else {
 						adapter.listSchedulesByDay = listDateString;
 						adapter.scheduleCollection = listScheduleByDay;
-						adapter.notifyDataSetChanged();
+						// adapter.notifyDataSetChanged();
 					}
-					// adapter.setNearestDate(closest);
-					Log.d("scroll position", group_scroll + "");
 
-					view.expand_list_schedule
-							.setOnGroupClickListener(new OnGroupClickListener() {
-								@Override
-								public boolean onGroupClick(
-										ExpandableListView parent, View v,
-										int groupPosition, long id) {
-									return true; // This way the expander cannot
-													// be
-													// collapsed
-								}
-							});
 					int count = adapter.getGroupCount();
-					for (int position = 1; position <= count; position++)
-						view.expand_list_schedule.expandGroup(position - 1);
-
+					// for (int position = 1; position <= count; position++)
+					// view.expand_list_schedule.expandGroup(position - 1);
 					// scroll to nearest
-					view.expand_list_schedule.setSelectedGroup(group_scroll);
-				} else {
-					ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
-					view.expand_list_schedule.setAdapter(adapter);
+					// view.expand_list_schedule.setSelectedGroup(group_scroll);
+
+					returnValue.add(count);
+					returnValue.add(group_scroll);
+
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 
-			view.expand_list_schedule.setVisibility(View.VISIBLE);
-			view.layout_top.setVisibility(View.VISIBLE);
-			view.btn_refresh.setVisibility(View.VISIBLE);
-			view.btn_me.setVisibility(View.VISIBLE);
-			view.btn_all.setVisibility(View.VISIBLE);
-			view.btn_today.setVisibility(View.VISIBLE);
-			view.layout_no_schedule.setVisibility(View.GONE);
+			// view.expand_list_schedule.setVisibility(View.VISIBLE);
+			// view.layout_top.setVisibility(View.VISIBLE);
+			// view.btn_refresh.setVisibility(View.VISIBLE);
+			// view.btn_me.setVisibility(View.VISIBLE);
+			// view.btn_all.setVisibility(View.VISIBLE);
+			// view.btn_today.setVisibility(View.VISIBLE);
+			// view.layout_no_schedule.setVisibility(View.GONE);
 		} else {
-
-			ExpandableListScheduleAdapter adapter = new ExpandableListScheduleAdapter();
-			view.expand_list_schedule.setAdapter(adapter);
 
 			ArrayList<Schedule> listSchedules = new ArrayList<Schedule>();
 			switch (type) {
 			case ME:
-				listSchedules = DatabaseHelper.getSharedDatabaseHelper(mContext).getAllSchedules();
+				listSchedules = DatabaseHelper
+						.getSharedDatabaseHelper(mContext).getAllSchedules();
 				break;
 			case ALL:
-				listSchedules = DatabaseHelper.getSharedDatabaseHelper(mContext).getMeSchedule();
+				listSchedules = DatabaseHelper
+						.getSharedDatabaseHelper(mContext).getMeSchedule();
 				break;
 			default:
 				break;
 			}
 			if (listSchedules == null || listSchedules.size() == 0) {
-				try {
-					view.expand_list_schedule.setVisibility(View.GONE);
-					view.layout_no_schedule.setVisibility(View.VISIBLE);
-					view.layout_top.setVisibility(View.VISIBLE);
-					view.btn_refresh.setVisibility(View.VISIBLE);
-					view.btn_me.setVisibility(View.GONE);
-					view.btn_all.setVisibility(View.GONE);
-					view.btn_today.setVisibility(View.GONE);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
+				returnValue.add(10);
+			} else {
+				returnValue.add(20);
 			}
+		}
+		return returnValue;
+	}
+
+	public void setViewNoData() {
+		try {
+
+			view.expand_list_schedule.setVisibility(View.GONE);
+			view.layout_no_schedule.setVisibility(View.VISIBLE);
+			view.layout_top.setVisibility(View.VISIBLE);
+			view.btn_refresh.setVisibility(View.VISIBLE);
+			view.btn_me.setVisibility(View.GONE);
+			view.btn_all.setVisibility(View.GONE);
+			view.btn_today.setVisibility(View.GONE);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void setViewData(int count, int groupScroll) {
+
+		view.expand_list_schedule.setVisibility(View.VISIBLE);
+		view.layout_top.setVisibility(View.VISIBLE);
+		view.btn_refresh.setVisibility(View.VISIBLE);
+		view.btn_me.setVisibility(View.VISIBLE);
+		view.btn_all.setVisibility(View.VISIBLE);
+		view.btn_today.setVisibility(View.VISIBLE);
+		view.layout_no_schedule.setVisibility(View.GONE);
+		if (view.expand_list_schedule.getAdapter() == null) {
+			// if(adapter!=null)
+			// {
+			view.expand_list_schedule.setAdapter(adapter);
+			// }
+		} else {
+			adapter.notifyDataSetChanged();
+		}
+		Log.d("scroll position", groupScroll + "");
+		view.expand_list_schedule
+				.setOnGroupClickListener(new OnGroupClickListener() {
+					@Override
+					public boolean onGroupClick(ExpandableListView parent,
+							View v, int groupPosition, long id) {
+						return true; // This way the expander cannot
+										// be
+										// collapsed
+					}
+				});
+		int size = 0;
+		ExpandableListScheduleAdapter ada = (ExpandableListScheduleAdapter) view.expand_list_schedule
+				.getExpandableListAdapter();
+		if (ada != null) {
+
+			size = ada.getGroupCount();
+		}
+		Log.d("size", size + "");
+		if (size > 0) {
+			for (int position = 0; position < size; position++) {
+				view.expand_list_schedule.expandGroup(position);
+				Log.d("position", position + "");
+			}
+		}
+		if (groupScroll < size) {
+			// scroll to nearest
+			view.expand_list_schedule.setSelectedGroup(groupScroll);
 		}
 	}
 
 	public void scheduleDownloadComplete() {
-		processDataForAdapterListview();
+		// processDataForAdapterListview();
+
+		/***
+		 * flag=false, start new thread flag=true, cancel old thread and start
+		 * new thread
+		 * 
+		 * **/
+
+		if (flag) {
+			if (task != null) {
+				task.cancel(true);
+			}
+		}
+		task = new LoadScheduleFromDbTask();
+		task.execute();
+
 		view.btn_refresh.setEnabled(true);
 	}
 

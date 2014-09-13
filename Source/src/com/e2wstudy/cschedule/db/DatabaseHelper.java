@@ -2,6 +2,7 @@ package com.e2wstudy.cschedule.db;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +24,6 @@ import com.e2wstudy.cschedule.models.TimeZoneModel;
 import com.e2wstudy.cschedule.models.TimeZoneTable;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -35,7 +35,7 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "cschedule";
-	public static final int DB_VERSION =12;
+	public static final int DB_VERSION = 12;
 	public static DatabaseHelper sharedDatabaseHelper;
 	public static final int NEW = 0;
 	public static final int EXISTED = 1;
@@ -45,14 +45,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final int VIEWER = 3;
 	public static final int NOSHARE = 4;
 
-	private Context context;
+	private static Context context;
 
 	DatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
+//		mOpenCounter.incrementAndGet();
 		this.context = context;
 	}
 
-	public static DatabaseHelper getSharedDatabaseHelper(Context context) {
+	private AtomicInteger mOpenCounter = new AtomicInteger();
+	private static SQLiteOpenHelper mDatabaseHelper;
+	private SQLiteDatabase mDatabase;
+	static DatabaseHelper instance;
+
+	public static synchronized void initializeInstance(SQLiteOpenHelper helper,
+			Context context) {
+		if (instance == null) {
+			instance = new DatabaseHelper(context);
+			mDatabaseHelper = helper;
+		}
+	}
+
+	public static synchronized DatabaseHelper getInstance() {
+		if (instance == null) {
+			mDatabaseHelper=new DatabaseHelper(context);
+			instance=new DatabaseHelper(context);
+//			throw new IllegalStateException(
+//					DatabaseHelper.class.getSimpleName()
+//							+ " is not initialized, call initializeInstance(..) method first.");
+		}
+		return instance;
+	}
+
+	public synchronized SQLiteDatabase openDatabase() {
+		if (mOpenCounter.incrementAndGet() == 1) {// Opening new database
+			mDatabase = mDatabaseHelper.getWritableDatabase();
+		}
+		return mDatabase;
+	}
+
+	public synchronized void closeDatabase() {
+		if (mOpenCounter.decrementAndGet() == 0) {// Closing database
+			mDatabase.close();
+		}
+
+	}
+
+	public static synchronized DatabaseHelper getSharedDatabaseHelper(
+			Context ctx) {
+		context = ctx;
 		if (sharedDatabaseHelper == null) {
 			sharedDatabaseHelper = new DatabaseHelper(context);
 		}
@@ -148,8 +189,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ AppVersionTable.appversion + " TEXT NOT NULL,"
 				+ AppVersionTable.enforce + " INTEGER NOT NULL,"
 				+ AppVersionTable.os + " TEXT NOT NULL," + AppVersionTable.msg
-				+ " text ," + AppVersionTable.osversion
-				+ " TEXT NOT NULL);");
+				+ " text ," + AppVersionTable.osversion + " TEXT NOT NULL);");
 
 	}
 
@@ -168,7 +208,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TimeZoneTable.TimeZoneTableName);
 		db.execSQL("DROP TABLE IF EXISTS " + AlertTable.alertTableName);
 		db.execSQL("DROP TABLE IF EXISTS " + AppVersionTable.appVersionTable);
-	
+
 		onCreate(db);
 
 	}
@@ -177,71 +217,91 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * get number of activity
 	 * */
 	public int getNumberActivity() {
-		Cursor mCount = this.getWritableDatabase().rawQuery(
-				"select count(*) from " + ActivityTable.ActivityTableName
-						+ " where " + ActivityTable.is_Deleted + "=0 and "
-						+ ActivityTable.user_login + "="
-						+ new SharedReference().getCurrentOwnerId(context),
-				null);
-		if (mCount != null) {
-			if (mCount.moveToFirst()) {
-				int count = mCount.getInt(0);
-				return count;
+		Cursor mCount = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			
+			mCount =database.rawQuery(
+					"select count(*) from " + ActivityTable.ActivityTableName
+							+ " where " + ActivityTable.is_Deleted + "=0 and "
+							+ ActivityTable.user_login + "="
+							+ new SharedReference().getCurrentOwnerId(context),
+					null);
+			if (mCount != null) {
+				if (mCount.moveToFirst()) {
+					int count = mCount.getInt(0);
+					return count;
+				}
 			}
-		}
 
-		mCount.close();
+			mCount.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (mCount != null)
+				mCount.close();
+		}
+		getInstance().closeDatabase();
 		return 0;
 	}
 
 	public AppVersion getCurrentVersion() {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * from " + AppVersionTable.appVersionTable + " where "
-						+ AppVersionTable.os + " = 'ANDROID'", null);
-		while (c != null && c.moveToNext()) {
-			String appVersion = "";
-			try {
-				appVersion = c.getString(c
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * from " + AppVersionTable.appVersionTable
+							+ " where " + AppVersionTable.os + " = 'ANDROID'",
+					null);
+			while (c != null && c.moveToNext()) {
+				String appVersion = "";
+				try {
+					appVersion = c.getString(c
+							.getColumnIndex(AppVersionTable.appversion));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				int appId = -1;
+				try {
+					appId = Integer.parseInt(c.getString(c
+							.getColumnIndex(AppVersionTable.id)));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				String os = c.getString(c.getColumnIndex(AppVersionTable.os));
+				String appversion = c.getString(c
 						.getColumnIndex(AppVersionTable.appversion));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			int appId = -1;
-			try {
-				appId = Integer.parseInt(c.getString(c
-						.getColumnIndex(AppVersionTable.id)));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			String os = c.getString(c.getColumnIndex(AppVersionTable.os));
-			String appversion = c.getString(c
-					.getColumnIndex(AppVersionTable.appversion));
-			int enforce = 0;
-			try {
-				enforce = Integer.parseInt(c.getString(c
-						.getColumnIndex(AppVersionTable.enforce)));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			String osversion = "";
-			try {
-				osversion = c.getString(c
-						.getColumnIndex(AppVersionTable.osversion));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+				int enforce = 0;
+				try {
+					enforce = Integer.parseInt(c.getString(c
+							.getColumnIndex(AppVersionTable.enforce)));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				String osversion = "";
+				try {
+					osversion = c.getString(c
+							.getColumnIndex(AppVersionTable.osversion));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 
-			String msg = "";
-			try {
-				msg = c.getString(c.getColumnIndex(AppVersionTable.msg));
-			} catch (Exception ex) {
-				ex.printStackTrace();
+				String msg = "";
+				try {
+					msg = c.getString(c.getColumnIndex(AppVersionTable.msg));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				AppVersion version = new AppVersion(appId, appversion, enforce,
+						os, osversion, msg);
+				return version;
 			}
-			AppVersion version = new AppVersion(appId, appversion, enforce, os,
-					osversion, msg);
-			return version;
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return null;
 	}
 
@@ -250,27 +310,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public ArrayList<TimeZoneModel> getTimeZone() {
 		ArrayList<TimeZoneModel> timeZones = new ArrayList<TimeZoneModel>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + TimeZoneTable.TimeZoneTableName
-						+ " order by " + TimeZoneTable.displayorder + " asc",
-				null);
-		while (c != null && c.moveToNext()) {
-			int id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
-			String tzname = c.getString(c.getColumnIndex(TimeZoneTable.tzname));
-			Log.d("timezone name", tzname);
-			String displayname = c.getString(c
-					.getColumnIndex(TimeZoneTable.displayname));
-			Log.d("display name", displayname);
-			String displayorder = c.getString(c
-					.getColumnIndex(TimeZoneTable.displayorder));
-			String abbrtzname = c.getString(c
-					.getColumnIndex(TimeZoneTable.abbrtzname));
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT * FROM " + TimeZoneTable.TimeZoneTableName
+							+ " order by " + TimeZoneTable.displayorder
+							+ " asc", null);
+			while (c != null && c.moveToNext()) {
+				int id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
+				String tzname = c.getString(c
+						.getColumnIndex(TimeZoneTable.tzname));
+				Log.d("timezone name", tzname);
+				String displayname = c.getString(c
+						.getColumnIndex(TimeZoneTable.displayname));
+				Log.d("display name", displayname);
+				String displayorder = c.getString(c
+						.getColumnIndex(TimeZoneTable.displayorder));
+				String abbrtzname = c.getString(c
+						.getColumnIndex(TimeZoneTable.abbrtzname));
 
-			TimeZoneModel timeZone = new TimeZoneModel(id, tzname, displayname,
-					displayorder, abbrtzname);
-			timeZones.add(timeZone);
+				TimeZoneModel timeZone = new TimeZoneModel(id, tzname,
+						displayname, displayorder, abbrtzname);
+				timeZones.add(timeZone);
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return timeZones;
 	}
 
@@ -279,45 +349,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public ArrayList<Alert> getAlerts() {
 		ArrayList<Alert> alerts = new ArrayList<Alert>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + AlertTable.alertTableName, null);
-		while (c != null && c.moveToNext()) {
-			int id = c.getInt(c.getColumnIndex(AlertTable.id));
-			String aname = c.getString(c.getColumnIndex(AlertTable.aname));
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + AlertTable.alertTableName, null);
+			while (c != null && c.moveToNext()) {
+				int id = c.getInt(c.getColumnIndex(AlertTable.id));
+				String aname = c.getString(c.getColumnIndex(AlertTable.aname));
 
-			Alert alert = new Alert(id, aname);
-			alerts.add(alert);
+				Alert alert = new Alert(id, aname);
+				alerts.add(alert);
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return alerts;
 	}
 
 	public ArrayList<MyActivity> getActivities() {
 		ArrayList<MyActivity> activities = new ArrayList<MyActivity>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ActivityTable.ActivityTableName + " where "
-						+ ActivityTable.is_Deleted + "=0 and "
-						+ ActivityTable.user_login + "='"
-						+ new SharedReference().getCurrentOwnerId(context)
-						+ "'", null);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ActivityTable.ActivityTableName
+							+ " where " + ActivityTable.is_Deleted + "=0 and "
+							+ ActivityTable.user_login + "='"
+							+ new SharedReference().getCurrentOwnerId(context)
+							+ "'", null);
 			while (c != null && c.moveToNext()) {
 				String id = c.getString(c
 						.getColumnIndex(ActivityTable.service_ID));
 				int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
-				// int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
-				// int repeat =
-				// c.getInt(c.getColumnIndex(ActivityTable.repeat));
 				String name = c.getString(c
 						.getColumnIndex(ActivityTable.service_Name));
-				// String start = c.getString(c
-				// .getColumnIndex(ActivityTable.start_time));
-				// String end =
-				// c.getString(c.getColumnIndex(ActivityTable.end_time));
 				String desp = c.getString(c
 						.getColumnIndex(ActivityTable.service_description));
-				// int otc =
-				// c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
 				int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
 				int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
 				int timezoneId = c.getInt(c
@@ -327,9 +399,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				activities.add(newActivity);
 			}
 			c.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
+		getInstance().closeDatabase();
 		return activities;
 	}
 
@@ -338,293 +413,378 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public ArrayList<MyActivity> getActivitiesOwnerOrOrganizer(String user_id) {
 		ArrayList<MyActivity> activities = new ArrayList<MyActivity>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ActivityTable.ActivityTableName + " where "
-						+ ActivityTable.is_Deleted + "=0 and "
-						+ ActivityTable.user_login + "='"
-						+ new SharedReference().getCurrentOwnerId(context)
-						+ "'" + " and (" + ActivityTable.sharedrole + " = "
-						+ CommConstant.OWNER + " or "
-						+ ActivityTable.sharedrole + " = "
-						+ CommConstant.ORGANIZER + ")", null);
-		while (c != null && c.moveToNext()) {
-			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
-			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
-			String name = c.getString(c
-					.getColumnIndex(ActivityTable.service_Name));
-			String desp = c.getString(c
-					.getColumnIndex(ActivityTable.service_description));
-			// int otc = c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
-			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
-			int timezoneId = c.getInt(c
-					.getColumnIndex(ActivityTable.timeZoneId));
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp,
-					role, alertId, timezoneId);
-			activities.add(newActivity);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ActivityTable.ActivityTableName
+							+ " where " + ActivityTable.is_Deleted + "=0 and "
+							+ ActivityTable.user_login + "='"
+							+ new SharedReference().getCurrentOwnerId(context)
+							+ "'" + " and (" + ActivityTable.sharedrole + " = "
+							+ CommConstant.OWNER + " or "
+							+ ActivityTable.sharedrole + " = "
+							+ CommConstant.ORGANIZER + ")", null);
+			while (c != null && c.moveToNext()) {
+				String id = c.getString(c
+						.getColumnIndex(ActivityTable.service_ID));
+				int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
+				String name = c.getString(c
+						.getColumnIndex(ActivityTable.service_Name));
+				String desp = c.getString(c
+						.getColumnIndex(ActivityTable.service_description));
+				int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
+				int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+				int timezoneId = c.getInt(c
+						.getColumnIndex(ActivityTable.timeZoneId));
+				MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+						role, alertId, timezoneId);
+				activities.add(newActivity);
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return activities;
 	}
 
 	public List<MyActivity> getUnsyncedNewActivities() {
 		List<MyActivity> activities = new ArrayList<MyActivity>();
-		// SharedPreferences sp = context.getSharedPreferences("MyPreferences",
-		// 0);
-		// int ownid = sp.getInt("currentownerid", 0);
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ActivityTable.ActivityTableName + " WHERE "
-						+ ActivityTable.is_Synchronized + "= 0" + " " + "AND "
-						// + ActivityTable.own_ID + "= "+ ownid + " " + "AND "
-						+ ActivityTable.last_ModifiedTime + " LIKE" + "'no%'",
-				null);
-		while (c != null && c.moveToNext()) {
-			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
-			// int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
-			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
-			Log.i("getUnsyncedNewActivities ownid ", ownid + "");
-			// int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
-			// int repeat = c.getInt(c.getColumnIndex(ActivityTable.repeat));
-			String name = c.getString(c
-					.getColumnIndex(ActivityTable.service_Name));
-			// String start = c.getString(c
-			// .getColumnIndex(ActivityTable.start_time));
-			// String end =
-			// c.getString(c.getColumnIndex(ActivityTable.end_time));
-			String desp = c.getString(c
-					.getColumnIndex(ActivityTable.service_description));
-			// int otc = c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
-			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
-			int timezoneId = c.getInt(c
-					.getColumnIndex(ActivityTable.timeZoneId));
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp,
-					role, alertId, timezoneId);
-			activities.add(newActivity);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ActivityTable.ActivityTableName
+							+ " WHERE " + ActivityTable.is_Synchronized + "= 0"
+							+ " "
+							+ "AND "
+							// + ActivityTable.own_ID + "= "+ ownid + " " +
+							// "AND "
+							+ ActivityTable.last_ModifiedTime + " LIKE"
+							+ "'no%'", null);
+			while (c != null && c.moveToNext()) {
+				String id = c.getString(c
+						.getColumnIndex(ActivityTable.service_ID));
+				int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
+				Log.i("getUnsyncedNewActivities ownid ", ownid + "");
+				String name = c.getString(c
+						.getColumnIndex(ActivityTable.service_Name));
+				String desp = c.getString(c
+						.getColumnIndex(ActivityTable.service_description));
+				int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
+				int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+				int timezoneId = c.getInt(c
+						.getColumnIndex(ActivityTable.timeZoneId));
+				MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+						role, alertId, timezoneId);
+				activities.add(newActivity);
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return activities;
 	}
 
 	public List<MyActivity> getUnsyncedEditedActivities() {
 		List<MyActivity> activities = new ArrayList<MyActivity>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ActivityTable.ActivityTableName + " WHERE "
-						+ ActivityTable.is_Synchronized + "= 0" + " " + "AND "
-						+ ActivityTable.last_ModifiedTime + " LIKE" + "'2%'",
-				null);
-		while (c != null && c.moveToNext()) {
-			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
-			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
-			// int alert = c.getInt(c.getColumnIndex(ActivityTable.alert));
-			// int repeat = c.getInt(c.getColumnIndex(ActivityTable.repeat));
-			String name = c.getString(c
-					.getColumnIndex(ActivityTable.service_Name));
-			// String start = c.getString(c
-			// .getColumnIndex(ActivityTable.start_time));
-			// String end =
-			// c.getString(c.getColumnIndex(ActivityTable.end_time));
-			String desp = c.getString(c
-					.getColumnIndex(ActivityTable.service_description));
-			// int otc = c.getInt(c.getColumnIndex(ActivityTable.otc_Offset));
-			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int timeZoneId = c.getInt(c
-					.getColumnIndex(ActivityTable.timeZoneId));
-			int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+		SQLiteDatabase database = getInstance().openDatabase();
+		Cursor c = null;
+		try {
+			c = this.getWritableDatabase().rawQuery(
+					"SELECT * FROM " + ActivityTable.ActivityTableName
+							+ " WHERE " + ActivityTable.is_Synchronized + "= 0"
+							+ " " + "AND " + ActivityTable.last_ModifiedTime
+							+ " LIKE" + "'2%'", null);
+			while (c != null && c.moveToNext()) {
+				String id = c.getString(c
+						.getColumnIndex(ActivityTable.service_ID));
+				int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
+				String name = c.getString(c
+						.getColumnIndex(ActivityTable.service_Name));
+				String desp = c.getString(c
+						.getColumnIndex(ActivityTable.service_description));
+				int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
+				int timeZoneId = c.getInt(c
+						.getColumnIndex(ActivityTable.timeZoneId));
+				int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
 
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp,
-					role, alertId, timeZoneId);
-			activities.add(newActivity);
+				MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+						role, alertId, timeZoneId);
+				activities.add(newActivity);
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return activities;
 	}
 
 	public MyActivity getActivity(String service_id) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ActivityTable.ActivityTableName + " WHERE "
-						+ ActivityTable.service_ID + " = " + service_id, null);
-		if (c != null && c.moveToNext()) {
-			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
-			int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
-			String name = c.getString(c
-					.getColumnIndex(ActivityTable.service_Name));
-			String desp = c.getString(c
-					.getColumnIndex(ActivityTable.service_description));
-			int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
-			int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
-			int timezoneId = c.getInt(c
-					.getColumnIndex(ActivityTable.timeZoneId));
-			MyActivity newActivity = new MyActivity(id, ownid, name, desp,
-					role, alertId, timezoneId);
-			return newActivity;
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery("SELECT * FROM "
+					+ ActivityTable.ActivityTableName + " WHERE "
+					+ ActivityTable.service_ID + " = " + service_id, null);
+
+			if (c != null && c.moveToNext()) {
+				String id = c.getString(c
+						.getColumnIndex(ActivityTable.service_ID));
+				int ownid = c.getInt(c.getColumnIndex(ActivityTable.own_ID));
+				String name = c.getString(c
+						.getColumnIndex(ActivityTable.service_Name));
+				String desp = c.getString(c
+						.getColumnIndex(ActivityTable.service_description));
+				int role = c.getInt(c.getColumnIndex(ActivityTable.sharedrole));
+				int alertId = c.getInt(c.getColumnIndex(ActivityTable.alertId));
+				int timezoneId = c.getInt(c
+						.getColumnIndex(ActivityTable.timeZoneId));
+				MyActivity newActivity = new MyActivity(id, ownid, name, desp,
+						role, alertId, timezoneId);
+				return newActivity;
+			}
+			c.close();
+			
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
+			
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return null;
 	}
 
 	public Schedule getScheduleSortedByID(int id) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.schedule_ID + " = " + id, null);
-		while (c != null && c.moveToNext()) {
-			int sche_id = c.getInt(c.getColumnIndex(ScheduleTable.schedule_ID));
-			int owner_id = c.getInt(c.getColumnIndex(ScheduleTable.own_ID));
-			int serv_id = c.getInt(c.getColumnIndex(ScheduleTable.service_ID));
-			String startDate = c.getString(c
-					.getColumnIndex(ScheduleTable.start_Time));
-			String endDate = c.getString(c
-					.getColumnIndex(ScheduleTable.end_Time));
-			String desp = c.getString(c
-					.getColumnIndex(ScheduleTable.schedule_Description));
-			int timeZone = c.getInt(c.getColumnIndex(ScheduleTable.timeZone));
-			int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
-			Schedule newSchedule = new Schedule(owner_id, sche_id,
-					serv_id + "", startDate, endDate, desp, alert, timeZone);
-			return newSchedule;
-		}c.close();
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT * FROM " + ScheduleTable.ScheduleTableName
+							+ " WHERE " + ScheduleTable.schedule_ID + " = "
+							+ id, null);
+			while (c != null && c.moveToNext()) {
+				int sche_id = c.getInt(c
+						.getColumnIndex(ScheduleTable.schedule_ID));
+				int owner_id = c.getInt(c.getColumnIndex(ScheduleTable.own_ID));
+				int serv_id = c.getInt(c
+						.getColumnIndex(ScheduleTable.service_ID));
+				String startDate = c.getString(c
+						.getColumnIndex(ScheduleTable.start_Time));
+				String endDate = c.getString(c
+						.getColumnIndex(ScheduleTable.end_Time));
+				String desp = c.getString(c
+						.getColumnIndex(ScheduleTable.schedule_Description));
+				int timeZone = c.getInt(c
+						.getColumnIndex(ScheduleTable.timeZone));
+				int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
+				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id
+						+ "", startDate, endDate, desp, alert, timeZone);
+				return newSchedule;
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
+		}
+		getInstance().closeDatabase();
 		return null;
 	}
 
 	public List<Schedule> getSchedulesBelongtoActivity(String id) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.service_ID + " = " + id + " AND "
-						+ ScheduleTable.is_Deleted + "=0", null);
+		Cursor c = null;
 		List<Schedule> schedules = new ArrayList<Schedule>();
-		while (c != null && c.moveToNext()) {
-			int sche_id = c.getInt(c.getColumnIndex(ScheduleTable.schedule_ID));
-			int owner_id = c.getInt(c.getColumnIndex(ScheduleTable.own_ID));
-			int serv_id = c.getInt(c.getColumnIndex(ScheduleTable.service_ID));
-			String startDate = c.getString(c
-					.getColumnIndex(ScheduleTable.start_Time));
-			String endDate = c.getString(c
-					.getColumnIndex(ScheduleTable.end_Time));
-			String desp = c.getString(c
-					.getColumnIndex(ScheduleTable.schedule_Description));
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT * FROM " + ScheduleTable.ScheduleTableName
+							+ " WHERE " + ScheduleTable.service_ID + " = " + id
+							+ " AND " + ScheduleTable.is_Deleted + "=0", null);
 
-			int timeZone = c.getInt(c.getColumnIndex(ScheduleTable.timeZone));
-			int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
+			while (c != null && c.moveToNext()) {
+				int sche_id = c.getInt(c
+						.getColumnIndex(ScheduleTable.schedule_ID));
+				int owner_id = c.getInt(c.getColumnIndex(ScheduleTable.own_ID));
+				int serv_id = c.getInt(c
+						.getColumnIndex(ScheduleTable.service_ID));
+				String startDate = c.getString(c
+						.getColumnIndex(ScheduleTable.start_Time));
+				String endDate = c.getString(c
+						.getColumnIndex(ScheduleTable.end_Time));
+				String desp = c.getString(c
+						.getColumnIndex(ScheduleTable.schedule_Description));
 
-			Schedule newSchedule = new Schedule(owner_id, sche_id,
-					serv_id + "", startDate, endDate, desp, alert, timeZone);
-			schedules.add(newSchedule);
+				int timeZone = c.getInt(c
+						.getColumnIndex(ScheduleTable.timeZone));
+				int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
+
+				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id
+						+ "", startDate, endDate, desp, alert, timeZone);
+				schedules.add(newSchedule);
+			}
+			c.close();
+
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return schedules;
 	}
 
 	public List<List<Schedule>> getScheduleSortedByDate() {
 		String columnName = "strftime('%Y-%m-%d'," + ScheduleTable.start_Time
 				+ ")";
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + columnName + " FROM "
-						+ ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.is_Deleted + "=0" + " ORDER BY "
-						+ columnName + " ASC", null);
-		List<String> dates = new ArrayList<String>();
-		List<String> distinctdates = new ArrayList<String>();
-		while (c != null && c.moveToNext()) {
-			int columnIndex = c.getColumnIndex(columnName);
-			String Date = c.getString(columnIndex);
-			// Log.i("database", Date);
-			dates.add(Date);
-		}
-
-		String previousDate = "2";
-		for (int i = 0; i < dates.size(); i++) {
-			String newDate = dates.get(i);
-			if (newDate.equalsIgnoreCase(previousDate) == false) {
-				distinctdates.add(newDate);
-			}
-			previousDate = newDate;
-		}
-
 		List<List<Schedule>> groupedSchedules = new ArrayList<List<Schedule>>();
-		for (int j = 0; j < distinctdates.size(); j++) {
-			List<Schedule> schedules = new ArrayList<Schedule>();
-			String date = distinctdates.get(j);
-			Cursor c1 = this.getWritableDatabase().rawQuery(
-					"SELECT * FROM " + ScheduleTable.ScheduleTableName
-							+ " WHERE " + ScheduleTable.start_Time + " LIKE "
-							+ "'" + date + "%'", null);
-			while (c1.moveToNext()) {
-				int startIndex = c1.getColumnIndex(ScheduleTable.start_Time);
-				String startDate = c1.getString(startIndex);
-				int endIndex = c1.getColumnIndex(ScheduleTable.end_Time);
-				String endDate = c1.getString(endIndex);
-				int scheduleIDIndex = c1
-						.getColumnIndex(ScheduleTable.schedule_ID);
-				int sche_id = c1.getInt(scheduleIDIndex);
-				int serviceIndex = c1.getColumnIndex(ScheduleTable.service_ID);
-				int serv_id = c1.getInt(serviceIndex);
-				int ownerIndex = c1.getColumnIndex(ScheduleTable.own_ID);
-				int owner_id = c1.getInt(ownerIndex);
-				int despIndex = c1
-						.getColumnIndex(ScheduleTable.schedule_Description);
-				String desp = c1.getString(despIndex);
-				int timeZone = c.getInt(c
-						.getColumnIndex(ScheduleTable.timeZone));
-				int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
-				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id
-						+ "", startDate, endDate, desp, alert, timeZone);
-				schedules.add(newSchedule);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT " + columnName + " FROM "
+							+ ScheduleTable.ScheduleTableName + " WHERE "
+							+ ScheduleTable.is_Deleted + "=0" + " ORDER BY "
+							+ columnName + " ASC", null);
+			List<String> dates = new ArrayList<String>();
+			List<String> distinctdates = new ArrayList<String>();
+			while (c != null && c.moveToNext()) {
+				int columnIndex = c.getColumnIndex(columnName);
+				String Date = c.getString(columnIndex);
+				// Log.i("database", Date);
+				dates.add(Date);
 			}
-			groupedSchedules.add(schedules);
-			c1.close();
+
+			String previousDate = "2";
+			for (int i = 0; i < dates.size(); i++) {
+				String newDate = dates.get(i);
+				if (newDate.equalsIgnoreCase(previousDate) == false) {
+					distinctdates.add(newDate);
+				}
+				previousDate = newDate;
+			}
+
+			for (int j = 0; j < distinctdates.size(); j++) {
+				List<Schedule> schedules = new ArrayList<Schedule>();
+				String date = distinctdates.get(j);
+				Cursor c1 = null;
+				try {
+					c1 = this.getWritableDatabase().rawQuery(
+							"SELECT * FROM " + ScheduleTable.ScheduleTableName
+									+ " WHERE " + ScheduleTable.start_Time
+									+ " LIKE " + "'" + date + "%'", null);
+					while (c1.moveToNext()) {
+						int startIndex = c1
+								.getColumnIndex(ScheduleTable.start_Time);
+						String startDate = c1.getString(startIndex);
+						int endIndex = c1
+								.getColumnIndex(ScheduleTable.end_Time);
+						String endDate = c1.getString(endIndex);
+						int scheduleIDIndex = c1
+								.getColumnIndex(ScheduleTable.schedule_ID);
+						int sche_id = c1.getInt(scheduleIDIndex);
+						int serviceIndex = c1
+								.getColumnIndex(ScheduleTable.service_ID);
+						int serv_id = c1.getInt(serviceIndex);
+						int ownerIndex = c1
+								.getColumnIndex(ScheduleTable.own_ID);
+						int owner_id = c1.getInt(ownerIndex);
+						int despIndex = c1
+								.getColumnIndex(ScheduleTable.schedule_Description);
+						String desp = c1.getString(despIndex);
+						int timeZone = c.getInt(c
+								.getColumnIndex(ScheduleTable.timeZone));
+						int alert = c.getInt(c
+								.getColumnIndex(ScheduleTable.alert));
+						Schedule newSchedule = new Schedule(owner_id, sche_id,
+								serv_id + "", startDate, endDate, desp, alert,
+								timeZone);
+						schedules.add(newSchedule);
+					}
+					groupedSchedules.add(schedules);
+					c1.close();
+				} finally {
+					// this gets called even if there is an exception somewhere
+					// above
+					if (c1 != null)
+						c1.close();
+				}
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return groupedSchedules;
 	}
 
 	public ArrayList<Schedule> getAllSchedules() {
 		ArrayList<Schedule> allschedules = new ArrayList<Schedule>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.is_Deleted + "=0 and "
-						+ ScheduleTable.user_login + "='"
-						+ new SharedReference().getCurrentOwnerId(context)
-						+ "' order  by datetime(" + ScheduleTable.start_Time
-						+ ") ASC", null);
-		String sql = "SELECT * FROM " + ScheduleTable.ScheduleTableName
-				+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
-				+ ScheduleTable.user_login + "='"
-				+ new SharedReference().getCurrentOwnerId(context)
-				+ "' order  by datetime(" + ScheduleTable.start_Time + ") ASC";
-		Log.d("get all schedule", sql);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ScheduleTable.ScheduleTableName
+							+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
+							+ ScheduleTable.user_login + "='"
+							+ new SharedReference().getCurrentOwnerId(context)
+							+ "' order  by datetime("
+							+ ScheduleTable.start_Time + ") ASC", null);
+			String sql = "SELECT * FROM " + ScheduleTable.ScheduleTableName
+					+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
+					+ ScheduleTable.user_login + "='"
+					+ new SharedReference().getCurrentOwnerId(context)
+					+ "' order  by datetime(" + ScheduleTable.start_Time
+					+ ") ASC";
+			Log.d("get all schedule", sql);
+			while (c != null && c.moveToNext()) {
+				int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
+				String startDate = c.getString(startIndex);
+				int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
+				String endDate = c.getString(endIndex);
+				int scheduleIDIndex = c
+						.getColumnIndex(ScheduleTable.schedule_ID);
+				int sche_id = c.getInt(scheduleIDIndex);
+				int serviceIndex = c.getColumnIndex(ScheduleTable.service_ID);
+				int serv_id = c.getInt(serviceIndex);
+				int ownerIndex = c.getColumnIndex(ScheduleTable.own_ID);
+				int owner_id = c.getInt(ownerIndex);
+				int despIndex = c
+						.getColumnIndex(ScheduleTable.schedule_Description);
+				String desp = c.getString(despIndex);
+				int timeZone = c.getInt(c
+						.getColumnIndex(ScheduleTable.timeZone));
+				int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
+				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id
+						+ "", startDate, endDate, desp, alert, timeZone);
+				allschedules.add(newSchedule);
+			}
 
-		try
-		{
-		while (c != null && c.moveToNext()) {
-			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
-			String startDate = c.getString(startIndex);
-			int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
-			String endDate = c.getString(endIndex);
-			int scheduleIDIndex = c.getColumnIndex(ScheduleTable.schedule_ID);
-			int sche_id = c.getInt(scheduleIDIndex);
-			int serviceIndex = c.getColumnIndex(ScheduleTable.service_ID);
-			int serv_id = c.getInt(serviceIndex);
-			int ownerIndex = c.getColumnIndex(ScheduleTable.own_ID);
-			int owner_id = c.getInt(ownerIndex);
-			int despIndex = c
-					.getColumnIndex(ScheduleTable.schedule_Description);
-			String desp = c.getString(despIndex);
-			int timeZone = c.getInt(c.getColumnIndex(ScheduleTable.timeZone));
-			int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
-			Schedule newSchedule = new Schedule(owner_id, sche_id,
-					serv_id + "", startDate, endDate, desp, alert, timeZone);
-			allschedules.add(newSchedule);
+			// If not added,error will occour
+			// IllegalStateException: Process 5808 exceeded cursor quota 100,
+			// will
+			// kill it
+			c.close();
+//			getInstance().closeDatabase();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
+			
 		}
-		}catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}
-		// If not added,error will occour
-		// IllegalStateException: Process 5808 exceeded cursor quota 100, will
-		// kill it
-		c.close();
-		// sharedDatabaseHelper.close();
-
+getInstance().closeDatabase();
 		return allschedules;
 	}
 
@@ -632,37 +792,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Get number of schedule
 	 * */
 	public int getNumberSchedule() {
-		// String query = "select count(*) from "
-		// + ScheduleTable.ScheduleTableName + ", "
-		// + OndutyTable.OntudyTableName + ","
-		// + SharedMemberTable.SharedMemberTableName + " WHERE "
-		// + ScheduleTable.ScheduleTableName + "."
-		// + ScheduleTable.is_Deleted + "=0 and "
-		// + ScheduleTable.user_login + "='"
-		// + new SharedReference().getCurrentOwnerId(context) + "' and "
-		// + OndutyTable.OntudyTableName + "." + OndutyTable.schedule_ID
-		// + " = " + ScheduleTable.ScheduleTableName + "."
-		// + ScheduleTable.schedule_ID + " and "
-		// + OndutyTable.participant_ID + "="
-		// + SharedMemberTable.member_id + " and "
-		// + SharedMemberTable.member_email + "='"
-		// + new SharedReference().getEmail(context) + "'";
+
 		String query = "SELECT * FROM " + ScheduleTable.ScheduleTableName
 				+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
 				+ ScheduleTable.user_login + "='"
 				+ new SharedReference().getCurrentOwnerId(context) + "'";
 		Log.d("query schedule", query);
-		Cursor mCount = this.getWritableDatabase().rawQuery(query, null);
-		if (mCount != null) {
-			// if(mCount.moveToFirst())
-			if (mCount.moveToFirst()) {
-				int count = mCount.getCount();
-				// int count = mCount.getInt(0);
-				return count;
+		SQLiteDatabase database = getInstance().openDatabase();
+		Cursor mCount = null;
+		try {
+			mCount =database.rawQuery(query, null);
+			if (mCount != null) {
+				// if(mCount.moveToFirst())
+				if (mCount.moveToFirst()) {
+					int count = mCount.getCount();
+					// int count = mCount.getInt(0);
+					return count;
+				}
 			}
-		}
 
-		mCount.close();
+			mCount.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (mCount != null)
+				mCount.close();
+		}
+getInstance().closeDatabase();
 		return 0;
 	}
 
@@ -678,17 +833,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ SharedMemberTable.member_email + "='"
 				+ new SharedReference().getEmail(context) + "'";
 		Log.d("sharedmember of email", query);
-		Cursor c = this.getWritableDatabase().rawQuery(query, null);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(query, null);
 
-		if (c != null && c.moveToNext()) {
-			int member_id = c.getInt(c
-					.getColumnIndex(SharedMemberTable.member_id));
-			return member_id;
+			if (c != null && c.moveToNext()) {
+				int member_id = c.getInt(c
+						.getColumnIndex(SharedMemberTable.member_id));
+				return member_id;
+			}
+			// If not added,error will occour
+			// IllegalStateException: Process 5808 exceeded cursor quota 100,
+			// will
+			// kill it
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		// If not added,error will occour
-		// IllegalStateException: Process 5808 exceeded cursor quota 100, will
-		// kill it
-		c.close();
+		getInstance().closeDatabase();
 		return -1;
 	}
 
@@ -697,153 +862,159 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public ArrayList<Schedule> getMeSchedule() {
 		ArrayList<Schedule> allschedules = new ArrayList<Schedule>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.is_Deleted + "=0 and "
-						+ ScheduleTable.user_login + "='"
-						+ new SharedReference().getCurrentOwnerId(context)
-						+ "' and " + ScheduleTable.own_ID + "<>"
-						+ new SharedReference().getCurrentOwnerId(context)
-						+ " order  by datetime(" + ScheduleTable.start_Time
-						+ ") ASC", null);
-		Log.d("me schedule",
-				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.is_Deleted + "=0 and "
-						+ ScheduleTable.user_login + "='"
-						+ new SharedReference().getCurrentOwnerId(context)
-						+ "' and " + ScheduleTable.own_ID + "<>"
-						+ new SharedReference().getCurrentOwnerId(context)
-						+ " order  by datetime(" + ScheduleTable.start_Time
-						+ ") ASC");
-		while (c != null && c.moveToNext()) {
-			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
-			String startDate = c.getString(startIndex);
-			int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
-			String endDate = c.getString(endIndex);
-			int scheduleIDIndex = c.getColumnIndex(ScheduleTable.schedule_ID);
-			int sche_id = c.getInt(scheduleIDIndex);
-			int serviceIndex = c.getColumnIndex(ScheduleTable.service_ID);
-			int serv_id = c.getInt(serviceIndex);
-			int ownerIndex = c.getColumnIndex(ScheduleTable.own_ID);
-			int owner_id = c.getInt(ownerIndex);
-			int despIndex = c
-					.getColumnIndex(ScheduleTable.schedule_Description);
-			String desp = c.getString(despIndex);
-			int timeZone = c.getInt(c.getColumnIndex(ScheduleTable.timeZone));
-			int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
-			Schedule newSchedule = new Schedule(owner_id, sche_id,
-					serv_id + "", startDate, endDate, desp, alert, timeZone);
-			allschedules.add(newSchedule);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ScheduleTable.ScheduleTableName
+							+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
+							+ ScheduleTable.user_login + "='"
+							+ new SharedReference().getCurrentOwnerId(context)
+							+ "' and " + ScheduleTable.own_ID + "<>"
+							+ new SharedReference().getCurrentOwnerId(context)
+							+ " order  by datetime(" + ScheduleTable.start_Time
+							+ ") ASC", null);
+			Log.d("me schedule",
+					"SELECT * FROM " + ScheduleTable.ScheduleTableName
+							+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
+							+ ScheduleTable.user_login + "='"
+							+ new SharedReference().getCurrentOwnerId(context)
+							+ "' and " + ScheduleTable.own_ID + "<>"
+							+ new SharedReference().getCurrentOwnerId(context)
+							+ " order  by datetime(" + ScheduleTable.start_Time
+							+ ") ASC");
+			while (c != null && c.moveToNext()) {
+				int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
+				String startDate = c.getString(startIndex);
+				int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
+				String endDate = c.getString(endIndex);
+				int scheduleIDIndex = c
+						.getColumnIndex(ScheduleTable.schedule_ID);
+				int sche_id = c.getInt(scheduleIDIndex);
+				int serviceIndex = c.getColumnIndex(ScheduleTable.service_ID);
+				int serv_id = c.getInt(serviceIndex);
+				int ownerIndex = c.getColumnIndex(ScheduleTable.own_ID);
+				int owner_id = c.getInt(ownerIndex);
+				int despIndex = c
+						.getColumnIndex(ScheduleTable.schedule_Description);
+				String desp = c.getString(despIndex);
+				int timeZone = c.getInt(c
+						.getColumnIndex(ScheduleTable.timeZone));
+				int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
+				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id
+						+ "", startDate, endDate, desp, alert, timeZone);
+				allschedules.add(newSchedule);
+			}
+			// If not added,error will occour
+			// IllegalStateException: Process 5808 exceeded cursor quota 100,
+			// will
+			// kill it
+			c.close();
+//			getInstance().closeDatabase();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
+		
 		}
-		// If not added,error will occour
-		// IllegalStateException: Process 5808 exceeded cursor quota 100, will
-		// kill it
-		c.close();
-		// sharedDatabaseHelper.close();
-
+		getInstance().closeDatabase();
 		return allschedules;
 	}
 
-	public List<String> getScheduleHeaders() {
-		String columnName = "strftime('%Y-%m-%d'," + ScheduleTable.start_Time
-				+ ")";
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + columnName + " FROM "
-						+ ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.is_Deleted + "=0" + " ORDER BY "
-						+ columnName + " ASC", null);
-		List<String> dates = new ArrayList<String>();
-		List<String> distinctdates = new ArrayList<String>();
-		while (c != null && c.moveToNext()) {
-			int columnIndex = c.getColumnIndex(columnName);
-			String Date = c.getString(columnIndex);
-			// Log.i("database", Date);
-			dates.add(Date);
-		}
-		c.close();
-		String previousDate = "2";
-		for (int i = 0; i < dates.size(); i++) {
-			String newDate = dates.get(i);
-			if (newDate.equalsIgnoreCase(previousDate) == false) {
-				String fullNewDate = newDate + " 00:00:00";
-				distinctdates.add(fullNewDate);
-			}
-			previousDate = newDate;
-		}
-		
-		return distinctdates;
-	}
-
+	
 	public List<Schedule> getUnsyncedNewSchedules() {
 		List<Schedule> schedules = new ArrayList<Schedule>();
-		Cursor c = this.getWritableDatabase()
-				.rawQuery(
-						"SELECT * FROM " + ScheduleTable.ScheduleTableName
-								+ " WHERE " + ScheduleTable.is_Synchronized
-								+ "= 0" + " " + "AND "
-								+ ScheduleTable.last_Modified + " LIKE"
-								+ "'no%'", null);
-		while (c != null && c.moveToNext()) {
-			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
-			String startDate = c.getString(startIndex);
-			int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
-			String endDate = c.getString(endIndex);
-			int scheduleIDIndex = c.getColumnIndex(ScheduleTable.schedule_ID);
-			int sche_id = c.getInt(scheduleIDIndex);
-			int serviceIndex = c.getColumnIndex(ScheduleTable.service_ID);
-			int serv_id = c.getInt(serviceIndex);
-			int ownerIndex = c.getColumnIndex(ScheduleTable.own_ID);
-			int owner_id = c.getInt(ownerIndex);
-			int despIndex = c
-					.getColumnIndex(ScheduleTable.schedule_Description);
-			String desp = c.getString(despIndex);
-			int timeZone = c.getInt(c.getColumnIndex(ScheduleTable.timeZone));
-			int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
-			Schedule newSchedule = new Schedule(owner_id, sche_id,
-					serv_id + "", startDate, endDate, desp, alert, timeZone);
-			schedules.add(newSchedule);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ScheduleTable.ScheduleTableName
+							+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
+							+ " " + "AND " + ScheduleTable.last_Modified
+							+ " LIKE" + "'no%'", null);
+			while (c != null && c.moveToNext()) {
+				int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
+				String startDate = c.getString(startIndex);
+				int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
+				String endDate = c.getString(endIndex);
+				int scheduleIDIndex = c
+						.getColumnIndex(ScheduleTable.schedule_ID);
+				int sche_id = c.getInt(scheduleIDIndex);
+				int serviceIndex = c.getColumnIndex(ScheduleTable.service_ID);
+				int serv_id = c.getInt(serviceIndex);
+				int ownerIndex = c.getColumnIndex(ScheduleTable.own_ID);
+				int owner_id = c.getInt(ownerIndex);
+				int despIndex = c
+						.getColumnIndex(ScheduleTable.schedule_Description);
+				String desp = c.getString(despIndex);
+				int timeZone = c.getInt(c
+						.getColumnIndex(ScheduleTable.timeZone));
+				int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
+				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id
+						+ "", startDate, endDate, desp, alert, timeZone);
+				schedules.add(newSchedule);
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return schedules;
 	}
 
 	public List<Schedule> getUnsyncedEditedSchedules() {
 		List<Schedule> schedules = new ArrayList<Schedule>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ScheduleTable.ScheduleTableName + " WHERE "
-						+ ScheduleTable.is_Synchronized + "= 0" + " " + "AND "
-						+ ScheduleTable.last_Modified + " LIKE" + "'2%'", null);
-		while (c != null && c.moveToNext()) {
-			int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
-			String startDate = c.getString(startIndex);
-			int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
-			String endDate = c.getString(endIndex);
-			int scheduleIDIndex = c.getColumnIndex(ScheduleTable.schedule_ID);
-			int sche_id = c.getInt(scheduleIDIndex);
-			int serviceIndex = c.getColumnIndex(ScheduleTable.service_ID);
-			int serv_id = c.getInt(serviceIndex);
-			int ownerIndex = c.getColumnIndex(ScheduleTable.own_ID);
-			int owner_id = c.getInt(ownerIndex);
-			int despIndex = c
-					.getColumnIndex(ScheduleTable.schedule_Description);
-			String desp = c.getString(despIndex);
-			int timeZone = c.getInt(c.getColumnIndex(ScheduleTable.timeZone));
-			int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
-			Schedule newSchedule = new Schedule(owner_id, sche_id,
-					serv_id + "", startDate, endDate, desp, alert, timeZone);
-			schedules.add(newSchedule);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ScheduleTable.ScheduleTableName
+							+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
+							+ " " + "AND " + ScheduleTable.last_Modified
+							+ " LIKE" + "'2%'", null);
+			while (c != null && c.moveToNext()) {
+				int startIndex = c.getColumnIndex(ScheduleTable.start_Time);
+				String startDate = c.getString(startIndex);
+				int endIndex = c.getColumnIndex(ScheduleTable.end_Time);
+				String endDate = c.getString(endIndex);
+				int scheduleIDIndex = c
+						.getColumnIndex(ScheduleTable.schedule_ID);
+				int sche_id = c.getInt(scheduleIDIndex);
+				int serviceIndex = c.getColumnIndex(ScheduleTable.service_ID);
+				int serv_id = c.getInt(serviceIndex);
+				int ownerIndex = c.getColumnIndex(ScheduleTable.own_ID);
+				int owner_id = c.getInt(ownerIndex);
+				int despIndex = c
+						.getColumnIndex(ScheduleTable.schedule_Description);
+				String desp = c.getString(despIndex);
+				int timeZone = c.getInt(c
+						.getColumnIndex(ScheduleTable.timeZone));
+				int alert = c.getInt(c.getColumnIndex(ScheduleTable.alert));
+				Schedule newSchedule = new Schedule(owner_id, sche_id, serv_id
+						+ "", startDate, endDate, desp, alert, timeZone);
+				schedules.add(newSchedule);
+			}
+			c.close();
+		} finally {
+			// this gets called even if there is an exception somewhere above
+			if (c != null)
+				c.close();
 		}
-		c.close();
+getInstance().closeDatabase();
 		return schedules;
 	}
 
 	public Participant getParticipant(int member_id) {
 		Cursor c = null;
 		Participant newParticipant = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
 			// Cursor c = this.getWritableDatabase().rawQuery("SELECT * FROM " +
 			// ParticipantTable.ParticipantTableName + " WHERE " +
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ParticipantTable.ParticipantTableName
 							+ " WHERE " + ParticipantTable.participant_ID
 							+ " = " + member_id, null);
@@ -875,35 +1046,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			e.printStackTrace();
 		} finally {
 			c.close();
-			return newParticipant;
+
 		}
-		
+		getInstance().closeDatabase();
+		return newParticipant;
 	}
 
 	public Sharedmember getSharedmember(int member_id, String activity_id) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
-						+ " WHERE " + SharedMemberTable.member_id + " = "
-						+ member_id + " AND " + SharedMemberTable.service_id
-						+ "=" + activity_id, null);
-		while (c != null && c.moveToNext()) {
-			int mem_id = c
-					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
-			int serviceid = c.getInt(c
-					.getColumnIndex(SharedMemberTable.service_id));
-			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
-			String name = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_name));
-			String email = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_email));
-			String mobile = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_mobile));
-			Sharedmember newSharedmember = new Sharedmember(mem_id, name,
-					email, mobile, role, serviceid);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
+							+ " WHERE " + SharedMemberTable.member_id + " = "
+							+ member_id + " AND "
+							+ SharedMemberTable.service_id + "=" + activity_id,
+					null);
+			while (c != null && c.moveToNext()) {
+				int mem_id = c.getInt(c
+						.getColumnIndex(SharedMemberTable.member_id));
+				int serviceid = c.getInt(c
+						.getColumnIndex(SharedMemberTable.service_id));
+				int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
+				String name = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_name));
+				String email = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_email));
+				String mobile = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_mobile));
+				Sharedmember newSharedmember = new Sharedmember(mem_id, name,
+						email, mobile, role, serviceid);
 
-			return newSharedmember;
+				return newSharedmember;
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return null;
 	}
 
@@ -911,30 +1094,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Get list participants of an activity
 	 * */
 	public ArrayList<Sharedmember> getSharedMemberForActivity(String activity_id) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
-						+ " WHERE " + SharedMemberTable.service_id + "="
-						+ activity_id, null);
+		Cursor c = null;
 		ArrayList<Sharedmember> list_shared_member = new ArrayList<Sharedmember>();
-		while (c != null && c.moveToNext()) {
-			int mem_id = c
-					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
-			// int serviceid = c.getInt(c
-			// .getColumnIndex(SharedMemberTable.service_id));
-			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
-			String name = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_name));
-			String email = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_email));
-			String mobile = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_mobile));
-			int sid = c.getInt(c.getColumnIndex(SharedMemberTable.smid));
-			Sharedmember shareMember = new Sharedmember(mem_id, name, email,
-					mobile, role, sid);
-			list_shared_member.add(shareMember);
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
+							+ " WHERE " + SharedMemberTable.service_id + "="
+							+ activity_id, null);
+
+			while (c != null && c.moveToNext()) {
+				int mem_id = c.getInt(c
+						.getColumnIndex(SharedMemberTable.member_id));
+				int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
+				String name = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_name));
+				String email = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_email));
+				String mobile = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_mobile));
+				int sid = c.getInt(c.getColumnIndex(SharedMemberTable.smid));
+				Sharedmember shareMember = new Sharedmember(mem_id, name,
+						email, mobile, role, sid);
+				list_shared_member.add(shareMember);
+
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return list_shared_member;
 	}
 
@@ -944,30 +1136,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public ArrayList<Participant> getParticipantsOfActivityWithoutRoleParticipant(
 			String activity_id) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
-						+ " WHERE " + SharedMemberTable.service_id + "="
-						+ activity_id + " and " + SharedMemberTable.role
-						+ " <>" + CommConstant.PARTICIPANT, null);
+		Cursor c = null;
 		ArrayList<Participant> list_participant = new ArrayList<Participant>();
-		while (c != null && c.moveToNext()) {
-			int mem_id = c
-					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
-			// int serviceid = c.getInt(c
-			// .getColumnIndex(SharedMemberTable.service_id));
-			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
-			String name = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_name));
-			String email = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_email));
-			String mobile = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_mobile));
-			Participant new_participant = new Participant(mem_id, name, email,
-					mobile, role);
-			list_participant.add(new_participant);
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
+							+ " WHERE " + SharedMemberTable.service_id + "="
+							+ activity_id + " and " + SharedMemberTable.role
+							+ " <>" + CommConstant.PARTICIPANT, null);
+
+			while (c != null && c.moveToNext()) {
+				int mem_id = c.getInt(c
+						.getColumnIndex(SharedMemberTable.member_id));
+				// int serviceid = c.getInt(c
+				// .getColumnIndex(SharedMemberTable.service_id));
+				int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
+				String name = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_name));
+				String email = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_email));
+				String mobile = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_mobile));
+				Participant new_participant = new Participant(mem_id, name,
+						email, mobile, role);
+				list_participant.add(new_participant);
+
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return list_participant;
 	}
 
@@ -975,21 +1178,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Get list activity of a member joined in
 	 * */
 	public ArrayList<String> getListActivity(String member_id) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ActivityTable.ActivityTableName + ", "
-						+ SharedMemberTable.SharedMemberTableName + " where "
-						+ ActivityTable.is_Deleted + "=0 and "
-						+ ActivityTable.service_ID + "="
-						+ SharedMemberTable.service_id + " and "
-						+ SharedMemberTable.member_id + "=" + member_id
-						+ " and ", null);
+		Cursor c = null;
 		ArrayList<String> list_activity_id = new ArrayList<String>();
-		while (c != null && c.moveToNext()) {
-			String id = c.getString(c.getColumnIndex(ActivityTable.service_ID));
-			list_activity_id.add(id);
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ActivityTable.ActivityTableName + ", "
+							+ SharedMemberTable.SharedMemberTableName
+							+ " where " + ActivityTable.is_Deleted + "=0 and "
+							+ ActivityTable.service_ID + "="
+							+ SharedMemberTable.service_id + " and "
+							+ SharedMemberTable.member_id + "=" + member_id
+							+ " and ", null);
+
+			while (c != null && c.moveToNext()) {
+				String id = c.getString(c
+						.getColumnIndex(ActivityTable.service_ID));
+				list_activity_id.add(id);
+
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return list_activity_id;
 	}
 
@@ -998,19 +1213,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public int getNumberActivity(String member_email) {
 		int number = 0;
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ActivityTable.ActivityTableName + ", "
-						+ SharedMemberTable.SharedMemberTableName + " where "
-						+ ActivityTable.is_Deleted + "=0 and "
-						+ ActivityTable.service_ID + "="
-						+ SharedMemberTable.service_id + " and "
-						+ SharedMemberTable.member_email + "='" + member_email
-						+ "'", null);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT * FROM " + ActivityTable.ActivityTableName + ", "
+							+ SharedMemberTable.SharedMemberTableName
+							+ " where " + ActivityTable.is_Deleted + "=0 and "
+							+ ActivityTable.service_ID + "="
+							+ SharedMemberTable.service_id + " and "
+							+ SharedMemberTable.member_email + "='"
+							+ member_email + "'", null);
 
-		if (c != null && c.moveToNext()) {
-			number = c.getCount();
+			if (c != null && c.moveToNext()) {
+				number = c.getCount();
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return number;
 	}
 
@@ -1018,119 +1243,162 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Get participant of an activity
 	 * */
 	public ArrayList<Sharedmember> getParticipantsOfActivity(String activity_id) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
-						+ " WHERE " + SharedMemberTable.service_id + "="
-						+ activity_id + " and " + SharedMemberTable.is_Deleted
-						+ "=0", null);
+		Cursor c = null;
 		ArrayList<Sharedmember> list_member = new ArrayList<Sharedmember>();
-		while (c != null && c.moveToNext()) {
-			int mem_id = c
-					.getInt(c.getColumnIndex(SharedMemberTable.member_id));
-			int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
-			String name = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_name));
-			String email = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_email));
-			String mobile = c.getString(c
-					.getColumnIndex(SharedMemberTable.member_mobile));
-			int sid = c.getInt(c.getColumnIndex(SharedMemberTable.smid));
-			Sharedmember new_participant = new Sharedmember(mem_id, name,
-					email, mobile, role, sid);
-			list_member.add(new_participant);
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
+							+ " WHERE " + SharedMemberTable.service_id + "="
+							+ activity_id + " and "
+							+ SharedMemberTable.is_Deleted + "=0", null);
+
+			while (c != null && c.moveToNext()) {
+				int mem_id = c.getInt(c
+						.getColumnIndex(SharedMemberTable.member_id));
+				int role = c.getInt(c.getColumnIndex(SharedMemberTable.role));
+				String name = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_name));
+				String email = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_email));
+				String mobile = c.getString(c
+						.getColumnIndex(SharedMemberTable.member_mobile));
+				int sid = c.getInt(c.getColumnIndex(SharedMemberTable.smid));
+				Sharedmember new_participant = new Sharedmember(mem_id, name,
+						email, mobile, role, sid);
+				list_member.add(new_participant);
+
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 
 		}
-		c.close();
+getInstance().closeDatabase();
 		return list_member;
 	}
 
 	public ArrayList<Participant> getParticipants() {
 		SharedReference ref = new SharedReference();
 		ArrayList<Participant> participants = new ArrayList<Participant>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ParticipantTable.ParticipantTableName
-						+ " WHERE " + ParticipantTable.is_Deleted + "=0"
-						+ " AND " + ParticipantTable.own_ID + "="
-						+ ref.getCurrentOwnerId(context) + " order by "
-						+ ParticipantTable.participant_Name
-						+ " COLLATE NOCASE ASC", null);
-		while (c != null && c.moveToNext()) {
-			int id = c
-					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));
-			int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
-			String name = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Name));
-			String email = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Email));
-			String mobile = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Mobile));
-			Participant newParticipant = new Participant(id, name, email,
-					mobile, ownid);
+		SQLiteDatabase database = getInstance().openDatabase();
+		Cursor c = null;
+		try {
+			c =database.rawQuery(
+					"SELECT * FROM " + ParticipantTable.ParticipantTableName
+							+ " WHERE " + ParticipantTable.is_Deleted + "=0"
+							+ " AND " + ParticipantTable.own_ID + "="
+							+ ref.getCurrentOwnerId(context) + " order by "
+							+ ParticipantTable.participant_Name
+							+ " COLLATE NOCASE ASC", null);
+			while (c != null && c.moveToNext()) {
+				int id = c.getInt(c
+						.getColumnIndex(ParticipantTable.participant_ID));
+				int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
+				String name = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Name));
+				String email = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Email));
+				String mobile = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Mobile));
+				Participant newParticipant = new Participant(id, name, email,
+						mobile, ownid);
 
-			// don't show login user in contact page
-			if (!email.equals(new SharedReference().getEmail(context))) {
-				participants.add(newParticipant);
+				// don't show login user in contact page
+				if (!email.equals(new SharedReference().getEmail(context))) {
+					participants.add(newParticipant);
+				}
 			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return participants;
 	}
 
 	public List<Participant> getUnsyncedNewParticipants() {
 		List<Participant> participants = new ArrayList<Participant>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ParticipantTable.ParticipantTableName
-						+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
-						+ " " + "AND " + ParticipantTable.last_Modified
-						+ " LIKE " + "'no%'", null);
-		while (c != null && c.moveToNext()) {
-			int id = c
-					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));
-			int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
-			String name = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Name));
-			String email = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Email));
-			String mobile = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Mobile));
-			Participant newParticipant = new Participant(id, name, email,
-					mobile, ownid);
-			participants.add(newParticipant);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ParticipantTable.ParticipantTableName
+							+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
+							+ " " + "AND " + ParticipantTable.last_Modified
+							+ " LIKE " + "'no%'", null);
+			while (c != null && c.moveToNext()) {
+				int id = c.getInt(c
+						.getColumnIndex(ParticipantTable.participant_ID));
+				int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
+				String name = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Name));
+				String email = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Email));
+				String mobile = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Mobile));
+				Participant newParticipant = new Participant(id, name, email,
+						mobile, ownid);
+				participants.add(newParticipant);
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return participants;
 	}
 
 	public List<Participant> getUnsyncedEditedParticipants() {
 		List<Participant> participants = new ArrayList<Participant>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT * FROM " + ParticipantTable.ParticipantTableName
-						+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
-						+ " AND " + ScheduleTable.is_Deleted + "= 0" + " "
-						+ "AND " + ParticipantTable.last_Modified + " LIKE "
-						+ "'2%'", null);
-		while (c != null && c.moveToNext()) {
-			int id = c
-					.getInt(c.getColumnIndex(ParticipantTable.participant_ID));
-			int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
-			String name = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Name));
-			String email = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Email));
-			String mobile = c.getString(c
-					.getColumnIndex(ParticipantTable.participant_Mobile));
-			Participant newParticipant = new Participant(id, name, email,
-					mobile, ownid);
-			participants.add(newParticipant);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT * FROM " + ParticipantTable.ParticipantTableName
+							+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
+							+ " AND " + ScheduleTable.is_Deleted + "= 0" + " "
+							+ "AND " + ParticipantTable.last_Modified
+							+ " LIKE " + "'2%'", null);
+			while (c != null && c.moveToNext()) {
+				int id = c.getInt(c
+						.getColumnIndex(ParticipantTable.participant_ID));
+				int ownid = c.getInt(c.getColumnIndex(ParticipantTable.own_ID));
+				String name = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Name));
+				String email = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Email));
+				String mobile = c.getString(c
+						.getColumnIndex(ParticipantTable.participant_Mobile));
+				Participant newParticipant = new Participant(id, name, email,
+						mobile, ownid);
+				participants.add(newParticipant);
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return participants;
 	}
 
 	public List<Confirm> getParticipantsForSchedule(int schedule_id) {
 		List<Confirm> memberids = new ArrayList<Confirm>();
+		SQLiteDatabase database = getInstance().openDatabase();
+		Cursor c = null;
 		try {
-			Cursor c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT " + OndutyTable.participant_ID + ","
 							+ OndutyTable.confirm + " FROM "
 							+ OndutyTable.OntudyTableName + " WHERE "
@@ -1147,9 +1415,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 			}
 			c.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
+		getInstance().closeDatabase();
 		return memberids;
 	}
 
@@ -1158,22 +1430,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public TimeZoneModel getTimeZone(int timeZoneId) {
 		TimeZoneModel timeZoneModel = null;
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT *  FROM " + TimeZoneTable.TimeZoneTableName + " WHERE "
-						+ TimeZoneTable.id + " = " + timeZoneId, null);
-		if (c != null && c.moveToNext()) {
-			int id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
-			String tzname = c.getString(c.getColumnIndex(TimeZoneTable.tzname));
-			String displayname = c.getString(c
-					.getColumnIndex(TimeZoneTable.displayname));
-			String displayorder = c.getString(c
-					.getColumnIndex(TimeZoneTable.displayorder));
-			String abbrtzname = c.getString(c
-					.getColumnIndex(TimeZoneTable.abbrtzname));
-			timeZoneModel = new TimeZoneModel(id, tzname, displayname,
-					displayorder, abbrtzname);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database
+					.rawQuery(
+							"SELECT *  FROM " + TimeZoneTable.TimeZoneTableName
+									+ " WHERE " + TimeZoneTable.id + " = "
+									+ timeZoneId, null);
+			if (c != null && c.moveToNext()) {
+				int id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
+				String tzname = c.getString(c
+						.getColumnIndex(TimeZoneTable.tzname));
+				String displayname = c.getString(c
+						.getColumnIndex(TimeZoneTable.displayname));
+				String displayorder = c.getString(c
+						.getColumnIndex(TimeZoneTable.displayorder));
+				String abbrtzname = c.getString(c
+						.getColumnIndex(TimeZoneTable.abbrtzname));
+				timeZoneModel = new TimeZoneModel(id, tzname, displayname,
+						displayorder, abbrtzname);
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return timeZoneModel;
 	}
 
@@ -1182,306 +1467,415 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public Alert getAlert(int alerId) {
 		Alert alert = null;
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT *  FROM " + AlertTable.alertTableName + " WHERE "
-						+ AlertTable.id + " = " + alerId, null);
-		if (c != null && c.moveToNext()) {
-			int id = c.getInt(c.getColumnIndex(AlertTable.id));
-			String aname = c.getString(c.getColumnIndex(AlertTable.aname));
-			alert = new Alert(id, aname);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT *  FROM " + AlertTable.alertTableName + " WHERE "
+							+ AlertTable.id + " = " + alerId, null);
+			if (c != null && c.moveToNext()) {
+				int id = c.getInt(c.getColumnIndex(AlertTable.id));
+				String aname = c.getString(c.getColumnIndex(AlertTable.aname));
+				alert = new Alert(id, aname);
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return alert;
 	}
 
 	public List<Integer> getOndutyRecordsForSchedule(int id) {
 		List<Integer> ondutyids = new ArrayList<Integer>();
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + OndutyTable.onduty_ID + " FROM "
-						+ OndutyTable.OntudyTableName + " WHERE "
-						+ OndutyTable.schedule_ID + " = " + id, null);
-		if (c != null && c.moveToNext()) {
-			int ondutyid_Index = c.getColumnIndex(OndutyTable.onduty_ID);
-			int ondutyid = c.getInt(ondutyid_Index);
-			ondutyids.add(ondutyid);
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT " + OndutyTable.onduty_ID + " FROM "
+							+ OndutyTable.OntudyTableName + " WHERE "
+							+ OndutyTable.schedule_ID + " = " + id, null);
+			if (c != null && c.moveToNext()) {
+				int ondutyid_Index = c.getColumnIndex(OndutyTable.onduty_ID);
+				int ondutyid = c.getInt(ondutyid_Index);
+				ondutyids.add(ondutyid);
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
+
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return ondutyids;
 	}
 
-
 	public boolean isTimeZoneExisted(int timeZoneId) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + TimeZoneTable.id + " from "
-						+ TimeZoneTable.TimeZoneTableName + " where "
-						+ TimeZoneTable.id + " = " + timeZoneId, null);
+		Cursor c = null;
 		int id = -1;
-		if (c != null && c.moveToNext())
-		{
-			id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT " + TimeZoneTable.id + " from "
+							+ TimeZoneTable.TimeZoneTableName + " where "
+							+ TimeZoneTable.id + " = " + timeZoneId, null);
+
+			if (c != null && c.moveToNext()) {
+				id = c.getInt(c.getColumnIndex(TimeZoneTable.id));
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isAlertExisted(int alertId) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + AlertTable.id + " from "
-						+ AlertTable.alertTableName + " where " + AlertTable.id
-						+ " = " + alertId, null);
+		Cursor c = null;
 		int id = -1;
-		if (c != null && c.moveToNext())
-		{
-			id = c.getInt(c.getColumnIndex(AlertTable.id));
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT " + AlertTable.id + " from "
+							+ AlertTable.alertTableName + " where "
+							+ AlertTable.id + " = " + alertId, null);
+
+			if (c != null && c.moveToNext()) {
+				id = c.getInt(c.getColumnIndex(AlertTable.id));
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 		}
-		c.close();
-		
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isVersionExisted(int versionId) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + AppVersionTable.id + " from "
-						+ AppVersionTable.appVersionTable + " where "
-						+ AppVersionTable.id + " = " + versionId, null);
 		int id = -1;
-		if (c != null && c.moveToNext())
-		{
-			id = c.getInt(c.getColumnIndex(AppVersionTable.id));
+		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT " + AppVersionTable.id + " from "
+							+ AppVersionTable.appVersionTable + " where "
+							+ AppVersionTable.id + " = " + versionId, null);
+
+			if (c != null && c.moveToNext()) {
+				id = c.getInt(c.getColumnIndex(AppVersionTable.id));
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
-//	 public String getCurrentVersion() {
-//	 Cursor c = this.getWritableDatabase().rawQuery(
-//	 "SELECT " + AppVersionTable.appversion + " from "
-//	 + AppVersionTable.appVersionTable + " where "
-//	 + AppVersionTable.os + " = 'ANDROID'", null);
-//	 while (c!=null&&c.moveToNext()) {
-//	 return c.getString(c.getColumnIndex(AppVersionTable.appversion));
-//	 }
-//	 return "0.0.0";
-//	 }
-
 	public boolean isScheduleExisted(int scheduleID) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + ScheduleTable.schedule_ID + " from "
-						+ ScheduleTable.ScheduleTableName + " where "
-						+ ScheduleTable.schedule_ID + " = " + scheduleID, null);
+		Cursor c = null;
 		int id = -1;
-		if (c != null && c.moveToNext()) {
-			id = c.getInt(c.getColumnIndex(ScheduleTable.schedule_ID));
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c = database.rawQuery(
+					"SELECT " + ScheduleTable.schedule_ID + " from "
+							+ ScheduleTable.ScheduleTableName + " where "
+							+ ScheduleTable.schedule_ID + " = " + scheduleID,
+					null);
+			if (c != null && c.moveToNext()) {
+				id = c.getInt(c.getColumnIndex(ScheduleTable.schedule_ID));
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isOndutyExisted(int scheduleID) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + OndutyTable.schedule_ID + " from "
-						+ OndutyTable.OntudyTableName + " where "
-						+ OndutyTable.schedule_ID + " = " + scheduleID, null);
+		Cursor c = null;
 		int id = -1;
-		if (c != null && c.moveToNext()) {
-			id = c.getInt(c.getColumnIndex(OndutyTable.schedule_ID));
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT " + OndutyTable.schedule_ID + " from "
+							+ OndutyTable.OntudyTableName + " where "
+							+ OndutyTable.schedule_ID + " = " + scheduleID,
+					null);
+
+			if (c != null && c.moveToNext()) {
+				id = c.getInt(c.getColumnIndex(OndutyTable.schedule_ID));
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isSharedmemberExisted(int memberid, String activityid) {
-		Cursor c = this.getWritableDatabase().rawQuery(
-				"SELECT " + SharedMemberTable.member_id + " from "
-						+ SharedMemberTable.SharedMemberTableName + " where "
-						+ SharedMemberTable.member_id + " = " + memberid
-						+ " AND " + SharedMemberTable.service_id + "="
-						+ activityid, null);
+		Cursor c = null;
 		int id = -1;
-		if (c != null && c.moveToNext()) {
-			// Wrong get method
-			// Couldn't read row 0, col -1 from CursorWindow. Make sure the
-			// Cursor is initialized correctly before accessing data from it.
-			// id = c.getInt(c.getColumnIndex(OndutyTable.schedule_ID));
-			id = c.getInt(c.getColumnIndex(SharedMemberTable.member_id));
+		SQLiteDatabase database = getInstance().openDatabase();
+		try {
+			c =database.rawQuery(
+					"SELECT " + SharedMemberTable.member_id + " from "
+							+ SharedMemberTable.SharedMemberTableName
+							+ " where " + SharedMemberTable.member_id + " = "
+							+ memberid + " AND " + SharedMemberTable.service_id
+							+ "=" + activityid, null);
+
+			if (c != null && c.moveToNext()) {
+				// Wrong get method
+				// Couldn't read row 0, col -1 from CursorWindow. Make sure the
+				// Cursor is initialized correctly before accessing data from
+				// it.
+				// id = c.getInt(c.getColumnIndex(OndutyTable.schedule_ID));
+				id = c.getInt(c.getColumnIndex(SharedMemberTable.member_id));
+			}
+			c.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			c.close();
 		}
-		c.close();
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean insertAppVersion(ContentValues contentValue) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				AppVersionTable.appVersionTable, AppVersionTable.id,
 				contentValue, SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateAppVersion(int id, ContentValues contentValue) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				AppVersionTable.appVersionTable, contentValue,
 				AppVersionTable.id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertAlert(ContentValues alert) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				AlertTable.alertTableName, AlertTable.id, alert,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateAlert(int id, ContentValues alert) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				AlertTable.alertTableName, alert, AlertTable.id + "=?",
 				whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertTimeZone(ContentValues timeZone) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result =database.insertWithOnConflict(
 				TimeZoneTable.TimeZoneTableName, TimeZoneTable.id, timeZone,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateTimeZone(int id, ContentValues timeZone) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				TimeZoneTable.TimeZoneTableName, timeZone,
 				TimeZoneTable.id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertParticipant(ContentValues newParticipant) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				ParticipantTable.ParticipantTableName,
 				ParticipantTable.participant_ID, newParticipant,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateParticipant(int id, ContentValues newParticipant) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		int result =database.update(
 				ParticipantTable.ParticipantTableName, newParticipant,
 				ParticipantTable.participant_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean deleteParticipant(int id) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().delete(
+		int result =database.delete(
 				ParticipantTable.ParticipantTableName,
 				ParticipantTable.participant_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertActivity(ContentValues newActivity) {
-
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				ActivityTable.ActivityTableName, ActivityTable.service_ID,
 				newActivity, SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateActivity(String id, ContentValues newActivity) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				ActivityTable.ActivityTableName, newActivity,
 				ActivityTable.service_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean deleteActivity(String id) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().delete(
+		int result = database.delete(
 				ActivityTable.ActivityTableName,
 				ActivityTable.service_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertSchedule(ContentValues newSchedule) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				ScheduleTable.ScheduleTableName, ScheduleTable.schedule_ID,
 				newSchedule, SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateSchedule(int id, ContentValues newSchedule) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				ScheduleTable.ScheduleTableName, newSchedule,
 				ScheduleTable.schedule_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean deleteSchedule(int id) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().delete(
+		int result = database.delete(
 				ScheduleTable.ScheduleTableName,
 				ScheduleTable.schedule_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertOnduty(ContentValues newOnduty) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				OndutyTable.OntudyTableName, OndutyTable.service_ID, newOnduty,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateOnduty(int id, ContentValues newOnduty) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		int result =database.update(
 				OndutyTable.OntudyTableName, newOnduty,
 				OndutyTable.schedule_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean updateOnduty(int id, int member_id, ContentValues newOnduty) {
 		String[] whereArgs = new String[] { String.valueOf(id),
 				String.valueOf(member_id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				OndutyTable.OntudyTableName,
 				newOnduty,
 				OndutyTable.schedule_ID + "=? AND "
 						+ OndutyTable.participant_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean updateConfirmStatus(int id, ContentValues newOnduty) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result =database.update(
 				OndutyTable.OntudyTableName, newOnduty,
 				OndutyTable.schedule_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean deleteRelatedOnduty(int scheduleID) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(scheduleID) };
-		int result = this.getWritableDatabase().delete(
+		int result = database.delete(
 				OndutyTable.OntudyTableName, OndutyTable.schedule_ID + "=?",
 				whereArgs);
+		getInstance().closeDatabase();
 		return (result > 0);
 	}
 
 	public boolean insertSharedmember(ContentValues sharedmember) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				SharedMemberTable.SharedMemberTableName,
 				SharedMemberTable.member_id, sharedmember,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean deleteSharedmember(int memberid, String activityid) {
 		String[] whereArgs = new String[] { String.valueOf(memberid),
 				String.valueOf(activityid) };
-		int result = this.getWritableDatabase().delete(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result =database.delete(
 				SharedMemberTable.SharedMemberTableName,
 				SharedMemberTable.member_id + "=?" + " AND "
 						+ SharedMemberTable.service_id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result > 0);
 	}
 
@@ -1489,11 +1883,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			ContentValues sharedmember) {
 		String[] whereArgs = new String[] { String.valueOf(memberid),
 				String.valueOf(activityid) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result =database.update(
 				SharedMemberTable.SharedMemberTableName,
 				sharedmember,
 				SharedMemberTable.member_id + "=?" + " AND "
 						+ SharedMemberTable.service_id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
@@ -1503,9 +1899,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public boolean updateSharedmember(int memberid, ContentValues sharedmember) {
 		String[] whereArgs = new String[] { String.valueOf(memberid) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				SharedMemberTable.SharedMemberTableName, sharedmember,
 				SharedMemberTable.member_id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
@@ -1516,7 +1914,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		int scheduleCounter = 0;
 		SharedReference ref = new SharedReference();
 		String userEmail = ref.getEmail(context);
-		Cursor c = this.getWritableDatabase().rawQuery(
+		SQLiteDatabase database = getInstance().openDatabase();
+		Cursor c = database.rawQuery(
 				"SELECT " + OndutyTable.participant_ID + " FROM "
 						+ OndutyTable.OntudyTableName, null);
 		while (c != null && c.moveToNext()) {
@@ -1527,6 +1926,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				scheduleCounter++;
 		}
 		c.close();
+		getInstance().closeDatabase();
 		return scheduleCounter;
 	}
 
@@ -1558,14 +1958,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void deleteTablesExitApp() {
-		this.getWritableDatabase().delete(
+		SQLiteDatabase database = getInstance().openDatabase();
+		database.delete(
 				ParticipantTable.ParticipantTableName, null, null);
-		this.getWritableDatabase().delete(
+		database.delete(
 				SharedMemberTable.SharedMemberTableName, null, null);
-		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
+		database.delete(OndutyTable.OntudyTableName, null,
 				null);
-		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
+		database.delete(ScheduleTable.ScheduleTableName,
 				null, null);
+		getInstance().closeDatabase();
 		SharedReference ref = new SharedReference();
 		ref.setLastestParticipantLastModifiedTime(context,
 				CommConstant.DEFAULT_DATE);
@@ -1576,16 +1978,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void evacuateDatabase() {
-		this.getWritableDatabase().delete(ActivityTable.ActivityTableName,
+		SQLiteDatabase database = getInstance().openDatabase();
+		database.delete(ActivityTable.ActivityTableName,
 				null, null);
-		this.getWritableDatabase().delete(
+		database.delete(
 				ParticipantTable.ParticipantTableName, null, null);
-		this.getWritableDatabase().delete(
+		database.delete(
 				SharedMemberTable.SharedMemberTableName, null, null);
-		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
+		database.delete(OndutyTable.OntudyTableName, null,
 				null);
-		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
+		database.delete(ScheduleTable.ScheduleTableName,
 				null, null);
+		getInstance().closeDatabase();
 		// this.getWritableDatabase().delete(TimeZoneTable.TimeZoneTableName,
 		// null, null);
 		// this.getWritableDatabase()
