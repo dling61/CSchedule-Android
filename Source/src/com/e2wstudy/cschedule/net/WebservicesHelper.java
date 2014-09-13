@@ -361,7 +361,7 @@ public class WebservicesHelper {
 							@Override
 							public void onSuccess(int statusCode,
 									Header[] headers, byte[] responseBody) {
-								Log.d("load contact", "success");
+								Log.d("load activity", "success");
 								String responseText = Utils
 										.convertBytesArrayToString(responseBody);
 
@@ -2176,6 +2176,7 @@ public class WebservicesHelper {
 		String sharedmemberUrl = BaseUrl.BASEURL + "services/" + activityid
 				+ "/" + "sharedmembers/" + memberid + "?"
 				+ BaseUrl.URL_POST_FIX;
+		Log.d("delete shared member url",sharedmemberUrl);
 		if (Utils.isNetworkOnline(context)) {
 			AsyncHttpClient clientRequest=MyApplication.clientRequest();
 			clientRequest.addHeader("Content-Type", CONTENT_TYPE);
@@ -2184,7 +2185,7 @@ public class WebservicesHelper {
 
 						public void onSuccess(int statusCode, Header[] headers,
 								byte[] responseBody) {
-							Log.e("remove device monitor", "" + statusCode);
+							Log.e("delete shared member of activity status code", "" + statusCode);
 							String responseText = Utils
 									.convertBytesArrayToString(responseBody);
 							Log.i("delete shared member of activity",
@@ -2716,9 +2717,11 @@ public class WebservicesHelper {
 	public void deleteActivity(final Context context, MyActivity activity,
 			final LoadingInterface loadingInterface,
 			final ActvityInterface activityInterface) {
-		String url = BaseUrl.BASEURL + "services/" + activity.getActivity_ID()
-				+ "?" + BaseUrl.URL_POST_FIX;
+		String url=BaseUrl.BASEURL+"services/%s?ownerid=%s&"+BaseUrl.URL_POST_FIX;
+		url = String.format(url,activity.getActivity_ID(),String.valueOf(new SharedReference().getCurrentOwnerId(context)));
 		Log.d("delete activity url",url);
+		RequestParams params = new RequestParams();
+		params.put(CommConstant.OWNER_ID, String.valueOf(new SharedReference().getCurrentOwnerId(context)));
 		final String id = activity.getActivity_ID();
 		if (Utils.isNetworkOnline(context)) {
 			AsyncHttpClient clientRequest=MyApplication.clientRequest();
@@ -2744,6 +2747,7 @@ public class WebservicesHelper {
 								byte[] responseBody) {
 							String responseText = Utils
 									.convertBytesArrayToString(responseBody);
+							Log.d("delete activity status code", statusCode+"");
 							Log.d("delete activity", responseText.toString());
 							try {
 								JSONObject response = new JSONObject(

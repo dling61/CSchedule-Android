@@ -24,7 +24,7 @@
             android:background="@color/bg"
             android:cacheColorHint="@color/white"
             android:orientation="vertical"
-            android:showDividers="middle" >
+             >
 
             <RelativeLayout
                 android:id="@+id/layout_new_activity_name"
