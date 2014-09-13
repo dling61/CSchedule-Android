@@ -514,9 +514,9 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				cv.put(SharedMemberTable.is_Synced, 0);
 				dbHelper.updateSharedmember(sharedMember.getID(), activity_id,
 						cv);
-				WebservicesHelper ws = WebservicesHelper.getInstance();
-				ws.deleteSharedmemberOfActivity(mContext,sharedMember.getID(),
-						activity_id, loadingInterface, iSharedMember);
+//				WebservicesHelper ws = WebservicesHelper.getInstance();
+//				ws.deleteSharedmemberOfActivity(mContext,sharedMember.getID(),
+//						activity_id, loadingInterface, iSharedMember);
 			}
 		}
 
@@ -538,8 +538,8 @@ public class AddNewActivity extends Activity implements OnClickListener {
 				dbHelper.updateOnduty(schedule_id, ocv);
 			}
 			dbHelper.updateSchedule(schedule_id, scv);
-			WebservicesHelper ws = WebservicesHelper.getInstance();
-			ws.deleteSchedule(mContext,sbelongtoa.get(i), iSchedule, loadingInterface);
+//			WebservicesHelper ws = WebservicesHelper.getInstance();
+//			ws.deleteSchedule(mContext,sbelongtoa.get(i), iSchedule, loadingInterface);
 		}
 
 		ContentValues cv = new ContentValues();
