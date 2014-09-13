@@ -1483,6 +1483,7 @@ public class WebservicesHelper {
 								byte[] responseBody) {
 							String responseText = Utils
 									.convertBytesArrayToString(responseBody);
+							Log.d("update schedule success status code", statusCode+"");
 							Log.d("update schedule success", responseText);
 							try {
 

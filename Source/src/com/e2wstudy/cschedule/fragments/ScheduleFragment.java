@@ -64,6 +64,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	// HashMap<String, ArrayList<Schedule>> listScheduleByDay = new
 	// HashMap<String, ArrayList<Schedule>>();
 	// ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+	LoadScheduleFromDbTask task;
+	boolean flag = false;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -249,6 +251,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
 			super.onPreExecute();
+			flag=false;
+			Log.d("start thread","start thead");
 			showLoading(mContext);
 		}
 
@@ -258,6 +262,12 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 		}
 
+		@Override
+		protected void onCancelled() {
+			// TODO Auto-generated method stub
+			super.onCancelled();
+			Log.d("cancel thread","cancel thead");
+		}
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -308,6 +318,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 				}
 			}
 			dimissDialog();
+			Log.d("finish thread","finish thead");
+			flag=true;
 		}
 	}
 
@@ -635,9 +647,10 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 					}
 				});
 		int size = 0;
-		ExpandableListScheduleAdapter ada=(ExpandableListScheduleAdapter) view.expand_list_schedule.getExpandableListAdapter();
+		ExpandableListScheduleAdapter ada = (ExpandableListScheduleAdapter) view.expand_list_schedule
+				.getExpandableListAdapter();
 		if (ada != null) {
-			
+
 			size = ada.getGroupCount();
 		}
 		Log.d("size", size + "");
@@ -656,7 +669,20 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 	public void scheduleDownloadComplete() {
 		// processDataForAdapterListview();
 
-		new LoadScheduleFromDbTask().execute();
+		/***
+		 * flag=false, start new thread flag=true, cancel old thread and start
+		 * new thread
+		 * 
+		 * **/
+
+		if (flag) {
+			if (task != null) {
+				task.cancel(true);
+			}
+		}
+		task = new LoadScheduleFromDbTask();
+		task.execute();
+
 		view.btn_refresh.setEnabled(true);
 	}
 

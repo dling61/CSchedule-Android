@@ -2,6 +2,7 @@ package com.e2wstudy.cschedule.db;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +24,6 @@ import com.e2wstudy.cschedule.models.TimeZoneModel;
 import com.e2wstudy.cschedule.models.TimeZoneTable;
 import com.e2wstudy.cschedule.utils.CommConstant;
 import com.e2wstudy.cschedule.utils.SharedReference;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -45,14 +45,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final int VIEWER = 3;
 	public static final int NOSHARE = 4;
 
-	private Context context;
+	private static Context context;
 
 	DatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
+//		mOpenCounter.incrementAndGet();
 		this.context = context;
 	}
 
-	public static DatabaseHelper getSharedDatabaseHelper(Context context) {
+	private AtomicInteger mOpenCounter = new AtomicInteger();
+	private static SQLiteOpenHelper mDatabaseHelper;
+	private SQLiteDatabase mDatabase;
+	static DatabaseHelper instance;
+
+	public static synchronized void initializeInstance(SQLiteOpenHelper helper,
+			Context context) {
+		if (instance == null) {
+			instance = new DatabaseHelper(context);
+			mDatabaseHelper = helper;
+		}
+	}
+
+	public static synchronized DatabaseHelper getInstance() {
+		if (instance == null) {
+			mDatabaseHelper=new DatabaseHelper(context);
+			instance=new DatabaseHelper(context);
+//			throw new IllegalStateException(
+//					DatabaseHelper.class.getSimpleName()
+//							+ " is not initialized, call initializeInstance(..) method first.");
+		}
+		return instance;
+	}
+
+	public synchronized SQLiteDatabase openDatabase() {
+		if (mOpenCounter.incrementAndGet() == 1) {// Opening new database
+			mDatabase = mDatabaseHelper.getWritableDatabase();
+		}
+		return mDatabase;
+	}
+
+	public synchronized void closeDatabase() {
+		if (mOpenCounter.decrementAndGet() == 0) {// Closing database
+			mDatabase.close();
+		}
+
+	}
+
+	public static synchronized DatabaseHelper getSharedDatabaseHelper(
+			Context ctx) {
+		context = ctx;
 		if (sharedDatabaseHelper == null) {
 			sharedDatabaseHelper = new DatabaseHelper(context);
 		}
@@ -177,8 +218,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public int getNumberActivity() {
 		Cursor mCount = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			mCount = this.getWritableDatabase().rawQuery(
+			
+			mCount =database.rawQuery(
 					"select count(*) from " + ActivityTable.ActivityTableName
 							+ " where " + ActivityTable.is_Deleted + "=0 and "
 							+ ActivityTable.user_login + "="
@@ -197,13 +240,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (mCount != null)
 				mCount.close();
 		}
+		getInstance().closeDatabase();
 		return 0;
 	}
 
 	public AppVersion getCurrentVersion() {
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * from " + AppVersionTable.appVersionTable
 							+ " where " + AppVersionTable.os + " = 'ANDROID'",
 					null);
@@ -256,6 +301,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return null;
 	}
 
@@ -265,8 +311,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public ArrayList<TimeZoneModel> getTimeZone() {
 		ArrayList<TimeZoneModel> timeZones = new ArrayList<TimeZoneModel>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT * FROM " + TimeZoneTable.TimeZoneTableName
 							+ " order by " + TimeZoneTable.displayorder
 							+ " asc", null);
@@ -293,6 +340,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return timeZones;
 	}
 
@@ -302,8 +350,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public ArrayList<Alert> getAlerts() {
 		ArrayList<Alert> alerts = new ArrayList<Alert>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + AlertTable.alertTableName, null);
 			while (c != null && c.moveToNext()) {
 				int id = c.getInt(c.getColumnIndex(AlertTable.id));
@@ -318,14 +367,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return alerts;
 	}
 
 	public ArrayList<MyActivity> getActivities() {
 		ArrayList<MyActivity> activities = new ArrayList<MyActivity>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ActivityTable.ActivityTableName
 							+ " where " + ActivityTable.is_Deleted + "=0 and "
 							+ ActivityTable.user_login + "='"
@@ -353,6 +404,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return activities;
 	}
 
@@ -362,8 +414,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public ArrayList<MyActivity> getActivitiesOwnerOrOrganizer(String user_id) {
 		ArrayList<MyActivity> activities = new ArrayList<MyActivity>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ActivityTable.ActivityTableName
 							+ " where " + ActivityTable.is_Deleted + "=0 and "
 							+ ActivityTable.user_login + "='"
@@ -394,14 +447,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return activities;
 	}
 
 	public List<MyActivity> getUnsyncedNewActivities() {
 		List<MyActivity> activities = new ArrayList<MyActivity>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ActivityTable.ActivityTableName
 							+ " WHERE " + ActivityTable.is_Synchronized + "= 0"
 							+ " "
@@ -433,11 +488,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return activities;
 	}
 
 	public List<MyActivity> getUnsyncedEditedActivities() {
 		List<MyActivity> activities = new ArrayList<MyActivity>();
+		SQLiteDatabase database = getInstance().openDatabase();
 		Cursor c = null;
 		try {
 			c = this.getWritableDatabase().rawQuery(
@@ -468,16 +525,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return activities;
 	}
 
 	public MyActivity getActivity(String service_id) {
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
-					"SELECT * FROM " + ActivityTable.ActivityTableName
-							+ " WHERE " + ActivityTable.service_ID + " = "
-							+ service_id, null);
+			c = database.rawQuery("SELECT * FROM "
+					+ ActivityTable.ActivityTableName + " WHERE "
+					+ ActivityTable.service_ID + " = " + service_id, null);
 
 			if (c != null && c.moveToNext()) {
 				String id = c.getString(c
@@ -496,18 +554,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				return newActivity;
 			}
 			c.close();
+			
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
 				c.close();
+			
 		}
+		getInstance().closeDatabase();
 		return null;
 	}
 
 	public Schedule getScheduleSortedByID(int id) {
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT * FROM " + ScheduleTable.ScheduleTableName
 							+ " WHERE " + ScheduleTable.schedule_ID + " = "
 							+ id, null);
@@ -536,14 +598,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return null;
 	}
 
 	public List<Schedule> getSchedulesBelongtoActivity(String id) {
 		Cursor c = null;
 		List<Schedule> schedules = new ArrayList<Schedule>();
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT * FROM " + ScheduleTable.ScheduleTableName
 							+ " WHERE " + ScheduleTable.service_ID + " = " + id
 							+ " AND " + ScheduleTable.is_Deleted + "=0", null);
@@ -576,6 +640,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return schedules;
 	}
 
@@ -584,8 +649,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ")";
 		List<List<Schedule>> groupedSchedules = new ArrayList<List<Schedule>>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT " + columnName + " FROM "
 							+ ScheduleTable.ScheduleTableName + " WHERE "
 							+ ScheduleTable.is_Deleted + "=0" + " ORDER BY "
@@ -660,14 +726,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return groupedSchedules;
 	}
 
 	public ArrayList<Schedule> getAllSchedules() {
 		ArrayList<Schedule> allschedules = new ArrayList<Schedule>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ScheduleTable.ScheduleTableName
 							+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
 							+ ScheduleTable.user_login + "='"
@@ -709,12 +777,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			// will
 			// kill it
 			c.close();
+//			getInstance().closeDatabase();
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
 				c.close();
+			
 		}
-
+getInstance().closeDatabase();
 		return allschedules;
 	}
 
@@ -728,9 +798,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ScheduleTable.user_login + "='"
 				+ new SharedReference().getCurrentOwnerId(context) + "'";
 		Log.d("query schedule", query);
+		SQLiteDatabase database = getInstance().openDatabase();
 		Cursor mCount = null;
 		try {
-			mCount = this.getWritableDatabase().rawQuery(query, null);
+			mCount =database.rawQuery(query, null);
 			if (mCount != null) {
 				// if(mCount.moveToFirst())
 				if (mCount.moveToFirst()) {
@@ -746,6 +817,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (mCount != null)
 				mCount.close();
 		}
+getInstance().closeDatabase();
 		return 0;
 	}
 
@@ -762,8 +834,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ new SharedReference().getEmail(context) + "'";
 		Log.d("sharedmember of email", query);
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(query, null);
+			c = database.rawQuery(query, null);
 
 			if (c != null && c.moveToNext()) {
 				int member_id = c.getInt(c
@@ -780,6 +853,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return -1;
 	}
 
@@ -789,8 +863,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public ArrayList<Schedule> getMeSchedule() {
 		ArrayList<Schedule> allschedules = new ArrayList<Schedule>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
+		
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ScheduleTable.ScheduleTableName
 							+ " WHERE " + ScheduleTable.is_Deleted + "=0 and "
 							+ ScheduleTable.user_login + "='"
@@ -835,58 +911,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			// will
 			// kill it
 			c.close();
+//			getInstance().closeDatabase();
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
 				c.close();
+		
 		}
+		getInstance().closeDatabase();
 		return allschedules;
 	}
 
-	public List<String> getScheduleHeaders() {
-		String columnName = "strftime('%Y-%m-%d'," + ScheduleTable.start_Time
-				+ ")";
-		List<String> dates = new ArrayList<String>();
-		List<String> distinctdates = new ArrayList<String>();
-		Cursor c = null;
-		try {
-			c = this.getWritableDatabase().rawQuery(
-					"SELECT " + columnName + " FROM "
-							+ ScheduleTable.ScheduleTableName + " WHERE "
-							+ ScheduleTable.is_Deleted + "=0" + " ORDER BY "
-							+ columnName + " ASC", null);
-
-			while (c != null && c.moveToNext()) {
-				int columnIndex = c.getColumnIndex(columnName);
-				String Date = c.getString(columnIndex);
-				// Log.i("database", Date);
-				dates.add(Date);
-			}
-			c.close();
-			String previousDate = "2";
-			for (int i = 0; i < dates.size(); i++) {
-				String newDate = dates.get(i);
-				if (newDate.equalsIgnoreCase(previousDate) == false) {
-					String fullNewDate = newDate + " 00:00:00";
-					distinctdates.add(fullNewDate);
-				}
-				previousDate = newDate;
-			}
-
-		} finally {
-			// this gets called even if there is an exception somewhere above
-			if (c != null)
-				c.close();
-		}
-
-		return distinctdates;
-	}
-
+	
 	public List<Schedule> getUnsyncedNewSchedules() {
 		List<Schedule> schedules = new ArrayList<Schedule>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ScheduleTable.ScheduleTableName
 							+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
 							+ " " + "AND " + ScheduleTable.last_Modified
@@ -919,14 +961,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+		getInstance().closeDatabase();
 		return schedules;
 	}
 
 	public List<Schedule> getUnsyncedEditedSchedules() {
 		List<Schedule> schedules = new ArrayList<Schedule>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ScheduleTable.ScheduleTableName
 							+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
 							+ " " + "AND " + ScheduleTable.last_Modified
@@ -959,16 +1003,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (c != null)
 				c.close();
 		}
+getInstance().closeDatabase();
 		return schedules;
 	}
 
 	public Participant getParticipant(int member_id) {
 		Cursor c = null;
 		Participant newParticipant = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
 			// Cursor c = this.getWritableDatabase().rawQuery("SELECT * FROM " +
 			// ParticipantTable.ParticipantTableName + " WHERE " +
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ParticipantTable.ParticipantTableName
 							+ " WHERE " + ParticipantTable.participant_ID
 							+ " = " + member_id, null);
@@ -1002,13 +1048,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return newParticipant;
 	}
 
 	public Sharedmember getSharedmember(int member_id, String activity_id) {
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
 							+ " WHERE " + SharedMemberTable.member_id + " = "
 							+ member_id + " AND "
@@ -1038,6 +1086,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return null;
 	}
 
@@ -1047,8 +1096,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public ArrayList<Sharedmember> getSharedMemberForActivity(String activity_id) {
 		Cursor c = null;
 		ArrayList<Sharedmember> list_shared_member = new ArrayList<Sharedmember>();
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
 							+ " WHERE " + SharedMemberTable.service_id + "="
 							+ activity_id, null);
@@ -1076,6 +1126,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return list_shared_member;
 	}
 
@@ -1087,8 +1138,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			String activity_id) {
 		Cursor c = null;
 		ArrayList<Participant> list_participant = new ArrayList<Participant>();
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
 							+ " WHERE " + SharedMemberTable.service_id + "="
 							+ activity_id + " and " + SharedMemberTable.role
@@ -1118,6 +1170,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return list_participant;
 	}
 
@@ -1127,8 +1180,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public ArrayList<String> getListActivity(String member_id) {
 		Cursor c = null;
 		ArrayList<String> list_activity_id = new ArrayList<String>();
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ActivityTable.ActivityTableName + ", "
 							+ SharedMemberTable.SharedMemberTableName
 							+ " where " + ActivityTable.is_Deleted + "=0 and "
@@ -1150,6 +1204,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return list_activity_id;
 	}
 
@@ -1159,8 +1214,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public int getNumberActivity(String member_email) {
 		int number = 0;
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT * FROM " + ActivityTable.ActivityTableName + ", "
 							+ SharedMemberTable.SharedMemberTableName
 							+ " where " + ActivityTable.is_Deleted + "=0 and "
@@ -1179,6 +1235,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return number;
 	}
 
@@ -1188,8 +1245,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public ArrayList<Sharedmember> getParticipantsOfActivity(String activity_id) {
 		Cursor c = null;
 		ArrayList<Sharedmember> list_member = new ArrayList<Sharedmember>();
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT * FROM " + SharedMemberTable.SharedMemberTableName
 							+ " WHERE " + SharedMemberTable.service_id + "="
 							+ activity_id + " and "
@@ -1218,15 +1276,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+getInstance().closeDatabase();
 		return list_member;
 	}
 
 	public ArrayList<Participant> getParticipants() {
 		SharedReference ref = new SharedReference();
 		ArrayList<Participant> participants = new ArrayList<Participant>();
+		SQLiteDatabase database = getInstance().openDatabase();
 		Cursor c = null;
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT * FROM " + ParticipantTable.ParticipantTableName
 							+ " WHERE " + ParticipantTable.is_Deleted + "=0"
 							+ " AND " + ParticipantTable.own_ID + "="
@@ -1258,14 +1318,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return participants;
 	}
 
 	public List<Participant> getUnsyncedNewParticipants() {
 		List<Participant> participants = new ArrayList<Participant>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ParticipantTable.ParticipantTableName
 							+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
 							+ " " + "AND " + ParticipantTable.last_Modified
@@ -1291,14 +1353,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return participants;
 	}
 
 	public List<Participant> getUnsyncedEditedParticipants() {
 		List<Participant> participants = new ArrayList<Participant>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT * FROM " + ParticipantTable.ParticipantTableName
 							+ " WHERE " + ScheduleTable.is_Synchronized + "= 0"
 							+ " AND " + ScheduleTable.is_Deleted + "= 0" + " "
@@ -1325,15 +1389,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return participants;
 	}
 
 	public List<Confirm> getParticipantsForSchedule(int schedule_id) {
 		List<Confirm> memberids = new ArrayList<Confirm>();
-
+		SQLiteDatabase database = getInstance().openDatabase();
 		Cursor c = null;
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT " + OndutyTable.participant_ID + ","
 							+ OndutyTable.confirm + " FROM "
 							+ OndutyTable.OntudyTableName + " WHERE "
@@ -1356,6 +1421,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return memberids;
 	}
 
@@ -1365,8 +1431,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public TimeZoneModel getTimeZone(int timeZoneId) {
 		TimeZoneModel timeZoneModel = null;
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase()
+			c = database
 					.rawQuery(
 							"SELECT *  FROM " + TimeZoneTable.TimeZoneTableName
 									+ " WHERE " + TimeZoneTable.id + " = "
@@ -1391,6 +1458,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return timeZoneModel;
 	}
 
@@ -1400,8 +1468,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public Alert getAlert(int alerId) {
 		Alert alert = null;
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT *  FROM " + AlertTable.alertTableName + " WHERE "
 							+ AlertTable.id + " = " + alerId, null);
 			if (c != null && c.moveToNext()) {
@@ -1416,14 +1485,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return alert;
 	}
 
 	public List<Integer> getOndutyRecordsForSchedule(int id) {
 		List<Integer> ondutyids = new ArrayList<Integer>();
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT " + OndutyTable.onduty_ID + " FROM "
 							+ OndutyTable.OntudyTableName + " WHERE "
 							+ OndutyTable.schedule_ID + " = " + id, null);
@@ -1439,14 +1510,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			c.close();
 
 		}
+		getInstance().closeDatabase();
 		return ondutyids;
 	}
 
 	public boolean isTimeZoneExisted(int timeZoneId) {
 		Cursor c = null;
 		int id = -1;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT " + TimeZoneTable.id + " from "
 							+ TimeZoneTable.TimeZoneTableName + " where "
 							+ TimeZoneTable.id + " = " + timeZoneId, null);
@@ -1460,14 +1533,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			c.close();
 		}
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isAlertExisted(int alertId) {
 		Cursor c = null;
 		int id = -1;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT " + AlertTable.id + " from "
 							+ AlertTable.alertTableName + " where "
 							+ AlertTable.id + " = " + alertId, null);
@@ -1481,14 +1556,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			c.close();
 		}
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isVersionExisted(int versionId) {
 		int id = -1;
 		Cursor c = null;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT " + AppVersionTable.id + " from "
 							+ AppVersionTable.appVersionTable + " where "
 							+ AppVersionTable.id + " = " + versionId, null);
@@ -1502,14 +1579,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			c.close();
 		}
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isScheduleExisted(int scheduleID) {
 		Cursor c = null;
 		int id = -1;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c = database.rawQuery(
 					"SELECT " + ScheduleTable.schedule_ID + " from "
 							+ ScheduleTable.ScheduleTableName + " where "
 							+ ScheduleTable.schedule_ID + " = " + scheduleID,
@@ -1523,14 +1602,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			c.close();
 		}
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isOndutyExisted(int scheduleID) {
 		Cursor c = null;
 		int id = -1;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT " + OndutyTable.schedule_ID + " from "
 							+ OndutyTable.OntudyTableName + " where "
 							+ OndutyTable.schedule_ID + " = " + scheduleID,
@@ -1545,14 +1626,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			c.close();
 		}
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean isSharedmemberExisted(int memberid, String activityid) {
 		Cursor c = null;
 		int id = -1;
+		SQLiteDatabase database = getInstance().openDatabase();
 		try {
-			c = this.getWritableDatabase().rawQuery(
+			c =database.rawQuery(
 					"SELECT " + SharedMemberTable.member_id + " from "
 							+ SharedMemberTable.SharedMemberTableName
 							+ " where " + SharedMemberTable.member_id + " = "
@@ -1573,182 +1656,226 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			c.close();
 		}
+		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
 	}
 
 	public boolean insertAppVersion(ContentValues contentValue) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				AppVersionTable.appVersionTable, AppVersionTable.id,
 				contentValue, SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateAppVersion(int id, ContentValues contentValue) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				AppVersionTable.appVersionTable, contentValue,
 				AppVersionTable.id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertAlert(ContentValues alert) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				AlertTable.alertTableName, AlertTable.id, alert,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateAlert(int id, ContentValues alert) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				AlertTable.alertTableName, alert, AlertTable.id + "=?",
 				whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertTimeZone(ContentValues timeZone) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result =database.insertWithOnConflict(
 				TimeZoneTable.TimeZoneTableName, TimeZoneTable.id, timeZone,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateTimeZone(int id, ContentValues timeZone) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				TimeZoneTable.TimeZoneTableName, timeZone,
 				TimeZoneTable.id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertParticipant(ContentValues newParticipant) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				ParticipantTable.ParticipantTableName,
 				ParticipantTable.participant_ID, newParticipant,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateParticipant(int id, ContentValues newParticipant) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		int result =database.update(
 				ParticipantTable.ParticipantTableName, newParticipant,
 				ParticipantTable.participant_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean deleteParticipant(int id) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().delete(
+		int result =database.delete(
 				ParticipantTable.ParticipantTableName,
 				ParticipantTable.participant_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertActivity(ContentValues newActivity) {
-
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				ActivityTable.ActivityTableName, ActivityTable.service_ID,
 				newActivity, SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateActivity(String id, ContentValues newActivity) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				ActivityTable.ActivityTableName, newActivity,
 				ActivityTable.service_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean deleteActivity(String id) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().delete(
+		int result = database.delete(
 				ActivityTable.ActivityTableName,
 				ActivityTable.service_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertSchedule(ContentValues newSchedule) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				ScheduleTable.ScheduleTableName, ScheduleTable.schedule_ID,
 				newSchedule, SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateSchedule(int id, ContentValues newSchedule) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				ScheduleTable.ScheduleTableName, newSchedule,
 				ScheduleTable.schedule_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean deleteSchedule(int id) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().delete(
+		int result = database.delete(
 				ScheduleTable.ScheduleTableName,
 				ScheduleTable.schedule_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean insertOnduty(ContentValues newOnduty) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				OndutyTable.OntudyTableName, OndutyTable.service_ID, newOnduty,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean updateOnduty(int id, ContentValues newOnduty) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		int result =database.update(
 				OndutyTable.OntudyTableName, newOnduty,
 				OndutyTable.schedule_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean updateOnduty(int id, int member_id, ContentValues newOnduty) {
 		String[] whereArgs = new String[] { String.valueOf(id),
 				String.valueOf(member_id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				OndutyTable.OntudyTableName,
 				newOnduty,
 				OndutyTable.schedule_ID + "=? AND "
 						+ OndutyTable.participant_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean updateConfirmStatus(int id, ContentValues newOnduty) {
 		String[] whereArgs = new String[] { String.valueOf(id) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result =database.update(
 				OndutyTable.OntudyTableName, newOnduty,
 				OndutyTable.schedule_ID + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
 	public boolean deleteRelatedOnduty(int scheduleID) {
+		SQLiteDatabase database = getInstance().openDatabase();
 		String[] whereArgs = new String[] { String.valueOf(scheduleID) };
-		int result = this.getWritableDatabase().delete(
+		int result = database.delete(
 				OndutyTable.OntudyTableName, OndutyTable.schedule_ID + "=?",
 				whereArgs);
+		getInstance().closeDatabase();
 		return (result > 0);
 	}
 
 	public boolean insertSharedmember(ContentValues sharedmember) {
-		long result = this.getWritableDatabase().insertWithOnConflict(
+		SQLiteDatabase database = getInstance().openDatabase();
+		long result = database.insertWithOnConflict(
 				SharedMemberTable.SharedMemberTableName,
 				SharedMemberTable.member_id, sharedmember,
 				SQLiteDatabase.CONFLICT_REPLACE);
+		getInstance().closeDatabase();
 		return (result == -1) ? false : true;
 	}
 
 	public boolean deleteSharedmember(int memberid, String activityid) {
 		String[] whereArgs = new String[] { String.valueOf(memberid),
 				String.valueOf(activityid) };
-		int result = this.getWritableDatabase().delete(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result =database.delete(
 				SharedMemberTable.SharedMemberTableName,
 				SharedMemberTable.member_id + "=?" + " AND "
 						+ SharedMemberTable.service_id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result > 0);
 	}
 
@@ -1756,11 +1883,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			ContentValues sharedmember) {
 		String[] whereArgs = new String[] { String.valueOf(memberid),
 				String.valueOf(activityid) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result =database.update(
 				SharedMemberTable.SharedMemberTableName,
 				sharedmember,
 				SharedMemberTable.member_id + "=?" + " AND "
 						+ SharedMemberTable.service_id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
@@ -1770,9 +1899,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * */
 	public boolean updateSharedmember(int memberid, ContentValues sharedmember) {
 		String[] whereArgs = new String[] { String.valueOf(memberid) };
-		int result = this.getWritableDatabase().update(
+		SQLiteDatabase database = getInstance().openDatabase();
+		int result = database.update(
 				SharedMemberTable.SharedMemberTableName, sharedmember,
 				SharedMemberTable.member_id + "=?", whereArgs);
+		getInstance().closeDatabase();
 		return (result == 1) ? true : false;
 	}
 
@@ -1783,7 +1914,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		int scheduleCounter = 0;
 		SharedReference ref = new SharedReference();
 		String userEmail = ref.getEmail(context);
-		Cursor c = this.getWritableDatabase().rawQuery(
+		SQLiteDatabase database = getInstance().openDatabase();
+		Cursor c = database.rawQuery(
 				"SELECT " + OndutyTable.participant_ID + " FROM "
 						+ OndutyTable.OntudyTableName, null);
 		while (c != null && c.moveToNext()) {
@@ -1794,6 +1926,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				scheduleCounter++;
 		}
 		c.close();
+		getInstance().closeDatabase();
 		return scheduleCounter;
 	}
 
@@ -1825,14 +1958,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void deleteTablesExitApp() {
-		this.getWritableDatabase().delete(
+		SQLiteDatabase database = getInstance().openDatabase();
+		database.delete(
 				ParticipantTable.ParticipantTableName, null, null);
-		this.getWritableDatabase().delete(
+		database.delete(
 				SharedMemberTable.SharedMemberTableName, null, null);
-		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
+		database.delete(OndutyTable.OntudyTableName, null,
 				null);
-		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
+		database.delete(ScheduleTable.ScheduleTableName,
 				null, null);
+		getInstance().closeDatabase();
 		SharedReference ref = new SharedReference();
 		ref.setLastestParticipantLastModifiedTime(context,
 				CommConstant.DEFAULT_DATE);
@@ -1843,16 +1978,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void evacuateDatabase() {
-		this.getWritableDatabase().delete(ActivityTable.ActivityTableName,
+		SQLiteDatabase database = getInstance().openDatabase();
+		database.delete(ActivityTable.ActivityTableName,
 				null, null);
-		this.getWritableDatabase().delete(
+		database.delete(
 				ParticipantTable.ParticipantTableName, null, null);
-		this.getWritableDatabase().delete(
+		database.delete(
 				SharedMemberTable.SharedMemberTableName, null, null);
-		this.getWritableDatabase().delete(OndutyTable.OntudyTableName, null,
+		database.delete(OndutyTable.OntudyTableName, null,
 				null);
-		this.getWritableDatabase().delete(ScheduleTable.ScheduleTableName,
+		database.delete(ScheduleTable.ScheduleTableName,
 				null, null);
+		getInstance().closeDatabase();
 		// this.getWritableDatabase().delete(TimeZoneTable.TimeZoneTableName,
 		// null, null);
 		// this.getWritableDatabase()
