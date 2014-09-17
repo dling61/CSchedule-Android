@@ -52,7 +52,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	boolean isActivityDownloadDone = false;
 	boolean isScheduleDownloadDone = false;
 	public static int TAB_SCHEDULE = 0;
-//	public static int TAB_ACTIVITY = 2;
+	public static int TAB_ACTIVITY = 2;
 	public static LoadingPopupViewHolder loadingPopup;
 	public static final int DIALOG_LOADING_THEME = android.R.style.Theme_Translucent_NoTitleBar;
 	public static boolean flag_schedule = false;

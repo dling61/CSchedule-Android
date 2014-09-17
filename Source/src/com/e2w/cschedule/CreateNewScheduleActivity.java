@@ -763,7 +763,7 @@ public class CreateNewScheduleActivity extends Activity implements
 							dialog.dismiss();
 							finish();
 							Utils.postLeftToRight(mContext);
-//							CategoryTabActivity.currentPage = CategoryTabActivity.TAB_ACTIVITY;
+							CategoryTabActivity.currentPage = CategoryTabActivity.TAB_ACTIVITY;
 							// Intent intent=new Intent("goToActivity");
 							// sendBroadcast(intent);
 
