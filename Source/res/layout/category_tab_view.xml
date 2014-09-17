@@ -4,12 +4,12 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <com.e2wstudy.cschedule.views.MenuAppView
+    <com.e2w.cschedule.views.MenuAppView
         android:id="@+id/menuTop"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
         android:visibility="gone">
- </com.e2wstudy.cschedule.views.MenuAppView>
+ </com.e2w.cschedule.views.MenuAppView>
 
     <TabHost
         android:id="@android:id/tabhost"
@@ -45,7 +45,7 @@
                 android:layout_weight="0"
                 android:background="@color/bg" />
 
-            <com.e2wstudy.cschedule.views.CustomViewPager
+            <com.e2w.cschedule.views.CustomViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"

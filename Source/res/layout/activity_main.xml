@@ -5,7 +5,7 @@
     android:background="@color/bg"
     tools:context=".MainActivity" >
 
-   <com.e2wstudy.cschedule.views.TitleBarView
+   <com.e2w.cschedule.views.TitleBarView
        android:layout_width="fill_parent"
        android:layout_height="wrap_content"
        android:id="@+id/titleBar"/>

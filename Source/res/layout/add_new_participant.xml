@@ -4,11 +4,11 @@
     android:layout_height="match_parent"
     android:background="@color/bg_participant_activity_title" >
 
-    <com.e2wstudy.cschedule.views.TitleBarView
+    <com.e2w.cschedule.views.TitleBarView
         android:id="@+id/titleBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
- </com.e2wstudy.cschedule.views.TitleBarView>
+ </com.e2w.cschedule.views.TitleBarView>
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -68,7 +68,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/layout_new_activity_name"
+                android:id="@+id/layout_new_activity_name_1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/bg_schedule" >
@@ -107,7 +107,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/layout_new_activity_name"
+                android:id="@+id/layout_new_activity_name_2"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/bg_schedule" >

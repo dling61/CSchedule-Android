@@ -5,10 +5,11 @@
     android:background="@color/bg_schedule" >
 
     
-    <com.e2wstudy.cschedule.views.TitleBarView
+    <com.e2w.cschedule.views.TitleBarView
         android:id="@+id/titleBar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" ></com.e2wstudy.cschedule.views.TitleBarView>
+        android:layout_height="wrap_content" >
+</com.e2w.cschedule.views.TitleBarView>
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

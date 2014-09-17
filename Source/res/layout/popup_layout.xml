@@ -5,11 +5,11 @@
     android:background="@color/bg"
     android:orientation="vertical" >
 
-    <com.e2wstudy.cschedule.views.TitleBarView
+    <com.e2w.cschedule.views.TitleBarView
         android:id="@+id/titleBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-    </com.e2wstudy.cschedule.views.TitleBarView>
+    </com.e2w.cschedule.views.TitleBarView>
 
     <ListView
         android:id="@+id/list_item"
