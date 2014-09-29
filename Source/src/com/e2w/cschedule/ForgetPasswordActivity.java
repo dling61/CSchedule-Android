@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.net.BaseUrl;
 import com.e2w.cschedule.net.JSONParser;
+import com.e2w.cschedule.utils.CommConstant;
 import com.e2w.cschedule.utils.Utils;
 import com.e2w.cschedule.views.LoadingPopupViewHolder;
 import com.e2w.cschedule.views.TitleBarView;
@@ -43,6 +45,7 @@ public class ForgetPasswordActivity extends BaseActivity implements OnClickListe
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		mContext = this;
 		setContentView(R.layout.forget_password);
 		

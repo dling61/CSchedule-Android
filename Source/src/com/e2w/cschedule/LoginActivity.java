@@ -5,8 +5,10 @@ package com.e2w.cschedule;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.json.JSONException;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.interfaces.LoadingInterface;
 import com.e2w.cschedule.interfaces.LoginInterface;
 import com.e2w.cschedule.interfaces.SetTokenInterface;
@@ -70,6 +72,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		mContext = this;
 		setContentView(R.layout.log_in);
 		Intent intent = getIntent();

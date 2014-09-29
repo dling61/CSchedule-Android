@@ -1,5 +1,6 @@
 package com.e2w.cschedule;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.fragments.ContactFragment;
 import com.e2w.cschedule.utils.CommConstant;
 
@@ -10,6 +11,7 @@ public class ContactActivity extends FragmentActivity {
 	String activity_id="";
 	@Override
 	protected void onCreate(Bundle arg0) {
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		overridePendingTransition(R.anim.animation_enter,
 			      R.anim.animation_leave);
 		// TODO Auto-generated method stub

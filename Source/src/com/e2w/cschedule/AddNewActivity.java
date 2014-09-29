@@ -3,6 +3,7 @@ package com.e2w.cschedule;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.adapter.SharedMemberAdapter;
 import com.e2w.cschedule.adapter.TextViewBaseAdapter;
 import com.e2w.cschedule.db.DatabaseHelper;
@@ -29,6 +30,7 @@ import com.e2w.cschedule.views.ConfirmDialog;
 import com.e2w.cschedule.views.LoadingPopupViewHolder;
 import com.e2w.cschedule.views.ParticipantInforDialog;
 import com.e2w.cschedule.views.ToastDialog;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
@@ -62,11 +64,12 @@ public class AddNewActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
+		
 		mContext = this;
 		view = new AddActivityView(mContext);
 		setContentView(view.layout);
-
+		
 		dbHelper = DatabaseHelper.getSharedDatabaseHelper(mContext);
 
 		ArrayList<TimeZoneModel> listTimeZone = new ArrayList<TimeZoneModel>();

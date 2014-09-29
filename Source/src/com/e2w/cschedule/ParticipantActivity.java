@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.fragments.ParticipantFragment;
 import com.e2w.cschedule.models.Confirm;
 import com.e2w.cschedule.utils.CommConstant;
@@ -23,6 +24,7 @@ public class ParticipantActivity extends FragmentActivity {
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		Utils.pushRightToLeft(ParticipantActivity.this);
 		setContentView(R.layout.participant);
 		activity_id = getIntent().getStringExtra(CommConstant.ACTIVITY_ID);

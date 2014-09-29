@@ -1,5 +1,6 @@
 package com.e2w.cschedule;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.animation.ExpandCollapseAnimation;
 import com.e2w.cschedule.utils.CommConstant;
 import com.e2w.cschedule.utils.Utils;
@@ -32,6 +33,7 @@ public class EditDescriptionActivity extends Activity implements
 		// overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
 		super.onCreate(savedInstanceState);
 		// this.setContentView(R.layout.composeactivity);
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		mContext = this;
 		setContentView(R.layout.edit_description_activity);
 		ed_description = (EditText) findViewById(R.id.et_activity_description);

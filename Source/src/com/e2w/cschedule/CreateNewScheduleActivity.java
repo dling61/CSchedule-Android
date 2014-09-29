@@ -2,10 +2,12 @@ package com.e2w.cschedule;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.adapter.ActivityNameAdapter;
 import com.e2w.cschedule.adapter.AlertTextBaseAdapter;
 import com.e2w.cschedule.adapter.TextBaseAdapter;
@@ -33,6 +35,7 @@ import com.e2w.cschedule.views.LoadingPopupViewHolder;
 import com.e2w.cschedule.views.PopupDialog;
 import com.e2w.cschedule.views.ToastDialog;
 import com.loopj.android.http.JsonHttpResponseHandler;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -103,6 +106,7 @@ public class CreateNewScheduleActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		mContext = this;
 		view = new AddScheduleView(mContext);
 		this.setContentView(view.layout);

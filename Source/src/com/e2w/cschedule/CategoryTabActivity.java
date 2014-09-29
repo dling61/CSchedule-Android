@@ -3,6 +3,7 @@ package com.e2w.cschedule;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.adapter.MyPagerAdapter;
 import com.e2w.cschedule.adapter.MyTabFactory;
 import com.e2w.cschedule.db.DatabaseHelper;
@@ -18,10 +19,12 @@ import com.e2w.cschedule.interfaces.SharedMemberInterface;
 import com.e2w.cschedule.models.Alert;
 import com.e2w.cschedule.models.TimeZoneModel;
 import com.e2w.cschedule.net.WebservicesHelper;
+import com.e2w.cschedule.utils.CommConstant;
 import com.e2w.cschedule.views.ConfirmDialog;
 import com.e2w.cschedule.views.CustomViewPager;
 import com.e2w.cschedule.views.LoadingPopupViewHolder;
 import com.e2w.cschedule.views.MenuAppView;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -78,6 +81,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		setContentView(R.layout.category_tab_view);
 		mContext = this;
 		loadingPopup = new LoadingPopupViewHolder(mContext,

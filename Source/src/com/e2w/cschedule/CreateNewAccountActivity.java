@@ -3,6 +3,7 @@
  * */
 package com.e2w.cschedule;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.interfaces.LoadingInterface;
 import com.e2w.cschedule.interfaces.LoginInterface;
 import com.e2w.cschedule.interfaces.SignUpInterface;
@@ -51,7 +52,7 @@ public class CreateNewAccountActivity extends BaseActivity implements
 
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		mContext = this;
 		this.setContentView(R.layout.create_new_account);
 

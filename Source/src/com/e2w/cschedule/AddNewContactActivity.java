@@ -1,5 +1,6 @@
 package com.e2w.cschedule;
 
+import com.bugsense.trace.BugSenseHandler;
 import com.e2w.cschedule.db.DatabaseHelper;
 import com.e2w.cschedule.interfaces.ContactInterface;
 import com.e2w.cschedule.interfaces.LoadingInterface;
@@ -13,6 +14,7 @@ import com.e2w.cschedule.views.AddParticipantView;
 import com.e2w.cschedule.views.ConfirmDialog;
 import com.e2w.cschedule.views.LoadingPopupViewHolder;
 import com.e2w.cschedule.views.ToastDialog;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -40,7 +42,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		mContext = this;
 		view = new AddParticipantView(mContext);
 		this.setContentView(view.layout);

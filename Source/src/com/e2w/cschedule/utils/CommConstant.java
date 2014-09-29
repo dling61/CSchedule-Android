@@ -77,4 +77,5 @@ public class CommConstant {
 	public static final String PROPERTY_APP_VERSION = "appVersion";
 	public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	public final static String DEFAULT_DATE="1700-01-01 12:00:00";
+	public final static String BUGSENSE_KEY = "68d3d82e";
 }
