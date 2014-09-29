@@ -3,17 +3,6 @@
  * */
 package com.e2w.cschedule;
 
-import com.bugsense.trace.BugSenseHandler;
-import com.e2w.cschedule.interfaces.LoadingInterface;
-import com.e2w.cschedule.interfaces.LoginInterface;
-import com.e2w.cschedule.interfaces.SignUpInterface;
-import com.e2w.cschedule.net.WebservicesHelper;
-import com.e2w.cschedule.utils.CommConstant;
-import com.e2w.cschedule.utils.Utils;
-import com.e2w.cschedule.views.LoadingPopupViewHolder;
-import com.e2w.cschedule.views.TitleBarView;
-import com.e2w.cschedule.views.ToastDialog;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +15,15 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import com.e2w.cschedule.interfaces.LoadingInterface;
+import com.e2w.cschedule.interfaces.SignUpInterface;
+import com.e2w.cschedule.net.WebservicesHelper;
+import com.e2w.cschedule.utils.CommConstant;
+import com.e2w.cschedule.utils.Utils;
+import com.e2w.cschedule.views.LoadingPopupViewHolder;
+import com.e2w.cschedule.views.TitleBarView;
+import com.e2w.cschedule.views.ToastDialog;
 
 /**
  * @class LoginActivity
@@ -52,7 +50,6 @@ public class CreateNewAccountActivity extends BaseActivity implements
 
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		mContext = this;
 		this.setContentView(R.layout.create_new_account);
 

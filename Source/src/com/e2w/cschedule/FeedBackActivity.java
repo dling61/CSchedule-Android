@@ -2,18 +2,7 @@ package com.e2w.cschedule;
 
 import org.json.JSONObject;
 
-import com.bugsense.trace.BugSenseHandler;
-import com.e2w.cschedule.net.BaseUrl;
-import com.e2w.cschedule.net.JSONParser;
-import com.e2w.cschedule.utils.CommConstant;
-import com.e2w.cschedule.utils.SharedReference;
-import com.e2w.cschedule.utils.Utils;
-import com.e2w.cschedule.views.LoadingPopupViewHolder;
-import com.e2w.cschedule.views.TitleBarView;
-import com.e2w.cschedule.views.ToastDialog;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,6 +11,14 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+
+import com.e2w.cschedule.net.BaseUrl;
+import com.e2w.cschedule.net.JSONParser;
+import com.e2w.cschedule.utils.SharedReference;
+import com.e2w.cschedule.utils.Utils;
+import com.e2w.cschedule.views.LoadingPopupViewHolder;
+import com.e2w.cschedule.views.TitleBarView;
+import com.e2w.cschedule.views.ToastDialog;
 
 public class FeedBackActivity extends BaseActivity implements OnClickListener {
 
@@ -37,7 +34,6 @@ public class FeedBackActivity extends BaseActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		BugSenseHandler.initAndStartSession(this, CommConstant.BUGSENSE_KEY);
 		setContentView(R.layout.aboutpage);
 		mContext = this;
 		edFeedback = (EditText) findViewById(R.id.ed_feedback);

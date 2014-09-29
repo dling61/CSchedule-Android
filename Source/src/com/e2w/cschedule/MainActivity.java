@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+
 /**
  * Class name: MainActivity Author: Huyen Nguyen Date: April 8th, 2014 This
  * class will show first when launch app
