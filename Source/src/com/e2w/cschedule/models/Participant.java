@@ -65,5 +65,8 @@ public class Participant {
 	{
 		this.owner_id = ownerid;
 	}
-	
+	public Participant()
+	{
+		
+	}
 }

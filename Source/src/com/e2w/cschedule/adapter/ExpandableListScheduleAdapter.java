@@ -79,8 +79,19 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 	}
 
 	public Object getChild(int groupPosition, int childPosition) {
-		return scheduleCollection.get(listSchedulesByDay.get(groupPosition))
-				.get(childPosition);
+		try {
+			if (listSchedulesByDay != null
+					&& listSchedulesByDay.size() > groupPosition) {
+				ArrayList<Schedule> listSchedule = scheduleCollection
+						.get(listSchedulesByDay.get(groupPosition));
+				if (listSchedule != null && listSchedule.size() > 0) {
+					return listSchedule.get(childPosition);
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
 	}
 
 	public long getChildId(int groupPosition, int childPosition) {
@@ -109,66 +120,76 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		} else {
 			viewHolder = (ScheduleViewHolder) convertView.getTag();
 		}
+		try {
+			final Schedule schedule = (Schedule) getChild(groupPosition,
+					childPosition);
+			if (schedule != null) {
+				MyActivity activity = DatabaseHelper.getSharedDatabaseHelper(
+						context).getActivity(schedule.getService_ID());
+				String activity_name = activity != null ? activity
+						.getActivity_name() : "";
+				String date = MyDate.getTimeWithAPMFromUTCTime(schedule
+						.getStarttime())
+						+ " to "
+						+ MyDate.getTimeWithAPMFromUTCTime(schedule
+								.getEndtime());
 
-		final Schedule schedule = (Schedule) getChild(groupPosition,
-				childPosition);
-		if (schedule != null) {
-			MyActivity activity =
-			DatabaseHelper.getSharedDatabaseHelper(context)
-					.getActivity(schedule.getService_ID());
-			String activity_name = activity != null ? activity
-					.getActivity_name() : "";
-			String date = MyDate.getTimeWithAPMFromUTCTime(schedule
-					.getStarttime())
-					+ " to "
-					+ MyDate.getTimeWithAPMFromUTCTime(schedule.getEndtime());
+				viewHolder.service_TV.setText(activity_name);
+				viewHolder.time_TV.setText(date.toLowerCase());
 
-			viewHolder.service_TV.setText(activity_name);
-			viewHolder.time_TV.setText(date.toLowerCase());
-
-			Log.d("activityname", activity.getActivity_name());
-			List<Confirm> memberids = DatabaseHelper.getSharedDatabaseHelper(context)
+				Log.d("activityname", activity.getActivity_name());
+				List<Confirm> memberids = DatabaseHelper
+						.getSharedDatabaseHelper(context)
 						.getParticipantsForSchedule(schedule.getSchedule_ID());
-		
-			if (memberids != null && memberids.size() > 0) {
 
-				Log.d("memberid", memberids.toString());
-				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(schedule,
-						memberids, schedule.getService_ID()
-						);
-				viewHolder.listview.setAdapter(adapter);
-				// viewHolder.listview.setVisibility(View.VISIBLE);
+				if (memberids != null && memberids.size() > 0) {
 
-			} else {
-				OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(schedule,
-						null, schedule.getService_ID());
-				viewHolder.listview.setAdapter(adapter);
-			}
-			convertView.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent inforActivityIntent = new Intent(context,
-							CreateNewScheduleActivity.class);
-					inforActivityIntent.putExtra(CommConstant.TYPE,
-							DatabaseHelper.EXISTED);
-					inforActivityIntent.putExtra(CommConstant.SCHEDULE_ID,
-							schedule.getSchedule_ID());
-					inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID,
-							schedule.getService_ID());
-					inforActivityIntent.putExtra(CommConstant.CREATOR,
-							schedule.getOwner_ID());
-					context.startActivity(inforActivityIntent);
-					Utils.pushRightToLeft(context);
+					Log.d("memberid", memberids.toString());
+					OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(
+							schedule, memberids, schedule.getService_ID());
+					viewHolder.listview.setAdapter(adapter);
+					// viewHolder.listview.setVisibility(View.VISIBLE);
+
+				} else {
+					OnDutyMemberAdapter adapter = new OnDutyMemberAdapter(
+							schedule, null, schedule.getService_ID());
+					viewHolder.listview.setAdapter(adapter);
 				}
-			});
+				convertView.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent inforActivityIntent = new Intent(context,
+								CreateNewScheduleActivity.class);
+						inforActivityIntent.putExtra(CommConstant.TYPE,
+								DatabaseHelper.EXISTED);
+						inforActivityIntent.putExtra(CommConstant.SCHEDULE_ID,
+								schedule.getSchedule_ID());
+						inforActivityIntent.putExtra(CommConstant.ACTIVITY_ID,
+								schedule.getService_ID());
+						inforActivityIntent.putExtra(CommConstant.CREATOR,
+								schedule.getOwner_ID());
+						context.startActivity(inforActivityIntent);
+						Utils.pushRightToLeft(context);
+					}
+				});
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		return convertView;
 	}
 
 	public int getChildrenCount(int groupPosition) {
-		if (scheduleCollection != null && listSchedulesByDay != null) {
-			return scheduleCollection
-					.get(listSchedulesByDay.get(groupPosition)).size();
+		try {
+			if (scheduleCollection != null && scheduleCollection.size() > 0
+					&& listSchedulesByDay != null
+					&& listSchedulesByDay.size() > groupPosition) {
+
+				return scheduleCollection.get(
+						listSchedulesByDay.get(groupPosition)).size();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		return 0;
 	}
@@ -177,7 +198,10 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		if (listSchedulesByDay == null) {
 			return 0;
 		}
-		return listSchedulesByDay.get(groupPosition);
+		if (listSchedulesByDay.size() > groupPosition) {
+			return listSchedulesByDay.get(groupPosition);
+		}
+		return 0;
 	}
 
 	public int getGroupCount() {
@@ -217,19 +241,22 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		// MyDate.getWeekdayFromUTCTime(listSchedulesByDay.get(groupPosition));
 		// String date =
 		// MyDate.transformUTCTimeToCustomStyle(this.getHeader(position));
-		String date_time_str = listSchedulesByDay.get(groupPosition);
+		if (listSchedulesByDay != null
+				&& listSchedulesByDay.size() > groupPosition) {
+			String date_time_str = listSchedulesByDay.get(groupPosition);
 
-		if (date_time_str != null) {
-			String[] date_time = date_time_str.split(";");
+			if (date_time_str != null) {
+				String[] date_time = date_time_str.split(";");
 
-			if (date_time != null) {
+				if (date_time != null) {
 
-				viewHolder.weekday_TV
-						.setText(date_time[0] != null ? date_time[0] : "");
-				viewHolder.date_TV.setText(date_time[1] != null ? date_time[1]
-						: "");
-				viewHolder.weekday_TV.setVisibility(View.VISIBLE);
-				viewHolder.date_TV.setVisibility(View.VISIBLE);
+					viewHolder.weekday_TV
+							.setText(date_time[0] != null ? date_time[0] : "");
+					viewHolder.date_TV
+							.setText(date_time[1] != null ? date_time[1] : "");
+					viewHolder.weekday_TV.setVisibility(View.VISIBLE);
+					viewHolder.date_TV.setVisibility(View.VISIBLE);
+				}
 			}
 		}
 		return convertView;
@@ -261,7 +288,6 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 		List<Confirm> listParticipantId;
 		String activity_id = "";
 		Schedule schedule;
-		
 
 		public OnDutyMemberAdapter(Schedule schedule,
 				List<Confirm> listParticipantId, String activity_id) {
@@ -303,47 +329,57 @@ public class ExpandableListScheduleAdapter extends BaseExpandableListAdapter {
 				holder = (DutyScheduleView) convertView.getTag();
 
 			}
-			final Confirm member = listParticipantId.get(position);
-			if (member != null) {
-				final Sharedmember sm = DatabaseHelper.getSharedDatabaseHelper(context).getSharedmember(member.getMemberId(),activity_id);
-				if (sm != null) {
-					holder.title.setText(sm.getName());
 
-					switch (member.getConfirm()) {
-					case CommConstant.CONFIRM_UNKNOWN:
-						holder.layoutTitle
-								.setBackgroundResource(R.drawable.onduty_border);
-						holder.title.setTextColor(context.getResources()
-								.getColor(R.color.on_duty_text));
-						break;
-					case CommConstant.CONFIRM_CONFIRMED:
-						holder.layoutTitle
-								.setBackgroundResource(R.drawable.onduty_border_green);
-						holder.title.setTextColor(Color.WHITE);
-						break;
-					case CommConstant.CONFIRM_DENIED:
-						holder.layoutTitle
-								.setBackgroundResource(R.drawable.onduty_border_red);
-						holder.title.setTextColor(Color.WHITE);
-						break;
-					default:
-						holder.layoutTitle
-								.setBackgroundResource(R.drawable.onduty_border_gray);
-						holder.title.setTextColor(context.getResources()
-								.getColor(R.color.on_duty_text));
-						break;
-					}
-					convertView.setOnClickListener(new OnClickListener() {
+			if (listParticipantId != null
+					&& listParticipantId.size() > position) {
+				final Confirm member = listParticipantId.get(position);
+				if (member != null) {
+					final Sharedmember sm = DatabaseHelper
+							.getSharedDatabaseHelper(context).getSharedmember(
+									member.getMemberId(), activity_id);
+					if (sm != null) {
+						holder.title.setText(sm.getName());
 
-						@Override
-						public void onClick(View v) {
-							participantInforDialog(sm, member, schedule);
+						switch (member.getConfirm()) {
+						case CommConstant.CONFIRM_UNKNOWN:
+							holder.layoutTitle
+									.setBackgroundResource(R.drawable.onduty_border);
+							holder.title.setTextColor(context.getResources()
+									.getColor(R.color.on_duty_text));
+							break;
+						case CommConstant.CONFIRM_CONFIRMED:
+							holder.layoutTitle
+									.setBackgroundResource(R.drawable.onduty_border_green);
+							holder.title.setTextColor(Color.WHITE);
+							break;
+						case CommConstant.CONFIRM_DENIED:
+							holder.layoutTitle
+									.setBackgroundResource(R.drawable.onduty_border_red);
+							holder.title.setTextColor(Color.WHITE);
+							break;
+						default:
+							holder.layoutTitle
+									.setBackgroundResource(R.drawable.onduty_border_gray);
+							holder.title.setTextColor(context.getResources()
+									.getColor(R.color.on_duty_text));
+							break;
 						}
-					});
+						convertView.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								try {
+									participantInforDialog(sm, member, schedule);
+								} catch (Exception ex) {
+									ex.printStackTrace();
+								}
+							}
+						});
+					}
+				} else {
+					holder.setVisibility(View.GONE);
+					convertView.setVisibility(View.GONE);
 				}
-			} else {
-				holder.setVisibility(View.GONE);
-				convertView.setVisibility(View.GONE);
 			}
 			return holder;
 		}
