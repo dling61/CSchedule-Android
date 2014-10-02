@@ -105,13 +105,11 @@ public class AccountFragment extends Fragment implements OnClickListener {
 		String email = ref.getEmail(mContext);
 		view.account_name_tv.setText(ref.getUsername(mContext));
 		view.account_email_tv.setText(email);
-		DatabaseHelper dbHelper = DatabaseHelper
-				.getSharedDatabaseHelper(mContext);
-		view.number_activities_tv.setText(String.valueOf(dbHelper
+		
+		view.number_activities_tv.setText(String.valueOf(DatabaseHelper.getSharedDatabaseHelper(mContext)
 				.getNumberActivity()));
-		view.number_schedules_tv.setText(String.valueOf(dbHelper
+		view.number_schedules_tv.setText(String.valueOf(DatabaseHelper.getSharedDatabaseHelper(mContext)
 				.getNumberSchedule()));
-		dbHelper.close();
 	}
 	
 	BroadcastReceiver scheduleReadyComplete = new BroadcastReceiver() {

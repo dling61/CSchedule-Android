@@ -37,6 +37,7 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	int selectedParticipantID = -1;
 	ProgressDialog progress = null;
 	LoadingPopupViewHolder loadingPopup;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -169,29 +170,29 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		SharedReference ref = new SharedReference();
 		int currentOwnerId = ref.getCurrentOwnerId(mContext);
 		Log.d("current ownerid", currentOwnerId + "");
-		Log.d("participant delete", thisParticipant.getID() + "");
-		if (thisParticipant.getID() == currentOwnerId) {
-			final ToastDialog dialog = new ToastDialog(mContext, mContext
-					.getResources().getString(R.string.your_contact));
-			dialog.show();
-			dialog.btnOk.setOnClickListener(new OnClickListener() {
+		if (thisParticipant != null) {
+			Log.d("participant delete", thisParticipant.getID() + "");
+			if (thisParticipant.getID() == currentOwnerId) {
+				final ToastDialog dialog = new ToastDialog(mContext, mContext
+						.getResources().getString(R.string.your_contact));
+				dialog.show();
+				dialog.btnOk.setOnClickListener(new OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-					dialog.dismiss();
-				}
-			});
-			return;
-		} else {
-			runOnUiThread(new Runnable() {
-				public void run() {
-					showAlertDeleteContact();
-				}
-			});
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+				return;
+			} else {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						showAlertDeleteContact();
+					}
+				});
+			}
 		}
 	}
-
-
 
 	// show loading
 	public void showLoading(Context mContext) {
@@ -213,50 +214,52 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 	 * Show alert delete contact Call ws delete contact if click yes
 	 * */
 	private void showAlertDeleteContact() {
-		final ConfirmDialog dialog = new ConfirmDialog(mContext, mContext
-				.getResources().getString(R.string.delete_contact)
-				+ " "
-				+ thisParticipant.getName() + "?");
-		dialog.show();
-		dialog.btnCancel.setOnClickListener(new OnClickListener() {
+		try {
+			final ConfirmDialog dialog = new ConfirmDialog(mContext, mContext
+					.getResources().getString(R.string.delete_contact)
+					+ " "
+					+ thisParticipant.getName() + "?");
+			dialog.show();
+			dialog.btnCancel.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				dialog.dismiss();
-			}
-		});
-
-		dialog.btnOk.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if (selectedParticipantID > 0) {
-					WebservicesHelper ws = WebservicesHelper.getInstance();
-					ws.deleteParticipant(mContext,thisParticipant,loadingInterface,iContact);
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
 				}
-			}
-		});
+			});
+
+			dialog.btnOk.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					if (selectedParticipantID > 0) {
+						WebservicesHelper ws = WebservicesHelper.getInstance();
+						ws.deleteParticipant(mContext, thisParticipant,
+								loadingInterface, iContact);
+					}
+				}
+			});
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
-	
-	ContactInterface iContact=new ContactInterface() {
-		
+
+	ContactInterface iContact = new ContactInterface() {
+
 		@Override
 		public void onError(String error) {
-			final ToastDialog dialog = new ToastDialog(
-					mContext, error);
+			final ToastDialog dialog = new ToastDialog(mContext, error);
 			dialog.show();
-			dialog.btnOk
-					.setOnClickListener(new OnClickListener() {
+			dialog.btnOk.setOnClickListener(new OnClickListener() {
 
-						@Override
-						public void onClick(
-								View v) {
-							dialog.dismiss();
-						}
-					});
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+				}
+			});
 		}
-		
+
 		@Override
 		public void onComplete() {
 			((Activity) mContext).finish();
@@ -277,7 +280,6 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		}
 	};
 
-	
 	/**
 	 * Add contact if create new and update if edit mode
 	 * */
@@ -307,6 +309,11 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			return;
 		}
 
+		if(thisParticipant==null)
+		{
+			thisParticipant=new Participant();
+		}
+		
 		thisParticipant.setEmail(email);
 		thisParticipant.setName(name);
 		thisParticipant.setMobile(mobile);
@@ -334,10 +341,12 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 			cv.put(ParticipantTable.user_login,
 					new SharedReference().getCurrentOwnerId(mContext));
 			dbHelper.insertParticipant(cv);
-			ws.addParticipant(mContext,thisParticipant, loadingInterface,iContact);
+			ws.addParticipant(mContext, thisParticipant, loadingInterface,
+					iContact);
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			dbHelper.updateParticipant(thisParticipant.getID(), cv);
-			ws.updateParticipant(mContext,thisParticipant, loadingInterface,iContact);
+			ws.updateParticipant(mContext, thisParticipant, loadingInterface,
+					iContact);
 		}
 
 	}
@@ -356,12 +365,12 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 					R.string.processing));
 		}
 		SharedReference ref = new SharedReference();
-		DatabaseHelper dbHelper = DatabaseHelper
-				.getSharedDatabaseHelper(mContext);
+		
 		if (composeType == DatabaseHelper.NEW) {
 			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.add_contact));
-			int newParticipantID = dbHelper.getNextParticipantID();
+			int newParticipantID = DatabaseHelper
+					.getSharedDatabaseHelper(mContext).getNextParticipantID();
 			int ownerid = ref.getCurrentOwnerId(mContext);
 			thisParticipant = new Participant(newParticipantID, null, null,
 					null, ownerid);
@@ -375,7 +384,8 @@ public class AddNewContactActivity extends Activity implements OnClickListener {
 		} else if (composeType == DatabaseHelper.EXISTED) {
 			view.titleBar.tv_name.setText(mContext.getResources().getString(
 					R.string.edit_participant));
-			thisParticipant = dbHelper.getParticipant(selectedParticipantID);
+			thisParticipant = DatabaseHelper
+					.getSharedDatabaseHelper(mContext).getParticipant(selectedParticipantID);
 			view.btn_remove_contact.setVisibility(View.VISIBLE);
 			setEdittextEditable(view.et_email, false);
 			setEdittextEditable(view.et_mobile, false);

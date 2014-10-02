@@ -292,16 +292,17 @@ public class CreateNewScheduleActivity extends Activity implements
 					participant += list_participant.get(i).getName() + ", ";
 				}
 				try {
-					if (list_participant.size() <= 3) {
+//					if (list_participant.size() <= 3) {
 						if (participant.endsWith(", ")) {
 							participant = participant.substring(0,
 									participant.length() - 2);
 						}
-					}
+//					}
 				} catch (Exception exx) {
 					exx.printStackTrace();
 				}
 				if (list_participant.size() > 3) {
+				
 					participant += ", ...";
 				}
 				view.tvOnduty.setText(participant);

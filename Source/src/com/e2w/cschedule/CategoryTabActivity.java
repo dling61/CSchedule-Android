@@ -22,6 +22,8 @@ import com.e2w.cschedule.views.ConfirmDialog;
 import com.e2w.cschedule.views.CustomViewPager;
 import com.e2w.cschedule.views.LoadingPopupViewHolder;
 import com.e2w.cschedule.views.MenuAppView;
+import com.google.android.gms.internal.ac;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -126,7 +128,7 @@ public class CategoryTabActivity extends FragmentActivity implements
 	 * */
 	BroadcastReceiver goToActivity = new BroadcastReceiver() {
 		public void onReceive(Context arg0, Intent arg1) {
-//			moveToPage(TAB_ACTIVITY);
+			// moveToPage(TAB_ACTIVITY);
 		}
 	};
 
@@ -153,8 +155,12 @@ public class CategoryTabActivity extends FragmentActivity implements
 
 		@Override
 		public void onComplete() {
-			activity.onDownloadComplete();
-
+			if (activity != null) {
+				activity.onDownloadComplete();
+			}
+			if (account != null) {
+				account.onResume();
+			}
 		}
 	};
 
@@ -168,7 +174,12 @@ public class CategoryTabActivity extends FragmentActivity implements
 
 		@Override
 		public void onComplete() {
-			schedule.scheduleDownloadComplete();
+			if (schedule != null) {
+				schedule.scheduleDownloadComplete();
+			}
+			if (account != null) {
+				account.onResume();
+			}
 		}
 	};
 
@@ -205,10 +216,10 @@ public class CategoryTabActivity extends FragmentActivity implements
 
 		// get all data after that, go to tab
 		WebservicesHelper ws = WebservicesHelper.getInstance();
-		ws.getAllActivitys(mContext,loadingInterface, activityInterface,
+		ws.getAllActivitys(mContext, loadingInterface, activityInterface,
 				scheduleInterface, sharedMemberInterface);
-//		ws.getSchedules(mContext, loadingInterface, scheduleInterface);
-		ws.getParticipantsFromWeb(mContext,iParticipant, loadingInterface);
+		// ws.getSchedules(mContext, loadingInterface, scheduleInterface);
+		ws.getParticipantsFromWeb(mContext, iParticipant, loadingInterface);
 
 	}
 

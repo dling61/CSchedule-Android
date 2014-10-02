@@ -220,8 +220,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public int getNumberActivity() {
 		Cursor mCount = null;
 		SQLiteDatabase database = getInstance().openDatabase();
-		try {
-			
+		try {		
 			mCount =database.rawQuery(
 					"select count(*) from " + ActivityTable.ActivityTableName
 							+ " where " + ActivityTable.is_Deleted + "=0 and "
@@ -234,12 +233,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 					return count;
 				}
 			}
-
 			mCount.close();
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (mCount != null)
+			{
 				mCount.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return 0;
@@ -300,7 +300,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return null;
@@ -339,7 +341,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return timeZones;
@@ -366,7 +370,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return alerts;
@@ -403,7 +409,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return activities;
@@ -446,7 +454,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return activities;
@@ -487,7 +497,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return activities;
@@ -524,7 +536,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return activities;
@@ -559,7 +573,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 			
 		}
 		getInstance().closeDatabase();
@@ -597,7 +613,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return null;
@@ -639,7 +657,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return schedules;
@@ -717,8 +737,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				} finally {
 					// this gets called even if there is an exception somewhere
 					// above
-					if (c1 != null)
-						c1.close();
+					if (c != null)
+					{
+						c.close();
+					}
 				}
 			}
 			c.close();
@@ -782,7 +804,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 			
 		}
 getInstance().closeDatabase();
@@ -816,7 +840,9 @@ getInstance().closeDatabase();
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (mCount != null)
+			{
 				mCount.close();
+			}
 		}
 getInstance().closeDatabase();
 		return 0;
@@ -852,7 +878,9 @@ getInstance().closeDatabase();
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return -1;
@@ -916,7 +944,9 @@ getInstance().closeDatabase();
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		
 		}
 		getInstance().closeDatabase();
@@ -960,7 +990,9 @@ getInstance().closeDatabase();
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return schedules;
@@ -1002,7 +1034,9 @@ getInstance().closeDatabase();
 		} finally {
 			// this gets called even if there is an exception somewhere above
 			if (c != null)
+			{
 				c.close();
+			}
 		}
 getInstance().closeDatabase();
 		return schedules;
@@ -1046,7 +1080,11 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1084,7 +1122,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1124,7 +1165,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1168,7 +1212,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1202,7 +1249,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1233,7 +1283,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1274,7 +1327,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 getInstance().closeDatabase();
@@ -1316,7 +1372,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1351,7 +1410,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1387,7 +1449,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1419,7 +1484,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1456,7 +1524,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1483,7 +1554,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1508,7 +1582,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 
 		}
 		getInstance().closeDatabase();
@@ -1532,7 +1609,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
@@ -1555,7 +1635,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
@@ -1578,7 +1661,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
@@ -1601,7 +1687,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
@@ -1625,7 +1714,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
@@ -1655,7 +1747,10 @@ getInstance().closeDatabase();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			c.close();
+			if (c != null)
+			{
+				c.close();
+			}
 		}
 		getInstance().closeDatabase();
 		return (id == (-1)) ? false : true;
