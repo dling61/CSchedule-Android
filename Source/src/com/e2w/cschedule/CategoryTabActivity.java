@@ -24,9 +24,7 @@ import com.e2w.cschedule.views.ConfirmDialog;
 import com.e2w.cschedule.views.CustomViewPager;
 import com.e2w.cschedule.views.LoadingPopupViewHolder;
 import com.e2w.cschedule.views.MenuAppView;
-
 import com.google.android.gms.internal.ac;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

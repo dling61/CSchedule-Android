@@ -179,19 +179,28 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 
 	// show loading
 	public void showLoading(Context mContext) {
-		if (loadingPopup == null) {
-			loadingPopup = new LoadingPopupViewHolder(mContext,
-					CategoryTabActivity.DIALOG_LOADING_THEME);
-		}
-		loadingPopup.setCancelable(true);
-		if (!loadingPopup.isShowing()) {
-			loadingPopup.show();
+		try {
+			if (loadingPopup == null) {
+				loadingPopup = new LoadingPopupViewHolder(mContext,
+						CategoryTabActivity.DIALOG_LOADING_THEME);
+			}
+			loadingPopup.setCancelable(true);
+			if (!loadingPopup.isShowing()) {
+				loadingPopup.show();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
 	public void dimissDialog() {
-		if (loadingPopup != null && loadingPopup.isShowing()) {
-			loadingPopup.dismiss();
+
+		try {
+			if (loadingPopup != null && loadingPopup.isShowing()) {
+				loadingPopup.dismiss();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -252,8 +261,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
 			super.onPreExecute();
-			flag=false;
-			Log.d("start thread","start thead");
+			flag = false;
+			Log.d("start thread", "start thead");
 			showLoading(mContext);
 		}
 
@@ -267,8 +276,9 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		protected void onCancelled() {
 			// TODO Auto-generated method stub
 			super.onCancelled();
-			Log.d("cancel thread","cancel thead");
+			Log.d("cancel thread", "cancel thead");
 		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -319,8 +329,8 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 				}
 			}
 			dimissDialog();
-			Log.d("finish thread","finish thead");
-			flag=true;
+			Log.d("finish thread", "finish thead");
+			flag = true;
 		}
 	}
 
@@ -334,8 +344,9 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		ArrayList<Integer> returnValue = new ArrayList<Integer>();
 		int group_scroll = 0;
-		dates.clear();
-
+		if (dates != null) {
+			dates.clear();
+		}
 		SimpleDateFormat fullDatetimeFormat = new SimpleDateFormat(
 				FORMAT_FULL_DATE);
 		fullDatetimeFormat.setTimeZone(TimeZone.getDefault());
@@ -675,15 +686,19 @@ public class ScheduleFragment extends Fragment implements OnClickListener {
 		 * new thread
 		 * 
 		 * **/
-
-		if (flag) {
-			if (task != null) {
-				task.cancel(true);
+		try {
+			if (flag) {
+				if (task != null) {
+					task.cancel(true);
+				}
 			}
+			task = new LoadScheduleFromDbTask();
+			if (task != null) {
+				task.execute();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		task = new LoadScheduleFromDbTask();
-		task.execute();
-
 		view.btn_refresh.setEnabled(true);
 	}
 
